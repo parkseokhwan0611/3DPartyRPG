@@ -125,6 +125,6 @@ public abstract class AttackBase : MonoBehaviour
         }
 
         // 4. 내비게이션 정지 거리 초기화
-        agent.stoppingDistance = 0f;
+        agent.stoppingDistance = 0.1f;
     }
 }
