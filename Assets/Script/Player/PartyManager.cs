@@ -74,6 +74,7 @@ public class PartyManager : MonoBehaviour
                 var attack = member.GetComponent<AttackBase>();
                 if (attack != null) attack.SetTarget(hit.transform);
             }
+            SpawnAttackMarker(hit.point);
         }
         // 2. 땅을 클릭했는지 확인 (이동 명령)
         else if (Physics.Raycast(ray, out hit, Mathf.Infinity, groundLayer))
@@ -108,6 +109,21 @@ public class PartyManager : MonoBehaviour
         // 기존에 사용하시던 오브젝트 풀 매니저 호출
         // 프리팹 이름은 "MoveMarker"라고 가정합니다.
         var markerGo = ObjectPoolManager.instance.GetGo("MoveMarker");
+        
+        if (markerGo != null)
+        {
+            markerGo.transform.position = spawnPosition;
+            
+            // 바닥에 붙는 마커이므로 회전값은 기본값(Identity) 혹은 
+            // 바닥의 노멀값에 맞게 설정 (보통은 아래처럼 기본 회전 사용)
+            markerGo.transform.rotation = Quaternion.identity;
+        }
+    }
+    void SpawnAttackMarker(Vector3 spawnPosition)
+    {
+        // 기존에 사용하시던 오브젝트 풀 매니저 호출
+        // 프리팹 이름은 "MoveMarker"라고 가정합니다.
+        var markerGo = ObjectPoolManager.instance.GetGo("AttackMarker");
         
         if (markerGo != null)
         {

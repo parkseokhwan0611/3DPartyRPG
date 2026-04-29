@@ -76,7 +76,15 @@ public class MeleeAttack : AttackBase
         if (ObjectPoolManager.instance != null)
         {
             var effect = ObjectPoolManager.instance.GetGo("Yellow Sword Slash 1");
-            if (effect != null) effect.transform.position = pos;
+            if (effect != null)
+            {
+                // 1. 위치 설정
+                effect.transform.position = pos;
+
+                // 2. 방향 설정 (캐릭터가 바라보는 정면 방향으로 회전)
+                // 만약 적을 향해 더 정확히 날리고 싶다면 currentTarget.position - transform.position을 사용하세요.
+                effect.transform.rotation = transform.rotation; 
+            }
         }
     }
     private void OnDrawGizmosSelected()
