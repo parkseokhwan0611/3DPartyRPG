@@ -12,42 +12,49 @@ public class RangedAttack : AttackBase
     {
         StartCoroutine(AttackRoutine());
     }
-
-private IEnumerator AttackRoutine()
+    private IEnumerator AttackRoutine()
     {
         if (currentTarget == null) yield break;
 
-        // 애니메이션 재생
+        // 1. 애니메이션 재생
         anim.SetTrigger("doNormalAttack");
         
-        // 발사 타이밍까지 대기
+        // 2. 발사 타이밍까지 대기
         yield return new WaitForSeconds(damageDelay);
 
-        // 만약 firePoint를 인스펙터에서 할당하지 않았다면 
-        // 캐릭터의 위치를 기본값으로 사용하도록 방어 코드를 추가합니다.
-        Transform spawnPoint = (firePoint != null) ? firePoint : transform;
-
-        // 1. 적을 향한 방향 계산 (firePoint 위치 기준)
-        // 적의 가슴 높이(Vector3.up * 1.0f)를 조준합니다.
         if (currentTarget == null) yield break;
-        Vector3 targetDir = (currentTarget.position + Vector3.up * 1.0f) - spawnPoint.position;
-        
-        
-        // 투사체가 땅으로 박히거나 하늘로 솟지 않게 Y축을 고정하고 싶다면 사용 (선택 사항)
-        // targetDir.y = 0; 
 
-        if (targetDir != Vector3.zero)
+        // [핵심 수정] 3. 정밀 조준 벡터 계산
+        // 캐릭터의 회전(transform.forward)을 무시하고, 
+        // 오직 '지팡이 끝'에서 '적의 중심'을 잇는 순수한 직선을 만듭니다.
+        
+        Vector3 spawnPos = (firePoint != null) ? firePoint.position : transform.position;
+        
+        // 지팡이 끝에서 적의 가슴을 향하는 방향 벡터 (순수하게 두 점 사이의 방향)
+        Vector3 preciseDir = (currentTarget.position - spawnPos).normalized;
+        
+        // 해당 방향을 바라보는 회전값 생성
+        Quaternion preciseRotation = Quaternion.LookRotation(preciseDir);
+
+        // 4. 투사체 생성
+        var effect = ObjectPoolManager.instance.GetGo(projectileName);
+
+        if (effect != null)
         {
-            // 2. 방향을 회전값(Quaternion)으로 변환
-            Quaternion lookRotation = Quaternion.LookRotation(targetDir);
+            // 위치와 회전을 계산된 정밀 값으로 즉시 강제 세팅
+            effect.transform.position = spawnPos;
+            effect.transform.rotation = preciseRotation;
 
-            // 3. 풀에서 투사체 소환
-            var effect = ObjectPoolManager.instance.GetGo(projectileName);
-            if (effect != null)
+            Rigidbody rb = effect.GetComponent<Rigidbody>();
+            if (rb != null)
             {
-                // 4. firePoint의 위치와 계산된 회전값을 적용
-                effect.transform.position = spawnPoint.position;
-                effect.transform.rotation = lookRotation;
+                // 물리 엔진 위치와 회전도 동기화
+                rb.position = spawnPos;
+                rb.rotation = preciseRotation;
+                
+                // 이전 속도 잔상 제거 (매우 중요)
+                rb.velocity = Vector3.zero;
+                rb.angularVelocity = Vector3.zero;
             }
         }
     }
