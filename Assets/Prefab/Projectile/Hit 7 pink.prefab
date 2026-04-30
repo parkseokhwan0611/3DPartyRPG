@@ -34329,13 +34329,14 @@ GameObject:
   - component: {fileID: 7377019190578261996}
   - component: {fileID: 1749582975259962380}
   - component: {fileID: 2763330135811631551}
+  - component: {fileID: -9004901364911522023}
   m_Layer: 8
   m_Name: Hit 7 pink
   m_TagString: PlayerAtk
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &7377019190578261996
 Transform:
   m_ObjectHideFlags: 0
@@ -34344,8 +34345,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8782024233737970620}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.30643207, y: 0.6864324, z: 0.4028692, w: 0.5221172}
-  m_LocalPosition: {x: 25.327354, y: 1.9209093, z: 3.801472}
+  m_LocalRotation: {x: 0, y: 0.99999607, z: 0, w: 0.00281547}
+  m_LocalPosition: {x: 25.083279, y: 0.9587066, z: 3.2877736}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -39226,6 +39227,19 @@ ParticleSystemRenderer:
   m_MeshWeighting2: 1
   m_MeshWeighting3: 1
   m_MaskInteraction: 0
+--- !u!114 &-9004901364911522023
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8782024233737970620}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dfcb7e11683e6064f99519b13a90c8ba, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  destroyTime: 0.8
 --- !u!1 &8825671546556537545
 GameObject:
   m_ObjectHideFlags: 0

@@ -79,38 +79,52 @@ public class ProjectileScript : PoolAble
             rb.velocity = transform.forward * speed;
         }
     }
-
     protected virtual void OnCollisionEnter(Collision collision)
     {
-        // 충돌 시 물리 멈춤
+        // 1. 투사체 물리 정지
         rb.constraints = RigidbodyConstraints.FreezeAll;
         if (lightSourse != null) lightSourse.enabled = false;
         col.enabled = false;
 
         if (projectilePS != null) projectilePS.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
 
-        // 충돌 이펙트 처리
+        // 2. 충돌 지점 계산
         ContactPoint contact = collision.contacts[0];
+        Vector3 hitPos = contact.point + contact.normal * hitOffset;
+
+        // 3. [핵심 수정] 외부 프리팹 소환 로직
         if (hit != null)
         {
-            hit.transform.position = contact.point + contact.normal * hitOffset;
-            
-            if (UseFirePointRotation) 
-                hit.transform.rotation = transform.rotation * Quaternion.Euler(0, 180f, 0);
-            else if (rotationOffset != Vector3.zero) 
-                hit.transform.rotation = Quaternion.Euler(rotationOffset);
-            else 
-                hit.transform.LookAt(contact.point + contact.normal);
+            // 프리팹의 이름을 사용하여 풀 매니저에서 오브젝트를 가져옵니다.
+            var hitEffect = ObjectPoolManager.instance.GetGo(hit.name);
 
-            if (hitPS != null) hitPS.Play();
+            if (hitEffect != null)
+            {
+                hitEffect.transform.position = hitPos;
+
+                // 회전 설정
+                if (UseFirePointRotation) 
+                    hitEffect.transform.rotation = transform.rotation * Quaternion.Euler(0, 180f, 0);
+                else if (rotationOffset != Vector3.zero) 
+                    hitEffect.transform.rotation = Quaternion.Euler(rotationOffset);
+                else 
+                    hitEffect.transform.LookAt(contact.point + contact.normal);
+
+                // [참고] 가져온 이펙트가 자동으로 풀에 반환되도록 
+                // 해당 히트 프리팹에도 PoolAble이나 유사한 스크립트가 붙어있어야 합니다.
+                hitEffect.SetActive(true); 
+                
+                // 만약 히트 이펙트 안에 파티클이 있다면 재생
+                var ps = hitEffect.GetComponent<ParticleSystem>();
+                if (ps != null) ps.Play();
+            }
         }
 
-        // 충돌했으므로 일정 시간 뒤 풀로 반환 (이펙트가 끝날 시간)
+        // 4. 투사체 본체 반환
         if (disableCoroutine != null) StopCoroutine(disableCoroutine);
-        float waitTime = (hitPS != null) ? hitPS.main.duration : 1.0f;
-        disableCoroutine = StartCoroutine(DisableTimer(waitTime));
+        // 이펙트가 소환되었으므로 본체는 즉시 혹은 아주 짧은 시간 뒤 반환
+        disableCoroutine = StartCoroutine(DisableTimer(0.2f)); 
     }
-
     private void ReturnToPool()
     {
         // Destroy 대신 반드시 Pool.Release를 사용해야 함

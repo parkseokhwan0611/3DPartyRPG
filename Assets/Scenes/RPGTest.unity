@@ -27941,8 +27941,8 @@ MonoBehaviour:
   - {fileID: 7679984365824007529}
   - {fileID: 6599030164936357093}
   - {fileID: 1458811746}
-  stopDistance: 2.5
-  resumeDistance: 4
+  stopDistance: 3
+  resumeDistance: 4.5
   rotationSpeed: 8
 --- !u!95 &1458811747
 Animator:
@@ -39817,11 +39817,19 @@ MonoBehaviour:
   - objectName: HealerNormalAtk
     perfab: {fileID: 3593354913146554835, guid: 1548e2a11f77a9e4cbabc665edfe7b4b,
       type: 3}
-    count: 10
+    count: 5
   - objectName: DealerNormalAtk
     perfab: {fileID: 4030561519296910290, guid: 2d6decd2b1f115a41972054be270ba56,
       type: 3}
-    count: 10
+    count: 5
+  - objectName: Hit 7 pink
+    perfab: {fileID: 8782024233737970620, guid: aee9084de8abedd42b81198ffd4bd054,
+      type: 3}
+    count: 5
+  - objectName: Hit 4 yellow arrow
+    perfab: {fileID: 1446723560700238633, guid: eaa882ce4e12f934bbda3a0ef8fcfde9,
+      type: 3}
+    count: 5
 --- !u!4 &2115435187
 Transform:
   m_ObjectHideFlags: 0
