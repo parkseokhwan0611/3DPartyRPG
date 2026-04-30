@@ -38,34 +38,34 @@ public class PartyMemberScript : MonoBehaviour
         var attackComp = GetComponent<AttackBase>();
         
         // --- [강화된 로직] 리더가 클릭 시 파티원들의 상태를 완전히 리셋 ---
-        if (isLeader && Input.GetMouseButtonDown(0)) 
-        {
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            if (Physics.Raycast(ray, out RaycastHit hit))
-            {
-                if (hit.collider.CompareTag("Ground"))
-                {
-                    foreach (var member in partyMembers)
-                    {
-                        if (member == null) continue;
+        // if (isLeader && Input.GetMouseButtonDown(0)) 
+        // {
+        //     Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        //     if (Physics.Raycast(ray, out RaycastHit hit))
+        //     {
+        //         if (hit.collider.CompareTag("Ground"))
+        //         {
+        //             foreach (var member in partyMembers)
+        //             {
+        //                 if (member == null) continue;
                         
-                        // 1. 공격 로직 즉시 강제 종료 (코루틴 중단 및 타겟 제거)
-                        var memberAttack = member.GetComponent<AttackBase>();
-                        if (memberAttack != null)
-                        {
-                            memberAttack.ForceCancelAttack();
-                        }
+        //                 // 1. 공격 로직 즉시 강제 종료 (코루틴 중단 및 타겟 제거)
+        //                 var memberAttack = member.GetComponent<AttackBase>();
+        //                 if (memberAttack != null)
+        //                 {
+        //                     memberAttack.ForceCancelAttack();
+        //                 }
 
-                        // 2. 이동 상태 강제 활성화
-                        // 파티원 스크립트의 isFollowing을 true로 만들어 공격 로직으로 못 가게 방해
-                        if (!member.isLeader)
-                        {
-                            member.isFollowing = true; 
-                        }
-                    }
-                }
-            }
-        }
+        //                 // 2. 이동 상태 강제 활성화
+        //                 // 파티원 스크립트의 isFollowing을 true로 만들어 공격 로직으로 못 가게 방해
+        //                 if (!member.isLeader)
+        //                 {
+        //                     member.isFollowing = true; 
+        //                 }
+        //             }
+        //         }
+        //     }
+        // }
         // ---------------------------------------------------------
 
         // [중요] 공격 중 판정 로직 수정
