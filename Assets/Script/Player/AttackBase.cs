@@ -80,25 +80,48 @@ public abstract class AttackBase : MonoBehaviour
         // 기본 구현은 애니메이션만 트리거 (자식에서 덮어씌울 예정)
         anim.SetTrigger("doNormalAttack");
     }
+    protected Vector3 TargetPosition
+    {
+        get
+        {
+            if (currentTarget == null) return transform.position + transform.forward;
+
+            // 1. 적에게 "AimTarget"이라는 이름의 자식이 있는지 확인
+            Transform aimPoint = currentTarget.Find("AimTarget");
+            
+            // 2. 있다면 그 위치를, 없다면 원래대로 적의 피벗(발바닥) 위치를 반환
+            return aimPoint != null ? aimPoint.position : currentTarget.position;
+        }
+    }
     protected void LookAtTarget()
     {
         if (currentTarget == null) return;
 
-        // 1. 타겟 방향 계산 (내 위치에서 적 위치를 뺀 벡터)
-        Vector3 direction = (currentTarget.position - transform.position).normalized;
+        // [수정] currentTarget.position 대신 TargetPosition을 사용!
+        Vector3 direction = (TargetPosition - transform.position).normalized;
+        direction.y = 0; // 여전히 몸은 수평으로만 회전
 
-        // 2. Y축만 바라보게 고정 (캐릭터가 위아래로 기우는 것 방지)
-        direction.y = 0;
-
-        // 3. 해당 방향으로의 회전값(Quaternion) 계산
         if (direction != Vector3.zero)
         {
             Quaternion lookRotation = Quaternion.LookRotation(direction);
-            
-            // 4. 즉시 회전시키거나, 부드럽게 회전 (Slerp)
-            // 10월 포트폴리오의 자연스러움을 위해 부드러운 회전을 추천합니다.
             transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime * 10f);
         }
+
+        // 1. 타겟 방향 계산 (내 위치에서 적 위치를 뺀 벡터)
+        // Vector3 direction = (currentTarget.position - transform.position).normalized;
+
+        // // 2. Y축만 바라보게 고정 (캐릭터가 위아래로 기우는 것 방지)
+        // direction.y = 0;
+
+        // // 3. 해당 방향으로의 회전값(Quaternion) 계산
+        // if (direction != Vector3.zero)
+        // {
+        //     Quaternion lookRotation = Quaternion.LookRotation(direction);
+            
+        //     // 4. 즉시 회전시키거나, 부드럽게 회전 (Slerp)
+        //     // 10월 포트폴리오의 자연스러움을 위해 부드러운 회전을 추천합니다.
+        //     transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime * 10f);
+        // }
     }
     // [핵심] 실제 데미지를 입히는 방식은 자식들이 결정함
     // 애니메이션 이벤트에서 호출될 함수입니다.

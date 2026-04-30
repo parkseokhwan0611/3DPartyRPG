@@ -30,10 +30,7 @@ public class HealerAttack : AttackBase
         
         Vector3 spawnPos = (firePoint != null) ? firePoint.position : transform.position;
         
-        // 지팡이 끝에서 적의 가슴을 향하는 방향 벡터 (순수하게 두 점 사이의 방향)
-        Vector3 preciseDir = (currentTarget.position - spawnPos).normalized;
-        
-        // 해당 방향을 바라보는 회전값 생성
+        Vector3 preciseDir = (TargetPosition - spawnPos).normalized;
         Quaternion preciseRotation = Quaternion.LookRotation(preciseDir);
 
         // 4. 투사체 생성

@@ -1,0 +1,1409 @@
+fileFormatVersion: 2
+guid: 6c1741215c57b9544b1c58a67eef5ac5
+ModelImporter:
+  serializedVersion: 21300
+  internalIDToNameTable: []
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: M_Dwarf_Casual_Male
+    second: {fileID: 2100000, guid: 9e94b7123371d0c4b9e3398d1da7ec1e, type: 2}
+  materials:
+    materialImportMode: 0
+    materialName: 0
+    materialSearch: 1
+    materialLocation: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    removeConstantScaleCurves: 1
+    motionNodeName: SKEL_Dwarf_Casual_Male
+    rigImportErrors: 
+    rigImportWarnings: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    importAnimatedCustomProperties: 0
+    importConstraints: 0
+    animationCompression: 3
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    extraUserProperties: []
+    clipAnimations:
+    - serializedVersion: 16
+      name: Dwarf_Casual_Male_Idle
+      takeName: Dwarf_Casual_Male_Idle
+      internalID: 1989756547174255027
+      firstFrame: -1
+      lastFrame: 119
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 1
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: Dwarf_Casual_Male_Walk
+      takeName: Dwarf_Casual_Male_Walk
+      internalID: -926832211049399739
+      firstFrame: -1
+      lastFrame: 29
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 1
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/LeftUpLeg
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/LeftUpLeg/LeftLeg
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/LeftUpLeg/LeftLeg/LeftFoot
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/LeftUpLeg/LeftLeg/LeftFoot/LeftToeBase
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/LeftUpLeg/LeftLeg/LeftFoot/LeftToeBase/LeftToe_End
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/RightUpLeg
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/RightUpLeg/RightLeg
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/RightUpLeg/RightLeg/RightFoot
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/RightUpLeg/RightLeg/RightFoot/RightToeBase
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/RightUpLeg/RightLeg/RightFoot/RightToeBase/RightToe_End
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/LeftShoulder
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/LeftShoulder/LeftArm
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/LeftShoulder/LeftArm/LeftForeArm
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/LeftShoulder/LeftArm/LeftForeArm/LeftHand
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/LeftShoulder/LeftArm/LeftForeArm/LeftHand/LeftHandIndex1
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/LeftShoulder/LeftArm/LeftForeArm/LeftHand/LeftHandIndex1/LeftHandIndex2
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/LeftShoulder/LeftArm/LeftForeArm/LeftHand/LeftHandIndex1/LeftHandIndex2/LeftHandIndex3
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/LeftShoulder/LeftArm/LeftForeArm/LeftHand/LeftHandIndex1/LeftHandIndex2/LeftHandIndex3/LeftHandIndex4
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/LeftShoulder/LeftArm/LeftForeArm/LeftHand/LeftHandMiddle1
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/LeftShoulder/LeftArm/LeftForeArm/LeftHand/LeftHandMiddle1/LeftHandMiddle2
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/LeftShoulder/LeftArm/LeftForeArm/LeftHand/LeftHandMiddle1/LeftHandMiddle2/LeftHandMiddle3
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/LeftShoulder/LeftArm/LeftForeArm/LeftHand/LeftHandMiddle1/LeftHandMiddle2/LeftHandMiddle3/LeftHandMiddle4
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/LeftShoulder/LeftArm/LeftForeArm/LeftHand/LeftHandPinky1
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/LeftShoulder/LeftArm/LeftForeArm/LeftHand/LeftHandPinky1/LeftHandPinky2
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/LeftShoulder/LeftArm/LeftForeArm/LeftHand/LeftHandPinky1/LeftHandPinky2/LeftHandPinky3
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/LeftShoulder/LeftArm/LeftForeArm/LeftHand/LeftHandPinky1/LeftHandPinky2/LeftHandPinky3/LeftHandPinky4
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/LeftShoulder/LeftArm/LeftForeArm/LeftHand/LeftHandRing1
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/LeftShoulder/LeftArm/LeftForeArm/LeftHand/LeftHandRing1/LeftHandRing2
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/LeftShoulder/LeftArm/LeftForeArm/LeftHand/LeftHandRing1/LeftHandRing2/LeftHandRing3
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/LeftShoulder/LeftArm/LeftForeArm/LeftHand/LeftHandRing1/LeftHandRing2/LeftHandRing3/LeftHandRing4
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/LeftShoulder/LeftArm/LeftForeArm/LeftHand/LeftHandThumb1
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/LeftShoulder/LeftArm/LeftForeArm/LeftHand/LeftHandThumb1/LeftHandThumb2
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/LeftShoulder/LeftArm/LeftForeArm/LeftHand/LeftHandThumb1/LeftHandThumb2/LeftHandThumb3
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/LeftShoulder/LeftArm/LeftForeArm/LeftHand/LeftHandThumb1/LeftHandThumb2/LeftHandThumb3/LeftHandThumb4
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/Neck
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/Neck/Head
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/Neck/Head/Beard
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/Neck/Head/Beard1_l
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/Neck/Head/Beard1_r
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/Neck/Head/Beard2_l
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/Neck/Head/Beard2_r
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/Neck/Head/HeadTop_End
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/RightShoulder
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/RightShoulder/RightArm
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/RightShoulder/RightArm/RightForeArm
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/RightShoulder/RightArm/RightForeArm/RightHand
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/RightShoulder/RightArm/RightForeArm/RightHand/RightHandIndex1
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/RightShoulder/RightArm/RightForeArm/RightHand/RightHandIndex1/RightHandIndex2
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/RightShoulder/RightArm/RightForeArm/RightHand/RightHandIndex1/RightHandIndex2/RightHandIndex3
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/RightShoulder/RightArm/RightForeArm/RightHand/RightHandIndex1/RightHandIndex2/RightHandIndex3/RightHandIndex4
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/RightShoulder/RightArm/RightForeArm/RightHand/RightHandMiddle1
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/RightShoulder/RightArm/RightForeArm/RightHand/RightHandMiddle1/RightHandMiddle2
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/RightShoulder/RightArm/RightForeArm/RightHand/RightHandMiddle1/RightHandMiddle2/RightHandMiddle3
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/RightShoulder/RightArm/RightForeArm/RightHand/RightHandMiddle1/RightHandMiddle2/RightHandMiddle3/RightHandMiddle4
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/RightShoulder/RightArm/RightForeArm/RightHand/RightHandPinky1
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/RightShoulder/RightArm/RightForeArm/RightHand/RightHandPinky1/RightHandPinky2
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/RightShoulder/RightArm/RightForeArm/RightHand/RightHandPinky1/RightHandPinky2/RightHandPinky3
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/RightShoulder/RightArm/RightForeArm/RightHand/RightHandPinky1/RightHandPinky2/RightHandPinky3/RightHandPinky4
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/RightShoulder/RightArm/RightForeArm/RightHand/RightHandRing1
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/RightShoulder/RightArm/RightForeArm/RightHand/RightHandRing1/RightHandRing2
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/RightShoulder/RightArm/RightForeArm/RightHand/RightHandRing1/RightHandRing2/RightHandRing3
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/RightShoulder/RightArm/RightForeArm/RightHand/RightHandRing1/RightHandRing2/RightHandRing3/RightHandRing4
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/RightShoulder/RightArm/RightForeArm/RightHand/RightHandThumb1
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/RightShoulder/RightArm/RightForeArm/RightHand/RightHandThumb1/RightHandThumb2
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/RightShoulder/RightArm/RightForeArm/RightHand/RightHandThumb1/RightHandThumb2/RightHandThumb3
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/RightShoulder/RightArm/RightForeArm/RightHand/RightHandThumb1/RightHandThumb2/RightHandThumb3/RightHandThumb4
+        weight: 1
+      - path: SKM_Dwarf_Casual_Male
+        weight: 1
+      maskType: 0
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: Dwarf_Casual_Male_Run
+      takeName: Dwarf_Casual_Male_Run
+      internalID: -5321056469777663686
+      firstFrame: -1
+      lastFrame: 19
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 1
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/LeftUpLeg
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/LeftUpLeg/LeftLeg
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/LeftUpLeg/LeftLeg/LeftFoot
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/LeftUpLeg/LeftLeg/LeftFoot/LeftToeBase
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/LeftUpLeg/LeftLeg/LeftFoot/LeftToeBase/LeftToe_End
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/RightUpLeg
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/RightUpLeg/RightLeg
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/RightUpLeg/RightLeg/RightFoot
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/RightUpLeg/RightLeg/RightFoot/RightToeBase
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/RightUpLeg/RightLeg/RightFoot/RightToeBase/RightToe_End
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/LeftShoulder
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/LeftShoulder/LeftArm
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/LeftShoulder/LeftArm/LeftForeArm
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/LeftShoulder/LeftArm/LeftForeArm/LeftHand
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/LeftShoulder/LeftArm/LeftForeArm/LeftHand/LeftHandIndex1
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/LeftShoulder/LeftArm/LeftForeArm/LeftHand/LeftHandIndex1/LeftHandIndex2
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/LeftShoulder/LeftArm/LeftForeArm/LeftHand/LeftHandIndex1/LeftHandIndex2/LeftHandIndex3
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/LeftShoulder/LeftArm/LeftForeArm/LeftHand/LeftHandIndex1/LeftHandIndex2/LeftHandIndex3/LeftHandIndex4
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/LeftShoulder/LeftArm/LeftForeArm/LeftHand/LeftHandMiddle1
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/LeftShoulder/LeftArm/LeftForeArm/LeftHand/LeftHandMiddle1/LeftHandMiddle2
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/LeftShoulder/LeftArm/LeftForeArm/LeftHand/LeftHandMiddle1/LeftHandMiddle2/LeftHandMiddle3
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/LeftShoulder/LeftArm/LeftForeArm/LeftHand/LeftHandMiddle1/LeftHandMiddle2/LeftHandMiddle3/LeftHandMiddle4
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/LeftShoulder/LeftArm/LeftForeArm/LeftHand/LeftHandPinky1
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/LeftShoulder/LeftArm/LeftForeArm/LeftHand/LeftHandPinky1/LeftHandPinky2
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/LeftShoulder/LeftArm/LeftForeArm/LeftHand/LeftHandPinky1/LeftHandPinky2/LeftHandPinky3
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/LeftShoulder/LeftArm/LeftForeArm/LeftHand/LeftHandPinky1/LeftHandPinky2/LeftHandPinky3/LeftHandPinky4
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/LeftShoulder/LeftArm/LeftForeArm/LeftHand/LeftHandRing1
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/LeftShoulder/LeftArm/LeftForeArm/LeftHand/LeftHandRing1/LeftHandRing2
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/LeftShoulder/LeftArm/LeftForeArm/LeftHand/LeftHandRing1/LeftHandRing2/LeftHandRing3
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/LeftShoulder/LeftArm/LeftForeArm/LeftHand/LeftHandRing1/LeftHandRing2/LeftHandRing3/LeftHandRing4
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/LeftShoulder/LeftArm/LeftForeArm/LeftHand/LeftHandThumb1
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/LeftShoulder/LeftArm/LeftForeArm/LeftHand/LeftHandThumb1/LeftHandThumb2
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/LeftShoulder/LeftArm/LeftForeArm/LeftHand/LeftHandThumb1/LeftHandThumb2/LeftHandThumb3
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/LeftShoulder/LeftArm/LeftForeArm/LeftHand/LeftHandThumb1/LeftHandThumb2/LeftHandThumb3/LeftHandThumb4
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/Neck
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/Neck/Head
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/Neck/Head/Beard
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/Neck/Head/Beard1_l
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/Neck/Head/Beard1_r
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/Neck/Head/Beard2_l
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/Neck/Head/Beard2_r
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/Neck/Head/HeadTop_End
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/RightShoulder
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/RightShoulder/RightArm
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/RightShoulder/RightArm/RightForeArm
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/RightShoulder/RightArm/RightForeArm/RightHand
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/RightShoulder/RightArm/RightForeArm/RightHand/RightHandIndex1
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/RightShoulder/RightArm/RightForeArm/RightHand/RightHandIndex1/RightHandIndex2
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/RightShoulder/RightArm/RightForeArm/RightHand/RightHandIndex1/RightHandIndex2/RightHandIndex3
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/RightShoulder/RightArm/RightForeArm/RightHand/RightHandIndex1/RightHandIndex2/RightHandIndex3/RightHandIndex4
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/RightShoulder/RightArm/RightForeArm/RightHand/RightHandMiddle1
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/RightShoulder/RightArm/RightForeArm/RightHand/RightHandMiddle1/RightHandMiddle2
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/RightShoulder/RightArm/RightForeArm/RightHand/RightHandMiddle1/RightHandMiddle2/RightHandMiddle3
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/RightShoulder/RightArm/RightForeArm/RightHand/RightHandMiddle1/RightHandMiddle2/RightHandMiddle3/RightHandMiddle4
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/RightShoulder/RightArm/RightForeArm/RightHand/RightHandPinky1
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/RightShoulder/RightArm/RightForeArm/RightHand/RightHandPinky1/RightHandPinky2
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/RightShoulder/RightArm/RightForeArm/RightHand/RightHandPinky1/RightHandPinky2/RightHandPinky3
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/RightShoulder/RightArm/RightForeArm/RightHand/RightHandPinky1/RightHandPinky2/RightHandPinky3/RightHandPinky4
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/RightShoulder/RightArm/RightForeArm/RightHand/RightHandRing1
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/RightShoulder/RightArm/RightForeArm/RightHand/RightHandRing1/RightHandRing2
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/RightShoulder/RightArm/RightForeArm/RightHand/RightHandRing1/RightHandRing2/RightHandRing3
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/RightShoulder/RightArm/RightForeArm/RightHand/RightHandRing1/RightHandRing2/RightHandRing3/RightHandRing4
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/RightShoulder/RightArm/RightForeArm/RightHand/RightHandThumb1
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/RightShoulder/RightArm/RightForeArm/RightHand/RightHandThumb1/RightHandThumb2
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/RightShoulder/RightArm/RightForeArm/RightHand/RightHandThumb1/RightHandThumb2/RightHandThumb3
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/RightShoulder/RightArm/RightForeArm/RightHand/RightHandThumb1/RightHandThumb2/RightHandThumb3/RightHandThumb4
+        weight: 1
+      - path: SKM_Dwarf_Casual_Male
+        weight: 1
+      maskType: 0
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: Dwarf_Casual_Male_Attack1
+      takeName: Dwarf_Casual_Male_Attack1
+      internalID: 3050186351338221708
+      firstFrame: -1
+      lastFrame: 41
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 1
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/LeftUpLeg
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/LeftUpLeg/LeftLeg
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/LeftUpLeg/LeftLeg/LeftFoot
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/LeftUpLeg/LeftLeg/LeftFoot/LeftToeBase
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/LeftUpLeg/LeftLeg/LeftFoot/LeftToeBase/LeftToe_End
+        weight: 0
+      - path: SKEL_Dwarf_Casual_Male/Hips/RightUpLeg
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/RightUpLeg/RightLeg
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/RightUpLeg/RightLeg/RightFoot
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/RightUpLeg/RightLeg/RightFoot/RightToeBase
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/RightUpLeg/RightLeg/RightFoot/RightToeBase/RightToe_End
+        weight: 0
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/LeftShoulder
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/LeftShoulder/LeftArm
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/LeftShoulder/LeftArm/LeftForeArm
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/LeftShoulder/LeftArm/LeftForeArm/LeftHand
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/LeftShoulder/LeftArm/LeftForeArm/LeftHand/LeftHandIndex1
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/LeftShoulder/LeftArm/LeftForeArm/LeftHand/LeftHandIndex1/LeftHandIndex2
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/LeftShoulder/LeftArm/LeftForeArm/LeftHand/LeftHandIndex1/LeftHandIndex2/LeftHandIndex3
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/LeftShoulder/LeftArm/LeftForeArm/LeftHand/LeftHandIndex1/LeftHandIndex2/LeftHandIndex3/LeftHandIndex4
+        weight: 0
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/LeftShoulder/LeftArm/LeftForeArm/LeftHand/LeftHandMiddle1
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/LeftShoulder/LeftArm/LeftForeArm/LeftHand/LeftHandMiddle1/LeftHandMiddle2
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/LeftShoulder/LeftArm/LeftForeArm/LeftHand/LeftHandMiddle1/LeftHandMiddle2/LeftHandMiddle3
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/LeftShoulder/LeftArm/LeftForeArm/LeftHand/LeftHandMiddle1/LeftHandMiddle2/LeftHandMiddle3/LeftHandMiddle4
+        weight: 0
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/LeftShoulder/LeftArm/LeftForeArm/LeftHand/LeftHandPinky1
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/LeftShoulder/LeftArm/LeftForeArm/LeftHand/LeftHandPinky1/LeftHandPinky2
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/LeftShoulder/LeftArm/LeftForeArm/LeftHand/LeftHandPinky1/LeftHandPinky2/LeftHandPinky3
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/LeftShoulder/LeftArm/LeftForeArm/LeftHand/LeftHandPinky1/LeftHandPinky2/LeftHandPinky3/LeftHandPinky4
+        weight: 0
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/LeftShoulder/LeftArm/LeftForeArm/LeftHand/LeftHandRing1
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/LeftShoulder/LeftArm/LeftForeArm/LeftHand/LeftHandRing1/LeftHandRing2
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/LeftShoulder/LeftArm/LeftForeArm/LeftHand/LeftHandRing1/LeftHandRing2/LeftHandRing3
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/LeftShoulder/LeftArm/LeftForeArm/LeftHand/LeftHandRing1/LeftHandRing2/LeftHandRing3/LeftHandRing4
+        weight: 0
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/LeftShoulder/LeftArm/LeftForeArm/LeftHand/LeftHandThumb1
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/LeftShoulder/LeftArm/LeftForeArm/LeftHand/LeftHandThumb1/LeftHandThumb2
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/LeftShoulder/LeftArm/LeftForeArm/LeftHand/LeftHandThumb1/LeftHandThumb2/LeftHandThumb3
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/LeftShoulder/LeftArm/LeftForeArm/LeftHand/LeftHandThumb1/LeftHandThumb2/LeftHandThumb3/LeftHandThumb4
+        weight: 0
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/Neck
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/Neck/Head
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/Neck/Head/Beard
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/Neck/Head/Beard1_l
+        weight: 0
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/Neck/Head/Beard1_r
+        weight: 0
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/Neck/Head/Beard2_l
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/Neck/Head/Beard2_r
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/Neck/Head/HeadTop_End
+        weight: 0
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/RightShoulder
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/RightShoulder/RightArm
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/RightShoulder/RightArm/RightForeArm
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/RightShoulder/RightArm/RightForeArm/RightHand
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/RightShoulder/RightArm/RightForeArm/RightHand/RightHandIndex1
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/RightShoulder/RightArm/RightForeArm/RightHand/RightHandIndex1/RightHandIndex2
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/RightShoulder/RightArm/RightForeArm/RightHand/RightHandIndex1/RightHandIndex2/RightHandIndex3
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/RightShoulder/RightArm/RightForeArm/RightHand/RightHandIndex1/RightHandIndex2/RightHandIndex3/RightHandIndex4
+        weight: 0
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/RightShoulder/RightArm/RightForeArm/RightHand/RightHandMiddle1
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/RightShoulder/RightArm/RightForeArm/RightHand/RightHandMiddle1/RightHandMiddle2
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/RightShoulder/RightArm/RightForeArm/RightHand/RightHandMiddle1/RightHandMiddle2/RightHandMiddle3
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/RightShoulder/RightArm/RightForeArm/RightHand/RightHandMiddle1/RightHandMiddle2/RightHandMiddle3/RightHandMiddle4
+        weight: 0
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/RightShoulder/RightArm/RightForeArm/RightHand/RightHandPinky1
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/RightShoulder/RightArm/RightForeArm/RightHand/RightHandPinky1/RightHandPinky2
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/RightShoulder/RightArm/RightForeArm/RightHand/RightHandPinky1/RightHandPinky2/RightHandPinky3
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/RightShoulder/RightArm/RightForeArm/RightHand/RightHandPinky1/RightHandPinky2/RightHandPinky3/RightHandPinky4
+        weight: 0
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/RightShoulder/RightArm/RightForeArm/RightHand/RightHandRing1
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/RightShoulder/RightArm/RightForeArm/RightHand/RightHandRing1/RightHandRing2
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/RightShoulder/RightArm/RightForeArm/RightHand/RightHandRing1/RightHandRing2/RightHandRing3
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/RightShoulder/RightArm/RightForeArm/RightHand/RightHandRing1/RightHandRing2/RightHandRing3/RightHandRing4
+        weight: 0
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/RightShoulder/RightArm/RightForeArm/RightHand/RightHandThumb1
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/RightShoulder/RightArm/RightForeArm/RightHand/RightHandThumb1/RightHandThumb2
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/RightShoulder/RightArm/RightForeArm/RightHand/RightHandThumb1/RightHandThumb2/RightHandThumb3
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/RightShoulder/RightArm/RightForeArm/RightHand/RightHandThumb1/RightHandThumb2/RightHandThumb3/RightHandThumb4
+        weight: 0
+      - path: SKM_Dwarf_Casual_Male
+        weight: 1
+      maskType: 0
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: Dwarf_Casual_Male_Attack2
+      takeName: Dwarf_Casual_Male_Attack2
+      internalID: -7931091339988949559
+      firstFrame: -1
+      lastFrame: 41
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 1
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/LeftUpLeg
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/LeftUpLeg/LeftLeg
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/LeftUpLeg/LeftLeg/LeftFoot
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/LeftUpLeg/LeftLeg/LeftFoot/LeftToeBase
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/LeftUpLeg/LeftLeg/LeftFoot/LeftToeBase/LeftToe_End
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/RightUpLeg
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/RightUpLeg/RightLeg
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/RightUpLeg/RightLeg/RightFoot
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/RightUpLeg/RightLeg/RightFoot/RightToeBase
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/RightUpLeg/RightLeg/RightFoot/RightToeBase/RightToe_End
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/LeftShoulder
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/LeftShoulder/LeftArm
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/LeftShoulder/LeftArm/LeftForeArm
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/LeftShoulder/LeftArm/LeftForeArm/LeftHand
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/LeftShoulder/LeftArm/LeftForeArm/LeftHand/LeftHandIndex1
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/LeftShoulder/LeftArm/LeftForeArm/LeftHand/LeftHandIndex1/LeftHandIndex2
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/LeftShoulder/LeftArm/LeftForeArm/LeftHand/LeftHandIndex1/LeftHandIndex2/LeftHandIndex3
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/LeftShoulder/LeftArm/LeftForeArm/LeftHand/LeftHandIndex1/LeftHandIndex2/LeftHandIndex3/LeftHandIndex4
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/LeftShoulder/LeftArm/LeftForeArm/LeftHand/LeftHandMiddle1
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/LeftShoulder/LeftArm/LeftForeArm/LeftHand/LeftHandMiddle1/LeftHandMiddle2
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/LeftShoulder/LeftArm/LeftForeArm/LeftHand/LeftHandMiddle1/LeftHandMiddle2/LeftHandMiddle3
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/LeftShoulder/LeftArm/LeftForeArm/LeftHand/LeftHandMiddle1/LeftHandMiddle2/LeftHandMiddle3/LeftHandMiddle4
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/LeftShoulder/LeftArm/LeftForeArm/LeftHand/LeftHandPinky1
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/LeftShoulder/LeftArm/LeftForeArm/LeftHand/LeftHandPinky1/LeftHandPinky2
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/LeftShoulder/LeftArm/LeftForeArm/LeftHand/LeftHandPinky1/LeftHandPinky2/LeftHandPinky3
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/LeftShoulder/LeftArm/LeftForeArm/LeftHand/LeftHandPinky1/LeftHandPinky2/LeftHandPinky3/LeftHandPinky4
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/LeftShoulder/LeftArm/LeftForeArm/LeftHand/LeftHandRing1
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/LeftShoulder/LeftArm/LeftForeArm/LeftHand/LeftHandRing1/LeftHandRing2
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/LeftShoulder/LeftArm/LeftForeArm/LeftHand/LeftHandRing1/LeftHandRing2/LeftHandRing3
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/LeftShoulder/LeftArm/LeftForeArm/LeftHand/LeftHandRing1/LeftHandRing2/LeftHandRing3/LeftHandRing4
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/LeftShoulder/LeftArm/LeftForeArm/LeftHand/LeftHandThumb1
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/LeftShoulder/LeftArm/LeftForeArm/LeftHand/LeftHandThumb1/LeftHandThumb2
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/LeftShoulder/LeftArm/LeftForeArm/LeftHand/LeftHandThumb1/LeftHandThumb2/LeftHandThumb3
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/LeftShoulder/LeftArm/LeftForeArm/LeftHand/LeftHandThumb1/LeftHandThumb2/LeftHandThumb3/LeftHandThumb4
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/Neck
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/Neck/Head
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/Neck/Head/Beard
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/Neck/Head/Beard1_l
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/Neck/Head/Beard1_r
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/Neck/Head/Beard2_l
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/Neck/Head/Beard2_r
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/Neck/Head/HeadTop_End
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/RightShoulder
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/RightShoulder/RightArm
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/RightShoulder/RightArm/RightForeArm
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/RightShoulder/RightArm/RightForeArm/RightHand
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/RightShoulder/RightArm/RightForeArm/RightHand/RightHandIndex1
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/RightShoulder/RightArm/RightForeArm/RightHand/RightHandIndex1/RightHandIndex2
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/RightShoulder/RightArm/RightForeArm/RightHand/RightHandIndex1/RightHandIndex2/RightHandIndex3
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/RightShoulder/RightArm/RightForeArm/RightHand/RightHandIndex1/RightHandIndex2/RightHandIndex3/RightHandIndex4
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/RightShoulder/RightArm/RightForeArm/RightHand/RightHandMiddle1
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/RightShoulder/RightArm/RightForeArm/RightHand/RightHandMiddle1/RightHandMiddle2
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/RightShoulder/RightArm/RightForeArm/RightHand/RightHandMiddle1/RightHandMiddle2/RightHandMiddle3
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/RightShoulder/RightArm/RightForeArm/RightHand/RightHandMiddle1/RightHandMiddle2/RightHandMiddle3/RightHandMiddle4
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/RightShoulder/RightArm/RightForeArm/RightHand/RightHandPinky1
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/RightShoulder/RightArm/RightForeArm/RightHand/RightHandPinky1/RightHandPinky2
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/RightShoulder/RightArm/RightForeArm/RightHand/RightHandPinky1/RightHandPinky2/RightHandPinky3
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/RightShoulder/RightArm/RightForeArm/RightHand/RightHandPinky1/RightHandPinky2/RightHandPinky3/RightHandPinky4
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/RightShoulder/RightArm/RightForeArm/RightHand/RightHandRing1
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/RightShoulder/RightArm/RightForeArm/RightHand/RightHandRing1/RightHandRing2
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/RightShoulder/RightArm/RightForeArm/RightHand/RightHandRing1/RightHandRing2/RightHandRing3
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/RightShoulder/RightArm/RightForeArm/RightHand/RightHandRing1/RightHandRing2/RightHandRing3/RightHandRing4
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/RightShoulder/RightArm/RightForeArm/RightHand/RightHandThumb1
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/RightShoulder/RightArm/RightForeArm/RightHand/RightHandThumb1/RightHandThumb2
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/RightShoulder/RightArm/RightForeArm/RightHand/RightHandThumb1/RightHandThumb2/RightHandThumb3
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/RightShoulder/RightArm/RightForeArm/RightHand/RightHandThumb1/RightHandThumb2/RightHandThumb3/RightHandThumb4
+        weight: 1
+      - path: SKM_Dwarf_Casual_Male
+        weight: 1
+      maskType: 0
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: Dwarf_Casual_Male_Hit
+      takeName: Dwarf_Casual_Male_Hit
+      internalID: 7388234349705861030
+      firstFrame: -1
+      lastFrame: 49
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/LeftUpLeg
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/LeftUpLeg/LeftLeg
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/LeftUpLeg/LeftLeg/LeftFoot
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/LeftUpLeg/LeftLeg/LeftFoot/LeftToeBase
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/LeftUpLeg/LeftLeg/LeftFoot/LeftToeBase/LeftToe_End
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/RightUpLeg
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/RightUpLeg/RightLeg
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/RightUpLeg/RightLeg/RightFoot
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/RightUpLeg/RightLeg/RightFoot/RightToeBase
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/RightUpLeg/RightLeg/RightFoot/RightToeBase/RightToe_End
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/LeftShoulder
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/LeftShoulder/LeftArm
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/LeftShoulder/LeftArm/LeftForeArm
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/LeftShoulder/LeftArm/LeftForeArm/LeftHand
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/LeftShoulder/LeftArm/LeftForeArm/LeftHand/LeftHandIndex1
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/LeftShoulder/LeftArm/LeftForeArm/LeftHand/LeftHandIndex1/LeftHandIndex2
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/LeftShoulder/LeftArm/LeftForeArm/LeftHand/LeftHandIndex1/LeftHandIndex2/LeftHandIndex3
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/LeftShoulder/LeftArm/LeftForeArm/LeftHand/LeftHandIndex1/LeftHandIndex2/LeftHandIndex3/LeftHandIndex4
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/LeftShoulder/LeftArm/LeftForeArm/LeftHand/LeftHandMiddle1
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/LeftShoulder/LeftArm/LeftForeArm/LeftHand/LeftHandMiddle1/LeftHandMiddle2
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/LeftShoulder/LeftArm/LeftForeArm/LeftHand/LeftHandMiddle1/LeftHandMiddle2/LeftHandMiddle3
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/LeftShoulder/LeftArm/LeftForeArm/LeftHand/LeftHandMiddle1/LeftHandMiddle2/LeftHandMiddle3/LeftHandMiddle4
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/LeftShoulder/LeftArm/LeftForeArm/LeftHand/LeftHandPinky1
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/LeftShoulder/LeftArm/LeftForeArm/LeftHand/LeftHandPinky1/LeftHandPinky2
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/LeftShoulder/LeftArm/LeftForeArm/LeftHand/LeftHandPinky1/LeftHandPinky2/LeftHandPinky3
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/LeftShoulder/LeftArm/LeftForeArm/LeftHand/LeftHandPinky1/LeftHandPinky2/LeftHandPinky3/LeftHandPinky4
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/LeftShoulder/LeftArm/LeftForeArm/LeftHand/LeftHandRing1
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/LeftShoulder/LeftArm/LeftForeArm/LeftHand/LeftHandRing1/LeftHandRing2
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/LeftShoulder/LeftArm/LeftForeArm/LeftHand/LeftHandRing1/LeftHandRing2/LeftHandRing3
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/LeftShoulder/LeftArm/LeftForeArm/LeftHand/LeftHandRing1/LeftHandRing2/LeftHandRing3/LeftHandRing4
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/LeftShoulder/LeftArm/LeftForeArm/LeftHand/LeftHandThumb1
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/LeftShoulder/LeftArm/LeftForeArm/LeftHand/LeftHandThumb1/LeftHandThumb2
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/LeftShoulder/LeftArm/LeftForeArm/LeftHand/LeftHandThumb1/LeftHandThumb2/LeftHandThumb3
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/LeftShoulder/LeftArm/LeftForeArm/LeftHand/LeftHandThumb1/LeftHandThumb2/LeftHandThumb3/LeftHandThumb4
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/Neck
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/Neck/Head
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/Neck/Head/Beard
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/Neck/Head/Beard1_l
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/Neck/Head/Beard1_r
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/Neck/Head/Beard2_l
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/Neck/Head/Beard2_r
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/Neck/Head/HeadTop_End
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/RightShoulder
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/RightShoulder/RightArm
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/RightShoulder/RightArm/RightForeArm
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/RightShoulder/RightArm/RightForeArm/RightHand
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/RightShoulder/RightArm/RightForeArm/RightHand/RightHandIndex1
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/RightShoulder/RightArm/RightForeArm/RightHand/RightHandIndex1/RightHandIndex2
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/RightShoulder/RightArm/RightForeArm/RightHand/RightHandIndex1/RightHandIndex2/RightHandIndex3
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/RightShoulder/RightArm/RightForeArm/RightHand/RightHandIndex1/RightHandIndex2/RightHandIndex3/RightHandIndex4
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/RightShoulder/RightArm/RightForeArm/RightHand/RightHandMiddle1
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/RightShoulder/RightArm/RightForeArm/RightHand/RightHandMiddle1/RightHandMiddle2
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/RightShoulder/RightArm/RightForeArm/RightHand/RightHandMiddle1/RightHandMiddle2/RightHandMiddle3
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/RightShoulder/RightArm/RightForeArm/RightHand/RightHandMiddle1/RightHandMiddle2/RightHandMiddle3/RightHandMiddle4
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/RightShoulder/RightArm/RightForeArm/RightHand/RightHandPinky1
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/RightShoulder/RightArm/RightForeArm/RightHand/RightHandPinky1/RightHandPinky2
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/RightShoulder/RightArm/RightForeArm/RightHand/RightHandPinky1/RightHandPinky2/RightHandPinky3
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/RightShoulder/RightArm/RightForeArm/RightHand/RightHandPinky1/RightHandPinky2/RightHandPinky3/RightHandPinky4
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/RightShoulder/RightArm/RightForeArm/RightHand/RightHandRing1
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/RightShoulder/RightArm/RightForeArm/RightHand/RightHandRing1/RightHandRing2
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/RightShoulder/RightArm/RightForeArm/RightHand/RightHandRing1/RightHandRing2/RightHandRing3
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/RightShoulder/RightArm/RightForeArm/RightHand/RightHandRing1/RightHandRing2/RightHandRing3/RightHandRing4
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/RightShoulder/RightArm/RightForeArm/RightHand/RightHandThumb1
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/RightShoulder/RightArm/RightForeArm/RightHand/RightHandThumb1/RightHandThumb2
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/RightShoulder/RightArm/RightForeArm/RightHand/RightHandThumb1/RightHandThumb2/RightHandThumb3
+        weight: 1
+      - path: SKEL_Dwarf_Casual_Male/Hips/Spine/Spine1/Spine2/RightShoulder/RightArm/RightForeArm/RightHand/RightHandThumb1/RightHandThumb2/RightHandThumb3/RightHandThumb4
+        weight: 1
+      - path: SKM_Dwarf_Casual_Male
+        weight: 1
+      maskType: 0
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: Dwarf_Casual_Male_Death
+      takeName: Dwarf_Casual_Male_Death
+      internalID: 470011066994281018
+      firstFrame: -1
+      lastFrame: 84
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    isReadable: 0
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    useSRGBMaterialColor: 1
+    sortHierarchyByName: 1
+    importVisibility: 1
+    importBlendShapes: 1
+    importCameras: 1
+    importLights: 1
+    nodeNameCollisionStrategy: 1
+    fileIdsGeneration: 2
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    keepQuads: 0
+    weldVertices: 1
+    bakeAxisConversion: 0
+    preserveHierarchy: 0
+    skinWeightsMode: 0
+    maxBonesPerVertex: 4
+    minBoneWeight: 0.001
+    optimizeBones: 1
+    meshOptimizationFlags: -1
+    indexFormat: 0
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVMarginMethod: 1
+    secondaryUVMinLightmapResolution: 40
+    secondaryUVMinObjectScale: 1
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+    normalCalculationMode: 4
+    legacyComputeAllNormalsFromSmoothingGroupsWhenMeshHasBlendShapes: 0
+    blendShapeNormalImportMode: 1
+    normalSmoothingSource: 0
+  referencedClips: []
+  importAnimation: 1
+  humanDescription:
+    serializedVersion: 3
+    human: []
+    skeleton:
+    - name: SKM_Dwarf_Casual_Male(Clone)
+      parentName: 
+      position: {x: 0, y: 0, z: 0}
+      rotation: {x: 0, y: 0, z: 0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: SKM_Dwarf_Casual_Male
+      parentName: SKM_Dwarf_Casual_Male(Clone)
+      position: {x: -0, y: 0, z: 0}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: SKEL_Dwarf_Casual_Male
+      parentName: SKM_Dwarf_Casual_Male(Clone)
+      position: {x: -0, y: 0, z: 0}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Hips
+      parentName: SKEL_Dwarf_Casual_Male
+      position: {x: -0.00204339, y: 0.5110683, z: -0.00581749}
+      rotation: {x: -0.000000059958445, y: 0.000000011641534, z: -5.4000557e-11, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Spine
+      parentName: Hips
+      position: {x: 0.0000000037204932, y: 0.100227356, z: 0.00023850756}
+      rotation: {x: 0.0011898457, y: -0.000000011641425, z: 9.911531e-11, w: 0.9999993}
+      scale: {x: 1, y: 1, z: 0.9999999}
+    - name: Spine1
+      parentName: Spine
+      position: {x: 0.0000000036674979, y: 0.1169323, z: 0.000000006730511}
+      rotation: {x: -0.0000000084983185, y: 0.00000001164835, z: 0.0000000028514093, w: 1}
+      scale: {x: 1, y: 1.0000001, z: 0.99999994}
+    - name: Spine2
+      parentName: Spine1
+      position: {x: 0.0000000034201082, y: 0.1336368, z: 0.000000013044616}
+      rotation: {x: 0.000000017345883, y: -0.000000011669201, z: -0.0000000116138, w: 1}
+      scale: {x: 1, y: 1, z: 0.9999999}
+    - name: LeftShoulder
+      parentName: Spine2
+      position: {x: -0.06290906, y: 0.13128512, z: 0.008585627}
+      rotation: {x: 0.5737955, y: -0.40422344, z: 0.5250284, w: 0.48135993}
+      scale: {x: 1.0000001, y: 1.0000001, z: 0.9999999}
+    - name: LeftArm
+      parentName: LeftShoulder
+      position: {x: -0.000000024552127, y: 0.13402033, z: 2.4420416e-10}
+      rotation: {x: -0.10821715, y: -0.002289012, z: 0.08689371, w: 0.99031985}
+      scale: {x: 0.99999994, y: 1.0000001, z: 1.0000002}
+    - name: LeftForeArm
+      parentName: LeftArm
+      position: {x: 0.000000008696637, y: 0.21488969, z: -0.000000006565182}
+      rotation: {x: 0.0069778766, y: -0.011133096, z: -0.082365476, w: 0.9965156}
+      scale: {x: 1.0000006, y: 1.0000001, z: 1.0000007}
+    - name: LeftHand
+      parentName: LeftForeArm
+      position: {x: -0.0014000314, y: 0.24290645, z: -0.000034918194}
+      rotation: {x: 0.088848256, y: -0.00045495573, z: 0.07116883, w: 0.9934993}
+      scale: {x: 1, y: 1.0000004, z: 1.0000004}
+    - name: LeftHandThumb1
+      parentName: LeftHand
+      position: {x: 0.018351352, y: 0.014693382, z: 0.006405608}
+      rotation: {x: 0.036509197, y: 0.030665215, z: -0.39218548, w: 0.91864973}
+      scale: {x: 1.0000006, y: 1.0000004, z: 1.0000006}
+    - name: LeftHandThumb2
+      parentName: LeftHandThumb1
+      position: {x: 0.015434655, y: 0.04415833, z: -0.0030906063}
+      rotation: {x: -0.0410344, y: -0.09730269, z: -0.14673214, w: 0.9835233}
+      scale: {x: 1.0000006, y: 1, z: 1.0000006}
+    - name: LeftHandThumb3
+      parentName: LeftHandThumb2
+      position: {x: -7.605833e-10, y: 0.02786771, z: 0.0000000020485769}
+      rotation: {x: -0.01121438, y: 0.02079002, z: 0.03682461, w: 0.9990426}
+      scale: {x: 1.0000002, y: 0.99999994, z: 1.0000001}
+    - name: LeftHandThumb4
+      parentName: LeftHandThumb3
+      position: {x: 0.000000014239382, y: 0.042126782, z: -0.000000011741365}
+      rotation: {x: 0.03830496, y: 0.119872674, z: -0.037973743, w: 0.991323}
+      scale: {x: 1, y: 1.0000001, z: 1}
+    - name: LeftHandIndex1
+      parentName: LeftHand
+      position: {x: 0.03743203, y: 0.057028726, z: -0.0050775493}
+      rotation: {x: 0.016117869, y: -0.0000008450005, z: -0.085387, w: 0.9962175}
+      scale: {x: 1.0000005, y: 1.0000004, z: 1.0000006}
+    - name: LeftHandIndex2
+      parentName: LeftHandIndex1
+      position: {x: 0.00022169971, y: 0.039938204, z: -0.00000007272388}
+      rotation: {x: 0.039519854, y: 0.00008206922, z: 0.0042301076, w: 0.9992099}
+      scale: {x: 1, y: 0.99999994, z: 1.0000001}
+    - name: LeftHandIndex3
+      parentName: LeftHandIndex2
+      position: {x: -0.0000000027257223, y: 0.038079254, z: 0.000000008483723}
+      rotation: {x: 0.028409243, y: -0.0052330806, z: -0.015331179, w: 0.9994651}
+      scale: {x: 1, y: 1.0000002, z: 1.0000004}
+    - name: LeftHandIndex4
+      parentName: LeftHandIndex3
+      position: {x: -0.0000000034719878, y: 0.021623254, z: 0.000000012001117}
+      rotation: {x: -0.018163815, y: 0.00000009452531, z: -0.00017435064, w: 0.999835}
+      scale: {x: 1, y: 1, z: 1}
+    - name: LeftHandMiddle1
+      parentName: LeftHand
+      position: {x: 0.013274312, y: 0.06474665, z: -0.008509578}
+      rotation: {x: 0.009195803, y: -0.0020806296, z: -0.067673825, w: 0.99766296}
+      scale: {x: 1.0000004, y: 1.0000004, z: 1.0000004}
+    - name: LeftHandMiddle2
+      parentName: LeftHandMiddle1
+      position: {x: 0.00013333735, y: 0.040142078, z: -0.0000019403142}
+      rotation: {x: 0.041407727, y: 0.0033080324, z: -0.0006871279, w: 0.9991367}
+      scale: {x: 0.99999994, y: 1.0000004, z: 1.0000004}
+    - name: LeftHandMiddle3
+      parentName: LeftHandMiddle2
+      position: {x: -0.000000015727238, y: 0.040035423, z: 0.0000000041396158}
+      rotation: {x: 0.0073700994, y: -0.0023858417, z: 0.00079037325, w: 0.9999697}
+      scale: {x: 0.9999998, y: 1.0000001, z: 1.0000001}
+    - name: LeftHandMiddle4
+      parentName: LeftHandMiddle3
+      position: {x: 0.0007029104, y: 0.021333873, z: -0.00000031415732}
+      rotation: {x: -0.044188716, y: 0.00000876886, z: -0.000058518697, w: 0.9990232}
+      scale: {x: 1, y: 1, z: 0.99999994}
+    - name: LeftHandRing1
+      parentName: LeftHand
+      position: {x: -0.013871174, y: 0.062301397, z: -0.0091425255}
+      rotation: {x: 0.004350192, y: 0.01608303, z: -0.05864361, w: 0.99814}
+      scale: {x: 1.0000004, y: 1.0000002, z: 1.0000006}
+    - name: LeftHandRing2
+      parentName: LeftHandRing1
+      position: {x: 0.000000006910895, y: 0.041452125, z: 0.0000000015954521}
+      rotation: {x: 0.04056567, y: -0.0044286614, z: 0.0060252147, w: 0.9991489}
+      scale: {x: 1, y: 1.0000007, z: 1.0000001}
+    - name: LeftHandRing3
+      parentName: LeftHandRing2
+      position: {x: -0.000000020692077, y: 0.04364821, z: 0.000000013622727}
+      rotation: {x: -0.015788661, y: 0.009422221, z: 0.005950062, w: 0.99981326}
+      scale: {x: 0.9999998, y: 1.0000006, z: 1.0000001}
+    - name: LeftHandRing4
+      parentName: LeftHandRing3
+      position: {x: -0.000000007795629, y: 0.018803876, z: -0.000000001437796}
+      rotation: {x: -0.043690905, y: 0.00000026978316, z: -0.0006070389, w: 0.99904495}
+      scale: {x: 1, y: 1, z: 1}
+    - name: LeftHandPinky1
+      parentName: LeftHand
+      position: {x: -0.04236937, y: 0.056364104, z: -0.008276681}
+      rotation: {x: -0.0016854552, y: 0.010110435, z: -0.052639358, w: 0.99856097}
+      scale: {x: 1.0000002, y: 1.0000001, z: 1.0000002}
+    - name: LeftHandPinky2
+      parentName: LeftHandPinky1
+      position: {x: -4.1952586e-10, y: 0.0446847, z: 0.0000000024378481}
+      rotation: {x: 0.040982276, y: 0.023016054, z: 0.0022028908, w: 0.9988923}
+      scale: {x: 1.0000001, y: 1.0000011, z: 1.0000006}
+    - name: LeftHandPinky3
+      parentName: LeftHandPinky2
+      position: {x: -0.00000001487977, y: 0.04078971, z: -4.4100076e-10}
+      rotation: {x: 0.028503865, y: -0.008966842, z: -0.0020498293, w: 0.9995514}
+      scale: {x: 0.9999998, y: 1.0000005, z: 1.0000004}
+    - name: LeftHandPinky4
+      parentName: LeftHandPinky3
+      position: {x: 0.0000000068813755, y: 0.01855234, z: 0.0000000064736563}
+      rotation: {x: -0.045227725, y: -0.000000033892835, z: -0.0007152532, w: 0.99897647}
+      scale: {x: 1.0000001, y: 1, z: 1}
+    - name: Neck
+      parentName: Spine2
+      position: {x: -6.996979e-11, y: 0.1503413, z: 0.000000011938315}
+      rotation: {x: -0.0011898528, y: -0.000000011627674, z: 0.000000011655376, w: 0.9999993}
+      scale: {x: 0.99999994, y: 1.0000001, z: 0.99999994}
+    - name: Head
+      parentName: Neck
+      position: {x: -0.000000007910951, y: 0.066888265, z: 0.0017657479}
+      rotation: {x: -0.000000002910383, y: 0.000000011641534, z: -0.0000000034106042, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: HeadTop_End
+      parentName: Head
+      position: {x: 0.0000000012242867, y: 0.1971909, z: 0.0052054957}
+      rotation: {x: 6.938894e-18, y: -5.421011e-20, z: 3.761582e-37, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Beard1_r
+      parentName: Head
+      position: {x: 0.04566646, y: -0.034579497, z: 0.14716002}
+      rotation: {x: 0.8896917, y: 0.33122087, z: -0.12875259, w: 0.28664303}
+      scale: {x: 0.9999998, y: 1.0000011, z: 1.0000008}
+    - name: Beard2_r
+      parentName: Head
+      position: {x: 0.05827085, y: -0.023568358, z: 0.1332656}
+      rotation: {x: 0.76678324, y: 0.5597201, z: -0.24570559, w: 0.19592261}
+      scale: {x: 1.0000002, y: 1.000001, z: 1.0000005}
+    - name: Beard
+      parentName: Head
+      position: {x: 0.000000020980824, y: -0.046258707, z: 0.13038446}
+      rotation: {x: 0.9374943, y: -0.000000042612406, z: -0.000000112055126, w: 0.34800065}
+      scale: {x: 0.99999994, y: 1, z: 0.99999994}
+    - name: Beard1_l
+      parentName: Head
+      position: {x: -0.04233571, y: -0.034579467, z: 0.14716004}
+      rotation: {x: 0.87792885, y: -0.36096808, z: 0.13814165, w: 0.28259492}
+      scale: {x: 1.0000001, y: 1, z: 1}
+    - name: Beard2_l
+      parentName: Head
+      position: {x: -0.054940097, y: -0.023568269, z: 0.13326561}
+      rotation: {x: 0.7753338, y: -0.54729325, z: 0.26848242, w: 0.16505979}
+      scale: {x: 1, y: 1, z: 1}
+    - name: RightShoulder
+      parentName: Spine2
+      position: {x: 0.064723335, y: 0.13532904, z: -0.012641792}
+      rotation: {x: 0.5737955, y: 0.4042234, z: -0.52502847, w: 0.48135987}
+      scale: {x: 0.99999994, y: 1.0000001, z: 1}
+    - name: RightArm
+      parentName: RightShoulder
+      position: {x: 0.000000019300455, y: 0.13402036, z: 0.0000000097873505}
+      rotation: {x: 0.10893468, y: 0.0007666052, z: 0.115291364, w: -0.98734015}
+      scale: {x: 1.0000004, y: 1.0000002, z: 1.0000001}
+    - name: RightForeArm
+      parentName: RightArm
+      position: {x: -0.0000000029243272, y: 0.21488956, z: -0.000000045592905}
+      rotation: {x: -0.006812617, y: -0.011127136, z: -0.08083201, w: -0.9966424}
+      scale: {x: 1, y: 1, z: 1.0000004}
+    - name: RightHand
+      parentName: RightForeArm
+      position: {x: -0.000000021160108, y: 0.23959832, z: -0.000000026223853}
+      rotation: {x: -0.09349396, y: 0.01277858, z: 0.065003626, w: -0.9934134}
+      scale: {x: 1, y: 1.0000007, z: 1.0000002}
+    - name: RightHandThumb1
+      parentName: RightHand
+      position: {x: -0.01702155, y: 0.018424584, z: 0.005990053}
+      rotation: {x: 0.029573921, y: 0.035326168, z: -0.4804253, w: -0.8758248}
+      scale: {x: 0.9999996, y: 0.99999964, z: 0.9999997}
+    - name: RightHandThumb2
+      parentName: RightHandThumb1
+      position: {x: 0.000000010487661, y: 0.03832856, z: 0.0000000065055668}
+      rotation: {x: 0.014654707, y: 0.114158764, z: -0.022653362, w: 0.9930961}
+      scale: {x: 1.0000005, y: 0.9999996, z: 1}
+    - name: RightHandThumb3
+      parentName: RightHandThumb2
+      position: {x: 0.000000012458219, y: 0.027867718, z: -0.000000014039672}
+      rotation: {x: -0.01121336, y: -0.020790065, z: -0.03682505, w: 0.9990425}
+      scale: {x: 1.0000002, y: 1.0000001, z: 1.0000001}
+    - name: RightHandThumb4
+      parentName: RightHandThumb3
+      position: {x: -0.0000000049854254, y: 0.042126775, z: 0.0000000012934808}
+      rotation: {x: 0.038304847, y: -0.119872734, z: 0.037973724, w: 0.991323}
+      scale: {x: 1, y: 1, z: 1.0000001}
+    - name: RightHandIndex1
+      parentName: RightHand
+      position: {x: -0.03338041, y: 0.074531965, z: -0.031599894}
+      rotation: {x: 0.09478602, y: -0.0055535985, z: -0.05679849, w: -0.9938606}
+      scale: {x: 1, y: 0.9999996, z: 0.9999998}
+    - name: RightHandIndex2
+      parentName: RightHandIndex1
+      position: {x: -0.00022169545, y: 0.039938185, z: -0.000000067997846}
+      rotation: {x: 0.039521556, y: -0.000082102575, z: -0.004230365, w: 0.99920976}
+      scale: {x: 1, y: 1.0000002, z: 1.0000002}
+    - name: RightHandIndex3
+      parentName: RightHandIndex2
+      position: {x: 0.000000007453906, y: 0.038079247, z: -0.000000014031738}
+      rotation: {x: 0.028409258, y: 0.0052330107, z: 0.015331288, w: 0.9994651}
+      scale: {x: 1, y: 1.0000001, z: 1.0000001}
+    - name: RightHandIndex4
+      parentName: RightHandIndex3
+      position: {x: 0.0000000021471573, y: 0.021623235, z: -0.0000000030312353}
+      rotation: {x: -0.0181638, y: -0.00000009360857, z: 0.00017435724, w: 0.999835}
+      scale: {x: 1, y: 0.99999994, z: 1}
+    - name: RightHandMiddle1
+      parentName: RightHand
+      position: {x: -0.008968416, y: 0.08179639, z: -0.029105615}
+      rotation: {x: -0.09566381, y: 0.012065238, z: 0.0440115, w: 0.9943671}
+      scale: {x: 1.0000001, y: 0.9999997, z: 0.99999994}
+    - name: RightHandMiddle2
+      parentName: RightHandMiddle1
+      position: {x: -0.00013330833, y: 0.040142093, z: -0.0000019309678}
+      rotation: {x: 0.0414103, y: -0.0033081688, z: 0.000687124, w: 0.99913657}
+      scale: {x: 0.9999998, y: 0.9999996, z: 1}
+    - name: RightHandMiddle3
+      parentName: RightHandMiddle2
+      position: {x: 0.000000007479649, y: 0.040035434, z: -0.000000010953852}
+      rotation: {x: 0.007370077, y: 0.0023859546, z: -0.0007903176, w: 0.9999698}
+      scale: {x: 1, y: 1.0000004, z: 1.0000002}
+    - name: RightHandMiddle4
+      parentName: RightHandMiddle3
+      position: {x: -0.0007029328, y: 0.021333857, z: -0.0000003173947}
+      rotation: {x: -0.044188697, y: -0.000008775591, z: 0.000058490314, w: 0.9990232}
+      scale: {x: 1, y: 0.99999994, z: 0.99999994}
+    - name: RightHandRing1
+      parentName: RightHand
+      position: {x: 0.015493313, y: 0.06537978, z: -0.0108784735}
+      rotation: {x: -0.09580987, y: -0.0037753792, z: 0.039555565, w: 0.9946063}
+      scale: {x: 1, y: 0.99999994, z: 0.99999994}
+    - name: RightHandRing2
+      parentName: RightHandRing1
+      position: {x: -0.0000000069124777, y: 0.041452136, z: 0.000000008182565}
+      rotation: {x: 0.040565696, y: 0.0044286847, z: -0.006025198, w: 0.9991489}
+      scale: {x: 1, y: 0.9999998, z: 1.0000001}
+    - name: RightHandRing3
+      parentName: RightHandRing2
+      position: {x: 0.000000004272766, y: 0.043648176, z: -0.000000008021643}
+      rotation: {x: -0.015788646, y: -0.009422434, z: -0.005950083, w: 0.99981326}
+      scale: {x: 1, y: 1.0000006, z: 1.0000001}
+    - name: RightHandRing4
+      parentName: RightHandRing3
+      position: {x: 0.0000000010458837, y: 0.018803865, z: 0.000000010382216}
+      rotation: {x: -0.043690905, y: -0.00000013616382, z: 0.0006070554, w: 0.99904495}
+      scale: {x: 1, y: 0.99999994, z: 1}
+    - name: RightHandPinky1
+      parentName: RightHand
+      position: {x: 0.046357725, y: 0.071567826, z: -0.028139614}
+      rotation: {x: -0.09858078, y: 0.004872985, z: 0.03130267, w: 0.9946247}
+      scale: {x: 1.0000002, y: 0.99999994, z: 0.99999994}
+    - name: RightHandPinky2
+      parentName: RightHandPinky1
+      position: {x: 0.0000000048713336, y: 0.04468472, z: -0.00000001233732}
+      rotation: {x: 0.040984653, y: -0.023016144, z: -0.0022028594, w: 0.99889225}
+      scale: {x: 1, y: 0.99999994, z: 1.0000006}
+    - name: RightHandPinky3
+      parentName: RightHandPinky2
+      position: {x: 0.000000004583008, y: 0.040789705, z: 0.00000001819036}
+      rotation: {x: 0.028503753, y: 0.008967031, z: 0.0020499376, w: 0.99955136}
+      scale: {x: 1.0000005, y: 1.0000005, z: 1.0000004}
+    - name: RightHandPinky4
+      parentName: RightHandPinky3
+      position: {x: -0.0000000014059549, y: 0.018552346, z: 0.00000000365005}
+      rotation: {x: -0.045227725, y: -0.0000001010327, z: 0.00071524276, w: 0.99897647}
+      scale: {x: 1, y: 0.9999999, z: 1}
+    - name: LeftUpLeg
+      parentName: Hips
+      position: {x: -0.09234599, y: 0.028941907, z: 0.030171275}
+      rotation: {x: 0.1024004, y: -0.07149028, z: 0.9911922, w: 0.044060353}
+      scale: {x: 1.0000002, y: 0.9999989, z: 0.99999994}
+    - name: LeftLeg
+      parentName: LeftUpLeg
+      position: {x: -0.000000018060106, y: 0.28789148, z: 0.000000017990857}
+      rotation: {x: 0.05490923, y: 0.09953464, z: 0.010918303, w: 0.9934579}
+      scale: {x: 1.0000001, y: 1.0000002, z: 0.99999994}
+    - name: LeftFoot
+      parentName: LeftLeg
+      position: {x: -0.00000002261677, y: 0.14381891, z: -0.00000003068785}
+      rotation: {x: 0.477406, y: -0.056957036, z: 0.031029437, w: 0.87628573}
+      scale: {x: 1.0000141, y: 1.0000076, z: 1.000001}
+    - name: LeftToeBase
+      parentName: LeftFoot
+      position: {x: -0.000000002763501, y: 0.17001371, z: 4.5572682e-10}
+      rotation: {x: 0.3201052, y: 0.101803206, z: -0.03462241, w: 0.9412598}
+      scale: {x: 0.99999934, y: 1.0000039, z: 0.99999756}
+    - name: LeftToe_End
+      parentName: LeftToeBase
+      position: {x: 0.000000003845696, y: 0.07399016, z: -0.000000007499737}
+      rotation: {x: -0.00000004230361, y: -0.00000009609394, z: 0.00000019648026, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: RightUpLeg
+      parentName: Hips
+      position: {x: 0.095676705, y: 0.028941924, z: 0.030171288}
+      rotation: {x: -0.0038167506, y: -0.07312304, z: 0.99629694, w: -0.0450659}
+      scale: {x: 1.0000002, y: 1.0000007, z: 1.0000004}
+    - name: RightLeg
+      parentName: RightUpLeg
+      position: {x: -0.000000008525012, y: 0.28808185, z: -0.000000008376856}
+      rotation: {x: 0.059659492, y: -0.00075467, z: -0.010412692, w: 0.9981642}
+      scale: {x: 1.0000001, y: 1.0000002, z: 1}
+    - name: RightFoot
+      parentName: RightLeg
+      position: {x: -0.000000004660137, y: 0.14382066, z: 0.00000003202952}
+      rotation: {x: 0.48419476, y: 0.05454479, z: -0.03026144, w: 0.87273395}
+      scale: {x: 1.0000147, y: 1.0000048, z: 1}
+    - name: RightToeBase
+      parentName: RightFoot
+      position: {x: 0.0000000035679275, y: 0.17381395, z: -0.000000041318508}
+      rotation: {x: 0.31309918, y: -0.10052246, z: 0.033347867, w: 0.94379663}
+      scale: {x: 0.99999994, y: 1.0000032, z: 0.9999985}
+    - name: RightToe_End
+      parentName: RightToeBase
+      position: {x: 0.0000000023656301, y: 0.07336504, z: -1.0319891e-10}
+      rotation: {x: 0.00000012256274, y: 0.00000019219554, z: 0.000000058416457, w: 1}
+      scale: {x: 0.99999994, y: 1, z: 1}
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    globalScale: 1
+    rootMotionBoneName: 
+    hasTranslationDoF: 0
+    hasExtraRoot: 1
+    skeletonHasParents: 1
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  autoGenerateAvatarMappingIfUnspecified: 1
+  animationType: 2
+  humanoidOversampling: 1
+  avatarSetup: 1
+  addHumanoidExtraRootOnlyWhenUsingAvatar: 1
+  remapMaterialsIfMaterialImportModeIsNone: 0
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
