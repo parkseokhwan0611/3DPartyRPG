@@ -92344,6 +92344,7 @@ GameObject:
   - component: {fileID: 4962108822225651253}
   - component: {fileID: 4852147920971686365}
   - component: {fileID: 5735091143841406098}
+  - component: {fileID: 5735091143841406100}
   - component: {fileID: 5735091143841406099}
   - component: {fileID: 5735091143841406097}
   - component: {fileID: 5735091143841406096}
@@ -92391,7 +92392,7 @@ NavMeshAgent:
   m_Acceleration: 8
   avoidancePriority: 50
   m_AngularSpeed: 0
-  m_StoppingDistance: 1.2
+  m_StoppingDistance: 1.5
   m_AutoTraverseOffMeshLink: 1
   m_AutoBraking: 1
   m_AutoRepath: 1
@@ -92421,9 +92422,9 @@ MonoBehaviour:
   distance: 0
   chaseDistance: 10
   navAgent: {fileID: 5735091143841406097}
-  navSpeed: 1
+  navSpeed: 2
   isAttack: 0
-  hudPos: {fileID: 908746892}
+  hudPos: {fileID: 0}
 --- !u!114 &5735091143841406099
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -92441,6 +92442,29 @@ MonoBehaviour:
   isDead: 0
   expReward: 5
   destroyDelay: 2
+--- !u!114 &5735091143841406100
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5735091143841406095}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: acd2eab4ef7c61747b38afe6622dbf8d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  attackDamage: 10
+  attackRange: 2
+  attackSpeed: 1
+  attackDuration: 1.8
+  currentTarget: {fileID: 0}
+  enemyLayer:
+    serializedVersion: 2
+    m_Bits: 64
+  hitRadius: 1.5
+  hitOffset: 1
+  isAttacking: 0
 --- !u!1 &5735091143920001678
 GameObject:
   m_ObjectHideFlags: 0

@@ -9,109 +9,73 @@ public class GoblinThiefMaleScript : MonoBehaviour
     Rigidbody rigid;
     public EnemyHp enemyHp;
     public GameObject normalDamageText;
+    
     [Header("#Player")]
     public List<PartyMemberScript> partyMembers;
     public float distance;
     public float chaseDistance;
+    
     [Header("#NavMesh")]
     public NavMeshAgent navAgent;
     public float navSpeed;
+    
     [Header("#Attack")]
-    //public BoxCollider meleeArea;
-    public bool isAttack;
+    public bool isAttack; // 외부 참조용으로 남겨둠
+    
     [Header("#Reference")]
     public Transform hudPos;
-    void Awake() {
+
+    private AttackBase attackModule;
+    private MonsterMeleeAttack monsterMeleeAttack;
+
+    void Awake() 
+    {
         animator = GetComponent<Animator>();
         rigid = GetComponent<Rigidbody>();
+        attackModule = GetComponent<AttackBase>();
+        monsterMeleeAttack = GetComponent<MonsterMeleeAttack>();
     }
-    // Start is called before the first frame update
-    void Start()
+
+    void Start() 
     {
         navAgent = GetComponent<NavMeshAgent>();
+        navAgent.speed = navSpeed; // NavAgent 속도 설정
     }
-    // Update is called once per frame
-    void Update()
+
+    void Update() 
     {
-        if(!GameManager.instance.isLive)
-            return;
-        if(enemyHp.hp > 0) {
-            LookAtPlayer();
-        }
-    }
-    void FixedUpdate() {
-        if (enemyHp.isDead) return;
-        Targeting();
-    }
-    void Targeting() {
-        float targetRadius = 0.4f;
-        float targetRange = 0.8f;
+        if(!GameManager.instance.isLive) return;
 
-        RaycastHit[] rayHits = Physics.SphereCastAll(transform.position, targetRadius, transform.forward, targetRange, LayerMask.GetMask("Player"));
-
-        if(rayHits.Length > 0 && !isAttack && enemyHp.hp > 0 && !enemyHp.isDead) {
-            StartCoroutine(Attack());
-        }
-    }
-    IEnumerator Attack() {
-        if (navAgent.enabled) {
-            navAgent.isStopped = true;
-        }
-        isAttack = true;
-
-        Vector3 direction = partyMembers[0].transform.position - transform.position;
-        direction.y = 0; // y축 고정을 위해 수직 축은 제거
-        if (direction != Vector3.zero) {
-            transform.rotation = Quaternion.LookRotation(direction);
-        }
-        if(enemyHp.hp>0 && !enemyHp.isDead)
+        // 고블린이 살아있을 때만 타겟팅 진행
+        if(enemyHp.hp > 0 && !enemyHp.isDead) 
         {
-            animator.SetTrigger("isAttack");
+            TargetingLogic();
         }
-        
-        yield return new WaitForSeconds(0.6f);
-
-        if(enemyHp.hp>0 && !enemyHp.isDead) {
-            //meleeArea.enabled = true;
-            animator.SetBool("isWalking", false);
-
-            yield return new WaitForSeconds(0.1f);
-            //meleeArea.enabled = false;
-
-            yield return new WaitForSeconds(1.267f);
-        }
-        isAttack = false;
-        navAgent.isStopped = false;
-    }
-    void LookAtPlayer() {
-        if (navAgent.isOnNavMesh && navAgent.enabled) 
+        else
         {
-            navAgent.SetDestination(partyMembers[0].transform.position);
-        }
-        // 플레이어의 위치로 바라보도록 회전
-        if (partyMembers != null && !enemyHp.isDead && !isAttack && enemyHp.hp > 0 )
-        {
-            distance = Vector3.Distance(transform.position, partyMembers[0].transform.position);
-            if(distance <= chaseDistance && !isAttack && !enemyHp.isDead && enemyHp.hp > 0) {
-                animator.SetBool("isWalking", true);
-                navAgent.speed = navSpeed;
-                Vector3 direction = partyMembers[0].transform.position - transform.position;
-                direction.y = 0; // y축 고정을 위해 수직 축은 제거
-                if (direction != Vector3.zero)
-                {
-                    Quaternion targetRotation = Quaternion.LookRotation(direction);
-                    transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 5f);
-                }
-            }
-            else if(!isAttack && distance > chaseDistance && enemyHp.hp > 0){
-                animator.SetBool("isWalking", false);
-                navAgent.speed = 0;
-            }
+            // 죽으면 타겟을 비워서 AttackBase 정지
+            attackModule.SetTarget(null);
         }
     }
-    void OnCollisionStay(Collision collision)
+    void TargetingLogic()
     {
-        if (collision.gameObject.CompareTag("Player"))
+        if (partyMembers == null || partyMembers.Count == 0 || partyMembers[0] == null) return;
+
+        float distance = Vector3.Distance(transform.position, partyMembers[0].transform.position);
+
+        if (distance <= chaseDistance && !monsterMeleeAttack.isAttacking)
+        {
+            // 타겟을 설정하면 AttackBase.Update -> HandleAttackLogic이 돌아감
+            attackModule.SetTarget(partyMembers[0].transform);
+        }
+        else
+        {
+            attackModule.SetTarget(null);
+        }
+    }
+    void OnCollisionStay(Collision collision) 
+    {
+        if (collision.gameObject.CompareTag("Player")) 
         {
             rigid.velocity = Vector3.zero;
         }
