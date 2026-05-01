@@ -59,19 +59,67 @@ public class GoblinThiefMaleScript : MonoBehaviour
     }
     void TargetingLogic()
     {
-        if (partyMembers == null || partyMembers.Count == 0 || partyMembers[0] == null) return;
-
-        float distance = Vector3.Distance(transform.position, partyMembers[0].transform.position);
-
-        if (distance <= chaseDistance && !monsterMeleeAttack.isAttacking)
+        // 1. 파티원이 없거나 리스트가 비어있으면 타겟 해제
+        if (partyMembers == null || partyMembers.Count == 0)
         {
-            // 타겟을 설정하면 AttackBase.Update -> HandleAttackLogic이 돌아감
-            attackModule.SetTarget(partyMembers[0].transform);
+            attackModule.SetTarget(null);
+            return;
+        }
+
+        // 2. 가장 가까운 파티원 찾기
+        Transform nearestTarget = GetNearestPartyMember();
+
+        if (nearestTarget == null)
+        {
+            attackModule.SetTarget(null);
+            return;
+        }
+
+        // 3. 거리 계산 및 로직 수행
+        float distanceToTarget = Vector3.Distance(transform.position, nearestTarget.position);
+
+        // 공격 중이 아닐 때만 타겟을 갱신하거나 추격함
+        if (distanceToTarget <= chaseDistance && !monsterMeleeAttack.isAttacking)
+        {
+            attackModule.SetTarget(nearestTarget);
+        }
+        else if (monsterMeleeAttack.isAttacking)
+        {
+            // 공격 중일 때는 타겟을 유지해서 바라보게 하되, 이동만 멈춤
+            // (이전 대화에서 제안한 '공격 중 회전'을 위한 로직)
+            navAgent.isStopped = true;
+            navAgent.velocity = Vector3.zero;
         }
         else
         {
+            // 범위를 벗어난 경우
             attackModule.SetTarget(null);
         }
+    }
+
+    // 파티원 중 가장 가까운 대상을 반환하는 함수
+    Transform GetNearestPartyMember()
+    {
+        Transform closest = null;
+        float minDistance = Mathf.Infinity; // 초기값은 무한대
+        Vector3 currentPos = transform.position;
+
+        foreach (PartyMemberScript member in partyMembers)
+        {
+            if (member == null) continue;
+
+            // 만약 캐릭터에게 '죽음' 상태 체크가 있다면 여기서 걸러주는 게 좋습니다.
+            // if (member.isDead) continue; 
+
+            float dist = Vector3.Distance(currentPos, member.transform.position);
+            if (dist < minDistance)
+            {
+                minDistance = dist;
+                closest = member.transform;
+            }
+        }
+
+        return closest;
     }
     void OnCollisionStay(Collision collision) 
     {
