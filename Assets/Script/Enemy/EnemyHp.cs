@@ -9,11 +9,12 @@ public class EnemyHp : MonoBehaviour, IDamageable
     public float hp;
     public float maxHp;
     public bool isDead = false;
-
+    [Header("# References")]
+    public GameObject normalDamageText;
+    public Transform hudPos;
     [Header("# Death Settings")]
     public float expReward = 5f; // 죽었을 때 주는 경험치
     public float destroyDelay = 2f; // 시체가 사라질 때까지의 시간
-
     private Animator animator;
     private NavMeshAgent navAgent;
     private Collider col;
@@ -36,14 +37,31 @@ public class EnemyHp : MonoBehaviour, IDamageable
         if (isDead) return;
 
         hp -= damage;
-        Debug.Log($"{gameObject.name}이 {damage}의 데미지를 입음! 남은 체력: {hp}");
+        //Debug.Log($"{gameObject.name}이 {damage}의 데미지를 입음! 남은 체력: {hp}");
 
+        SpawnDamageText(damage);
         if (hp <= 0)
         {
             hp = 0;
             Die();
         }
     }
+        private void SpawnDamageText(float damage)
+        {
+            if (normalDamageText == null) return;
+
+            // 1. 데미지 텍스트 생성 (위치는 몬스터의 hudPos 또는 현재 위치)
+            Vector3 spawnPos = hudPos != null ? hudPos.position : transform.position + Vector3.up * 2f;
+            GameObject textObj = Instantiate(normalDamageText, spawnPos, Quaternion.identity);
+
+            // 2. DamageText 스크립트의 damage 변수에 값 전달
+            DamageText dt = textObj.GetComponent<DamageText>();
+            if (dt != null)
+            {
+                // 생성 즉시 Setup을 호출하여 'text' 변수가 null인 상태로 Update가 도는 것을 방지합니다.
+                dt.Setup(damage);
+            }
+        }
     private void Die()
     {
         if (isDead) return;

@@ -16,6 +16,8 @@ public class ProjectileScript : PoolAble
     [SerializeField] protected Light lightSourse;
     [SerializeField] protected GameObject[] Detached;
     [SerializeField] protected ParticleSystem projectilePS;
+    public float damage;       // 투사체가 입힐 데미지
+    public GameObject owner;
     
     private Coroutine disableCoroutine; // 코루틴 중복 방지용
 
@@ -66,6 +68,11 @@ public class ProjectileScript : PoolAble
             projectilePS.Play();
         }
     }
+    public void SetProjectileData(float dmg, GameObject attacker)
+    {
+        damage = dmg;
+        owner = attacker;
+    }
     protected virtual IEnumerator DisableTimer(float time)
     {
         yield return new WaitForSeconds(time);
@@ -81,6 +88,12 @@ public class ProjectileScript : PoolAble
     }
     protected virtual void OnCollisionEnter(Collision collision)
     {
+        IDamageable target = collision.gameObject.GetComponent<IDamageable>();
+        if (target != null)
+        {
+            // 인터페이스를 통해 데미지 전달
+            target.TakeDamage(damage, gameObject);
+        }
         // 1. 투사체 물리 정지
         rb.constraints = RigidbodyConstraints.FreezeAll;
         if (lightSourse != null) lightSourse.enabled = false;

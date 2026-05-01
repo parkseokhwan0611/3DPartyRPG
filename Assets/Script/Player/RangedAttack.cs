@@ -42,6 +42,15 @@ public class RangedAttack : AttackBase
             effect.transform.position = spawnPos;
             effect.transform.rotation = preciseRotation;
 
+            // --- 데미지 데이터 설정 추가 ---
+            ProjectileScript proj = effect.GetComponent<ProjectileScript>();
+            if (proj != null)
+            {
+                // AttackBase에서 상속받은 attackDamage를 투사체에 전달
+                proj.SetProjectileData(attackDamage, gameObject);
+            }
+            // ----------------------------
+
             Rigidbody rb = effect.GetComponent<Rigidbody>();
             if (rb != null)
             {

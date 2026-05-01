@@ -8,7 +8,6 @@ public class GoblinThiefMaleScript : MonoBehaviour
     public Animator animator;
     Rigidbody rigid;
     public EnemyHp enemyHp;
-    public GameObject normalDamageText;
     
     [Header("#Player")]
     public List<PartyMemberScript> partyMembers;
