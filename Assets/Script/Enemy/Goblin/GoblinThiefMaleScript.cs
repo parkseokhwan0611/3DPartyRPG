@@ -10,7 +10,7 @@ public class GoblinThiefMaleScript : MonoBehaviour
     public EnemyHp enemyHp;
     public GameObject normalDamageText;
     [Header("#Player")]
-    [SerializeField] GameObject player;
+    public List<PartyMemberScript> partyMembers;
     public float distance;
     public float chaseDistance;
     [Header("#NavMesh")]
@@ -28,10 +28,6 @@ public class GoblinThiefMaleScript : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        if (player == null)
-        {
-            player = GameObject.FindGameObjectWithTag("Player");
-        }
         navAgent = GetComponent<NavMeshAgent>();
     }
     // Update is called once per frame
@@ -63,7 +59,7 @@ public class GoblinThiefMaleScript : MonoBehaviour
         }
         isAttack = true;
 
-        Vector3 direction = player.transform.position - transform.position;
+        Vector3 direction = partyMembers[0].transform.position - transform.position;
         direction.y = 0; // y축 고정을 위해 수직 축은 제거
         if (direction != Vector3.zero) {
             transform.rotation = Quaternion.LookRotation(direction);
@@ -77,7 +73,7 @@ public class GoblinThiefMaleScript : MonoBehaviour
 
         if(enemyHp.hp>0 && !enemyHp.isDead) {
             //meleeArea.enabled = true;
-            animator.SetBool("isWalk", false);
+            animator.SetBool("isWalking", false);
 
             yield return new WaitForSeconds(0.1f);
             //meleeArea.enabled = false;
@@ -90,16 +86,16 @@ public class GoblinThiefMaleScript : MonoBehaviour
     void LookAtPlayer() {
         if (navAgent.isOnNavMesh && navAgent.enabled) 
         {
-            navAgent.SetDestination(player.transform.position);
+            navAgent.SetDestination(partyMembers[0].transform.position);
         }
         // 플레이어의 위치로 바라보도록 회전
-        if (player != null && !enemyHp.isDead && !isAttack && enemyHp.hp > 0 )
+        if (partyMembers != null && !enemyHp.isDead && !isAttack && enemyHp.hp > 0 )
         {
-            distance = Vector3.Distance(transform.position, player.transform.position);
+            distance = Vector3.Distance(transform.position, partyMembers[0].transform.position);
             if(distance <= chaseDistance && !isAttack && !enemyHp.isDead && enemyHp.hp > 0) {
-                animator.SetBool("isWalk", true);
+                animator.SetBool("isWalking", true);
                 navAgent.speed = navSpeed;
-                Vector3 direction = player.transform.position - transform.position;
+                Vector3 direction = partyMembers[0].transform.position - transform.position;
                 direction.y = 0; // y축 고정을 위해 수직 축은 제거
                 if (direction != Vector3.zero)
                 {
@@ -108,7 +104,7 @@ public class GoblinThiefMaleScript : MonoBehaviour
                 }
             }
             else if(!isAttack && distance > chaseDistance && enemyHp.hp > 0){
-                animator.SetBool("isWalk", false);
+                animator.SetBool("isWalking", false);
                 navAgent.speed = 0;
             }
         }
