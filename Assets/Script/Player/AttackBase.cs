@@ -8,6 +8,7 @@ public abstract class AttackBase : MonoBehaviour
     public float attackRange = 2.0f;
     public float attackSpeed = 1.0f; // 초당 공격 횟수
     protected float attackCooldown = 0f;
+    public float attackDuration = 1.0f;
 
     [Header("참조 컴포넌트")]
     protected NavMeshAgent agent;
@@ -77,7 +78,7 @@ public abstract class AttackBase : MonoBehaviour
         if (attackCooldown <= 0)
         {
             ExecuteAttack(); 
-            attackCooldown = 1f / attackSpeed;
+            attackCooldown = attackDuration / attackSpeed;
         }
     }
     // 자식들이 이 함수를 override해서 각자의 코루틴을 실행하게 합니다.

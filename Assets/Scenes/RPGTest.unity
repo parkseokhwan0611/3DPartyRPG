@@ -28105,6 +28105,7 @@ GameObject:
   - component: {fileID: 1458811747}
   - component: {fileID: 1458811746}
   - component: {fileID: 1458811749}
+  - component: {fileID: 1458811750}
   - component: {fileID: 1458811745}
   m_Layer: 6
   m_Name: Healer
@@ -28212,6 +28213,7 @@ MonoBehaviour:
   attackDamage: 10
   attackRange: 8
   attackSpeed: 1
+  attackDuration: 1.167
   currentTarget: {fileID: 0}
   enemyLayer:
     serializedVersion: 2
@@ -28219,6 +28221,22 @@ MonoBehaviour:
   projectileName: HealerNormalAtk
   firePoint: {fileID: 871957546}
   damageDelay: 0.5
+--- !u!114 &1458811750
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1458811744}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 22a8366cfb4b9184391f2205e6756a38, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxHp: 100
+  currentHp: 100
+  attackPower: 0
+  attackSpeed: 0
 --- !u!1 &1462638661
 GameObject:
   m_ObjectHideFlags: 0
@@ -45236,6 +45254,7 @@ GameObject:
   - component: {fileID: 6599030164936357091}
   - component: {fileID: 6599030164936357093}
   - component: {fileID: 6599030164936357094}
+  - component: {fileID: 6599030164936357095}
   - component: {fileID: 6599030164936357092}
   m_Layer: 6
   m_Name: Dealer
@@ -100490,6 +100509,7 @@ MonoBehaviour:
   attackDamage: 10
   attackRange: 7
   attackSpeed: 1
+  attackDuration: 1.017
   currentTarget: {fileID: 0}
   enemyLayer:
     serializedVersion: 2
@@ -100497,6 +100517,22 @@ MonoBehaviour:
   projectileName: DealerNormalAtk
   firePoint: {fileID: 297090778}
   damageDelay: 0.5
+--- !u!114 &6599030164936357095
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 450230773691446307}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 22a8366cfb4b9184391f2205e6756a38, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxHp: 100
+  currentHp: 100
+  attackPower: 0
+  attackSpeed: 0
 --- !u!1 &6600208266837583189
 GameObject:
   m_ObjectHideFlags: 0
@@ -110916,6 +110952,7 @@ GameObject:
   - component: {fileID: 3980959347461316007}
   - component: {fileID: 7679984365824007529}
   - component: {fileID: 7679984365824007530}
+  - component: {fileID: 7679984365824007531}
   - component: {fileID: 7679984365824007528}
   m_Layer: 6
   m_Name: Tanker
@@ -110984,6 +111021,7 @@ MonoBehaviour:
   attackDamage: 10
   attackRange: 2
   attackSpeed: 1
+  attackDuration: 1
   currentTarget: {fileID: 0}
   enemyLayer:
     serializedVersion: 2
@@ -110992,6 +111030,22 @@ MonoBehaviour:
   hitOffset: 1
   damageDelay: 0.33
   hitEffectName: Yellow Sword Slash 1
+--- !u!114 &7679984365824007531
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7679984365824007527}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 22a8366cfb4b9184391f2205e6756a38, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxHp: 100
+  currentHp: 100
+  attackPower: 0
+  attackSpeed: 0
 --- !u!1 &7681127020705469813
 GameObject:
   m_ObjectHideFlags: 0

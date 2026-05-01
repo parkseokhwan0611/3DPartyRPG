@@ -5,7 +5,7 @@ using UnityEngine.AI;
 
 public class EnemyHp : MonoBehaviour, IDamageable
 {
-[Header("# HP Settings")]
+    [Header("# HP Settings")]
     public float hp;
     public float maxHp;
     public bool isDead = false;
