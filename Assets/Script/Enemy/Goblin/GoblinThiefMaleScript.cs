@@ -66,7 +66,7 @@ public class GoblinThiefMaleScript : MonoBehaviour
             return;
         }
 
-        // 2. 가장 가까운 파티원 찾기
+        // 2. 가장 가까운 파티원 찾기 -> 여기에 Tanker 어그로 관리 넣으면 될듯
         Transform nearestTarget = GetNearestPartyMember();
 
         if (nearestTarget == null)

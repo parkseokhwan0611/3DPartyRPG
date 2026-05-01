@@ -12,6 +12,8 @@ public class GameManager : MonoBehaviour
     public bool isLive;
     public bool cantMove = false;
     [Header("#Status")]
+    public float hp = 200;
+    public float maxhp = 200;
     public float mana = 100;
     public float maxMana = 100;
     public float level = 1;
@@ -19,17 +21,13 @@ public class GameManager : MonoBehaviour
     public float maxExp = 10;
     public int combo = 0;
     [Header("#Stat")]
-    public int str; //공, 치뎀
-    public int dex; //공속, 치확
+    public int str; //공
     public int vit; //체력, 방어력
-    public int order; //질서
-    public int chaos; //혼돈
+    public int intel; //지능
+    public int fth; //신앙
     [Header("#Atk")]
     public float attack; //공격력
     public float attackSpeed;
-    [Header("#HP")]
-    public float hp = 200;
-    public float maxhp = 200;
     [Header("#DEF")]
     public float def = 0;
     [Header("#AtkSpd")]
