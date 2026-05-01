@@ -13,6 +13,7 @@ public abstract class AttackBase : MonoBehaviour
     protected NavMeshAgent agent;
     protected Animator anim;
     public Transform currentTarget; // 현재 타겟
+    protected EnemyHp targetHealth;
     public LayerMask enemyLayer;
 
     protected virtual void Start()
@@ -26,9 +27,14 @@ public abstract class AttackBase : MonoBehaviour
 
         if (currentTarget != null)
         {
-            // [추가] 타겟이 있다면 이동 중이든 공격 중이든 항상 적을 바라봅니다.
+            // [개선] 매 프레임 GetComponent 하지 않고, 저장된 변수만 체크합니다.
+            if (targetHealth != null && targetHealth.isDead)
+            {
+                ClearTarget(); // 타겟 초기화 로직을 따로 빼면 관리하기 편합니다.
+                return;
+            }
+
             LookAtTarget();
-            
             HandleAttackLogic();
         }
     }
@@ -106,22 +112,6 @@ public abstract class AttackBase : MonoBehaviour
             Quaternion lookRotation = Quaternion.LookRotation(direction);
             transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime * 10f);
         }
-
-        // 1. 타겟 방향 계산 (내 위치에서 적 위치를 뺀 벡터)
-        // Vector3 direction = (currentTarget.position - transform.position).normalized;
-
-        // // 2. Y축만 바라보게 고정 (캐릭터가 위아래로 기우는 것 방지)
-        // direction.y = 0;
-
-        // // 3. 해당 방향으로의 회전값(Quaternion) 계산
-        // if (direction != Vector3.zero)
-        // {
-        //     Quaternion lookRotation = Quaternion.LookRotation(direction);
-            
-        //     // 4. 즉시 회전시키거나, 부드럽게 회전 (Slerp)
-        //     // 10월 포트폴리오의 자연스러움을 위해 부드러운 회전을 추천합니다.
-        //     transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime * 10f);
-        // }
     }
     // [핵심] 실제 데미지를 입히는 방식은 자식들이 결정함
     // 애니메이션 이벤트에서 호출될 함수입니다.
@@ -130,7 +120,24 @@ public abstract class AttackBase : MonoBehaviour
     // 타겟 설정 함수
     public void SetTarget(Transform target)
     {
+        if (currentTarget == target) return;
+
         currentTarget = target;
+
+        if (currentTarget != null)
+        {
+            // 여기서 딱 한 번만 GetComponent를 실행합니다!
+            targetHealth = currentTarget.GetComponent<EnemyHp>();
+        }
+        else
+        {
+            targetHealth = null;
+        }
+    }
+    protected void ClearTarget()
+    {
+        currentTarget = null;
+        targetHealth = null;
     }
     public void ForceCancelAttack()
     {

@@ -57,18 +57,21 @@ public class MeleeAttack : AttackBase
         {
             // 캐릭터 위치에서 앞방향으로 0.3만큼 더한 좌표 계산
             Vector3 effectPos = transform.position + (transform.forward * 0.3f);
-            
-            // 높이 조절이 필요하다면(예: 허리 높이) y값을 살짝 더해줄 수 있습니다.
-            // effectPos.y += 1.0f; 
-
             SpawnHitEffect(effectPos);
         }
 
         // 3. 데미지 판정 및 로그 출력
         foreach (Collider enemy in hitEnemies)
         {
-            //Debug.Log(enemy.name + " 타격!");
-            // enemy.GetComponent<IDamageable>()?.TakeDamage(attackDamage);
+            // 1. 해당 오브젝트에서 IDamageable 인터페이스를 가져옵니다.
+            IDamageable target = enemy.GetComponent<IDamageable>();
+
+            // 2. 인터페이스가 존재한다면 데미지를 입힙니다.
+            if (target != null)
+            {
+                // AttackBase에 정의된 attackDamage를 전달합니다.
+                target.TakeDamage(attackDamage, gameObject);
+            }
         }
     }
     private void SpawnHitEffect(Vector3 pos)
