@@ -35075,6 +35075,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1849586277}
   - component: {fileID: 1849586276}
+  - component: {fileID: 1849586278}
   m_Layer: 0
   m_Name: Virtual Camera
   m_TagString: Untagged
@@ -35137,6 +35138,18 @@ Transform:
   - {fileID: 864201727}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 44, y: 0, z: 0}
+--- !u!114 &1849586278
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1849586275}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1802ff0246741746aaeddb40ca89039, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1850185676
 GameObject:
   m_ObjectHideFlags: 0
@@ -84144,7 +84157,7 @@ Animator:
   m_GameObject: {fileID: 5735091143841406095}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 22100000, guid: df30f41a4dcf733498dcc81b082cd267, type: 2}
+  m_Controller: {fileID: 9100000, guid: f07ac4e8c2748694fb3496c667e27986, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -92139,7 +92152,7 @@ GameObject:
   - component: {fileID: 4852147920971686365}
   - component: {fileID: 5735091143841406096}
   m_Layer: 7
-  m_Name: goblin_thief_male
+  m_Name: GoblinThiefMale
   m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -124238,10 +124251,10 @@ SceneRoots:
   m_Roots:
   - {fileID: 569050550}
   - {fileID: 1911610936}
+  - {fileID: 1849586277}
   - {fileID: 2115435187}
   - {fileID: 464600386}
   - {fileID: 1566684146}
-  - {fileID: 1849586277}
   - {fileID: 7052383835653015517}
   - {fileID: 969498966131715737}
   - {fileID: 1458811748}
