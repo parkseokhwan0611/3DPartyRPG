@@ -8,11 +8,16 @@ public class MonsterMeleeAttack : AttackBase
     public float hitRadius = 1.5f;
     public float hitOffset = 1.0f;
     public bool isAttacking = false;
+    [Header("타이밍 설정 (초 단위)")]
+    public float damageDelay = 0.33f; // 애니메이션 시작 후 타격판정까지 걸리는 시간
     protected override void Start()
     {
         base.Start();
     }
-
+    protected override void Update()
+    {
+        base.Update();
+    }
     // AttackBase의 StopAndAttack에서 호출됨
     protected override void ExecuteAttack()
     {
@@ -43,7 +48,10 @@ public class MonsterMeleeAttack : AttackBase
         anim.SetTrigger("doNormalAttack");
         anim.SetBool("isWalking", false);
 
-        yield return new WaitForSeconds(attackDuration / attackSpeed);
+        yield return new WaitForSeconds(damageDelay / attackSpeed);
+        OnHit();
+
+        yield return new WaitForSeconds(attackDuration - damageDelay / attackSpeed);
 
         if (agent != null && agent.isOnNavMesh)
         {
@@ -53,17 +61,38 @@ public class MonsterMeleeAttack : AttackBase
     }
     public override void OnHit()
     {
-        // 실제 데미지 판정 (애니메이션 이벤트용)
+        // 1. 판정 위치 계산 (기존 기즈모 범위용)
         Vector3 hitPos = transform.position + (transform.forward * hitOffset);
-        Collider[] hitPlayers = Physics.OverlapSphere(hitPos, hitRadius, LayerMask.GetMask("Player"));
+        Collider[] hitEnemies = Physics.OverlapSphere(hitPos, hitRadius, enemyLayer);
 
-        foreach (var playerCol in hitPlayers)
+        // 2. 적을 한 명이라도 맞췄다면 캐릭터의 0.3m 앞 위치에 이펙트 생성
+        if (hitEnemies.Length > 0)
         {
-            var damageable = playerCol.GetComponent<IDamageable>();
-            if (damageable != null)
+            Debug.Log($"{hitEnemies.Length}명의 대상을 감지함");
+        }
+        else
+        {
+             Debug.Log("NotFound");
+        }
+
+        // 3. 데미지 판정 및 로그 출력
+        foreach (Collider enemy in hitEnemies)
+        {
+            // 1. 해당 오브젝트에서 IDamageable 인터페이스를 가져옵니다.
+            IDamageable target = enemy.GetComponent<IDamageable>();
+
+            // 2. 인터페이스가 존재한다면 데미지를 입힙니다.
+            if (target != null)
             {
-                damageable.TakeDamage(attackDamage, gameObject);
+                // AttackBase에 정의된 attackDamage를 전달합니다.
+                target.TakeDamage(attackDamage, gameObject);
             }
         }
+    }
+    private void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.red;
+        Vector3 hitPos = transform.position + (transform.forward * hitOffset);
+        Gizmos.DrawWireSphere(hitPos, hitRadius);
     }
 }

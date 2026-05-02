@@ -28454,6 +28454,7 @@ GameObject:
   - component: {fileID: 1458811749}
   - component: {fileID: 1458811750}
   - component: {fileID: 1458811745}
+  - component: {fileID: 1458811751}
   m_Layer: 6
   m_Name: Healer
   m_TagString: Player
@@ -28582,7 +28583,29 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxHp: 100
   currentHp: 100
-  damageTextColor: {r: 0.984123, g: 1, b: 0.13679248, a: 1}
+--- !u!136 &1458811751
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1458811744}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.5
+  m_Height: 2
+  m_Direction: 1
+  m_Center: {x: 0, y: 1, z: 0}
 --- !u!1 &1462638661
 GameObject:
   m_ObjectHideFlags: 0
@@ -45495,6 +45518,7 @@ GameObject:
   - component: {fileID: 6599030164936357094}
   - component: {fileID: 6599030164936357095}
   - component: {fileID: 6599030164936357092}
+  - component: {fileID: 6599030164936357096}
   m_Layer: 6
   m_Name: Dealer
   m_TagString: Player
@@ -92815,6 +92839,7 @@ MonoBehaviour:
   hitRadius: 1.5
   hitOffset: 1
   isAttacking: 0
+  damageDelay: 0.33
 --- !u!1 &5735091143920001678
 GameObject:
   m_ObjectHideFlags: 0
@@ -100799,7 +100824,29 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxHp: 100
   currentHp: 100
-  damageTextColor: {r: 0.735849, g: 0, b: 0.503207, a: 1}
+--- !u!136 &6599030164936357096
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 450230773691446307}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.5
+  m_Height: 2
+  m_Direction: 1
+  m_Center: {x: 0, y: 1, z: 0}
 --- !u!1 &6600208266837583189
 GameObject:
   m_ObjectHideFlags: 0
@@ -111221,6 +111268,7 @@ GameObject:
   - component: {fileID: 7679984365824007530}
   - component: {fileID: 7679984365824007531}
   - component: {fileID: 7679984365824007528}
+  - component: {fileID: 7679984365824007532}
   m_Layer: 6
   m_Name: Tanker
   m_TagString: Player
@@ -111311,7 +111359,29 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxHp: 100
   currentHp: 100
-  damageTextColor: {r: 1, g: 0.45802027, b: 0.1462264, a: 1}
+--- !u!136 &7679984365824007532
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7679984365824007527}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.5
+  m_Height: 2
+  m_Direction: 1
+  m_Center: {x: 0, y: 1, z: 0}
 --- !u!1 &7681127020705469813
 GameObject:
   m_ObjectHideFlags: 0
