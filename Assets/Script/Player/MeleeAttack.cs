@@ -3,6 +3,7 @@ using System.Collections;
 
 public class MeleeAttack : AttackBase
 {
+    private CharacterStat myStat;
     [Header("근접 공격 판정 설정")]
     public float hitRadius = 1.5f;
     public float hitOffset = 1.0f;
@@ -10,7 +11,11 @@ public class MeleeAttack : AttackBase
     [Header("타이밍 설정 (초 단위)")]
     public float damageDelay = 0.33f; // 애니메이션 시작 후 타격판정까지 걸리는 시간
     public string hitEffectName = "Yellow Sword Slash 1";
-
+    void Awake()
+    {
+        // 같은 오브젝트에 붙어있는 스탯 스크립트를 참조
+        myStat = GetComponent<CharacterStat>();
+    }
     // 부모의 StopAndAttack을 오버라이드하여 코루틴을 실행합니다.
     protected override void Update()
     {
@@ -60,6 +65,8 @@ public class MeleeAttack : AttackBase
             SpawnHitEffect(effectPos);
         }
 
+        float damage = myStat.TotalAtk;
+
         // 3. 데미지 판정 및 로그 출력
         foreach (Collider enemy in hitEnemies)
         {
@@ -70,7 +77,7 @@ public class MeleeAttack : AttackBase
             if (target != null)
             {
                 // AttackBase에 정의된 attackDamage를 전달합니다.
-                target.TakeDamage(attackDamage, gameObject);
+                target.TakeDamage(damage, gameObject);
             }
         }
     }

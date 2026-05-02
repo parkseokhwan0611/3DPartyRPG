@@ -3,11 +3,16 @@ using UnityEngine;
 
 public class HealerAttack : AttackBase
 {
-[Header("Ranged Settings")]
+    private CharacterStat myStat;
+    [Header("Ranged Settings")]
     public string projectileName = "HealerNormalAtk"; // 풀 매니저에서 식별할 이름
     public Transform firePoint;               // 발사 위치 (지팡이 끝, 손 등)
     public float damageDelay = 0.35f;         // 애니메이션 중 발사체가 생성되는 타이밍
-
+    void Awake()
+    {
+        // 같은 오브젝트에 붙어있는 스탯 스크립트를 참조
+        myStat = GetComponent<CharacterStat>();
+    }
     protected override void ExecuteAttack()
     {
         StartCoroutine(AttackRoutine());
@@ -41,6 +46,8 @@ public class HealerAttack : AttackBase
             // 위치와 회전을 계산된 정밀 값으로 즉시 강제 세팅
             effect.transform.position = spawnPos;
             effect.transform.rotation = preciseRotation;
+
+            float damage = myStat.TotalAp;
 
             // --- 데미지 데이터 설정 추가 ---
             ProjectileScript proj = effect.GetComponent<ProjectileScript>();

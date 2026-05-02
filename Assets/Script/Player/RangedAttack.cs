@@ -3,11 +3,16 @@ using System.Collections;
 
 public class RangedAttack : AttackBase
 {
+    private CharacterStat myStat;
     [Header("Ranged Settings")]
     public string projectileName = "MagicBall"; // 풀 매니저에서 식별할 이름
     public Transform firePoint;               // 발사 위치 (지팡이 끝, 손 등)
     public float damageDelay = 0.35f;         // 애니메이션 중 발사체가 생성되는 타이밍
-
+    void Awake()
+    {
+        // 같은 오브젝트에 붙어있는 스탯 스크립트를 참조
+        myStat = GetComponent<CharacterStat>();
+    }
     protected override void ExecuteAttack()
     {
         StartCoroutine(AttackRoutine());
@@ -42,12 +47,14 @@ public class RangedAttack : AttackBase
             effect.transform.position = spawnPos;
             effect.transform.rotation = preciseRotation;
 
+            float damage = myStat.TotalAp;
+
             // --- 데미지 데이터 설정 추가 ---
             ProjectileScript proj = effect.GetComponent<ProjectileScript>();
             if (proj != null)
             {
                 // AttackBase에서 상속받은 attackDamage를 투사체에 전달
-                proj.SetProjectileData(attackDamage, gameObject);
+                proj.SetProjectileData(damage, gameObject);
             }
             // ----------------------------
 

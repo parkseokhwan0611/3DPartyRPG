@@ -27,7 +27,7 @@ public class PartyHPUIScript : MonoBehaviour
     void UpdateHpUI()
     {
         // HP가 변했다는 신호를 받았을 때 실행됨
-        float targetFill = stat.hp / stat.maxHp;
+        float targetFill = stat.hp / stat.MaxHp;
         
         if (hpCoroutine != null) StopCoroutine(hpCoroutine);
         hpCoroutine = StartCoroutine(SmoothUpdateBar(targetFill));
