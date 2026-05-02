@@ -7,14 +7,14 @@ public class DamageText : MonoBehaviour
     public float alphaSpeed = 1f;
     public float destroyTime = 1f;
     
-    private TextMeshProUGUI text;
+    private TextMeshPro text;
     private Color alpha;
     private bool isInitialized = false;
 
     // Awake에서도 미리 찾아둡니다.
     void Awake()
     {
-        text = GetComponent<TextMeshProUGUI>();
+        text = GetComponent<TextMeshPro>();
     }
 
     public void Setup(float damageAmount)
@@ -22,7 +22,7 @@ public class DamageText : MonoBehaviour
         // [중요] text가 null이라면 여기서 한 번 더 찾습니다.
         if (text == null) 
         {
-            text = GetComponent<TextMeshProUGUI>();
+            text = GetComponent<TextMeshPro>();
         }
 
         // 만약 GetComponent를 했는데도 null이라면 프리팹 설정 문제 입니디.

@@ -14006,17 +14006,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0cd44c1031e13a943bb63640046fad76, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_UiScaleMode: 0
+  m_UiScaleMode: 1
   m_ReferencePixelsPerUnit: 100
   m_ScaleFactor: 1
-  m_ReferenceResolution: {x: 800, y: 600}
+  m_ReferenceResolution: {x: 1920, y: 1080}
   m_ScreenMatchMode: 0
-  m_MatchWidthOrHeight: 0
+  m_MatchWidthOrHeight: 1
   m_PhysicalUnit: 3
   m_FallbackScreenDPI: 96
   m_DefaultSpriteDPI: 96
   m_DynamicPixelsPerUnit: 1
-  m_PresetInfoIsWorld: 1
+  m_PresetInfoIsWorld: 0
 --- !u!223 &690733488
 Canvas:
   m_ObjectHideFlags: 0
@@ -14026,7 +14026,7 @@ Canvas:
   m_GameObject: {fileID: 690733485}
   m_Enabled: 1
   serializedVersion: 3
-  m_RenderMode: 2
+  m_RenderMode: 0
   m_Camera: {fileID: 0}
   m_PlaneDistance: 100
   m_PixelPerfect: 0
@@ -14035,7 +14035,7 @@ Canvas:
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
   m_VertexColorAlwaysGammaSpace: 0
-  m_AdditionalShaderChannelsFlag: 0
+  m_AdditionalShaderChannelsFlag: 25
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0
   m_SortingOrder: 0
@@ -14049,16 +14049,16 @@ RectTransform:
   m_GameObject: {fileID: 690733485}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0, y: 0, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 458, y: 257.5}
-  m_SizeDelta: {x: 916, y: 515}
-  m_Pivot: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
+  m_Pivot: {x: 0, y: 0}
 --- !u!1 &692624143
 GameObject:
   m_ObjectHideFlags: 0
@@ -28582,6 +28582,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxHp: 100
   currentHp: 100
+  damageTextColor: {r: 0.984123, g: 1, b: 0.13679248, a: 1}
 --- !u!1 &1462638661
 GameObject:
   m_ObjectHideFlags: 0
@@ -85527,7 +85528,7 @@ Transform:
   m_GameObject: {fileID: 5735091143841406095}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 13.24, y: 0, z: 8.99}
+  m_LocalPosition: {x: 14.6, y: 0, z: 6.53}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -92721,10 +92722,10 @@ CapsuleCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.6
-  m_Height: 1.5
+  m_Radius: 0.7
+  m_Height: 2
   m_Direction: 1
-  m_Center: {x: 0, y: 0.75, z: 0}
+  m_Center: {x: 0, y: 1, z: 0}
 --- !u!195 &5735091143841406097
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -92786,7 +92787,7 @@ MonoBehaviour:
   hp: 100
   maxHp: 100
   isDead: 0
-  normalDamageText: {fileID: 22354579903626800, guid: 9a79092a5fd48b64f94f00448143e718,
+  normalDamageText: {fileID: 441271096938680117, guid: 684230b9243a97b48b1153cdbb963f76,
     type: 3}
   hudPos: {fileID: 908746892}
   expReward: 5
@@ -100798,6 +100799,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxHp: 100
   currentHp: 100
+  damageTextColor: {r: 0.735849, g: 0, b: 0.503207, a: 1}
 --- !u!1 &6600208266837583189
 GameObject:
   m_ObjectHideFlags: 0
@@ -111309,6 +111311,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxHp: 100
   currentHp: 100
+  damageTextColor: {r: 1, g: 0.45802027, b: 0.1462264, a: 1}
 --- !u!1 &7681127020705469813
 GameObject:
   m_ObjectHideFlags: 0
@@ -124919,10 +124922,10 @@ SceneRoots:
   - {fileID: 70980121}
   - {fileID: 2115435187}
   - {fileID: 464600386}
+  - {fileID: 690733489}
   - {fileID: 2031906700}
   - {fileID: 1566684146}
   - {fileID: 7052383835653015517}
   - {fileID: 969498966131715737}
   - {fileID: 1458811748}
   - {fileID: 4962108822225651253}
-  - {fileID: 690733489}
