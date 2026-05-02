@@ -65,15 +65,14 @@ public class MonsterMeleeAttack : AttackBase
         Vector3 hitPos = transform.position + (transform.forward * hitOffset);
         Collider[] hitEnemies = Physics.OverlapSphere(hitPos, hitRadius, enemyLayer);
 
-        // 2. 적을 한 명이라도 맞췄다면 캐릭터의 0.3m 앞 위치에 이펙트 생성
-        if (hitEnemies.Length > 0)
-        {
-            Debug.Log($"{hitEnemies.Length}명의 대상을 감지함");
-        }
-        else
-        {
-             Debug.Log("NotFound");
-        }
+        // if (hitEnemies.Length > 0)
+        // {
+        //     Debug.Log($"{hitEnemies.Length}명의 대상을 감지함");
+        // }
+        // else
+        // {
+        //      Debug.Log("NotFound");
+        // }
 
         // 3. 데미지 판정 및 로그 출력
         foreach (Collider enemy in hitEnemies)
