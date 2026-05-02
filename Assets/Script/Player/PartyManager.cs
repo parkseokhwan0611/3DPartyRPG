@@ -1,12 +1,14 @@
 using UnityEngine;
 using System.Collections.Generic;
+using Cinemachine;
 
 public class PartyManager : MonoBehaviour
 {
     public List<PartyMemberScript> partyMembers = new List<PartyMemberScript>();
     public PartyMemberScript currentLeader;
     public LayerMask groundLayer;
-
+    [Header("# Camera")]
+    public CinemachineVirtualCamera virtualCamera;
     void Start()
     {
         // 시작 시 첫 번째 멤버를 리더로 설정
@@ -36,6 +38,14 @@ public class PartyManager : MonoBehaviour
         
         PartyMemberScript newLeader = partyMembers[index];
         currentLeader = newLeader; // 현재 리더 갱신
+
+        // 시네머신 카메라 타겟 변경 로직 추가 ---
+        if (virtualCamera != null)
+        {
+            virtualCamera.Follow = newLeader.transform;
+            virtualCamera.LookAt = newLeader.transform; // 필요하다면 LookAt도 설정
+        }
+        // ------------------------------------------
 
         // 새로운 체인 순서 리스트 생성
         List<PartyMemberScript> newOrder = new List<PartyMemberScript>();
