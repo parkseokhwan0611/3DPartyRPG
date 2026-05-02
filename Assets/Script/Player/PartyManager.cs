@@ -20,9 +20,9 @@ public class PartyManager : MonoBehaviour
         if (partyMembers.Count == 0) return;
 
         // 1. 리더 변경 입력 (F1, F2, F3)
-        if (Input.GetKeyDown(KeyCode.F1)) ChangeLeader(0);
-        if (Input.GetKeyDown(KeyCode.F2)) ChangeLeader(1);
-        if (Input.GetKeyDown(KeyCode.F3)) ChangeLeader(2);
+        if (Input.GetKeyDown(KeyCode.Alpha1)) ChangeLeader(0);
+        if (Input.GetKeyDown(KeyCode.Alpha2)) ChangeLeader(1);
+        if (Input.GetKeyDown(KeyCode.Alpha3)) ChangeLeader(2);
 
         // 2. 리더 이동 명령 (우클릭)
         if (currentLeader != null && Input.GetMouseButtonDown(1))
