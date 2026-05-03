@@ -50,11 +50,12 @@ public class HealerAttack : AttackBase
             float damage = myStat.TotalAp;
 
             // --- 데미지 데이터 설정 추가 ---
+            // [수정] 스탯의 TotalAp를 가져와서 투사체에 전달
             ProjectileScript proj = effect.GetComponent<ProjectileScript>();
             if (proj != null)
             {
-                // AttackBase에서 상속받은 attackDamage를 투사체에 전달
-                proj.SetProjectileData(attackDamage, gameObject);
+                // 실시간 계산된 전체 공격력(TotalAp)을 전달합니다.
+                proj.SetProjectileData(myStat.TotalAp, gameObject);
             }
             // ----------------------------
 
@@ -74,4 +75,13 @@ public class HealerAttack : AttackBase
 
     // 근접 판정이 아니므로 OnHit은 비워둡니다.
     public override void OnHit() { }
+
+    public void OnProjectileHit(EnemyHp enemyStat)
+    {
+        // 중앙 상단 UI 매니저 호출
+        if (TargetHpScript.instance != null)
+        {
+            TargetHpScript.instance.SetTarget(enemyStat);
+        }
+    }
 }

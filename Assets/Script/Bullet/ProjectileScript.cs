@@ -93,6 +93,18 @@ public class ProjectileScript : PoolAble
         {
             // 인터페이스를 통해 데미지 전달
             target.TakeDamage(damage, gameObject);
+
+            // 2. [추가] 나를 쏜 주인(HealerAttack 등)에게 적 정보 전달
+            if (owner != null)
+            {
+                // AttackBase를 상속받은 스크립트라면 OnProjectileHit 호출
+                var attacker = owner.GetComponent<HealerAttack>();
+                if (attacker != null)
+                {
+                    var enemyStat = collision.gameObject.GetComponent<EnemyHp>();
+                    if (enemyStat != null) attacker.OnProjectileHit(enemyStat);
+                }
+            }
         }
         // 1. 투사체 물리 정지
         rb.constraints = RigidbodyConstraints.FreezeAll;

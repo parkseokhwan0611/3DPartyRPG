@@ -10,6 +10,7 @@ public class EnemyHp : MonoBehaviour, IDamageable
     public float maxHp;
     public bool isDead = false;
     [Header("# References")]
+    public string enemyName;
     public GameObject normalDamageText;
     public Transform hudPos;
     [Header("# Death Settings")]
@@ -18,7 +19,7 @@ public class EnemyHp : MonoBehaviour, IDamageable
     private Animator animator;
     private NavMeshAgent navAgent;
     private Collider col;
-
+    public System.Action<float, float> OnHpChanged;
     void Awake()
     {
         animator = GetComponent<Animator>();
@@ -38,8 +39,9 @@ public class EnemyHp : MonoBehaviour, IDamageable
 
         hp -= damage;
         //Debug.Log($"{gameObject.name}이 {damage}의 데미지를 입음! 남은 체력: {hp}");
-
+        hp = Mathf.Clamp(hp, 0, maxHp);
         SpawnDamageText(damage);
+        OnHpChanged?.Invoke(hp, maxHp);
         if (hp <= 0)
         {
             hp = 0;

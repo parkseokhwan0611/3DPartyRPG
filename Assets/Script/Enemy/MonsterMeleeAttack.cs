@@ -4,12 +4,17 @@ using UnityEngine;
 
 public class MonsterMeleeAttack : AttackBase
 {
+    private EnemyHp enemyHp;
     [Header("근접 공격 판정 설정")]
     public float hitRadius = 1.5f;
     public float hitOffset = 1.0f;
     public bool isAttacking = false;
     [Header("타이밍 설정 (초 단위)")]
     public float damageDelay = 0.33f; // 애니메이션 시작 후 타격판정까지 걸리는 시간
+    void Awake()
+    {
+        enemyHp = GetComponent<EnemyHp>();
+    }
     protected override void Start()
     {
         base.Start();
@@ -49,7 +54,10 @@ public class MonsterMeleeAttack : AttackBase
         anim.SetBool("isWalking", false);
 
         yield return new WaitForSeconds(damageDelay / attackSpeed);
-        OnHit();
+        if(enemyHp.hp > 0)
+        {
+            OnHit();
+        }
 
         yield return new WaitForSeconds(attackDuration - damageDelay / attackSpeed);
 

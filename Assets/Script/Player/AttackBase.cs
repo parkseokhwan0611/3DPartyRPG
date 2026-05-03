@@ -85,7 +85,7 @@ public abstract class AttackBase : MonoBehaviour
     protected virtual void ExecuteAttack()
     {
         // 기본 구현은 애니메이션만 트리거 (자식에서 덮어씌울 예정)
-        anim.SetTrigger("doNormalAttack");
+        //anim.SetTrigger("doNormalAttack");
     }
     protected Vector3 TargetPosition
     {

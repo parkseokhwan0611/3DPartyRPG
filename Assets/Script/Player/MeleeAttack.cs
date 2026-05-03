@@ -53,34 +53,43 @@ public class MeleeAttack : AttackBase
     }
     public override void OnHit()
     {
-        // 1. 판정 위치 계산 (기존 기즈모 범위용)
+        // 0. 스탯 참조 확인
+        if (myStat == null) return;
+
+        // 1. 판정 위치 계산
         Vector3 hitPos = transform.position + (transform.forward * hitOffset);
         Collider[] hitEnemies = Physics.OverlapSphere(hitPos, hitRadius, enemyLayer);
 
-        // 2. 적을 한 명이라도 맞췄다면 캐릭터의 0.3m 앞 위치에 이펙트 생성
+        // 2. 이펙트 생성 (적을 한 명이라도 맞췄을 때)
         if (hitEnemies.Length > 0)
         {
-            // 캐릭터 위치에서 앞방향으로 0.3만큼 더한 좌표 계산
             Vector3 effectPos = transform.position + (transform.forward * 0.3f);
             SpawnHitEffect(effectPos);
         }
 
         float damage = myStat.TotalAtk;
+        bool isTargetSet = false; // UI 타겟 설정을 한 번만 하기 위한 변수
 
-        // 3. 데미지 판정 및 로그 출력
+        // 3. 데미지 판정
         foreach (Collider enemy in hitEnemies)
         {
-            // 1. 해당 오브젝트에서 IDamageable 인터페이스를 가져옵니다.
-            IDamageable target = enemy.GetComponent<IDamageable>();
-
-            // 2. 인터페이스가 존재한다면 데미지를 입힙니다.
-            if (target != null)
+            // 최적화: 한 번만 가져와서 사용
+            var enemyStat = enemy.GetComponent<EnemyHp>();
+            
+            if (enemyStat != null)
             {
-                // AttackBase에 정의된 attackDamage를 전달합니다.
-                target.TakeDamage(damage, gameObject);
+                // 인터페이스 방식 데미지 전달
+                enemyStat.TakeDamage(damage, gameObject);
+
+                // 중앙 상단 UI 설정 (첫 번째 맞은 적만 표시)
+                if (!isTargetSet && TargetHpScript.instance != null)
+                {
+                    TargetHpScript.instance.SetTarget(enemyStat);
+                    isTargetSet = true;
+                }
             }
-        }
     }
+}
     private void SpawnHitEffect(Vector3 pos)
     {
         if (ObjectPoolManager.instance != null)
