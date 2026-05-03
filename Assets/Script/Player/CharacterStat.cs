@@ -23,11 +23,13 @@ public class CharacterStat : MonoBehaviour, IDamageable
     //     hp = MaxHp;
     // }
     // CharacterStat.cs
-    void Awake() // Start에서 Awake로 변경
+    void Awake()
     {
         if (DataManager.instance != null)
         {
-            myStatus = DataManager.instance.partyStatuses[partyIndex];
+            // partyIndex가 리스트 범위를 벗어나면 IndexOutOfRangeException 발생
+            if (partyIndex < DataManager.instance.partyStatuses.Count)
+                myStatus = DataManager.instance.partyStatuses[partyIndex];
         }
     }
     public void TakeDamage(float damage, GameObject attacker)
@@ -39,8 +41,10 @@ public class CharacterStat : MonoBehaviour, IDamageable
         myStatus.currentHp = Mathf.Clamp(myStatus.currentHp, 0, myStatus.MaxHp);
 
         // 2. 이벤트 호출 (두 군데 모두 호출하는 것이 좋습니다)
-        myStatus.OnHpChanged?.Invoke(); // 데이터 중심 알림
-        OnHpChanged?.Invoke();          // 로컬(Stat) 중심 알림
+        // myStatus.OnHpChanged?.Invoke(); // 데이터 중심 알림
+        // OnHpChanged?.Invoke();          // 로컬(Stat) 중심 알림
+        myStatus.RaiseHpChanged(); // ← 직접 Invoke 대신 이걸로 교체
+        OnHpChanged?.Invoke();
 
         // 3. 연출
         SpawnDamageText(damage);

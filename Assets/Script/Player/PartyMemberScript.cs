@@ -7,6 +7,7 @@ public class PartyMemberScript : MonoBehaviour
     public NavMeshAgent agent;
     public bool isLeader = false;
     public Animator anim;
+    private AttackBase attackComp;
     
     [Header("파티 체인 설정")]
     public Transform targetToFollow; // 내 바로 앞 순서의 캐릭터
@@ -18,7 +19,10 @@ public class PartyMemberScript : MonoBehaviour
     public float stopDistance = 2.0f;  // 앞 사람과 이 거리면 멈춤
     public float resumeDistance = 3.5f; // 앞 사람이 이보다 멀어지면 출발
     public float rotationSpeed = 8.0f;
-
+    void Awake() 
+    {
+        attackComp = GetComponent<AttackBase>(); 
+    }
     void Start()
     {
         agent = GetComponent<NavMeshAgent>();
@@ -34,9 +38,6 @@ public class PartyMemberScript : MonoBehaviour
     void Update()
     {
         UpdateAnimation();
-
-        var attackComp = GetComponent<AttackBase>();
-
         // [중요] 공격 중 판정 로직 수정
         // attackComp.currentTarget이 null인 것을 확인하는 것 외에도 
         // 리더가 이동 중일 때는 공격보다 이동을 우선하도록 조건을 확인해야 합니다.

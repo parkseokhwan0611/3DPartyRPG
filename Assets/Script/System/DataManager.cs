@@ -19,6 +19,11 @@ public class DataManager : MonoBehaviour
     }
     public void InitData()
     {
+        if (baseDataList == null || baseDataList.Count == 0)
+        {
+            Debug.LogWarning("DataManager: baseDataList가 비어있습니다!");
+            return;
+        }
         partyStatuses.Clear();
 
         foreach (var baseData in baseDataList)
