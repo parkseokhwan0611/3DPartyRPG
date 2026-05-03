@@ -9,28 +9,44 @@ public class CharacterStat : MonoBehaviour, IDamageable
     public GameObject playerDamageText;
     public Transform hudPos;
     public ClassData classData;
-    [Header("# Base Stats")]
-    public float hp;
-    public float MaxHp => classData.hp + classData.baseVit * classData.hpPerVit;
     public event Action OnHpChanged;
-    public float mp;
-    public float MaxMp;
-    public float atk;
-    public float TotalAtk => classData.baseStr * classData.atkPerStr; 
-    public float TotalAp => classData.baseInt * classData.apPerInt + classData.baseFht * classData.apPerFth; 
-    void Awake()
+    // [중요] 이제 모든 스탯 정보는 이 안에 들어있습니다.
+    private CharacterStatus myStatus;
+    public int partyIndex;
+    public float Hp => myStatus.currentHp;
+    public float MaxHp => myStatus.MaxHp;
+    public float TotalAtk => myStatus.TotalAtk;
+    public float TotalAp => myStatus.TotalAp;
+    // void Awake()
+    // {
+    //     // 초기화 (StatManager에서 데이터를 받아올 수도 있음)
+    //     hp = MaxHp;
+    // }
+    // CharacterStat.cs
+    void Awake() // Start에서 Awake로 변경
     {
-        // 초기화 (StatManager에서 데이터를 받아올 수도 있음)
-        hp = MaxHp;
+        if (DataManager.instance != null)
+        {
+            myStatus = DataManager.instance.partyStatuses[partyIndex];
+        }
     }
     public void TakeDamage(float damage, GameObject attacker)
     {
-        hp -= damage;
-        OnHpChanged?.Invoke();
+        if (myStatus == null) return;
 
+        // 1. 실제 데이터 매니저 내의 HP를 깎음
+        myStatus.currentHp -= damage;
+        myStatus.currentHp = Mathf.Clamp(myStatus.currentHp, 0, myStatus.MaxHp);
+
+        // 2. 이벤트 호출 (두 군데 모두 호출하는 것이 좋습니다)
+        myStatus.OnHpChanged?.Invoke(); // 데이터 중심 알림
+        OnHpChanged?.Invoke();          // 로컬(Stat) 중심 알림
+
+        // 3. 연출
         SpawnDamageText(damage);
 
-        if (hp <= 0) Die();
+        // 4. 사망 판정
+        if (myStatus.currentHp <= 0) Die();
     }
     private void SpawnDamageText(float damage)
     {
