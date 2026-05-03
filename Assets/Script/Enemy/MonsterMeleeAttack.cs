@@ -26,10 +26,9 @@ public class MonsterMeleeAttack : AttackBase
     // AttackBase의 StopAndAttack에서 호출됨
     protected override void ExecuteAttack()
     {
-        // 이미 공격 코루틴이 돌고 있지 않을 때만 실행
+        if (isAttacking) return; // isAttacking 플래그로 이중 방어
         StartCoroutine(MonsterAttackRoutine());
     }
-
     private IEnumerator MonsterAttackRoutine()
     {
         if (agent != null && agent.isOnNavMesh)
@@ -54,7 +53,7 @@ public class MonsterMeleeAttack : AttackBase
         anim.SetBool("isWalking", false);
 
         yield return new WaitForSeconds(damageDelay / attackSpeed);
-        if(enemyHp.hp > 0)
+        if(enemyHp != null && enemyHp.hp > 0)
         {
             OnHit();
         }

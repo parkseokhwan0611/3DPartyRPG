@@ -4,14 +4,25 @@ using Cinemachine;
 
 public class PartyManager : MonoBehaviour
 {
+    // ─────────────────────────────────────────
+    // 파티 구성
+    // ─────────────────────────────────────────
     public List<PartyMemberScript> partyMembers = new List<PartyMemberScript>();
     public PartyMemberScript currentLeader;
+
+    // ─────────────────────────────────────────
+    // 참조
+    // ─────────────────────────────────────────
+    [Header("참조")]
     public LayerMask groundLayer;
-    [Header("# Camera")]
     public CinemachineVirtualCamera virtualCamera;
+
+    // ─────────────────────────────────────────────────────────────────
+    // Unity 생명주기
+    // ─────────────────────────────────────────────────────────────────
+
     void Start()
     {
-        // 시작 시 첫 번째 멤버를 리더로 설정
         if (partyMembers.Count > 0) ChangeLeader(0);
     }
 
@@ -19,129 +30,135 @@ public class PartyManager : MonoBehaviour
     {
         if (partyMembers.Count == 0) return;
 
-        // 1. 리더 변경 입력 (F1, F2, F3)
+        HandleLeaderChangeInput();
+        HandleCommandInput();
+    }
+
+    // ─────────────────────────────────────────────────────────────────
+    // 입력 처리 (Input만 담당, 로직은 각 메서드에 위임)
+    // ─────────────────────────────────────────────────────────────────
+
+    void HandleLeaderChangeInput()
+    {
         if (Input.GetKeyDown(KeyCode.Alpha1)) ChangeLeader(0);
         if (Input.GetKeyDown(KeyCode.Alpha2)) ChangeLeader(1);
         if (Input.GetKeyDown(KeyCode.Alpha3)) ChangeLeader(2);
+    }
 
-        // 2. 리더 이동 명령 (우클릭)
-        if (currentLeader != null && Input.GetMouseButtonDown(1))
+    void HandleCommandInput()
+    {
+        if (currentLeader == null) return;
+        if (!Input.GetMouseButtonDown(1)) return;
+
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+
+        // 우선순위 1: 적 클릭 → 공격 명령
+        if (TryGetEnemyHit(ray, out RaycastHit enemyHit))
         {
-            HandleCommand();
+            DispatchAttackCommand(enemyHit);
+            return;
+        }
+
+        // 우선순위 2: 땅 클릭 → 이동 명령
+        if (TryGetGroundHit(ray, out RaycastHit groundHit))
+        {
+            DispatchMoveCommand(groundHit.point);
         }
     }
 
-    // 인덱스 번호로 리더를 교체하는 함수
+    // ─────────────────────────────────────────────────────────────────
+    // 레이캐스트 (결과만 반환, 사이드이펙트 없음)
+    // ─────────────────────────────────────────────────────────────────
+
+    bool TryGetEnemyHit(Ray ray, out RaycastHit hit)
+    {
+        return Physics.Raycast(ray, out hit, Mathf.Infinity, LayerMask.GetMask("Enemy"));
+    }
+
+    bool TryGetGroundHit(Ray ray, out RaycastHit hit)
+    {
+        return Physics.Raycast(ray, out hit, Mathf.Infinity, groundLayer);
+    }
+
+    // ─────────────────────────────────────────────────────────────────
+    // 명령 디스패치 (실제 로직 실행)
+    // ─────────────────────────────────────────────────────────────────
+
+    void DispatchAttackCommand(RaycastHit hit)
+    {
+        foreach (var member in partyMembers)
+        {
+            var attack = member.GetComponent<AttackBase>();
+            if (attack != null) attack.SetTarget(hit.transform);
+        }
+
+        SpawnMarker("AttackMarker", hit.point);
+    }
+
+    void DispatchMoveCommand(Vector3 destination)
+    {
+        // 모든 멤버의 공격 타겟 해제 및 정지 거리 설정
+        foreach (var member in partyMembers)
+        {
+            var attack = member.GetComponent<AttackBase>();
+            if (attack != null) attack.SetTarget(null);
+
+            member.agent.stoppingDistance = (member == currentLeader)
+                ? 0.1f
+                : member.stopDistance;
+        }
+
+        // 리더에게만 목적지 설정 (팔로워는 PartyMemberScript가 자체적으로 따라옴)
+        currentLeader.agent.SetDestination(destination);
+
+        SpawnMarker("MoveMarker", destination);
+    }
+
+    // ─────────────────────────────────────────────────────────────────
+    // 리더 변경
+    // ─────────────────────────────────────────────────────────────────
+
     public void ChangeLeader(int index)
     {
         if (index < 0 || index >= partyMembers.Count) return;
-        
-        PartyMemberScript newLeader = partyMembers[index];
-        currentLeader = newLeader; // 현재 리더 갱신
 
-        // 시네머신 카메라 타겟 변경 로직 추가 ---
+        PartyMemberScript newLeader = partyMembers[index];
+        currentLeader = newLeader;
+
+        // 카메라 타겟 변경
         if (virtualCamera != null)
         {
             virtualCamera.Follow = newLeader.transform;
-            virtualCamera.LookAt = newLeader.transform; // 필요하다면 LookAt도 설정
+            virtualCamera.LookAt = newLeader.transform;
         }
-        // ------------------------------------------
 
-        // 새로운 체인 순서 리스트 생성
-        List<PartyMemberScript> newOrder = new List<PartyMemberScript>();
-        
-        // 선택된 리더를 0순위(맨 앞)로
-        newOrder.Add(newLeader);
-        
-        // 나머지 멤버들을 원래 partyMembers 순서대로 추가
+        // 새 체인 순서 생성: 선택된 리더를 맨 앞으로
+        List<PartyMemberScript> newOrder = new List<PartyMemberScript> { newLeader };
         foreach (var member in partyMembers)
         {
-            if (member != newLeader)
-            {
-                newOrder.Add(member);
-            }
+            if (member != newLeader) newOrder.Add(member);
         }
 
-        // 모든 멤버에게 새로운 체인 순서 통보
+        // 모든 멤버에게 새 순서 통보
         foreach (var member in partyMembers)
         {
             member.UpdateChainOrder(newOrder);
         }
     }
 
-    void HandleCommand()
+    // ─────────────────────────────────────────────────────────────────
+    // 마커 스폰 (공통 유틸)
+    // ─────────────────────────────────────────────────────────────────
+
+    void SpawnMarker(string poolKey, Vector3 position)
     {
-        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        // 변수 하나만 선언해서 돌려쓰는 것이 가장 안전합니다.
-        RaycastHit hit;
+        if (ObjectPoolManager.instance == null) return;
 
-        // 1. 적을 클릭했는지 확인 (공격 명령)
-        // LayerMask.GetMask를 사용하면 더 정확합니다.
-        if (Physics.Raycast(ray, out hit, Mathf.Infinity, LayerMask.GetMask("Enemy")))
+        var marker = ObjectPoolManager.instance.GetGo(poolKey);
+        if (marker != null)
         {
-            foreach (var member in partyMembers)
-            {
-                var attack = member.GetComponent<AttackBase>();
-                if (attack != null) attack.SetTarget(hit.transform);
-            }
-            SpawnAttackMarker(hit.point);
-        }
-        // 2. 땅을 클릭했는지 확인 (이동 명령)
-        else if (Physics.Raycast(ray, out hit, Mathf.Infinity, groundLayer))
-        {
-            foreach (var member in partyMembers)
-            {
-                var attack = member.GetComponent<AttackBase>();
-                if (attack != null) 
-                {
-                    attack.SetTarget(null); // 타겟 해제
-                }
-
-                // [중요] 리더와 멤버의 정지 거리 분리
-                if (member == currentLeader)
-                {
-                    member.agent.stoppingDistance = 0.1f; // 리더는 목적지 끝까지
-                }
-                else
-                {
-                    member.agent.stoppingDistance = member.stopDistance; // 멤버는 3.0 유지
-                }
-            }
-
-            // 목적지 설정
-            currentLeader.agent.SetDestination(hit.point);
-            SpawnMoveMarker(hit.point);
-        }
-    }
-
-    void SpawnMoveMarker(Vector3 spawnPosition)
-    {
-        // 기존에 사용하시던 오브젝트 풀 매니저 호출
-        // 프리팹 이름은 "MoveMarker"라고 가정합니다.
-        var markerGo = ObjectPoolManager.instance.GetGo("MoveMarker");
-        
-        if (markerGo != null)
-        {
-            markerGo.transform.position = spawnPosition;
-            
-            // 바닥에 붙는 마커이므로 회전값은 기본값(Identity) 혹은 
-            // 바닥의 노멀값에 맞게 설정 (보통은 아래처럼 기본 회전 사용)
-            markerGo.transform.rotation = Quaternion.identity;
-        }
-    }
-    void SpawnAttackMarker(Vector3 spawnPosition)
-    {
-        // 기존에 사용하시던 오브젝트 풀 매니저 호출
-        // 프리팹 이름은 "MoveMarker"라고 가정합니다.
-        var markerGo = ObjectPoolManager.instance.GetGo("AttackMarker");
-        
-        if (markerGo != null)
-        {
-            markerGo.transform.position = spawnPosition;
-            
-            // 바닥에 붙는 마커이므로 회전값은 기본값(Identity) 혹은 
-            // 바닥의 노멀값에 맞게 설정 (보통은 아래처럼 기본 회전 사용)
-            markerGo.transform.rotation = Quaternion.identity;
+            marker.transform.position = position;
+            marker.transform.rotation = Quaternion.identity;
         }
     }
 }

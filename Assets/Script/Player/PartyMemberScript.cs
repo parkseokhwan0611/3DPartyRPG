@@ -4,49 +4,80 @@ using System.Collections.Generic;
 
 public class PartyMemberScript : MonoBehaviour
 {
-    public NavMeshAgent agent;
-    public bool isLeader = false;
-    public Animator anim;
-    private AttackBase attackComp;
-    
-    [Header("파티 체인 설정")]
-    public Transform targetToFollow; // 내 바로 앞 순서의 캐릭터
-    public List<PartyMemberScript> partyMembers; // 파티원 전체 리스트 (매니저에서 할당 권장)
-    
-    private bool isFollowing = false;
+    // ─────────────────────────────────────────
+    // 상태머신
+    // ─────────────────────────────────────────
+    public enum MemberState { Idle, Following, Attacking, Dead }
+    public MemberState CurrentState { get; private set; } = MemberState.Idle;
 
-    [Header("자연스러운 이동 설정")]
-    public float stopDistance = 2.0f;  // 앞 사람과 이 거리면 멈춤
-    public float resumeDistance = 3.5f; // 앞 사람이 이보다 멀어지면 출발
-    public float rotationSpeed = 8.0f;
-    void Awake() 
+    // ─────────────────────────────────────────
+    // 컴포넌트 참조 (캐싱)
+    // ─────────────────────────────────────────
+    [HideInInspector] public NavMeshAgent agent;
+    private Animator anim;
+    private AttackBase attackComp; // ← Awake에서 한 번만 캐싱
+
+    // ─────────────────────────────────────────
+    // 파티 체인 설정
+    // ─────────────────────────────────────────
+    [Header("파티 체인 설정")]
+    public bool isLeader = false;
+    public Transform targetToFollow;
+
+    // ─────────────────────────────────────────
+    // 이동 설정
+    // ─────────────────────────────────────────
+    [Header("이동 설정")]
+    public float stopDistance   = 2.0f;
+    public float resumeDistance = 3.5f;
+    public float rotationSpeed  = 8.0f;
+
+    // ─────────────────────────────────────────────────────────────────
+    // Unity 생명주기
+    // ─────────────────────────────────────────────────────────────────
+    void Awake()
     {
-        attackComp = GetComponent<AttackBase>(); 
+        agent      = GetComponent<NavMeshAgent>();
+        anim       = GetComponent<Animator>();
+        attackComp = GetComponent<AttackBase>();
+
+        // AttackBase의 공격 시작/종료 이벤트를 구독합니다.
+        // PartyMemberScript는 이제 AttackBase의 내부 상태를 직접 보지 않습니다.
+        if (attackComp != null)
+        {
+            attackComp.OnAttackStarted += HandleAttackStarted;
+            attackComp.OnAttackEnded   += HandleAttackEnded;
+        }
     }
+
     void Start()
     {
-        agent = GetComponent<NavMeshAgent>();
-        agent.acceleration = 12f;
-        agent.angularSpeed = 1000f;
+        agent.acceleration    = 12f;
+        agent.angularSpeed    = 1000f;
         agent.stoppingDistance = stopDistance;
-        
-        // 리더가 아닐 때 NavMeshAgent의 자동 회전을 꺼야 SmoothLookAt이 먹힙니다.
-        agent.updateRotation = isLeader; 
-
-        if (anim == null) anim = GetComponent<Animator>();
+        agent.updateRotation  = isLeader;
     }
+
+    void OnDestroy()
+    {
+        // 구독 해제 (메모리 누수 방지)
+        if (attackComp != null)
+        {
+            attackComp.OnAttackStarted -= HandleAttackStarted;
+            attackComp.OnAttackEnded   -= HandleAttackEnded;
+        }
+    }
+
     void Update()
     {
         UpdateAnimation();
-        // [중요] 공격 중 판정 로직 수정
-        // attackComp.currentTarget이 null인 것을 확인하는 것 외에도 
-        // 리더가 이동 중일 때는 공격보다 이동을 우선하도록 조건을 확인해야 합니다.
-        if (attackComp != null && attackComp.currentTarget != null)
-        {
-            // 리더가 이동 중이 아닐 때만 공격 로직을 수행하도록 방어 코드를 짤 수 있습니다.
-            isFollowing = false;
-            return; 
-        }
+
+        // Dead 상태면 아무것도 하지 않음
+        if (CurrentState == MemberState.Dead) return;
+
+        // Attacking 상태면 이동 로직을 건너뜀
+        // (AttackBase가 이동을 직접 제어하므로 여기선 관여하지 않음)
+        if (CurrentState == MemberState.Attacking) return;
 
         if (isLeader)
         {
@@ -59,57 +90,56 @@ public class PartyMemberScript : MonoBehaviour
             HandleFollowLogic();
         }
     }
-    // [중요] 리더가 바뀔 때마다 모든 파티원이 호출해야 하는 함수
+
+    // ─────────────────────────────────────────────────────────────────
+    // 상태 전환 (AttackBase 이벤트 콜백)
+    // ─────────────────────────────────────────────────────────────────
+
+    private void HandleAttackStarted()
+    {
+        ChangeState(MemberState.Attacking);
+    }
+
+    private void HandleAttackEnded()
+    {
+        // 공격이 끝나면 리더/팔로워에 맞게 상태 복귀
+        ChangeState(isLeader ? MemberState.Idle : MemberState.Following);
+    }
+
+    public void ChangeState(MemberState newState)
+    {
+        if (CurrentState == newState) return;
+        CurrentState = newState;
+    }
+
+    // ─────────────────────────────────────────────────────────────────
+    // 파티 체인 순서 갱신 (PartyManager에서 호출)
+    // ─────────────────────────────────────────────────────────────────
     public void UpdateChainOrder(List<PartyMemberScript> newOrder)
     {
         int myIndex = newOrder.IndexOf(this);
 
         if (myIndex == 0) // 내가 리더
         {
-            isLeader = true;
-            targetToFollow = null;
-            agent.updateRotation = true;
-            agent.stoppingDistance = 0.1f; // 리더는 클릭 지점에 정확히 멈춤
+            isLeader              = true;
+            targetToFollow        = null;
+            agent.updateRotation  = true;
+            agent.stoppingDistance = 0.1f;
+            ChangeState(MemberState.Idle);
         }
         else // 내가 팔로워
         {
-            isLeader = false;
-            targetToFollow = newOrder[myIndex - 1].transform;
-            agent.updateRotation = false;
-
-            // [핵심 추가] 내 앞사람(targetToFollow)이 누구냐에 따라 내 정지 거리를 보정합니다.
-            // 앞 사람이 원거리 캐릭터라면, 조금 더 멀리서 멈추게 합니다.
-            PartyMemberScript frontMember = newOrder[myIndex - 1];
-            
-            // 기본 stopDistance가 2.0이라면, 원거리를 쫓을 땐 0.5~1.0을 더해줍니다.
-            agent.stoppingDistance = stopDistance; 
-            
-            // 예: 리더가 원거리(마법사/힐러)라면 근거리는 0.8m 더 뒤에 정지
-            // (인스펙터에서 public bool isMelee 같은 변수를 만들어 체크하면 더 좋습니다)
+            isLeader              = false;
+            targetToFollow        = newOrder[myIndex - 1].transform;
+            agent.updateRotation  = false;
+            agent.stoppingDistance = stopDistance;
+            ChangeState(MemberState.Following);
         }
     }
 
-    void HandleFollowLogic()
-    {
-        float distanceToTarget = Vector3.Distance(transform.position, targetToFollow.position);
-
-        if (!isFollowing && distanceToTarget > resumeDistance)
-        {
-            isFollowing = true;
-        }
-        else if (isFollowing && distanceToTarget <= stopDistance)
-        {
-            isFollowing = false;
-            agent.ResetPath();
-            agent.velocity = Vector3.zero;
-        }
-
-        if (isFollowing)
-        {
-            agent.SetDestination(targetToFollow.position);
-            SmoothLookAt(targetToFollow.position);
-        }
-    }
+    // ─────────────────────────────────────────────────────────────────
+    // 이동 로직
+    // ─────────────────────────────────────────────────────────────────
 
     void HandleLeaderMovement()
     {
@@ -122,20 +152,51 @@ public class PartyMemberScript : MonoBehaviour
             }
         }
     }
+
+    void HandleFollowLogic()
+    {
+        float dist = Vector3.Distance(transform.position, targetToFollow.position);
+
+        if (CurrentState != MemberState.Following && dist > resumeDistance)
+        {
+            ChangeState(MemberState.Following);
+        }
+        else if (CurrentState == MemberState.Following && dist <= stopDistance)
+        {
+            ChangeState(MemberState.Idle);
+            agent.ResetPath();
+            agent.velocity = Vector3.zero;
+        }
+
+        if (CurrentState == MemberState.Following)
+        {
+            agent.SetDestination(targetToFollow.position);
+            SmoothLookAt(targetToFollow.position);
+        }
+    }
+
+    // ─────────────────────────────────────────────────────────────────
+    // 유틸
+    // ─────────────────────────────────────────────────────────────────
+
     void UpdateAnimation()
     {
         if (anim == null) return;
-        anim.SetBool("isWalking", isLeader ? agent.velocity.sqrMagnitude > 0.1f : isFollowing);
+
+        bool walking = isLeader
+            ? agent.velocity.sqrMagnitude > 0.1f
+            : CurrentState == MemberState.Following;
+
+        anim.SetBool("isWalking", walking);
     }
 
     void SmoothLookAt(Vector3 targetPos)
     {
         Vector3 dir = (targetPos - transform.position).normalized;
         dir.y = 0;
-        if (dir != Vector3.zero)
-        {
-            Quaternion targetRotation = Quaternion.LookRotation(dir);
-            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * rotationSpeed);
-        }
+        if (dir == Vector3.zero) return;
+
+        Quaternion targetRot = Quaternion.LookRotation(dir);
+        transform.rotation   = Quaternion.Slerp(transform.rotation, targetRot, Time.deltaTime * rotationSpeed);
     }
 }
