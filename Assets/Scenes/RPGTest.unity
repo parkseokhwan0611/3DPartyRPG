@@ -29889,12 +29889,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   agent: {fileID: 1458811745}
   isLeader: 0
-  anim: {fileID: 1458811747}
   targetToFollow: {fileID: 0}
-  partyMembers:
-  - {fileID: 7679984365824007529}
-  - {fileID: 6599030164936357093}
-  - {fileID: 1458811746}
   stopDistance: 3
   resumeDistance: 4.5
   rotationSpeed: 8
@@ -29957,7 +29952,7 @@ MonoBehaviour:
   currentTarget: {fileID: 0}
   enemyLayer:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 128
   projectileName: HealerNormalAtk
   firePoint: {fileID: 871957546}
   damageDelay: 0.5
@@ -43654,6 +43649,9 @@ MonoBehaviour:
   - objectName: Hit 4 yellow arrow
     perfab: {fileID: 1446723560700238633, guid: eaa882ce4e12f934bbda3a0ef8fcfde9,
       type: 3}
+    count: 5
+  - objectName: NormalDamageText
+    perfab: {fileID: 441271096938680117, guid: 684230b9243a97b48b1153cdbb963f76, type: 3}
     count: 5
 --- !u!4 &2115435187
 Transform:
@@ -102069,12 +102067,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   agent: {fileID: 6599030164936357092}
   isLeader: 0
-  anim: {fileID: 6599030164936357091}
   targetToFollow: {fileID: 0}
-  partyMembers:
-  - {fileID: 7679984365824007529}
-  - {fileID: 6599030164936357093}
-  - {fileID: 1458811746}
   stopDistance: 2
   resumeDistance: 3.5
   rotationSpeed: 8
@@ -112314,12 +112307,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   agent: {fileID: 7679984365824007528}
   isLeader: 0
-  anim: {fileID: 3980959347461316007}
   targetToFollow: {fileID: 0}
-  partyMembers:
-  - {fileID: 7679984365824007529}
-  - {fileID: 6599030164936357093}
-  - {fileID: 1458811746}
   stopDistance: 2
   resumeDistance: 3.5
   rotationSpeed: 8

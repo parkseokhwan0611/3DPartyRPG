@@ -36,40 +36,40 @@ public class CharacterStat : MonoBehaviour, IDamageable
     {
         if (myStatus == null) return;
 
-        // 1. 실제 데이터 매니저 내의 HP를 깎음
         myStatus.currentHp -= damage;
         myStatus.currentHp = Mathf.Clamp(myStatus.currentHp, 0, myStatus.MaxHp);
 
-        // 2. 이벤트 호출 (두 군데 모두 호출하는 것이 좋습니다)
-        // myStatus.OnHpChanged?.Invoke(); // 데이터 중심 알림
-        // OnHpChanged?.Invoke();          // 로컬(Stat) 중심 알림
-        myStatus.RaiseHpChanged(); // ← 직접 Invoke 대신 이걸로 교체
+        myStatus.RaiseHpChanged();
         OnHpChanged?.Invoke();
 
-        // 3. 연출
-        SpawnDamageText(damage);
+        // 피격은 항상 빨간색
+        SpawnDamageText(damage, Color.red);
 
-        // 4. 사망 판정
         if (myStatus.currentHp <= 0) Die();
     }
-    private void SpawnDamageText(float damage)
+    private void SpawnDamageText(float damage, Color color)
     {
         if (playerDamageText == null) return;
 
-        // 1. 데미지 텍스트 생성 (위치는 몬스터의 hudPos 또는 현재 위치)
-        // 1. 원하는 회전값을 쿼터니언으로 변환 (X축으로 60도)
         Quaternion spawnRotation = Quaternion.Euler(60f, 0f, 0f);
-
-        // 2. Instantiate 시점에 해당 회전값 적용
         Vector3 spawnPos = hudPos != null ? hudPos.position : transform.position + Vector3.up * 2f;
         GameObject textObj = Instantiate(playerDamageText, spawnPos, spawnRotation);
 
-        // 2. DamageText 스크립트의 damage 변수에 값 전달
         DamageText dt = textObj.GetComponent<DamageText>();
         if (dt != null)
+            dt.Setup(damage, color); // 전달받은 색상 사용
+    }
+
+    public Color GetDamageColor()
+    {
+        if (classData == null) return Color.white;
+
+        switch (classData.classType)
         {
-                // 생성 즉시 Setup을 호출하여 'text' 변수가 null인 상태로 Update가 도는 것을 방지합니다.
-            dt.Setup(damage);
+            case ClassData.ClassType.Tanker: return new Color(1f, 0.5f, 0f);
+            case ClassData.ClassType.Dealer: return new Color(0.6f, 0f, 1f);
+            case ClassData.ClassType.Healer: return new Color(1f, 0.9f, 0f);
+            default: return Color.white;
         }
     }
     void Die() { /* 사망 로직 */ }

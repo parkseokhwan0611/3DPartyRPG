@@ -16,11 +16,15 @@ public class PartyManager : MonoBehaviour
     [Header("참조")]
     public LayerMask groundLayer;
     public CinemachineVirtualCamera virtualCamera;
+    public static PartyManager instance; // 선언
 
     // ─────────────────────────────────────────────────────────────────
     // Unity 생명주기
     // ─────────────────────────────────────────────────────────────────
-
+    void Awake()
+    {
+        instance = this; // 초기화
+    }
     void Start()
     {
         if (partyMembers.Count > 0) ChangeLeader(0);

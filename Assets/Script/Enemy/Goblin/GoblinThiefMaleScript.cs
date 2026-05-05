@@ -1,71 +1,103 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
 public class GoblinThiefMaleScript : MonoBehaviour
 {
+    [Header("# References")]
     public Animator animator;
-    Rigidbody rigid;
     public EnemyHp enemyHp;
-    
-    [Header("#Player")]
-    public List<PartyMemberScript> partyMembers;
-    public float distance;
-    public float chaseDistance;
-    
-    [Header("#NavMesh")]
     public NavMeshAgent navAgent;
-    public float navSpeed;
-    
-    [Header("#Attack")]
-    public bool isAttack; // 외부 참조용으로 남겨둠
-    
-    [Header("#Reference")]
-    public Transform hudPos;
 
+    [Header("# Chase Settings")]
+    public float chaseDistance = 10f;
+
+    [Header("# NavMesh")]
+    public float navSpeed = 3f;
+
+    // 타겟팅 갱신 간격 (매 프레임 X → 0.2초마다)
+    private const float TargetingInterval = 0.2f;
+    private float targetingTimer = 0f;
+
+    // 컴포넌트 캐싱
+    private Rigidbody rigid;
     private AttackBase attackModule;
     private MonsterMeleeAttack monsterMeleeAttack;
 
-    void Awake() 
-    {
-        animator = GetComponent<Animator>();
-        rigid = GetComponent<Rigidbody>();
-        attackModule = GetComponent<AttackBase>();
-        monsterMeleeAttack = GetComponent<MonsterMeleeAttack>();
-    }
+    // 공격 상태 (이벤트로 관리)
+    private bool isAttacking = false;
 
-    void Start() 
-    {
-        navAgent = GetComponent<NavMeshAgent>();
-        navAgent.speed = navSpeed; // NavAgent 속도 설정
-    }
+    // ─────────────────────────────────────────────────────────────────
+    // Unity 생명주기
+    // ─────────────────────────────────────────────────────────────────
 
-    void Update() 
+    void Awake()
     {
-        if(!GameManager.instance.isLive) return;
+        animator            = GetComponent<Animator>();
+        rigid               = GetComponent<Rigidbody>();
+        navAgent            = GetComponent<NavMeshAgent>();
+        attackModule        = GetComponent<AttackBase>();
+        monsterMeleeAttack  = GetComponent<MonsterMeleeAttack>();
 
-        // 고블린이 살아있을 때만 타겟팅 진행
-        if(enemyHp.hp > 0 && !enemyHp.isDead) 
+        // AttackBase 이벤트 구독 (내부 상태 직접 참조 제거)
+        if (attackModule != null)
         {
+            attackModule.OnAttackStarted += () => isAttacking = true;
+            attackModule.OnAttackEnded   += () => isAttacking = false;
+        }
+
+        // EnemyHp 사망 이벤트 구독
+        if (enemyHp != null)
+            enemyHp.OnDied += HandleDeath;
+
+    }
+
+    void Start()
+    {
+        navAgent.speed = navSpeed;
+    }
+
+    void OnDestroy()
+    {
+        // 구독 해제 (메모리 누수 방지)
+        if (attackModule != null)
+        {
+            attackModule.OnAttackStarted -= () => isAttacking = true;
+            attackModule.OnAttackEnded   -= () => isAttacking = false;
+        }
+
+        if (enemyHp != null)
+            enemyHp.OnDied -= HandleDeath;
+    }
+
+    void Update()
+    {
+        if (GameManager.instance == null || !GameManager.instance.isLive) return;
+        if (enemyHp == null || enemyHp.isDead) return;
+
+        // 타겟팅은 매 프레임이 아닌 일정 간격으로만 실행
+        targetingTimer += Time.deltaTime;
+        if (targetingTimer >= TargetingInterval)
+        {
+            targetingTimer = 0f;
             TargetingLogic();
         }
-        else
-        {
-            // 죽으면 타겟을 비워서 AttackBase 정지
-            attackModule.SetTarget(null);
-        }
     }
+
+    // ─────────────────────────────────────────────────────────────────
+    // 타겟팅 로직
+    // ─────────────────────────────────────────────────────────────────
+
     void TargetingLogic()
     {
-        // 1. 파티원이 없거나 리스트가 비어있으면 타겟 해제
-        if (partyMembers == null || partyMembers.Count == 0)
+        // PartyManager 싱글톤에서 항상 최신 파티원 리스트를 가져옴
+        // (인스펙터 수동 할당 불필요)
+        if (PartyManager.instance == null || PartyManager.instance.partyMembers.Count == 0)
         {
             attackModule.SetTarget(null);
             return;
         }
 
-        // 2. 가장 가까운 파티원 찾기 -> 여기에 Tanker 어그로 관리 넣으면 될듯
         Transform nearestTarget = GetNearestPartyMember();
 
         if (nearestTarget == null)
@@ -74,57 +106,66 @@ public class GoblinThiefMaleScript : MonoBehaviour
             return;
         }
 
-        // 3. 거리 계산 및 로직 수행
-        float distanceToTarget = Vector3.Distance(transform.position, nearestTarget.position);
+        float distToTarget = Vector3.Distance(transform.position, nearestTarget.position);
 
-        // 공격 중이 아닐 때만 타겟을 갱신하거나 추격함
-        if (distanceToTarget <= chaseDistance && !monsterMeleeAttack.isAttacking)
+        if (distToTarget <= chaseDistance && !isAttacking)
         {
             attackModule.SetTarget(nearestTarget);
+            navAgent.isStopped = false;
         }
-        else if (monsterMeleeAttack.isAttacking)
+        else if (distToTarget > chaseDistance)
         {
-            // 공격 중일 때는 타겟을 유지해서 바라보게 하되, 이동만 멈춤
-            // (이전 대화에서 제안한 '공격 중 회전'을 위한 로직)
-            navAgent.isStopped = true;
-            navAgent.velocity = Vector3.zero;
-        }
-        else
-        {
-            // 범위를 벗어난 경우
             attackModule.SetTarget(null);
         }
     }
 
-    // 파티원 중 가장 가까운 대상을 반환하는 함수
     Transform GetNearestPartyMember()
     {
-        Transform closest = null;
-        float minDistance = Mathf.Infinity; // 초기값은 무한대
+        Transform closest  = null;
+        float minDist      = Mathf.Infinity;
         Vector3 currentPos = transform.position;
 
-        foreach (PartyMemberScript member in partyMembers)
+        foreach (PartyMemberScript member in PartyManager.instance.partyMembers)
         {
             if (member == null) continue;
 
-            // 만약 캐릭터에게 '죽음' 상태 체크가 있다면 여기서 걸러주는 게 좋습니다.
-            // if (member.isDead) continue; 
+            // 상태머신으로 사망 여부 체크
+            if (member.CurrentState == PartyMemberScript.MemberState.Dead) continue;
 
             float dist = Vector3.Distance(currentPos, member.transform.position);
-            if (dist < minDistance)
+            if (dist < minDist)
             {
-                minDistance = dist;
+                minDist = dist;
                 closest = member.transform;
             }
         }
 
         return closest;
     }
-    void OnCollisionStay(Collision collision) 
+
+    // ─────────────────────────────────────────────────────────────────
+    // 사망 처리 (EnemyHp.OnDied 이벤트 콜백)
+    // ─────────────────────────────────────────────────────────────────
+
+    private void HandleDeath()
     {
-        if (collision.gameObject.CompareTag("Player")) 
+        attackModule.SetTarget(null);
+        isAttacking = false;
+
+        if (navAgent.enabled)
         {
-            rigid.velocity = Vector3.zero;
+            navAgent.isStopped = true;
+            navAgent.velocity  = Vector3.zero;
         }
+    }
+
+    // ─────────────────────────────────────────────────────────────────
+    // 물리
+    // ─────────────────────────────────────────────────────────────────
+
+    void OnCollisionStay(Collision collision)
+    {
+        if (collision.gameObject.CompareTag("Player"))
+            rigid.velocity = Vector3.zero;
     }
 }

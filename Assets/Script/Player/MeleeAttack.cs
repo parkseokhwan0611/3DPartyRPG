@@ -68,6 +68,7 @@ public class MeleeAttack : AttackBase
         }
 
         float damage = myStat.TotalAtk;
+        Color damageColor = myStat.GetDamageColor(); // CharacterStat에서 색상 가져옴
         bool isTargetSet = false; // UI 타겟 설정을 한 번만 하기 위한 변수
 
         // 3. 데미지 판정
@@ -79,7 +80,7 @@ public class MeleeAttack : AttackBase
             if (enemyStat != null)
             {
                 // 인터페이스 방식 데미지 전달
-                enemyStat.TakeDamage(damage, gameObject);
+                enemyStat.TakeDamage(damage, gameObject, damageColor); // 색상 전달
 
                 // 중앙 상단 UI 설정 (첫 번째 맞은 적만 표시)
                 if (!isTargetSet && TargetHpScript.instance != null)

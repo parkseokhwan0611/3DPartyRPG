@@ -165,4 +165,8 @@ public abstract class AttackBase : MonoBehaviour
 
         agent.stoppingDistance = 0.1f;
     }
+    protected void RaiseAttackEnded()
+    {
+        OnAttackEnded?.Invoke();
+    }
 }

@@ -1,100 +1,110 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class MonsterMeleeAttack : AttackBase
 {
     private EnemyHp enemyHp;
+
     [Header("근접 공격 판정 설정")]
     public float hitRadius = 1.5f;
     public float hitOffset = 1.0f;
-    public bool isAttacking = false;
+
     [Header("타이밍 설정 (초 단위)")]
-    public float damageDelay = 0.33f; // 애니메이션 시작 후 타격판정까지 걸리는 시간
+    public float damageDelay = 0.33f;
+
+    // 외부에서 읽기만 가능하도록 프로퍼티로 변경
+    public bool IsAttacking { get; private set; } = false;
+
+    // ─────────────────────────────────────────────────────────────────
+    // Unity 생명주기
+    // ─────────────────────────────────────────────────────────────────
+
     void Awake()
     {
         enemyHp = GetComponent<EnemyHp>();
     }
+
     protected override void Start()
     {
         base.Start();
     }
+
     protected override void Update()
     {
         base.Update();
     }
-    // AttackBase의 StopAndAttack에서 호출됨
+
+    // ─────────────────────────────────────────────────────────────────
+    // 공격 실행
+    // ─────────────────────────────────────────────────────────────────
+
     protected override void ExecuteAttack()
     {
-        if (isAttacking) return; // isAttacking 플래그로 이중 방어
+        // isAttacking 플래그로 코루틴 중복 실행 방지
+        if (IsAttacking) return;
         StartCoroutine(MonsterAttackRoutine());
     }
+
     private IEnumerator MonsterAttackRoutine()
     {
-        if (agent != null && agent.isOnNavMesh)
-        {
-            agent.isStopped = true;
-            isAttacking = true;
-        }
+        IsAttacking = true;
 
-        // --- 추가: 공격 시작 시 플레이어를 즉시 바라봄 ---
+        if (agent != null && agent.isOnNavMesh)
+            agent.isStopped = true;
+
         if (currentTarget != null)
         {
             Vector3 direction = (currentTarget.position - transform.position).normalized;
-            direction.y = 0; // 수평 회전만
+            direction.y = 0;
             if (direction != Vector3.zero)
-            {
                 transform.rotation = Quaternion.LookRotation(direction);
-            }
         }
-        // ------------------------------------------
 
-        anim.SetTrigger("doNormalAttack");
-        anim.SetBool("isWalking", false);
-
-        yield return new WaitForSeconds(damageDelay / attackSpeed);
-        if(enemyHp != null && enemyHp.hp > 0)
+        if (anim != null)
         {
-            OnHit();
+            anim.SetTrigger("doNormalAttack");
+            anim.SetBool("isWalking", false);
         }
 
-        yield return new WaitForSeconds(attackDuration - damageDelay / attackSpeed);
+        yield return new WaitForSeconds(damageDelay);
+
+        if (enemyHp != null && enemyHp.hp > 0)
+            OnHit();
+
+        yield return new WaitForSeconds(attackDuration - damageDelay);
 
         if (agent != null && agent.isOnNavMesh)
-        {
             agent.isStopped = false;
-            isAttacking = false;
-        }
+
+        IsAttacking = false;
+        RaiseAttackEnded();
+
+        // 코루틴이 끝난 시점에 쿨다운을 0으로 리셋
+        // AttackBase가 걸어놓은 쿨다운을 무효화
+        attackCooldown = 0f;
     }
+
+    // ─────────────────────────────────────────────────────────────────
+    // 타격 판정
+    // ─────────────────────────────────────────────────────────────────
+
     public override void OnHit()
     {
-        // 1. 판정 위치 계산 (기존 기즈모 범위용)
         Vector3 hitPos = transform.position + (transform.forward * hitOffset);
-        Collider[] hitEnemies = Physics.OverlapSphere(hitPos, hitRadius, enemyLayer);
+        Collider[] hitTargets = Physics.OverlapSphere(hitPos, hitRadius, enemyLayer);
 
-        // if (hitEnemies.Length > 0)
-        // {
-        //     Debug.Log($"{hitEnemies.Length}명의 대상을 감지함");
-        // }
-        // else
-        // {
-        //      Debug.Log("NotFound");
-        // }
-
-        // 3. 데미지 판정 및 로그 출력
-        foreach (Collider enemy in hitEnemies)
+        foreach (Collider target in hitTargets)
         {
-            // 1. 해당 오브젝트에서 IDamageable 인터페이스를 가져옵니다.
-            IDamageable target = enemy.GetComponent<IDamageable>();
-
-            // 2. 인터페이스가 존재한다면 데미지를 입힙니다.
-            if (target != null)
-            {
-                // AttackBase에 정의된 attackDamage를 전달합니다.
-                target.TakeDamage(attackDamage, gameObject);
-            }
+            IDamageable damageable = target.GetComponent<IDamageable>();
+            if (damageable != null)
+                damageable.TakeDamage(attackDamage, gameObject);
         }
     }
+
+    // ─────────────────────────────────────────────────────────────────
+    // 에디터 기즈모
+    // ─────────────────────────────────────────────────────────────────
+
     private void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.red;
