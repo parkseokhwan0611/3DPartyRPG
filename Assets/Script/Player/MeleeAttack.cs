@@ -21,20 +21,6 @@ public class MeleeAttack : AttackBase
     {
         base.Update();
     }
-
-    // 부모 클래스의 공격 실행 부분을 코루틴 호출로 변경하기 위해 
-    // AttackBase의 StopAndAttack 로직을 코루틴화하여 새로 정의합니다.
-    // (AttackBase에서 virtual로 선언되어 있지 않다면, 부모 코드를 조금 수정하거나 
-    // 아래처럼 새로 정의해서 사용할 수 있습니다.)
-
-    // public void StartAttackSequence()
-    // {
-    //     if (attackCooldown <= 0)
-    //     {
-    //         StartCoroutine(AttackRoutine());
-    //         attackCooldown = 1.267f / attackSpeed;
-    //     }
-    // }
     private IEnumerator AttackRoutine()
     {
         // 1. 공격 준비 (정지 및 회전)
