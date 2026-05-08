@@ -9,6 +9,11 @@ public class DataManager : MonoBehaviour
     // 현재 파티원들의 실시간 정보를 담는 리스트나 사전(Dictionary)
     public List<CharacterStatus> partyStatuses = new List<CharacterStatus>();
     public List<ClassData> baseDataList;
+    public int partyLevel = 1;
+    public int partyExp = 0;
+
+    public event System.Action OnLevelUp;
+    public event System.Action OnExpGained;
 
     void Awake() {
         if (instance == null) {
@@ -41,5 +46,31 @@ public class DataManager : MonoBehaviour
             
             partyStatuses.Add(newStatus);
         }
+    }
+    public void AddExp(float exp)
+    {
+        partyExp += (int)exp;
+
+        while (partyExp >= GetRequiredExp(partyLevel))
+        {
+            partyExp -= GetRequiredExp(partyLevel);
+            partyLevel++;
+            LevelUpAllMembers();
+            OnLevelUp?.Invoke();
+        }
+
+        OnExpGained?.Invoke();
+    }
+    private void LevelUpAllMembers()
+    {
+        foreach (var status in partyStatuses)
+        {
+            status.statPoint += 5; // 캐릭터당 5포인트
+        }
+    }
+
+    public int GetRequiredExp(int level)
+    {
+        return level * 100; // 나중에 공식 조정
     }
 }

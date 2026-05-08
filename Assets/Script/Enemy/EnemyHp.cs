@@ -120,10 +120,10 @@ public class EnemyHp : MonoBehaviour, IDamageable
 
     IEnumerator DeathRoutine()
     {
-        yield return new WaitForSeconds(destroyDelay);
+        if (DataManager.instance != null)
+            DataManager.instance.AddExp(expReward);
 
-        if (GameManager.instance != null)
-            GameManager.instance.exp += expReward;
+        yield return new WaitForSeconds(destroyDelay);
 
         Destroy(gameObject);
     }
