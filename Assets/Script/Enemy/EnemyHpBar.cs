@@ -7,11 +7,11 @@ public class EnemyHpBar : MonoBehaviour
 {
     public EnemyHp enemyHp;
     public Image hpBar;
-    public GameObject background;
     public Image mask;
     public float hpAmount;
     private float currentHpFill; // 현재 HP 바의 채우기 정도를 추적하기 위한 변수
     private Quaternion fixedRotation;
+    private Transform camTransform;
 
     public float changeSpeed = 1.5f; // HP 바 변경 속도
 
@@ -19,13 +19,12 @@ public class EnemyHpBar : MonoBehaviour
     {
         fixedRotation = transform.rotation;
         currentHpFill = enemyHp.hp / enemyHp.maxHp; // 현재 HP로 초기화
+        camTransform = Camera.main.transform;
     }
 
     void LateUpdate()
     {
-        transform.rotation = fixedRotation;
-        mask.transform.rotation = fixedRotation;
-        background.transform.rotation = fixedRotation;
+        transform.LookAt(transform.position + camTransform.rotation * Vector3.forward, camTransform.rotation * Vector3.up);
     }
 
     void Awake() 
