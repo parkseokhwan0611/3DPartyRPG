@@ -46,6 +46,13 @@ public class RangedAttack : AttackBase
 
         float damage = myStat.TotalAp; // RangedAttack은 ATK 사용
 
+        if (Random.value <= myStat.TotalCritRate)
+        {
+            damage *= myStat.TotalCritDamage;
+            CinemachineShake.Instance.ShakeCamera(10f, .2f);
+            // 나중에 치명타 전용 색상이나 연출 추가 가능
+        }
+
         ProjectileScript proj = effect.GetComponent<ProjectileScript>();
         if (proj != null)
         {

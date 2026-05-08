@@ -57,6 +57,13 @@ public class MeleeAttack : AttackBase
         Color damageColor = myStat.GetDamageColor(); // CharacterStat에서 색상 가져옴
         bool isTargetSet = false; // UI 타겟 설정을 한 번만 하기 위한 변수
 
+        if (Random.value <= myStat.TotalCritRate)
+        {
+            damage *= myStat.TotalCritDamage;
+            CinemachineShake.Instance.ShakeCamera(10f, .2f);
+            // 나중에 치명타 전용 색상이나 연출 추가 가능
+        }
+
         // 3. 데미지 판정
         foreach (Collider enemy in hitEnemies)
         {

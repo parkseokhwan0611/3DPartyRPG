@@ -24,6 +24,14 @@ public string charName;
     public float TotalAp  => ((classData.baseInt + addedInt) * classData.apPerInt)
                         + ((classData.baseFht + addedFht) * classData.apPerFth);
 
+    // 패시브/아이템으로 누적되는 추가 수치
+    public float addedCritRate   = 0f;
+    public float addedCritDamage = 0f;
+
+    // 최종 치명타 수치
+    public float TotalCritRate   => classData.baseCritRate + addedCritRate;
+    public float TotalCritDamage => classData.baseCritDamage + addedCritDamage;
+
     // 이벤트를 데이터 클래스에 넣으면 UI 업데이트가 더 쉬워집니다.
     public event Action OnHpChanged;
     public void RaiseHpChanged()

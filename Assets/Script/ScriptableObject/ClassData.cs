@@ -20,4 +20,7 @@ public class ClassData : ScriptableObject
     public float hpPerVit;  // 체력 1당 증가할 HP 계수
     public float apPerInt;  // 지능 1당 증가할 AP 계수
     public float apPerFth;  // 신앙 1당 증가할 AP 계수
+    [Header("치명타")]
+    public float baseCritRate   = 0.05f; // 기본 치명타 확률 5%
+    public float baseCritDamage = 1.5f;  // 기본 치명타 배율 150%
 }

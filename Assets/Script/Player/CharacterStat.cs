@@ -17,6 +17,9 @@ public class CharacterStat : MonoBehaviour, IDamageable
     public float MaxHp => myStatus.MaxHp;
     public float TotalAtk => myStatus.TotalAtk;
     public float TotalAp => myStatus.TotalAp;
+    //Critical
+    public float TotalCritRate   => myStatus.TotalCritRate;
+    public float TotalCritDamage => myStatus.TotalCritDamage;
     // void Awake()
     // {
     //     // 초기화 (StatManager에서 데이터를 받아올 수도 있음)
