@@ -18,6 +18,8 @@ public string charName;
     public float addedInt = 0;
     public float addedFht = 0;
 
+    public int skillPoint = 0;
+
     public float MaxHp   => classData.hp + ((classData.baseVit + addedVit) * classData.hpPerVit);
     public float MaxMp => classData.mp; // 필요시 공식 추가
     public float TotalAtk => (classData.baseStr + addedStr) * classData.atkPerStr;
@@ -70,6 +72,24 @@ public string charName;
         // 패시브 스킬이면 즉시 스탯 적용
         if (skill is PassiveSkillData passive)
             ApplyPassive(passive, currentLevel + 1);
+
+        return true;
+    }
+
+    public bool TryLevelUpSkill(SkillData skill)
+    {
+        int currentLevel = GetSkillLevel(skill);
+
+        // 최대 레벨 체크
+        if (currentLevel >= skill.maxLevel) return false;
+
+        // 포인트 비용 체크
+        int cost = skill.skillPointCost[currentLevel]; // 현재 레벨 인덱스
+        if (skillPoint < cost) return false;
+
+        // 포인트 차감 후 레벨업
+        skillPoint -= cost;
+        skillLevels[skill] = currentLevel + 1;
 
         return true;
     }

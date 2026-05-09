@@ -9,6 +9,7 @@ public class DataManager : MonoBehaviour
     // 현재 파티원들의 실시간 정보를 담는 리스트나 사전(Dictionary)
     public List<CharacterStatus> partyStatuses = new List<CharacterStatus>();
     public List<ClassData> baseDataList;
+    public List<ClassSkillTree> skillTrees;
     public int partyLevel = 1;
     public int partyExp = 0;
 
@@ -66,11 +67,17 @@ public class DataManager : MonoBehaviour
         foreach (var status in partyStatuses)
         {
             status.statPoint += 5; // 캐릭터당 5포인트
+            status.skillPoint += 1;
         }
     }
 
     public int GetRequiredExp(int level)
     {
         return level * 100; // 나중에 공식 조정
+    }
+
+    public ClassSkillTree GetSkillTree(ClassData.ClassType classType)
+    {
+        return skillTrees.Find(t => t.classType == classType);
     }
 }
