@@ -17,6 +17,7 @@ public class CharacterStat : MonoBehaviour, IDamageable
     public float MaxHp => myStatus.MaxHp;
     public float TotalAtk => myStatus.TotalAtk;
     public float TotalAp => myStatus.TotalAp;
+    public float TotalDef => myStatus.TotalDef;
     //Critical
     public float TotalCritRate   => myStatus.TotalCritRate;
     public float TotalCritDamage => myStatus.TotalCritDamage;
@@ -39,14 +40,18 @@ public class CharacterStat : MonoBehaviour, IDamageable
     {
         if (myStatus == null) return;
 
-        myStatus.currentHp -= damage;
+        // 퍼센트 감산 방식 예시 (나중에 필요하면)
+        float damageReduction = TotalDef / (TotalDef + 100f); // 100은 조정 가능한 상수
+        float finalDamage = damage * (1f - damageReduction);
+
+        myStatus.currentHp -= finalDamage;
         myStatus.currentHp = Mathf.Clamp(myStatus.currentHp, 0, myStatus.MaxHp);
 
         myStatus.RaiseHpChanged();
         OnHpChanged?.Invoke();
 
         // 피격은 항상 빨간색
-        SpawnDamageText(damage, Color.red);
+        SpawnDamageText(finalDamage, Color.red);
 
         if (myStatus.currentHp <= 0) Die();
     }

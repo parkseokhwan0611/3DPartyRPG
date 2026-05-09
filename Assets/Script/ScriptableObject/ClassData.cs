@@ -18,6 +18,7 @@ public class ClassData : ScriptableObject
     public float baseFht;    // 기본 체력
     public float atkPerStr;  // 힘 1당 증가할 ATK 계수
     public float hpPerVit;  // 체력 1당 증가할 HP 계수
+    public float defPerVit;  // 체력 1당 증가할 HP 계수
     public float apPerInt;  // 지능 1당 증가할 AP 계수
     public float apPerFth;  // 신앙 1당 증가할 AP 계수
     [Header("치명타")]

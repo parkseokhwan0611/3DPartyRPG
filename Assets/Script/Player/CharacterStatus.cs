@@ -31,6 +31,10 @@ public string charName;
     // 최종 치명타 수치
     public float TotalCritRate   => classData.baseCritRate + addedCritRate;
     public float TotalCritDamage => classData.baseCritDamage + addedCritDamage;
+    //방어력
+    public float addedDef = 0f; // 아이템으로 추가되는 방어력
+
+    public float TotalDef => ((classData.baseVit + addedVit) * classData.defPerVit) + addedDef;
 
     // 이벤트를 데이터 클래스에 넣으면 UI 업데이트가 더 쉬워집니다.
     public event Action OnHpChanged;
