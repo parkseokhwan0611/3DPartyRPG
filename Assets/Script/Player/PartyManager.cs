@@ -36,6 +36,9 @@ public class PartyManager : MonoBehaviour
 
         HandleLeaderChangeInput();
         HandleCommandInput();
+
+        var skillManager = currentLeader.GetComponent<SkillManager>();
+        if (skillManager != null) skillManager.HandleKeyInput();
     }
 
     // ─────────────────────────────────────────────────────────────────

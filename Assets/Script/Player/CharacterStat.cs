@@ -10,11 +10,14 @@ public class CharacterStat : MonoBehaviour, IDamageable
     public Transform hudPos;
     public ClassData classData;
     public event Action OnHpChanged;
+    public event Action OnMpChanged;
     // [중요] 이제 모든 스탯 정보는 이 안에 들어있습니다.
     private CharacterStatus myStatus;
     public int partyIndex;
     public float Hp => myStatus.currentHp;
     public float MaxHp => myStatus.MaxHp;
+    public float Mp    => myStatus.currentMp;
+    public float MaxMp => myStatus.MaxMp;
     public float TotalAtk => myStatus.TotalAtk;
     public float TotalAp => myStatus.TotalAp;
     public float TotalDef => myStatus.TotalDef;
@@ -79,6 +82,21 @@ public class CharacterStat : MonoBehaviour, IDamageable
             case ClassData.ClassType.Healer: return new Color(1f, 0.9f, 0f);
             default: return Color.white;
         }
+    }
+    // 스킬 사용 가능 여부 체크 + MP 차감
+    public bool TryUseMp(float cost)
+    {
+        if (myStatus == null) return false;
+
+        // MP 부족하면 false 반환 → 스킬 발동 안 됨
+        if (myStatus.currentMp < cost) return false;
+
+        myStatus.currentMp -= cost;
+        myStatus.currentMp = Mathf.Clamp(myStatus.currentMp, 0, myStatus.MaxMp);
+
+        // MP 변경 이벤트 (UI 갱신용)
+        OnMpChanged?.Invoke();
+        return true;
     }
     void Die() { /* 사망 로직 */ }
 }

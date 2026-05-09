@@ -47,6 +47,11 @@ public string charName;
     {
         OnHpChanged?.Invoke();
     }
+    // MP 회복 (자연 회복이나 힐러 스킬용)
+    public void RecoverMp(float amount)
+    {
+        currentMp = Mathf.Clamp(currentMp + amount, 0, MaxMp);
+    }
 
     // 스킬 레벨 가져오기 (없으면 0)
     public int GetSkillLevel(SkillData skill)
