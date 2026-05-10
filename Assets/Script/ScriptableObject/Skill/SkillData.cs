@@ -11,7 +11,7 @@ public class SkillData : ScriptableObject
     public Sprite icon;
     public ClassData.ClassType requiredClass; // 사용 가능 직업
     public enum SkillType { Damage, Buff, Passive }
-    public enum SkillCategory { Primary, Secondary, Passive }
+    public enum SkillCategory { Main, Sub, Passive }
     [Header("스킬 분류")]
     public SkillType skillType;         // 내부 로직용
     public SkillCategory skillCategory; // UI 배치용
