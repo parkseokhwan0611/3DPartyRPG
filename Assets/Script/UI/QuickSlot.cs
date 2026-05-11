@@ -3,22 +3,18 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using TMPro;
 
-public class QuickSlot : MonoBehaviour, IDropHandler
+public class QuickSlot : MonoBehaviour, IDropHandler, IPointerClickHandler
 {
     [Header("# UI 참조")]
     public Image iconImage;
-    public TextMeshProUGUI keyText;   // Q / W / E / R 텍스트
-    public Image cooldownOverlay;     // 쿨다운 오버레이 (Image Type: Filled)
+    public TextMeshProUGUI keyText;
+    public Image cooldownOverlay;
 
     [Header("# 슬롯 설정")]
     public int slotIndex; // 0=Q, 1=W, 2=E, 3=R
 
-    private SkillData assignedSkill;
+    public SkillData AssignedSkill { get; private set; }
     private QuickSlotUI quickSlotUI;
-
-    // ─────────────────────────────────────────────────────────────────
-    // Unity 생명주기
-    // ─────────────────────────────────────────────────────────────────
 
     void Awake()
     {
@@ -27,24 +23,31 @@ public class QuickSlot : MonoBehaviour, IDropHandler
 
     void Start()
     {
-        // 쿨다운 오버레이 초기화
         if (cooldownOverlay != null)
         {
+            cooldownOverlay.type       = Image.Type.Filled;
             cooldownOverlay.fillMethod = Image.FillMethod.Radial360;
             cooldownOverlay.gameObject.SetActive(false);
         }
     }
 
     // ─────────────────────────────────────────────────────────────────
-    // 드롭 처리 (SkillIconUI에서 드래그 앤 드롭)
+    // 드롭 처리
     // ─────────────────────────────────────────────────────────────────
 
     public void OnDrop(PointerEventData eventData)
     {
-        SkillIconUI draggedIcon = eventData.pointerDrag?.GetComponent<SkillIconUI>();
+        if (eventData.pointerDrag == null) return;
+
+        SkillIconUI draggedIcon = eventData.pointerDrag.GetComponent<SkillIconUI>();
         if (draggedIcon == null) return;
 
-        // 습득한 스킬만 등록 가능
+        if (draggedIcon.SkillData == null)
+        {
+            Debug.Log("[QuickSlot] 스킬 데이터가 없습니다.");
+            return;
+        }
+
         if (draggedIcon.SkillLevel <= 0)
         {
             Debug.Log("[QuickSlot] 습득하지 않은 스킬은 등록할 수 없습니다.");
@@ -52,16 +55,25 @@ public class QuickSlot : MonoBehaviour, IDropHandler
         }
 
         SetSkill(draggedIcon.SkillData);
-        quickSlotUI.RegisterSkill(slotIndex, draggedIcon.SkillData);
+
+        if (quickSlotUI != null)
+            quickSlotUI.RegisterSkill(slotIndex, draggedIcon.SkillData);
+    }
+
+    // 슬롯 우클릭으로 스킬 해제
+    public void OnPointerClick(PointerEventData eventData)
+    {
+        if (eventData.button == PointerEventData.InputButton.Right)
+            ClearSkill();
     }
 
     // ─────────────────────────────────────────────────────────────────
-    // 스킬 표시
+    // 스킬 설정 / 해제
     // ─────────────────────────────────────────────────────────────────
 
     public void SetSkill(SkillData skill)
     {
-        assignedSkill = skill;
+        AssignedSkill = skill;
 
         if (iconImage != null)
         {
@@ -70,14 +82,20 @@ public class QuickSlot : MonoBehaviour, IDropHandler
         }
     }
 
+    public void ClearSkill()
+    {
+        SetSkill(null);
+        if (quickSlotUI != null)
+            quickSlotUI.RegisterSkill(slotIndex, null);
+    }
+
     // ─────────────────────────────────────────────────────────────────
-    // 쿨다운 오버레이 갱신 (매 프레임 SkillManager에서 호출)
+    // 쿨다운 오버레이
     // ─────────────────────────────────────────────────────────────────
 
     public void UpdateCooldown(float ratio)
     {
         if (cooldownOverlay == null) return;
-
         cooldownOverlay.gameObject.SetActive(ratio > 0f);
         cooldownOverlay.fillAmount = ratio;
     }

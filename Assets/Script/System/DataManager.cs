@@ -10,6 +10,7 @@ public class DataManager : MonoBehaviour
     public List<CharacterStatus> partyStatuses = new List<CharacterStatus>();
     public List<ClassData> baseDataList;
     public List<ClassSkillTree> skillTrees;
+    
     public int partyLevel = 1;
     public int partyExp = 0;
 
@@ -44,6 +45,7 @@ public class DataManager : MonoBehaviour
             // MaxHp는 이제 classData를 기반으로 자동 계산되므로 currentHp에 바로 대입 가능합니다.
             newStatus.currentHp = newStatus.MaxHp; 
             newStatus.currentMp = newStatus.MaxMp;
+            newStatus.skillPoint = 1; // 시작 시 1 지급
             
             partyStatuses.Add(newStatus);
         }

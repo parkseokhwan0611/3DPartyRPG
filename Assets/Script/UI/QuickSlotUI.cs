@@ -23,9 +23,7 @@ public class QuickSlotUI : MonoBehaviour
     {
         if (slotIndex < 0 || slotIndex >= slots.Length) return;
 
-        slots[slotIndex].SetSkill(skill);
-
-        // SkillManager에도 반영 (현재 리더 기준)
+        // SkillManager에 반영 (현재 리더 기준)
         if (PartyManager.instance?.currentLeader != null)
         {
             SkillManager skillManager = PartyManager.instance.currentLeader
@@ -37,7 +35,7 @@ public class QuickSlotUI : MonoBehaviour
     }
 
     // ─────────────────────────────────────────────────────────────────
-    // 쿨다운 갱신 (매 프레임 호출)
+    // 쿨다운 갱신
     // ─────────────────────────────────────────────────────────────────
 
     void Update()
@@ -51,8 +49,8 @@ public class QuickSlotUI : MonoBehaviour
 
         for (int i = 0; i < slots.Length; i++)
         {
-            if (slots[i] == null) continue;
-            slots[i].UpdateCooldown(skillManager.GetCooldownRatio(i));
+            if (slots[i] != null)
+                slots[i].UpdateCooldown(skillManager.GetCooldownRatio(i));
         }
     }
 }
