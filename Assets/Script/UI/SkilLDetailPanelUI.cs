@@ -11,10 +11,10 @@ public class SkillDetailPanelUI : MonoBehaviour
     public TextMeshProUGUI skillNameText;
     public TextMeshProUGUI skillLvText;
     public TextMeshProUGUI skillDescText;
-    public TextMeshProUGUI mpCostText;
+    public TextMeshProUGUI mpCostText;       // 패시브는 표시 안 함
     public TextMeshProUGUI cooldownText;
-    public TextMeshProUGUI damageText;    // 데미지 스킬 전용
-    public TextMeshProUGUI specialText;   // 버프/패시브 전용
+    public TextMeshProUGUI damageText;       // 데미지 스킬 전용
+    public TextMeshProUGUI specialText;      // 버프/패시브 효과
 
     [Header("# 다음 레벨 정보")]
     public TextMeshProUGUI nextSkillLvText;
@@ -22,8 +22,8 @@ public class SkillDetailPanelUI : MonoBehaviour
     public TextMeshProUGUI requiredSkillPointText;
     public TextMeshProUGUI nextMpCostText;
     public TextMeshProUGUI nextCooldownText;
-    public TextMeshProUGUI nextDamageText;   // 데미지 스킬 전용
-    public TextMeshProUGUI nextSpecialText;  // 버프/패시브 전용
+    public TextMeshProUGUI nextDamageText;
+    public TextMeshProUGUI nextSpecialText;
 
     [Header("# 버튼")]
     public Button learnButton;
@@ -39,10 +39,8 @@ public class SkillDetailPanelUI : MonoBehaviour
     void Start()
     {
         skillWindow = GetComponentInParent<SkillWindowUI>();
-
         if (learnButton != null)
             learnButton.onClick.AddListener(OnLearnButtonClicked);
-
         Clear();
     }
 
@@ -68,29 +66,30 @@ public class SkillDetailPanelUI : MonoBehaviour
         int currentLevel = status.GetSkillLevel(skill);
         int nextLevel    = currentLevel + 1;
         bool isMaxLevel  = currentLevel >= skill.maxLevel;
+        bool isPassive   = skill.skillType == SkillData.SkillType.Passive;
 
-        // ── 스킬 이름 / 레벨 / 설명 ──
-        if (skillNameText != null)
-            skillNameText.text = skill.skillName;
-
-        if (skillLvText != null)
-            skillLvText.text = currentLevel > 0 ? $"LV {currentLevel}" : "미습득";
-
-        if (skillDescText != null)
-            skillDescText.text = skill.description;
+        // ── 기본 정보 ──
+        SetTextSafe(skillNameText, skill.skillName);
+        SetTextSafe(skillLvText,   currentLevel > 0 ? $"LV {currentLevel}" : "미습득");
+        SetTextSafe(skillDescText, skill.description);
 
         // ── 현재 레벨 수치 ──
         if (currentLevel > 0)
         {
             int idx = currentLevel - 1;
 
-            SetTextSafe(mpCostText,   idx < skill.mpCost.Length
-                ? $"마나 소모량: {skill.mpCost[idx]}" : "");
+            // 패시브는 마나 소모 없음
+            if (!isPassive && idx < skill.mpCost.Length)
+                SetTextSafe(mpCostText, $"마나 소모량: {skill.mpCost[idx]}");
+            else
+                SetTextSafe(mpCostText, "");
 
-            SetTextSafe(cooldownText, idx < skill.cooldown.Length
-                ? $"쿨타임: {skill.cooldown[idx]}초" : "");
+            // 패시브는 쿨다운 없음
+            if (!isPassive && idx < skill.cooldown.Length)
+                SetTextSafe(cooldownText, $"쿨타임: {skill.cooldown[idx]}초");
+            else
+                SetTextSafe(cooldownText, "");
 
-            // 스킬 타입에 따라 계수 표시 분리
             ShowCurrentStatByType(skill, currentLevel);
         }
         else
@@ -106,26 +105,26 @@ public class SkillDetailPanelUI : MonoBehaviour
         {
             int nextIdx = nextLevel - 1;
 
-            if (nextSkillLvText != null)
-                nextSkillLvText.text = $"LV {nextLevel}";
+            SetTextSafe(nextSkillLvText, $"LV {nextLevel}");
 
-            SetTextSafe(nextMpCostText,   nextIdx < skill.mpCost.Length
-                ? $"마나 소모량: {skill.mpCost[nextIdx]}" : "");
+            if (!isPassive && nextIdx < skill.mpCost.Length)
+                SetTextSafe(nextMpCostText, $"마나 소모량: {skill.mpCost[nextIdx]}");
+            else
+                SetTextSafe(nextMpCostText, "");
 
-            SetTextSafe(nextCooldownText, nextIdx < skill.cooldown.Length
-                ? $"쿨타임: {skill.cooldown[nextIdx]}초" : "");
+            if (!isPassive && nextIdx < skill.cooldown.Length)
+                SetTextSafe(nextCooldownText, $"쿨타임: {skill.cooldown[nextIdx]}초");
+            else
+                SetTextSafe(nextCooldownText, "");
 
-            // 스킬 타입에 따라 다음 레벨 계수 표시
             ShowNextStatByType(skill, nextLevel);
 
             // 필요 스킬 포인트
             if (nextIdx < skill.skillPointCost.Length)
             {
                 int cost = skill.skillPointCost[nextIdx];
-
                 SetTextSafe(requiredSkillPointText, $"필요 스킬 포인트: {cost}");
-                SetTextSafe(levelConditionText,
-                    $"스킬 포인트 {status.skillPoint} 보유");
+                SetTextSafe(levelConditionText, $"스킬 포인트 {status.skillPoint} 보유");
 
                 if (learnButton != null)
                     learnButton.interactable = status.skillPoint >= cost;
@@ -133,42 +132,33 @@ public class SkillDetailPanelUI : MonoBehaviour
         }
         else
         {
-            // 최대 레벨
-            if (nextSkillLvText != null) nextSkillLvText.text = "최대 레벨";
-            SetTextSafe(nextMpCostText,        "");
-            SetTextSafe(nextCooldownText,      "");
-            SetTextSafe(nextDamageText,        "");
-            SetTextSafe(nextSpecialText,       "");
-            SetTextSafe(requiredSkillPointText,"");
-            SetTextSafe(levelConditionText,    "");
+            SetTextSafe(nextSkillLvText,        "최대 레벨");
+            SetTextSafe(nextMpCostText,         "");
+            SetTextSafe(nextCooldownText,       "");
+            SetTextSafe(nextDamageText,         "");
+            SetTextSafe(nextSpecialText,        "");
+            SetTextSafe(requiredSkillPointText, "");
+            SetTextSafe(levelConditionText,     "");
             if (learnButton != null) learnButton.interactable = false;
         }
     }
 
     // ─────────────────────────────────────────────────────────────────
-    // 스킬 타입별 현재 레벨 계수 표시
+    // 스킬 타입별 현재 레벨 계수
     // ─────────────────────────────────────────────────────────────────
 
     private void ShowCurrentStatByType(SkillData skill, int level)
     {
-        // 데미지 스킬
         if (skill is DamageSkillData dmgSkill)
         {
             SetTextSafe(damageText,  $"데미지: {dmgSkill.GetDamageMultiplier(level) * 100f:F1}%");
-            SetTextSafe(specialText, ""); // 패시브/버프 텍스트 비우기
+            SetTextSafe(specialText, "");
         }
-        // 버프 스킬 — 데미지 없음
         else if (skill is BuffSkillData buffSkill)
         {
             SetTextSafe(damageText,  "");
-            string buffInfo = "";
-            if (buffSkill.GetAtkBonus(level) > 0)  buffInfo += $"공격력 +{buffSkill.GetAtkBonus(level)}\n";
-            if (buffSkill.GetApBonus(level) > 0)   buffInfo += $"주문력 +{buffSkill.GetApBonus(level)}\n";
-            if (buffSkill.GetDefBonus(level) > 0)  buffInfo += $"방어력 +{buffSkill.GetDefBonus(level)}\n";
-            buffInfo += $"지속시간: {buffSkill.GetDuration(level)}초";
-            SetTextSafe(specialText, buffInfo);
+            SetTextSafe(specialText, GetBuffDescription(buffSkill, level));
         }
-        // 패시브 스킬 — 데미지 없음
         else if (skill is PassiveSkillData passiveSkill)
         {
             SetTextSafe(damageText,  "");
@@ -182,7 +172,7 @@ public class SkillDetailPanelUI : MonoBehaviour
     }
 
     // ─────────────────────────────────────────────────────────────────
-    // 스킬 타입별 다음 레벨 계수 표시
+    // 스킬 타입별 다음 레벨 계수
     // ─────────────────────────────────────────────────────────────────
 
     private void ShowNextStatByType(SkillData skill, int nextLevel)
@@ -194,13 +184,8 @@ public class SkillDetailPanelUI : MonoBehaviour
         }
         else if (skill is BuffSkillData buffSkill)
         {
-            SetTextSafe(nextDamageText, "");
-            string buffInfo = "";
-            if (buffSkill.GetAtkBonus(nextLevel) > 0)  buffInfo += $"공격력 +{buffSkill.GetAtkBonus(nextLevel)}\n";
-            if (buffSkill.GetApBonus(nextLevel) > 0)   buffInfo += $"주문력 +{buffSkill.GetApBonus(nextLevel)}\n";
-            if (buffSkill.GetDefBonus(nextLevel) > 0)  buffInfo += $"방어력 +{buffSkill.GetDefBonus(nextLevel)}\n";
-            buffInfo += $"지속시간: {buffSkill.GetDuration(nextLevel)}초";
-            SetTextSafe(nextSpecialText, buffInfo);
+            SetTextSafe(nextDamageText,  "");
+            SetTextSafe(nextSpecialText, GetBuffDescription(buffSkill, nextLevel));
         }
         else if (skill is PassiveSkillData passiveSkill)
         {
@@ -213,6 +198,53 @@ public class SkillDetailPanelUI : MonoBehaviour
             SetTextSafe(nextSpecialText, "");
         }
     }
+
+    // ─────────────────────────────────────────────────────────────────
+    // 버프 설명 생성 (최대 3개 효과)
+    // ─────────────────────────────────────────────────────────────────
+
+    private string GetBuffDescription(BuffSkillData buff, int level)
+    {
+        if (buff.buffEffects == null || buff.buffEffects.Count == 0) return "";
+
+        string result = buff.isPartyBuff ? "[파티 버프]\n" : "[개인 버프]\n";
+        result += $"지속시간: {buff.GetDuration(level)}초\n";
+
+        foreach (var effect in buff.buffEffects)
+        {
+            float value = effect.GetValue(level);
+            switch (effect.effectType)
+            {
+                case BuffSkillData.BuffEffectType.AtkBonus:
+                    result += $"공격력 +{value}\n";
+                    break;
+                case BuffSkillData.BuffEffectType.ApBonus:
+                    result += $"주문력 +{value}\n";
+                    break;
+                case BuffSkillData.BuffEffectType.DefBonus:
+                    result += $"방어력 +{value}\n";
+                    break;
+                case BuffSkillData.BuffEffectType.CritRate:
+                    result += $"치명타 확률 +{value * 100f:F1}%\n";
+                    break;
+                case BuffSkillData.BuffEffectType.CritDamage:
+                    result += $"치명타 배율 +{value * 100f:F1}%\n";
+                    break;
+                case BuffSkillData.BuffEffectType.MaxHpBonus:
+                    result += $"최대 체력 +{value}\n";
+                    break;
+                case BuffSkillData.BuffEffectType.SpeedBonus:
+                    result += $"이동속도 +{value}\n";
+                    break;
+            }
+        }
+
+        return result.TrimEnd('\n');
+    }
+
+    // ─────────────────────────────────────────────────────────────────
+    // 패시브 설명 생성
+    // ─────────────────────────────────────────────────────────────────
 
     private string GetPassiveDescription(PassiveSkillData passive, int level)
     {

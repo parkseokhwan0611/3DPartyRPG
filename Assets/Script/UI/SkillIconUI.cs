@@ -24,8 +24,12 @@ public class SkillIconUI : MonoBehaviour,
 
     void Awake()
     {
-        // Canvas를 루트에서 찾기
-        rootCanvas = FindObjectOfType<Canvas>();
+        // FindObjectOfType 대신 부모에서 직접 찾기
+        rootCanvas = GetComponentInParent<Canvas>();
+        
+        // 루트 캔버스를 찾아야 함 (중첩 캔버스 문제 방지)
+        if (rootCanvas != null)
+            rootCanvas = rootCanvas.rootCanvas;
     }
 
     public void Setup(SkillData skill, int level, bool unlocked, SkillWindowUI window)
@@ -72,6 +76,13 @@ public class SkillIconUI : MonoBehaviour,
         // 습득하지 않은 스킬은 드래그 불가
         if (SkillData == null || SkillLevel <= 0) return;
         if (rootCanvas == null) return;
+
+        // 패시브 스킬은 드래그 불가
+        if (SkillData.skillType == SkillData.SkillType.Passive)
+        {
+            Debug.Log("[SkillIconUI] 패시브 스킬은 퀵슬롯에 등록할 수 없습니다.");
+            return;
+        }
 
         // 드래그 임시 아이콘 생성
         dragIcon = new GameObject("DragIcon");

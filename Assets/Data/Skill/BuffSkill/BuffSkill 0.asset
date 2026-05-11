@@ -32,15 +32,14 @@ MonoBehaviour:
   - 0
   - 0
   - 0
-  baseDuration: 5
-  durationPerLevel: 1
-  baseAtkBonus: 0
-  atkBonusPerLevel: 0
-  baseApBonus: 0
-  apBonusPerLevel: 0
-  baseDefBonus: 0
-  defBonusPerLevel: 0
+  isPartyBuff: 0
   animTriggerName: 
   animDuration: 0
   effectSpawnDelay: 0
   effectPoolKey: 
+  baseDuration: 5
+  durationPerLevel: 1
+  buffEffects:
+  - effectType: 0
+    baseValue: 0
+    valuePerLevel: 0

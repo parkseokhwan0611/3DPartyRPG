@@ -19,10 +19,12 @@ public class QuickSlot : MonoBehaviour, IDropHandler, IPointerClickHandler
     void Awake()
     {
         quickSlotUI = GetComponentInParent<QuickSlotUI>();
+        
     }
 
     void Start()
     {
+        // iconImage는 건드리지 않음
         if (cooldownOverlay != null)
         {
             cooldownOverlay.type       = Image.Type.Filled;
@@ -45,6 +47,13 @@ public class QuickSlot : MonoBehaviour, IDropHandler, IPointerClickHandler
         if (draggedIcon.SkillData == null)
         {
             Debug.Log("[QuickSlot] 스킬 데이터가 없습니다.");
+            return;
+        }
+
+        // 패시브 이중 체크
+        if (draggedIcon.SkillData?.skillType == SkillData.SkillType.Passive)
+        {
+            Debug.Log("[QuickSlot] 패시브 스킬은 등록할 수 없습니다.");
             return;
         }
 
@@ -78,7 +87,10 @@ public class QuickSlot : MonoBehaviour, IDropHandler, IPointerClickHandler
         if (iconImage != null)
         {
             iconImage.sprite = skill != null ? skill.icon : null;
-            iconImage.color  = skill != null ? Color.white : new Color(1f, 1f, 1f, 0.3f);
+            // 스킬 없으면 반투명, 있으면 불투명
+            iconImage.color  = skill != null
+                ? Color.white
+                : new Color(1f, 1f, 1f, 0f); // 완전 투명으로 처리
         }
     }
 

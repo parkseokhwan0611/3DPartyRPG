@@ -29,7 +29,6 @@ public class SkillWindowUI : MonoBehaviour
 
     void OnEnable()
     {
-        // 창이 열릴 때 현재 리더로 초기화
         if (PartyManager.instance?.currentLeader != null)
         {
             CharacterStat stat = PartyManager.instance.currentLeader.GetComponent<CharacterStat>();
@@ -37,10 +36,10 @@ public class SkillWindowUI : MonoBehaviour
             {
                 currentCharIndex = stat.partyIndex;
                 RefreshSkillTree();
+                quickSlotPanel.RefreshByCharIndex(currentCharIndex); // 추가
             }
         }
     }
-
     // ─────────────────────────────────────────────────────────────────
     // 캐릭터 탭 전환 (CharacterTabGroup 버튼에서 호출)
     // ─────────────────────────────────────────────────────────────────
@@ -50,6 +49,9 @@ public class SkillWindowUI : MonoBehaviour
         currentCharIndex = charIndex;
         RefreshSkillTree();
         detailPanel.Clear();
+
+        // 해당 캐릭터의 퀵슬롯으로 갱신
+        quickSlotPanel.RefreshByCharIndex(charIndex);
     }
 
     // ─────────────────────────────────────────────────────────────────
@@ -112,11 +114,12 @@ public class SkillWindowUI : MonoBehaviour
     // ─────────────────────────────────────────────────────────────────
     // 스킬 레벨업 후 갱신 (SkillDetailPanelUI에서 호출)
     // ─────────────────────────────────────────────────────────────────
-
+    
     public void OnSkillLevelUp()
     {
         RefreshSkillTree();
     }
+
 
     public int GetCurrentCharIndex() => currentCharIndex;
 }

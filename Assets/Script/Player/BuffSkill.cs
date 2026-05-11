@@ -20,7 +20,7 @@ public class BuffSkill : SkillBase
     protected override IEnumerator ExecuteSkill(Transform target)
     {
         var data = GetBuffData();
-    if (data == null) yield break;
+        if (data == null) yield break;
 
         // 1. 애니메이션 실행
         if (anim != null && !string.IsNullOrEmpty(data.animTriggerName))
@@ -31,11 +31,13 @@ public class BuffSkill : SkillBase
             yield return new WaitForSeconds(data.effectSpawnDelay);
 
         // 3. 이펙트 스폰
-        SpawnEffect();
+        SpawnEffect(data);
 
-        // 4. 버프 적용
-        ApplyPartyBuff();
-
+        // 4. 파티 버프 or 개인 버프
+        if (data.isPartyBuff)
+            ApplyPartyBuff(data);
+        else
+            ApplySelfBuff(data);
 
         // 5. 애니메이션 나머지 대기
         float remaining = data.animDuration - data.effectSpawnDelay;
@@ -44,10 +46,15 @@ public class BuffSkill : SkillBase
     }
 
     // ─────────────────────────────────────────────────────────────────
-    // 파티 전체 버프 적용
+    // 버프 적용
     // ─────────────────────────────────────────────────────────────────
 
-    private void ApplyPartyBuff()
+    private void ApplySelfBuff(BuffSkillData data)
+    {
+        StartCoroutine(BuffRoutine(myStat, data));
+    }
+
+    private void ApplyPartyBuff(BuffSkillData data)
     {
         if (PartyManager.instance == null) return;
 
@@ -58,67 +65,73 @@ public class BuffSkill : SkillBase
 
             CharacterStat stat = member.GetComponent<CharacterStat>();
             if (stat != null)
-                StartCoroutine(BuffRoutine(stat));
+                StartCoroutine(BuffRoutine(stat, data));
         }
     }
 
-    // ─────────────────────────────────────────────────────────────────
-    // 버프 지속 코루틴
-    // ─────────────────────────────────────────────────────────────────
-
-    private IEnumerator BuffRoutine(CharacterStat stat)
+    private IEnumerator BuffRoutine(CharacterStat stat, BuffSkillData data)
     {
         if (stat == null) yield break;
 
-        float duration   = buffData.GetDuration(skillLevel);
-        float atkBonus   = buffData.GetAtkBonus(skillLevel);
-        float apBonus    = buffData.GetApBonus(skillLevel);
-        float defBonus   = buffData.GetDefBonus(skillLevel);
+        var status = DataManager.instance?.partyStatuses[stat.partyIndex];
+        if (status == null) yield break;
+
+        float duration = data.GetDuration(skillLevel);
 
         // 버프 적용
-        ApplyBuff(stat, atkBonus, apBonus, defBonus);
+        ApplyBuffEffects(status, data, skillLevel, 1f);
 
-        // 버프 이펙트 (대상 위에 이펙트 표시)
-        SpawnTargetEffect(stat.transform);
+        // 버프 이펙트 (대상 위에)
+        SpawnTargetEffect(data, stat.transform);
 
         // 지속시간 대기
         yield return new WaitForSeconds(duration);
 
         // 버프 해제
-        RemoveBuff(stat, atkBonus, apBonus, defBonus);
+        ApplyBuffEffects(status, data, skillLevel, -1f);
     }
 
-    private void ApplyBuff(CharacterStat stat, float atk, float ap, float def)
+    // multiplier: 1f = 적용, -1f = 해제
+    private void ApplyBuffEffects(CharacterStatus status, BuffSkillData data, int level, float multiplier)
     {
-        // CharacterStatus의 added 수치에 직접 더함
-        var status = DataManager.instance?.partyStatuses[stat.partyIndex];
-        if (status == null) return;
+        foreach (var effect in data.buffEffects)
+        {
+            float value = effect.GetValue(level) * multiplier;
 
-        status.addedStr += atk;
-        status.addedInt += ap;
-        status.addedDef += def;
-    }
-
-    private void RemoveBuff(CharacterStat stat, float atk, float ap, float def)
-    {
-        var status = DataManager.instance?.partyStatuses[stat.partyIndex];
-        if (status == null) return;
-
-        status.addedStr -= atk;
-        status.addedInt -= ap;
-        status.addedDef -= def;
+            switch (effect.effectType)
+            {
+                case BuffSkillData.BuffEffectType.AtkBonus:
+                    status.addedStr += value;
+                    break;
+                case BuffSkillData.BuffEffectType.ApBonus:
+                    status.addedInt += value;
+                    break;
+                case BuffSkillData.BuffEffectType.DefBonus:
+                    status.addedDef += value;
+                    break;
+                case BuffSkillData.BuffEffectType.CritRate:
+                    status.addedCritRate += value;
+                    break;
+                case BuffSkillData.BuffEffectType.CritDamage:
+                    status.addedCritDamage += value;
+                    break;
+                case BuffSkillData.BuffEffectType.MaxHpBonus:
+                    status.addedVit += value;
+                    break;
+            }
+        }
     }
 
     // ─────────────────────────────────────────────────────────────────
     // 이펙트 스폰
     // ─────────────────────────────────────────────────────────────────
 
-    private void SpawnEffect()
+    private void SpawnEffect(BuffSkillData data)
     {
-        if (string.IsNullOrEmpty(buffData.effectPoolKey)) return;
+        if (string.IsNullOrEmpty(data.effectPoolKey)) return;
         if (ObjectPoolManager.instance == null) return;
 
-        var effect = ObjectPoolManager.instance.GetGo(buffData.effectPoolKey);
+        var effect = ObjectPoolManager.instance.GetGo(data.effectPoolKey);
         if (effect != null)
         {
             effect.transform.position = transform.position;
@@ -126,13 +139,12 @@ public class BuffSkill : SkillBase
         }
     }
 
-    // 버프 대상 위에 이펙트 표시
-    private void SpawnTargetEffect(Transform target)
+    private void SpawnTargetEffect(BuffSkillData data, Transform target)
     {
-        if (string.IsNullOrEmpty(buffData.effectPoolKey)) return;
+        if (string.IsNullOrEmpty(data.effectPoolKey)) return;
         if (ObjectPoolManager.instance == null) return;
 
-        var effect = ObjectPoolManager.instance.GetGo(buffData.effectPoolKey);
+        var effect = ObjectPoolManager.instance.GetGo(data.effectPoolKey);
         if (effect != null)
         {
             effect.transform.position = target.position;
