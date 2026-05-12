@@ -98,5 +98,9 @@ public class CharacterStat : MonoBehaviour, IDamageable
         OnMpChanged?.Invoke();
         return true;
     }
+    public void RaiseHpChanged()
+    {
+        OnHpChanged?.Invoke();
+    }
     void Die() { /* 사망 로직 */ }
 }

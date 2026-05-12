@@ -2768,6 +2768,7 @@ GameObject:
   - component: {fileID: 3135441985344593845}
   - component: {fileID: 1045097644406216187}
   - component: {fileID: 811392039888150760}
+  - component: {fileID: -327002959743040393}
   - component: {fileID: 7954425702217469426}
   - component: {fileID: 4220463396946552067}
   m_Layer: 7
@@ -2833,6 +2834,7 @@ MonoBehaviour:
   enemyHp: {fileID: 811392039888150760}
   navAgent: {fileID: 7954425702217469426}
   chaseDistance: 10
+  targetSwitchThreshold: 1
   navSpeed: 1.5
 --- !u!114 &1045097644406216187
 MonoBehaviour:
@@ -2877,6 +2879,18 @@ MonoBehaviour:
   hudPos: {fileID: 5511221066833110898}
   expReward: 10
   destroyDelay: 2
+--- !u!114 &-327002959743040393
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8762004475818107220}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ac5e93ab7fb765e4399333b99c61d3ba, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!195 &7954425702217469426
 NavMeshAgent:
   m_ObjectHideFlags: 0

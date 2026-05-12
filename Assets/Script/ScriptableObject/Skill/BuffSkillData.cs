@@ -36,12 +36,16 @@ public class BuffSkillData : SkillData
 
     public enum BuffEffectType
     {
-        AtkBonus,    // 공격력 증가
-        ApBonus,     // 주문력 증가
-        DefBonus,    // 방어력 증가
-        CritRate,    // 치명타 확률 증가
-        CritDamage,  // 치명타 배율 증가
-        MaxHpBonus,  // 최대 체력 증가
-        SpeedBonus,  // 이동속도 증가
+        AtkBonus,
+        ApBonus,
+        DefBonus,
+        CritRate,
+        CritDamage,
+        MaxHpBonus,
+        SpeedBonus,
+        Shield,        // 쉴드 추가
+        ManaRegen,     // 마나 재생 추가
+        HpRegen,       // 체력 재생 추가
+        DebuffImmune,  // 디버프 면역 추가
     }
 }

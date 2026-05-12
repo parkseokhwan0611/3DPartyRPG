@@ -3,31 +3,20 @@ using System.Collections.Generic;
 
 public class SkillManager : MonoBehaviour
 {
-    // ─────────────────────────────────────────
-    // 컴포넌트 참조
-    // ─────────────────────────────────────────
     private PartyMemberScript memberScript;
     private AttackBase attackBase;
 
-    // ─────────────────────────────────────────
-    // 스킬 슬롯 (Q/W/E/R)
-    // 인스펙터에서 SO만 드래그하면 런타임에 자동 생성
-    // ─────────────────────────────────────────
     [Header("스킬 슬롯 (Q/W/E/R)")]
     public SkillData slotQ;
     public SkillData slotW;
     public SkillData slotE;
     public SkillData slotR;
 
-    // 런타임에 생성된 실제 스킬 컴포넌트
     private SkillBase[] slots = new SkillBase[4];
 
-    // ─────────────────────────────────────────
-    // 자동 사용 설정 (팔로워 전용)
-    // ─────────────────────────────────────────
     [Header("자동 스킬 설정 (팔로워 전용)")]
     public int attackPerSkill = 2;
-    private int attackCount = 0;
+    private int attackCount   = 0;
 
     // ─────────────────────────────────────────────────────────────────
     // Unity 생명주기
@@ -44,17 +33,14 @@ public class SkillManager : MonoBehaviour
         slots[3] = CreateSkill(slotR);
 
         if (attackBase != null)
-        {
-            // OnAttackStarted 대신 OnAttackExecuted 구독
             attackBase.OnAttackExecuted += HandleAttackCount;
-        }
     }
 
     void OnDestroy()
     {
         if (attackBase != null)
             attackBase.OnAttackExecuted -= HandleAttackCount;
-}
+    }
 
     // ─────────────────────────────────────────────────────────────────
     // 스킬 동적 생성
@@ -74,12 +60,14 @@ public class SkillManager : MonoBehaviour
             case SkillData.SkillType.Buff:
                 skill = gameObject.AddComponent<BuffSkill>();
                 break;
-            case SkillData.SkillType.Passive:
-                // 패시브는 슬롯에 등록하지 않고 별도로 관리
-                Debug.LogWarning("[SkillManager] 패시브 스킬은 슬롯이 아닌 패시브 목록에 등록하세요.");
+            case SkillData.SkillType.Heal:
+                skill = gameObject.AddComponent<HealSkill>();
                 break;
-            default:
-                Debug.LogWarning($"[SkillManager] 알 수 없는 스킬 타입: {data.skillType}");
+            case SkillData.SkillType.Debuff:
+                skill = gameObject.AddComponent<DebuffSkill>();
+                break;
+            case SkillData.SkillType.Passive:
+                Debug.LogWarning("[SkillManager] 패시브 스킬은 슬롯에 등록하지 않습니다.");
                 break;
         }
 
@@ -90,7 +78,7 @@ public class SkillManager : MonoBehaviour
     }
 
     // ─────────────────────────────────────────────────────────────────
-    // 리더 — 플레이어 입력
+    // 리더 입력
     // ─────────────────────────────────────────────────────────────────
 
     public void HandleKeyInput()
@@ -103,7 +91,6 @@ public class SkillManager : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.R)) UseSkillByIndex(3);
     }
 
-    // UI 버튼에서 인덱스로 호출 (0=Q, 1=W, 2=E, 3=R)
     public void UseSkillByIndex(int index)
     {
         if (!memberScript.isLeader) return;
@@ -116,7 +103,7 @@ public class SkillManager : MonoBehaviour
     }
 
     // ─────────────────────────────────────────────────────────────────
-    // 팔로워 — 자동 스킬 사용
+    // 팔로워 자동 스킬
     // ─────────────────────────────────────────────────────────────────
 
     private void HandleAttackCount()
@@ -124,7 +111,6 @@ public class SkillManager : MonoBehaviour
         if (memberScript.isLeader) return;
 
         attackCount++;
-
         if (attackCount >= attackPerSkill)
         {
             attackCount = 0;
@@ -135,9 +121,7 @@ public class SkillManager : MonoBehaviour
     private void TryAutoUseSkill()
     {
         Transform target = attackBase.currentTarget;
-        if (target == null) return;
 
-        // 준비된 슬롯 중 랜덤으로 하나 선택
         List<SkillBase> readySlots = new List<SkillBase>();
         foreach (var slot in slots)
         {
@@ -148,7 +132,17 @@ public class SkillManager : MonoBehaviour
         if (readySlots.Count == 0) return;
 
         SkillBase chosen = readySlots[Random.Range(0, readySlots.Count)];
-        chosen.TryUseSkill(target);
+
+        // 힐/버프 스킬은 타겟 없어도 사용 가능
+        if (chosen.skillData.skillType == SkillData.SkillType.Heal ||
+            chosen.skillData.skillType == SkillData.SkillType.Buff)
+        {
+            chosen.TryUseSkill(null);
+        }
+        else
+        {
+            chosen.TryUseSkill(target);
+        }
     }
 
     // ─────────────────────────────────────────────────────────────────
@@ -161,19 +155,15 @@ public class SkillManager : MonoBehaviour
         return slots[index];
     }
 
-    // 런타임에서 슬롯 교체 (스킬 장착 UI에서 호출)
     public void SetSlot(int index, SkillData newData)
     {
         if (index < 0 || index >= slots.Length) return;
 
-        // 기존 슬롯 컴포넌트 제거
         if (slots[index] != null)
             Destroy(slots[index]);
 
-        // 새 스킬 생성
         slots[index] = CreateSkill(newData);
 
-        // 인스펙터 SO도 동기화
         switch (index)
         {
             case 0: slotQ = newData; break;
@@ -183,14 +173,12 @@ public class SkillManager : MonoBehaviour
         }
     }
 
-    // 슬롯의 쿨다운 비율 반환 (UI 쿨다운 표시용)
     public float GetCooldownRatio(int index)
     {
         SkillBase skill = GetSlot(index);
         return skill != null ? skill.CooldownRatio : 0f;
     }
 
-    // 슬롯의 스킬 아이콘 반환 (UI용)
     public Sprite GetSkillIcon(int index)
     {
         SkillBase skill = GetSlot(index);
