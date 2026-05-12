@@ -35,14 +35,14 @@ public class DamageSkill : SkillBase
             anim.ResetTrigger("doNormalAttack");
         }
 
-        yield return new WaitForSeconds(0.2f);
+        //yield return new WaitForSeconds(0.2f);
 
-    if (anim != null && !string.IsNullOrEmpty(data.animTriggerName))
-    {
-        anim.ResetTrigger(data.animTriggerName);
-        yield return null;
-        anim.SetTrigger(data.animTriggerName);
-    }
+        if (anim != null && !string.IsNullOrEmpty(data.animTriggerName))
+        {
+            anim.ResetTrigger(data.animTriggerName);
+            yield return null;
+            anim.SetTrigger(data.animTriggerName);
+        }
 
         // 애니메이터가 완전히 Idle로 정착할 때까지 대기
         yield return null;

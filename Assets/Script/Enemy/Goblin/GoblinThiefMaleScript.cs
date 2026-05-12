@@ -11,6 +11,7 @@ public class GoblinThiefMaleScript : MonoBehaviour
 
     [Header("# Chase Settings")]
     public float chaseDistance = 10f;
+    public float targetSwitchThreshold = 1.0f; // 타겟 전환 거리 차이 기준
 
     [Header("# NavMesh")]
     public float navSpeed = 3f;
@@ -87,11 +88,8 @@ public class GoblinThiefMaleScript : MonoBehaviour
     // ─────────────────────────────────────────────────────────────────
     // 타겟팅 로직
     // ─────────────────────────────────────────────────────────────────
-
     void TargetingLogic()
     {
-        // PartyManager 싱글톤에서 항상 최신 파티원 리스트를 가져옴
-        // (인스펙터 수동 할당 불필요)
         if (PartyManager.instance == null || PartyManager.instance.partyMembers.Count == 0)
         {
             attackModule.SetTarget(null);
@@ -108,10 +106,28 @@ public class GoblinThiefMaleScript : MonoBehaviour
 
         float distToTarget = Vector3.Distance(transform.position, nearestTarget.position);
 
-        if (distToTarget <= chaseDistance && !isAttacking)
+        if (distToTarget <= chaseDistance)
         {
-            attackModule.SetTarget(nearestTarget);
-            navAgent.isStopped = false;
+            // 공격 중이더라도 현재 타겟보다 더 가까운 타겟이 있으면 전환
+            if (!isAttacking)
+            {
+                attackModule.SetTarget(nearestTarget);
+                navAgent.isStopped = false;
+            }
+            else if (attackModule.currentTarget != nearestTarget)
+            {
+                // 공격 중에도 더 가까운 타겟으로 전환
+                // 단 현재 타겟과의 거리차가 일정 이상일 때만 전환 (너무 잦은 전환 방지)
+                float currentTargetDist = attackModule.currentTarget != null
+                    ? Vector3.Distance(transform.position, attackModule.currentTarget.position)
+                    : Mathf.Infinity;
+
+                if (distToTarget < currentTargetDist - 1.0f) // 1미터 이상 가까울 때만 전환
+                {
+                    attackModule.SetTarget(nearestTarget);
+                    navAgent.isStopped = false;
+                }
+            }
         }
         else if (distToTarget > chaseDistance)
         {
