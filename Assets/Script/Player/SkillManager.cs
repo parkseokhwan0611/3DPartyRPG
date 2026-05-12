@@ -38,21 +38,23 @@ public class SkillManager : MonoBehaviour
         memberScript = GetComponent<PartyMemberScript>();
         attackBase   = GetComponent<AttackBase>();
 
-        // SO 기반으로 슬롯 스킬 자동 생성
         slots[0] = CreateSkill(slotQ);
         slots[1] = CreateSkill(slotW);
         slots[2] = CreateSkill(slotE);
         slots[3] = CreateSkill(slotR);
 
         if (attackBase != null)
-            attackBase.OnAttackStarted += HandleAttackCount;
+        {
+            // OnAttackStarted 대신 OnAttackExecuted 구독
+            attackBase.OnAttackExecuted += HandleAttackCount;
+        }
     }
 
     void OnDestroy()
     {
         if (attackBase != null)
-            attackBase.OnAttackStarted -= HandleAttackCount;
-    }
+            attackBase.OnAttackExecuted -= HandleAttackCount;
+}
 
     // ─────────────────────────────────────────────────────────────────
     // 스킬 동적 생성

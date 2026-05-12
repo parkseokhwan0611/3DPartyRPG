@@ -9,6 +9,7 @@ public abstract class AttackBase : MonoBehaviour
     // ─────────────────────────────────────────
     public event Action OnAttackStarted; // 공격 시작 시 발생
     public event Action OnAttackEnded;   // 공격 종료(타겟 해제) 시 발생
+    public event Action OnAttackExecuted;
 
     // ─────────────────────────────────────────
     // 공격 설정
@@ -93,13 +94,14 @@ public abstract class AttackBase : MonoBehaviour
 
         LookAtTarget();
 
-        // 스킬 시전 중이면 기본 공격 중지
         if (IsCastingSkill) return;
+        if (firstAttackDelay > 0) return;
 
         if (attackCooldown <= 0)
         {
             ExecuteAttack();
             attackCooldown = attackDuration / attackSpeed;
+            OnAttackExecuted?.Invoke(); // ← 공격 1회마다 발생
         }
     }
 
