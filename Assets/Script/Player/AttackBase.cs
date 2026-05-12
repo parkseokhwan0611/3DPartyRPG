@@ -20,6 +20,7 @@ public abstract class AttackBase : MonoBehaviour
     public float attackDuration = 1.0f;
     protected float attackCooldown = 0f;
     public bool IsCastingSkill { get; set; } = false;
+    private float firstAttackDelay = 0f; // 첫 공격 대기 타이머
 
     // ─────────────────────────────────────────
     // 참조 컴포넌트
@@ -44,6 +45,13 @@ public abstract class AttackBase : MonoBehaviour
     protected virtual void Update()
     {
         if (attackCooldown > 0) attackCooldown -= Time.deltaTime;
+
+        // 첫 공격 딜레이 처리
+        if (firstAttackDelay > 0)
+        {
+            firstAttackDelay -= Time.deltaTime;
+            return; // 딜레이 중엔 공격 로직 진입 안 함
+        }
 
         if (currentTarget == null) return;
 
@@ -105,17 +113,27 @@ public abstract class AttackBase : MonoBehaviour
     {
         if (currentTarget == target) return;
 
+        // 진행 중인 공격 코루틴 중단
+        StopAllCoroutines();
+        attackCooldown   = 0f;
+        firstAttackDelay = 0.15f;
+
+        // anim.Play("Idle") 제거 — Root Motion 충돌 원인
+        // 트리거만 초기화
+        if (anim != null)
+            anim.ResetTrigger("doNormalAttack");
+
         currentTarget = target;
 
         if (currentTarget != null)
         {
             targetHealth = currentTarget.GetComponent<EnemyHp>();
-            OnAttackStarted?.Invoke(); // ← 공격 시작 알림
+            OnAttackStarted?.Invoke();
         }
         else
         {
             targetHealth = null;
-            OnAttackEnded?.Invoke();   // ← 공격 종료 알림 (타겟 해제)
+            OnAttackEnded?.Invoke();
         }
     }
 
@@ -176,5 +194,9 @@ public abstract class AttackBase : MonoBehaviour
     protected void RaiseAttackEnded()
     {
         OnAttackEnded?.Invoke();
+    }
+    public void ResetFirstAttackDelay(float delay = 0.15f)
+    {
+        firstAttackDelay = delay;
     }
 }

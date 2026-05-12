@@ -30,15 +30,22 @@ public class DamageSkill : SkillBase
             attackBase.ResetAttackCooldown();
         }
 
-        // 애니메이터 초기화 — 현재 재생 중인 공격 모션 즉시 종료
         if (anim != null)
         {
             anim.ResetTrigger("doNormalAttack");
-            // Play로 강제로 Idle 상태로 복귀
-            anim.Play("Idle", 0, 0f);
         }
 
-        // 두 프레임 대기 후 스킬 트리거
+        yield return new WaitForSeconds(0.2f);
+
+    if (anim != null && !string.IsNullOrEmpty(data.animTriggerName))
+    {
+        anim.ResetTrigger(data.animTriggerName);
+        yield return null;
+        anim.SetTrigger(data.animTriggerName);
+    }
+
+        // 애니메이터가 완전히 Idle로 정착할 때까지 대기
+        yield return null;
         yield return null;
         yield return null;
 

@@ -72,13 +72,20 @@ public abstract class SkillBase : MonoBehaviour
     // ExecuteSkill을 래핑해서 시작/종료 플래그 관리
     private IEnumerator SkillRoutine(Transform target)
     {
-        // 스킬 시전 시작 — 기본 공격 중지
-        if (attackBase != null) attackBase.IsCastingSkill = true;
+        // 스킬 시작 시 firstAttackDelay도 초기화
+        if (attackBase != null)
+        {
+            attackBase.IsCastingSkill = true;
+            attackBase.ResetFirstAttackDelay(0.3f); // 스킬 후 공격 딜레이
+        }
 
         yield return StartCoroutine(ExecuteSkill(target));
 
-        // 스킬 시전 종료 — 기본 공격 재개
-        if (attackBase != null) attackBase.IsCastingSkill = false;
+        // 스킬 종료 후 애니메이터 정착 대기
+        yield return new WaitForSeconds(0.1f);
+
+        if (attackBase != null)
+            attackBase.IsCastingSkill = false;
     }
 
     protected abstract IEnumerator ExecuteSkill(Transform target);
