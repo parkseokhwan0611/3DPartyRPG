@@ -23,6 +23,8 @@ public class PartyMemberScript : MonoBehaviour
     [Header("파티 체인 설정")]
     public bool isLeader = false;
     public Transform targetToFollow;
+    [Header("리더 표시 VFX")]
+    public GameObject leaderVFX; // 인스펙터에서 VFX 오브젝트 할당
 
     // ─────────────────────────────────────────
     // 이동 설정
@@ -56,6 +58,8 @@ public class PartyMemberScript : MonoBehaviour
         agent.angularSpeed    = 1000f;
         agent.stoppingDistance = stopDistance;
         agent.updateRotation  = isLeader;
+
+        if (leaderVFX != null) leaderVFX.SetActive(isLeader);
     }
 
     void OnDestroy()
@@ -121,19 +125,23 @@ public class PartyMemberScript : MonoBehaviour
 
         if (myIndex == 0) // 내가 리더
         {
-            isLeader              = true;
-            targetToFollow        = null;
-            agent.updateRotation  = true;
+            isLeader               = true;
+            targetToFollow         = null;
+            agent.updateRotation   = true;
             agent.stoppingDistance = 0.1f;
             ChangeState(MemberState.Idle);
+
+            if (leaderVFX != null) leaderVFX.SetActive(true); // ← 추가
         }
         else // 내가 팔로워
         {
-            isLeader              = false;
-            targetToFollow        = newOrder[myIndex - 1].transform;
-            agent.updateRotation  = false;
+            isLeader               = false;
+            targetToFollow         = newOrder[myIndex - 1].transform;
+            agent.updateRotation   = false;
             agent.stoppingDistance = stopDistance;
             ChangeState(MemberState.Following);
+
+            if (leaderVFX != null) leaderVFX.SetActive(false); // ← 추가
         }
     }
 

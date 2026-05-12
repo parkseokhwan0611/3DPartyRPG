@@ -19,6 +19,7 @@ public abstract class AttackBase : MonoBehaviour
     public float attackSpeed   = 1.0f;
     public float attackDuration = 1.0f;
     protected float attackCooldown = 0f;
+    public bool IsCastingSkill { get; set; } = false;
 
     // ─────────────────────────────────────────
     // 참조 컴포넌트
@@ -83,6 +84,9 @@ public abstract class AttackBase : MonoBehaviour
         if (anim != null) anim.SetBool("isWalking", false);
 
         LookAtTarget();
+
+        // 스킬 시전 중이면 기본 공격 중지
+        if (IsCastingSkill) return;
 
         if (attackCooldown <= 0)
         {
@@ -164,6 +168,10 @@ public abstract class AttackBase : MonoBehaviour
         }
 
         agent.stoppingDistance = 0.1f;
+    }
+    public void ResetAttackCooldown()
+    {
+        attackCooldown = 0f;
     }
     protected void RaiseAttackEnded()
     {

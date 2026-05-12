@@ -22,30 +22,46 @@ public class DamageSkill : SkillBase
         if (data == null) yield break;
         if (target == null) yield break;
 
-        // 1. 타겟 방향으로 회전
+        // 일반 공격 강제 중단
+        AttackBase attackBase = GetComponent<AttackBase>();
+        if (attackBase != null)
+        {
+            attackBase.StopAllCoroutines();
+            attackBase.ResetAttackCooldown();
+        }
+
+        // 애니메이터 초기화 — 현재 재생 중인 공격 모션 즉시 종료
+        if (anim != null)
+        {
+            anim.ResetTrigger("doNormalAttack");
+            // Play로 강제로 Idle 상태로 복귀
+            anim.Play("Idle", 0, 0f);
+        }
+
+        // 두 프레임 대기 후 스킬 트리거
+        yield return null;
+        yield return null;
+
         Vector3 dir = (target.position - transform.position).normalized;
         dir.y = 0;
         if (dir != Vector3.zero)
             transform.rotation = Quaternion.LookRotation(dir);
 
-        // 2. 애니메이션 실행
         if (anim != null && !string.IsNullOrEmpty(data.animTriggerName))
+        {
+            anim.ResetTrigger(data.animTriggerName);
+            yield return null;
             anim.SetTrigger(data.animTriggerName);
+        }
 
-        // 3. 이펙트 스폰 타이밍까지 대기
         if (data.effectSpawnDelay > 0f)
             yield return new WaitForSeconds(data.effectSpawnDelay);
 
-        // 4. 이펙트 스폰
         SpawnEffect();
 
-        // 5. 단일 타겟 or 범위 타격 판정
-        if (data.isAoe)
-            ApplyAoeDamage();
-        else
-            ApplySingleDamage(target);
+        if (data.isAoe) ApplyAoeDamage();
+        else            ApplySingleDamage(target);
 
-        // 6. 애니메이션 나머지 대기
         float remaining = data.animDuration - data.effectSpawnDelay;
         if (remaining > 0f)
             yield return new WaitForSeconds(remaining);

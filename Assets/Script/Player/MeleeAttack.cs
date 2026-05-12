@@ -23,18 +23,20 @@ public class MeleeAttack : AttackBase
     }
     private IEnumerator AttackRoutine()
     {
-        // 1. 공격 준비 (정지 및 회전)
         agent.ResetPath();
         anim.SetBool("isWalking", false);
         LookAtTarget();
 
-        // 2. 애니메이션 실행
+        // 이전 트리거 초기화
+        anim.ResetTrigger("doNormalAttack");
+
+        // 애니메이터가 현재 프레임 처리를 완전히 마칠 때까지 대기
+        yield return null; // 1프레임
+        yield return null; // 2프레임 (확실하게)
+
         anim.SetTrigger("doNormalAttack");
 
-        // 3. 판정 타이밍까지 대기 (선딜레이)
         yield return new WaitForSeconds(damageDelay);
-
-        // 4. 실제 타격 판정 실행
         OnHit();
     }
     public override void OnHit()
