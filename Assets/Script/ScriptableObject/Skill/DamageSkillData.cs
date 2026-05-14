@@ -9,9 +9,13 @@ public class DamageSkillData : SkillData
     public float baseDamageMultiplier = 1.0f;  // 기본 배율
     public float damageMultiplierPerLevel = 0.1f; // 레벨당 증가 배율
     public bool useAp; //True면 AP, False면 AD
+    [Header("사거리 설정")]
+    public float castRange = 3f;  
     public float baseRange = 3f;
     public float rangePerLevel = 0f;
     public bool isAoe;
+    [Header("부가 디버프 효과 (선택)")]
+    public List<DebuffSkillData.DebuffEffect> onHitDebuffs = new List<DebuffSkillData.DebuffEffect>();
 
     [Header("애니메이션 / 이펙트")]
     public string animTriggerName;    // 애니메이터 트리거 이름

@@ -38,7 +38,7 @@ public abstract class SkillBase : MonoBehaviour
         if (skillData == null) return false;
         if (!IsReady) return false;
 
-        // 데미지 스킬이면 타겟 범위 체크
+        // 데미지 스킬이면 사거리 체크
         if (skillData.skillType == SkillData.SkillType.Damage)
         {
             if (target == null) return false;
@@ -46,12 +46,12 @@ public abstract class SkillBase : MonoBehaviour
             DamageSkillData dmgData = skillData as DamageSkillData;
             if (dmgData != null)
             {
-                float dist  = Vector3.Distance(transform.position, target.position);
-                float range = dmgData.GetRange(skillLevel);
+                float dist = Vector3.Distance(transform.position, target.position);
 
-                if (dist > range)
+                // 판정 범위(baseRange) 대신 사거리(castRange)로 체크
+                if (dist > dmgData.castRange)
                 {
-                    Debug.Log("[SkillBase] 타겟이 스킬 범위 밖입니다.");
+                    Debug.Log("[SkillBase] 타겟이 스킬 사거리 밖입니다.");
                     return false;
                 }
             }

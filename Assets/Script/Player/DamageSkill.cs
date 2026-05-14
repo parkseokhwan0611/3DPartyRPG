@@ -103,6 +103,24 @@ public class DamageSkill : SkillBase
 
         enemyHp.TakeDamage(CalculateDamage(), gameObject, myStat.GetDamageColor());
 
+        // 부가 디버프 적용
+        if (damageData.onHitDebuffs.Count > 0)
+        {
+            StatusEffectHandler handler = target.GetComponent<StatusEffectHandler>();
+            if (handler != null)
+            {
+                foreach (var debuff in damageData.onHitDebuffs)
+                {
+                    handler.ApplyEffect(new StatusEffect(
+                        debuff.effectType,
+                        debuff.GetValue(skillLevel),
+                        debuff.GetDuration(skillLevel),
+                        gameObject
+                    ));
+                }
+            }
+        }
+
         if (TargetHpScript.instance != null)
             TargetHpScript.instance.SetTarget(enemyHp);
     }
