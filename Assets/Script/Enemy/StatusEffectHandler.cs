@@ -3,28 +3,49 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.AI;
 
-// 몬스터에 붙는 상태이상 처리 컴포넌트
 public class StatusEffectHandler : MonoBehaviour
 {
     private NavMeshAgent agent;
     private Animator anim;
     private float baseSpeed;
 
-    // 현재 활성화된 상태이상 목록
     private List<StatusEffect> activeEffects = new List<StatusEffect>();
 
-    // 디버프 개수 (힐러 스킬 연계용)
     public int DebuffCount { get; private set; } = 0;
 
-    // 상태이상 이벤트
     public System.Action OnDebuffAdded;
     public System.Action OnDebuffRemoved;
+    public System.Action OnStunEnded;
+
+    // 스턴 전용 타이머 — 코루틴 의존 안 함
+    private float stunTimer  = 0f;
+    private bool  isStunned  = false;
 
     void Awake()
     {
-        agent    = GetComponent<NavMeshAgent>();
-        anim     = GetComponent<Animator>();
+        agent     = GetComponent<NavMeshAgent>();
+        anim      = GetComponent<Animator>();
         baseSpeed = agent != null ? agent.speed : 3f;
+    }
+
+    // ─────────────────────────────────────────────────────────────────
+    // Update — 스턴 타이머를 Update에서 직접 관리
+    // AttackBase/StatusEffectHandler 코루틴 충돌 완전 회피
+    // ─────────────────────────────────────────────────────────────────
+
+    void Update()
+    {
+        if (!isStunned) return;
+
+        stunTimer -= Time.deltaTime;
+
+        if (stunTimer <= 0f)
+        {
+            // EndStun 전에 isStunned를 먼저 false로 설정
+            // 같은 프레임에 Update가 다시 실행되는 것을 방지
+            isStunned = false;
+            EndStun();
+        }
     }
 
     // ─────────────────────────────────────────────────────────────────
@@ -33,13 +54,16 @@ public class StatusEffectHandler : MonoBehaviour
 
     public void ApplyEffect(StatusEffect effect)
     {
-        // 같은 타입의 효과가 있으면 갱신 (덮어씌우기)
-        RemoveEffect(effect.effectType);
+        if (effect.effectType == StatusEffectType.Stun)
+        {
+            ApplyStun(effect);
+            return;
+        }
 
+        // 스턴 외 효과는 기존 코루틴 방식
+        CancelEffect(effect.effectType);
         activeEffects.Add(effect);
-        StartCoroutine(EffectRoutine(effect));
 
-        // 디버프면 카운트 증가
         if (IsDebuff(effect.effectType))
         {
             DebuffCount++;
@@ -47,6 +71,76 @@ public class StatusEffectHandler : MonoBehaviour
         }
 
         ApplyEffectValue(effect, true);
+        effect.routine = StartCoroutine(EffectRoutine(effect));
+    }
+
+    // ─────────────────────────────────────────────────────────────────
+    // 스턴 전용 로직 — Update 타이머 방식
+    // ─────────────────────────────────────────────────────────────────
+
+    private void ApplyStun(StatusEffect effect)
+    {
+        if (isStunned)
+        {
+            stunTimer = Mathf.Max(stunTimer, effect.duration);
+            return;
+        }
+
+        // 1. isStunned를 먼저 true로 설정
+        //    AttackBase.Update()가 StopAndAttack()으로 진입 못 하게 막음
+        isStunned = true;
+        stunTimer = effect.duration;
+        DebuffCount++;
+        OnDebuffAdded?.Invoke();
+
+        // 2. NavMesh 정지
+        if (agent != null) agent.isStopped = true;
+
+        // 3. 애니메이션
+        if (anim != null)
+        {
+            anim.SetBool("isWalking", false);
+            anim.SetTrigger("isStun");
+        }
+
+        // 4. ForceCancelAttack 먼저 (코루틴 정지)
+        var attackBase = GetComponent<AttackBase>();
+        if (attackBase != null)
+            attackBase.ForceCancelAttack();
+
+        // 5. ResetAttackState 나중에 (IsAttacking 초기화)
+        var monsterAttack = GetComponent<MonsterMeleeAttack>();
+        if (monsterAttack != null)
+            monsterAttack.ResetAttackState();
+    }
+
+    private void EndStun()
+    {
+        // isStunned는 Update에서 이미 false로 설정됨
+        stunTimer = 0f;
+        DebuffCount = Mathf.Max(0, DebuffCount - 1);
+        OnDebuffRemoved?.Invoke();
+
+        if (agent != null)
+        {
+            agent.isStopped = false;
+            agent.velocity  = Vector3.zero;
+        }
+
+        if (anim != null)
+            anim.ResetTrigger("isStun");
+
+        OnStunEnded?.Invoke();
+    }
+
+    // ─────────────────────────────────────────────────────────────────
+    // 상태이상 확인
+    // ─────────────────────────────────────────────────────────────────
+
+    public bool HasDebuff(StatusEffectType type)
+    {
+        if (type == StatusEffectType.Stun) return isStunned;
+        return activeEffects.Exists(e => e.effectType == type);
     }
 
     // ─────────────────────────────────────────────────────────────────
@@ -55,8 +149,21 @@ public class StatusEffectHandler : MonoBehaviour
 
     public void RemoveEffect(StatusEffectType type)
     {
+        if (type == StatusEffectType.Stun)
+            {
+                if (isStunned)
+                {
+                    isStunned = false; // 먼저 false
+                    EndStun();
+                }
+                return;
+            }
+
         StatusEffect existing = activeEffects.Find(e => e.effectType == type);
         if (existing == null) return;
+
+        if (existing.routine != null)
+            StopCoroutine(existing.routine);
 
         activeEffects.Remove(existing);
         ApplyEffectValue(existing, false);
@@ -68,63 +175,80 @@ public class StatusEffectHandler : MonoBehaviour
         }
     }
 
-    // 모든 디버프 제거 (힐러 디버프 제거 스킬용)
+    private void CancelEffect(StatusEffectType type)
+    {
+        StatusEffect existing = activeEffects.Find(e => e.effectType == type);
+        if (existing == null) return;
+
+        if (existing.routine != null)
+            StopCoroutine(existing.routine);
+
+        activeEffects.Remove(existing);
+        ApplyEffectValue(existing, false);
+
+        if (IsDebuff(type))
+            DebuffCount = Mathf.Max(0, DebuffCount - 1);
+    }
+
     public void RemoveAllDebuffs()
     {
+        // 스턴 해제
+        if (isStunned) EndStun();
+
+        // 나머지 디버프 해제
         List<StatusEffect> debuffs = activeEffects.FindAll(e => IsDebuff(e.effectType));
         foreach (var debuff in debuffs)
         {
-            StopCoroutine(EffectRoutine(debuff));
+            if (debuff.routine != null)
+                StopCoroutine(debuff.routine);
+
             activeEffects.Remove(debuff);
             ApplyEffectValue(debuff, false);
         }
+
         DebuffCount = 0;
         OnDebuffRemoved?.Invoke();
     }
 
-    public bool HasDebuff(StatusEffectType type)
-    {
-        return activeEffects.Exists(e => e.effectType == type);
-    }
-
     // ─────────────────────────────────────────────────────────────────
-    // 효과 지속 코루틴
+    // 코루틴 (스턴 제외 효과)
     // ─────────────────────────────────────────────────────────────────
 
     private IEnumerator EffectRoutine(StatusEffect effect)
     {
         yield return new WaitForSeconds(effect.duration);
-        RemoveEffect(effect.effectType);
+
+        if (!activeEffects.Contains(effect)) yield break;
+
+        activeEffects.Remove(effect);
+        ApplyEffectValue(effect, false);
+
+        if (IsDebuff(effect.effectType))
+        {
+            DebuffCount = Mathf.Max(0, DebuffCount - 1);
+            OnDebuffRemoved?.Invoke();
+        }
     }
 
     // ─────────────────────────────────────────────────────────────────
-    // 효과 수치 적용/해제
+    // 효과 수치 적용/해제 (스턴 제외)
     // ─────────────────────────────────────────────────────────────────
 
     private void ApplyEffectValue(StatusEffect effect, bool apply)
     {
-        float multiplier = apply ? 1f : -1f;
-
         switch (effect.effectType)
         {
-            case StatusEffectType.Stun:
-                if (agent != null) agent.isStopped = apply;
-                if (anim != null)  anim.SetBool("isWalking", !apply);
-                break;
-
             case StatusEffectType.Slow:
             case StatusEffectType.MoveSpeedDown:
                 if (agent != null)
-                    agent.speed = apply
-                        ? baseSpeed * (1f - effect.value)
-                        : baseSpeed;
+                    agent.speed = apply ? baseSpeed * (1f - effect.value) : baseSpeed;
                 break;
 
             case StatusEffectType.AtkDown:
-                // EnemyHp나 MonsterMeleeAttack에서 참조
                 var monsterAttack = GetComponent<MonsterMeleeAttack>();
                 if (monsterAttack != null)
-                    monsterAttack.attackDamage -= monsterAttack.attackDamage * effect.value * multiplier;
+                    monsterAttack.attackDamage -= monsterAttack.attackDamage
+                        * effect.value * (apply ? 1f : -1f);
                 break;
         }
     }

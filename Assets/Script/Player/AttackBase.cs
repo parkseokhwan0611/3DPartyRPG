@@ -1,27 +1,27 @@
 using UnityEngine;
 using UnityEngine.AI;
-using System; // Action을 사용하기 위해 필요
+using System;
 
 public abstract class AttackBase : MonoBehaviour
 {
     // ─────────────────────────────────────────
-    // 이벤트 (PartyMemberScript가 구독)
+    // 이벤트
     // ─────────────────────────────────────────
-    public event Action OnAttackStarted; // 공격 시작 시 발생
-    public event Action OnAttackEnded;   // 공격 종료(타겟 해제) 시 발생
+    public event Action OnAttackStarted;
+    public event Action OnAttackEnded;
     public event Action OnAttackExecuted;
 
     // ─────────────────────────────────────────
     // 공격 설정
     // ─────────────────────────────────────────
     [Header("공격 설정")]
-    public float attackDamage  = 10f;
-    public float attackRange   = 2.0f;
-    public float attackSpeed   = 1.0f;
+    public float attackDamage   = 10f;
+    public float attackRange    = 2.0f;
+    public float attackSpeed    = 1.0f;
     public float attackDuration = 1.0f;
-    protected float attackCooldown = 0f;
+    protected float attackCooldown  = 0f;
     public bool IsCastingSkill { get; set; } = false;
-    private float firstAttackDelay = 0f; // 첫 공격 대기 타이머
+    private float firstAttackDelay  = 0f;
 
     // ─────────────────────────────────────────
     // 참조 컴포넌트
@@ -46,12 +46,10 @@ public abstract class AttackBase : MonoBehaviour
     protected virtual void Update()
     {
         if (attackCooldown > 0) attackCooldown -= Time.deltaTime;
-
-        // 첫 공격 딜레이 처리
         if (firstAttackDelay > 0)
         {
             firstAttackDelay -= Time.deltaTime;
-            return; // 딜레이 중엔 공격 로직 진입 안 함
+            return;
         }
 
         if (currentTarget == null) return;
@@ -72,7 +70,7 @@ public abstract class AttackBase : MonoBehaviour
 
     protected virtual void HandleAttackLogic()
     {
-        float distance = Vector3.Distance(transform.position, currentTarget.position);
+        float distance         = Vector3.Distance(transform.position, currentTarget.position);
         agent.stoppingDistance = attackRange;
 
         if (distance <= attackRange)
@@ -89,6 +87,10 @@ public abstract class AttackBase : MonoBehaviour
 
     protected virtual void StopAndAttack()
     {
+        // 스턴 중이면 공격 불가
+        var statusHandler = GetComponent<StatusEffectHandler>();
+        if (statusHandler != null && statusHandler.HasDebuff(StatusEffectType.Stun)) return;
+
         agent.ResetPath();
         if (anim != null) anim.SetBool("isWalking", false);
 
@@ -101,7 +103,7 @@ public abstract class AttackBase : MonoBehaviour
         {
             ExecuteAttack();
             attackCooldown = attackDuration / attackSpeed;
-            OnAttackExecuted?.Invoke(); // ← 공격 1회마다 발생
+            OnAttackExecuted?.Invoke();
         }
     }
 
@@ -111,17 +113,42 @@ public abstract class AttackBase : MonoBehaviour
     // 타겟 관리
     // ─────────────────────────────────────────────────────────────────
 
+    // 플레이어용 — firstAttackDelay 적용
     public void SetTarget(Transform target)
     {
         if (currentTarget == target) return;
 
-        // 진행 중인 공격 코루틴 중단
-        StopAllCoroutines();
-        attackCooldown   = 0f;
-        firstAttackDelay = 0.15f;
+        StopAttackCoroutine();
+        attackCooldown = 0f;
 
-        // anim.Play("Idle") 제거 — Root Motion 충돌 원인
-        // 트리거만 초기화
+        if (anim != null)
+            anim.ResetTrigger("doNormalAttack");
+
+        currentTarget = target;
+
+        if (currentTarget != null)
+        {
+            targetHealth     = currentTarget.GetComponent<EnemyHp>();
+            OnAttackStarted?.Invoke();
+            firstAttackDelay = 0.15f;
+        }
+        else
+        {
+            targetHealth     = null;
+            firstAttackDelay = 0f;
+            OnAttackEnded?.Invoke();
+        }
+    }
+
+    // 몬스터용 — firstAttackDelay 없이 즉시 공격
+    public void SetTargetImmediate(Transform target)
+    {
+        if (currentTarget == target) return;
+
+        // StopAttackCoroutine 제거 — 몬스터용이라 코루틴 중단 불필요
+        attackCooldown   = 0f;
+        firstAttackDelay = 0f;
+
         if (anim != null)
             anim.ResetTrigger("doNormalAttack");
 
@@ -137,13 +164,13 @@ public abstract class AttackBase : MonoBehaviour
             targetHealth = null;
             OnAttackEnded?.Invoke();
         }
-    }
+}
 
     protected void ClearTarget()
     {
         currentTarget = null;
         targetHealth  = null;
-        OnAttackEnded?.Invoke();       // ← 타겟이 죽어서 종료될 때도 알림
+        OnAttackEnded?.Invoke();
     }
 
     // ─────────────────────────────────────────────────────────────────
@@ -178,27 +205,33 @@ public abstract class AttackBase : MonoBehaviour
 
     public void ForceCancelAttack()
     {
-        StopAllCoroutines();
-        ClearTarget(); // ClearTarget이 OnAttackEnded 이벤트도 발생시킴
+        StopAttackCoroutine();
 
         if (anim != null)
         {
             anim.ResetTrigger("doNormalAttack");
-            anim.SetBool("isWalking", true);
+            anim.SetBool("isWalking", false);
         }
 
+        attackCooldown        = 0f;
+        firstAttackDelay      = 0f;
         agent.stoppingDistance = 0.1f;
     }
-    public void ResetAttackCooldown()
+
+    protected virtual void StopAttackCoroutine()
     {
-        attackCooldown = 0f;
+        // 기본 구현은 비워둠 — 자식 클래스에서 override
     }
-    protected void RaiseAttackEnded()
+
+    public void ResetAttackCooldown()   => attackCooldown   = 0f;
+    public void ResetFirstAttackDelay(float delay = 0.15f) => firstAttackDelay = delay;
+
+    protected void RaiseAttackEnded()   => OnAttackEnded?.Invoke();
+
+    public void ForceResetTarget()
     {
-        OnAttackEnded?.Invoke();
-    }
-    public void ResetFirstAttackDelay(float delay = 0.15f)
-    {
-        firstAttackDelay = delay;
+        currentTarget    = null;
+        targetHealth     = null;
+        firstAttackDelay = 0f;
     }
 }

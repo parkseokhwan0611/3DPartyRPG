@@ -1,4 +1,3 @@
-using System.Collections;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -10,22 +9,20 @@ public class GoblinThiefMaleScript : MonoBehaviour
     public NavMeshAgent navAgent;
 
     [Header("# Chase Settings")]
-    public float chaseDistance = 10f;
-    public float targetSwitchThreshold = 1.0f; // 타겟 전환 거리 차이 기준
+    public float chaseDistance          = 10f;
+    public float targetSwitchThreshold  = 1.0f;
 
     [Header("# NavMesh")]
     public float navSpeed = 3f;
 
-    // 타겟팅 갱신 간격 (매 프레임 X → 0.2초마다)
     private const float TargetingInterval = 0.2f;
-    private float targetingTimer = 0f;
+    private float targetingTimer          = 0f;
 
-    // 컴포넌트 캐싱
     private Rigidbody rigid;
     private AttackBase attackModule;
     private MonsterMeleeAttack monsterMeleeAttack;
+    private StatusEffectHandler statusHandler;
 
-    // 공격 상태 (이벤트로 관리)
     private bool isAttacking = false;
 
     // ─────────────────────────────────────────────────────────────────
@@ -34,23 +31,24 @@ public class GoblinThiefMaleScript : MonoBehaviour
 
     void Awake()
     {
-        animator            = GetComponent<Animator>();
-        rigid               = GetComponent<Rigidbody>();
-        navAgent            = GetComponent<NavMeshAgent>();
-        attackModule        = GetComponent<AttackBase>();
-        monsterMeleeAttack  = GetComponent<MonsterMeleeAttack>();
+        animator           = GetComponent<Animator>();
+        rigid              = GetComponent<Rigidbody>();
+        navAgent           = GetComponent<NavMeshAgent>();
+        attackModule       = GetComponent<AttackBase>();
+        monsterMeleeAttack = GetComponent<MonsterMeleeAttack>();
+        statusHandler      = GetComponent<StatusEffectHandler>();
 
-        // AttackBase 이벤트 구독 (내부 상태 직접 참조 제거)
+        if (statusHandler != null)
+            statusHandler.OnStunEnded += HandleStunEnded;
+
         if (attackModule != null)
         {
             attackModule.OnAttackStarted += () => isAttacking = true;
             attackModule.OnAttackEnded   += () => isAttacking = false;
         }
 
-        // EnemyHp 사망 이벤트 구독
         if (enemyHp != null)
             enemyHp.OnDied += HandleDeath;
-
     }
 
     void Start()
@@ -60,12 +58,8 @@ public class GoblinThiefMaleScript : MonoBehaviour
 
     void OnDestroy()
     {
-        // 구독 해제 (메모리 누수 방지)
-        if (attackModule != null)
-        {
-            attackModule.OnAttackStarted -= () => isAttacking = true;
-            attackModule.OnAttackEnded   -= () => isAttacking = false;
-        }
+        if (statusHandler != null)
+            statusHandler.OnStunEnded -= HandleStunEnded;
 
         if (enemyHp != null)
             enemyHp.OnDied -= HandleDeath;
@@ -76,7 +70,10 @@ public class GoblinThiefMaleScript : MonoBehaviour
         if (GameManager.instance == null || !GameManager.instance.isLive) return;
         if (enemyHp == null || enemyHp.isDead) return;
 
-        // 타겟팅은 매 프레임이 아닌 일정 간격으로만 실행
+        // 스턴 중이면 타겟팅 중단
+        if (statusHandler != null && statusHandler.HasDebuff(StatusEffectType.Stun))
+            return;
+
         targetingTimer += Time.deltaTime;
         if (targetingTimer >= TargetingInterval)
         {
@@ -88,11 +85,12 @@ public class GoblinThiefMaleScript : MonoBehaviour
     // ─────────────────────────────────────────────────────────────────
     // 타겟팅 로직
     // ─────────────────────────────────────────────────────────────────
+
     void TargetingLogic()
     {
         if (PartyManager.instance == null || PartyManager.instance.partyMembers.Count == 0)
         {
-            attackModule.SetTarget(null);
+            attackModule.SetTargetImmediate(null);
             return;
         }
 
@@ -100,7 +98,7 @@ public class GoblinThiefMaleScript : MonoBehaviour
 
         if (nearestTarget == null)
         {
-            attackModule.SetTarget(null);
+            attackModule.SetTargetImmediate(null);
             return;
         }
 
@@ -108,30 +106,31 @@ public class GoblinThiefMaleScript : MonoBehaviour
 
         if (distToTarget <= chaseDistance)
         {
-            // 공격 중이더라도 현재 타겟보다 더 가까운 타겟이 있으면 전환
             if (!isAttacking)
             {
-                attackModule.SetTarget(nearestTarget);
-                navAgent.isStopped = false;
+                // 같은 타겟이면 SetTarget 호출 안 함
+                if (attackModule.currentTarget != nearestTarget)
+                {
+                    attackModule.SetTargetImmediate(nearestTarget);
+                    navAgent.isStopped = false;
+                }
             }
             else if (attackModule.currentTarget != nearestTarget)
             {
-                // 공격 중에도 더 가까운 타겟으로 전환
-                // 단 현재 타겟과의 거리차가 일정 이상일 때만 전환 (너무 잦은 전환 방지)
                 float currentTargetDist = attackModule.currentTarget != null
                     ? Vector3.Distance(transform.position, attackModule.currentTarget.position)
                     : Mathf.Infinity;
 
-                if (distToTarget < currentTargetDist - 1.0f) // 1미터 이상 가까울 때만 전환
+                if (distToTarget < currentTargetDist - targetSwitchThreshold)
                 {
-                    attackModule.SetTarget(nearestTarget);
+                    attackModule.SetTargetImmediate(nearestTarget);
                     navAgent.isStopped = false;
                 }
             }
         }
-        else if (distToTarget > chaseDistance)
+        else
         {
-            attackModule.SetTarget(null);
+            attackModule.SetTargetImmediate(null);
         }
     }
 
@@ -144,8 +143,6 @@ public class GoblinThiefMaleScript : MonoBehaviour
         foreach (PartyMemberScript member in PartyManager.instance.partyMembers)
         {
             if (member == null) continue;
-
-            // 상태머신으로 사망 여부 체크
             if (member.CurrentState == PartyMemberScript.MemberState.Dead) continue;
 
             float dist = Vector3.Distance(currentPos, member.transform.position);
@@ -160,12 +157,38 @@ public class GoblinThiefMaleScript : MonoBehaviour
     }
 
     // ─────────────────────────────────────────────────────────────────
-    // 사망 처리 (EnemyHp.OnDied 이벤트 콜백)
+    // 스턴 해제
+    // ─────────────────────────────────────────────────────────────────
+
+    private void HandleStunEnded()
+    {
+        if (enemyHp == null || enemyHp.isDead) return;
+
+        if (navAgent.enabled)
+        {
+            navAgent.isStopped = false;
+            navAgent.velocity  = Vector3.zero;
+        }
+
+        isAttacking    = false;
+        targetingTimer = TargetingInterval;
+
+        // ForceResetTarget + SetTargetImmediate 대신
+        // attackCooldown만 초기화하고 타겟팅 로직에 맡김
+        attackModule.ResetAttackCooldown();
+
+        // 타겟이 있으면 그대로 유지, 없으면 새로 찾기
+        if (attackModule.currentTarget == null)
+            TargetingLogic();
+    }
+
+    // ─────────────────────────────────────────────────────────────────
+    // 사망 처리
     // ─────────────────────────────────────────────────────────────────
 
     private void HandleDeath()
     {
-        attackModule.SetTarget(null);
+        attackModule.SetTargetImmediate(null);
         isAttacking = false;
 
         if (navAgent.enabled)

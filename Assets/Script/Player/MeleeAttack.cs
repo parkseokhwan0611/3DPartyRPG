@@ -11,6 +11,7 @@ public class MeleeAttack : AttackBase
     [Header("타이밍 설정 (초 단위)")]
     public float damageDelay = 0.33f; // 애니메이션 시작 후 타격판정까지 걸리는 시간
     public string hitEffectName = "Yellow Sword Slash 1";
+    private Coroutine attackCoroutine;
     void Awake()
     {
         // 같은 오브젝트에 붙어있는 스탯 스크립트를 참조
@@ -110,7 +111,15 @@ public class MeleeAttack : AttackBase
     }
     protected override void ExecuteAttack()
     {
-        // 스킬 발동 로직
-        StartCoroutine(AttackRoutine());
+        attackCoroutine = StartCoroutine(AttackRoutine());
+    }
+
+    protected override void StopAttackCoroutine()
+    {
+        if (attackCoroutine != null)
+        {
+            StopCoroutine(attackCoroutine);
+            attackCoroutine = null;
+        }
     }
 }

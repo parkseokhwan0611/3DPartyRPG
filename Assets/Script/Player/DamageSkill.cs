@@ -153,6 +153,25 @@ public class DamageSkill : SkillBase
         }
     }
 
+    // 공통 디버프 적용 함수 추가
+    private void ApplyOnHitDebuffs(Transform target)
+    {
+        if (damageData.onHitDebuffs == null || damageData.onHitDebuffs.Count == 0) return;
+
+        StatusEffectHandler handler = target.GetComponent<StatusEffectHandler>();
+        if (handler == null) return;
+
+        foreach (var debuff in damageData.onHitDebuffs)
+        {
+            handler.ApplyEffect(new StatusEffect(
+                debuff.effectType,
+                debuff.GetValue(skillLevel),
+                debuff.GetDuration(skillLevel),
+                gameObject
+            ));
+        }
+}
+
     // ─────────────────────────────────────────────────────────────────
     // 이펙트 스폰
     // ─────────────────────────────────────────────────────────────────

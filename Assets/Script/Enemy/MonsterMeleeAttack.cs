@@ -11,6 +11,8 @@ public class MonsterMeleeAttack : AttackBase
 
     [Header("타이밍 설정 (초 단위)")]
     public float damageDelay = 0.33f;
+    private Coroutine attackCoroutine;
+
 
     // 외부에서 읽기만 가능하도록 프로퍼티로 변경
     public bool IsAttacking { get; private set; } = false;
@@ -40,9 +42,27 @@ public class MonsterMeleeAttack : AttackBase
 
     protected override void ExecuteAttack()
     {
-        // isAttacking 플래그로 코루틴 중복 실행 방지
         if (IsAttacking) return;
-        StartCoroutine(MonsterAttackRoutine());
+        
+        // 혹시 남아있는 이전 코루틴 강제 정지
+        if (attackCoroutine != null)
+        {
+            StopCoroutine(attackCoroutine);
+            attackCoroutine = null;
+        }
+        
+        attackCoroutine = StartCoroutine(MonsterAttackRoutine());
+    }
+
+    protected override void StopAttackCoroutine()
+    {
+        if (attackCoroutine != null)
+        {
+            StopCoroutine(attackCoroutine);
+            attackCoroutine = null;
+            Debug.Log("[Monster] 코루틴 정지됨");
+        }
+        IsAttacking = false;
     }
 
     private IEnumerator MonsterAttackRoutine()
@@ -73,14 +93,17 @@ public class MonsterMeleeAttack : AttackBase
 
         yield return new WaitForSeconds(attackDuration - damageDelay);
 
-        if (agent != null && agent.isOnNavMesh)
+        // 이 코루틴이 현재 등록된 attackCoroutine과 같을 때만 isStopped 해제
+        // 다른 코루틴이 이미 실행 중이면 건드리지 않음
+        var statusHandler = GetComponent<StatusEffectHandler>();
+        bool isStunned    = statusHandler != null && statusHandler.HasDebuff(StatusEffectType.Stun);
+
+        if (!isStunned && agent != null && agent.isOnNavMesh)
             agent.isStopped = false;
 
-        IsAttacking = false;
+        IsAttacking    = false;
+        attackCoroutine = null;
         RaiseAttackEnded();
-
-        // 코루틴이 끝난 시점에 쿨다운을 0으로 리셋
-        // AttackBase가 걸어놓은 쿨다운을 무효화
         attackCooldown = 0f;
     }
 
@@ -110,5 +133,9 @@ public class MonsterMeleeAttack : AttackBase
         Gizmos.color = Color.red;
         Vector3 hitPos = transform.position + (transform.forward * hitOffset);
         Gizmos.DrawWireSphere(hitPos, hitRadius);
+    }
+    public void ResetAttackState()
+    {
+        IsAttacking = false;
     }
 }
