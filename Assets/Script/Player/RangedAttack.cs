@@ -10,6 +10,8 @@ public class RangedAttack : AttackBase
     public Transform firePoint;
     public float damageDelay = 0.35f;
 
+    private Coroutine attackCoroutine;
+
     protected override void Start()
     {
         base.Start();
@@ -21,12 +23,31 @@ public class RangedAttack : AttackBase
 
     protected override void ExecuteAttack()
     {
-        StartCoroutine(AttackRoutine());
+        attackCoroutine = StartCoroutine(AttackRoutine());
+    }
+
+    // ─────────────────────────────────────────────────────────────────
+    // 공격 코루틴만 정확히 멈춤
+    // ─────────────────────────────────────────────────────────────────
+    protected override void StopAttackCoroutine()
+    {
+        if (attackCoroutine != null)
+        {
+            StopCoroutine(attackCoroutine);
+            attackCoroutine = null;
+        }
     }
 
     private IEnumerator AttackRoutine()
     {
         if (currentTarget == null) yield break;
+
+        // 공격 중 이동 중단
+        if (agent != null)
+        {
+            agent.ResetPath();
+            agent.velocity = Vector3.zero;
+        }
 
         anim.SetTrigger("doNormalAttack");
 
@@ -44,21 +65,17 @@ public class RangedAttack : AttackBase
         effect.transform.position = spawnPos;
         effect.transform.rotation = preciseRot;
 
-        float damage = myStat.TotalAp; // RangedAttack은 ATK 사용
+        float damage = myStat.TotalAp;
 
         if (Random.value <= myStat.TotalCritRate)
         {
             damage *= myStat.TotalCritDamage;
             CinemachineShake.Instance.ShakeCamera(10f, .2f);
-            // 나중에 치명타 전용 색상이나 연출 추가 가능
         }
 
         ProjectileScript proj = effect.GetComponent<ProjectileScript>();
         if (proj != null)
-        {
-            // 색상도 함께 전달
             proj.SetProjectileData(damage, gameObject, OnProjectileHit, myStat.GetDamageColor());
-        }
 
         Rigidbody rb = effect.GetComponent<Rigidbody>();
         if (rb != null)
@@ -68,6 +85,8 @@ public class RangedAttack : AttackBase
             rb.velocity        = Vector3.zero;
             rb.angularVelocity = Vector3.zero;
         }
+
+        attackCoroutine = null;
     }
 
     private void OnProjectileHit(EnemyHp enemyStat)

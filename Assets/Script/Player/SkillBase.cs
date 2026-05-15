@@ -95,25 +95,31 @@ public abstract class SkillBase : MonoBehaviour
     // ─────────────────────────────────────────────────────────────────
     // 스킬 루틴
     // ─────────────────────────────────────────────────────────────────
-
     private IEnumerator SkillRoutine(Transform target)
     {
-
-        // 발동 시작 플래그
-        if (skillManager != null) skillManager.IsActivatingSkill = true;
-        if (attackBase   != null)
+        if (attackBase != null)
         {
+            attackBase.CancelCurrentAttack();
             attackBase.IsCastingSkill = true;
             attackBase.ResetFirstAttackDelay(0.3f);
         }
 
-        // 현재 스킬 등록
+        // 스킬 시전 중 이동 중단
+        var agent = GetComponent<UnityEngine.AI.NavMeshAgent>();
+        if (agent != null)
+        {
+            agent.ResetPath();
+            agent.velocity = Vector3.zero;
+        }
+
+        if (skillManager != null) skillManager.IsActivatingSkill = true;
         skillManager?.RegisterCurrentSkill(this);
 
-        // 스킬 실행 (애니메이션 + 이펙트 + 데미지 + 후딜 전체 포함)
         yield return StartCoroutine(ExecuteSkill(target));
 
-        // 후딜까지 끝나면 완전 종료
+        if (skillManager != null && skillManager.IsActivatingSkill)
+            ReleaseActivating();
+
         if (attackBase != null) attackBase.IsCastingSkill = false;
         skillManager?.UnregisterCurrentSkill();
         skillCoroutine = null;

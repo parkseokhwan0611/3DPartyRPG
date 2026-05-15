@@ -76,12 +76,16 @@ public class PartyMemberScript : MonoBehaviour
     {
         UpdateAnimation();
 
-        // Dead 상태면 아무것도 하지 않음
         if (CurrentState == MemberState.Dead) return;
-
-        // Attacking 상태면 이동 로직을 건너뜀
-        // (AttackBase가 이동을 직접 제어하므로 여기선 관여하지 않음)
         if (CurrentState == MemberState.Attacking) return;
+
+        // 스킬 시전 중이면 이동 로직 중단
+        var skillManager = GetComponent<SkillManager>();
+        if (skillManager != null && skillManager.IsActivatingSkill) return;
+
+        // IsCastingSkill도 체크
+        var attackBase = GetComponent<AttackBase>();
+        if (attackBase != null && attackBase.IsCastingSkill) return;
 
         if (isLeader)
         {
@@ -190,6 +194,13 @@ public class PartyMemberScript : MonoBehaviour
     void UpdateAnimation()
     {
         if (anim == null) return;
+
+        // 스킬 시전 중이면 애니메이션 건드리지 않음
+        var skillManager = GetComponent<SkillManager>();
+        if (skillManager != null && skillManager.IsActivatingSkill) return;
+
+        var attackBase = GetComponent<AttackBase>();
+        if (attackBase != null && attackBase.IsCastingSkill) return;
 
         bool walking = isLeader
             ? agent.velocity.sqrMagnitude > 0.1f

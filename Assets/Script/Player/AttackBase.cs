@@ -70,6 +70,9 @@ public abstract class AttackBase : MonoBehaviour
 
     protected virtual void HandleAttackLogic()
     {
+        // 스킬 시전 중이면 이동/공격 로직 건드리지 않음
+        if (IsCastingSkill) return;
+
         float distance         = Vector3.Distance(transform.position, currentTarget.position);
         agent.stoppingDistance = attackRange;
 
@@ -87,9 +90,14 @@ public abstract class AttackBase : MonoBehaviour
 
     protected virtual void StopAndAttack()
     {
-        // 스턴 중이면 공격 불가
         var statusHandler = GetComponent<StatusEffectHandler>();
         if (statusHandler != null && statusHandler.HasDebuff(StatusEffectType.Stun)) return;
+
+        if (IsCastingSkill)
+        {
+            Debug.Log("[AttackBase] IsCastingSkill = true, 공격 중단");
+            return;
+        }
 
         agent.ResetPath();
         if (anim != null) anim.SetBool("isWalking", false);
@@ -233,5 +241,11 @@ public abstract class AttackBase : MonoBehaviour
         currentTarget    = null;
         targetHealth     = null;
         firstAttackDelay = 0f;
+    }
+
+    public void CancelCurrentAttack()
+    {
+        StopAttackCoroutine();
+        attackCooldown = 0f;
     }
 }

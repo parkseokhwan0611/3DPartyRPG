@@ -28,11 +28,11 @@ MonoBehaviour:
   - 20
   - 20
   cooldown:
-  - 6
-  - 6
-  - 6
-  - 6
-  - 6
+  - 8
+  - 8
+  - 8
+  - 8
+  - 8
   skillPointCost: 0200000002000000020000000200000004000000
   baseDamageMultiplier: 1.5
   damageMultiplierPerLevel: 0.1
@@ -50,6 +50,9 @@ MonoBehaviour:
   hasNextSkillBuff: 0
   nextSkillDamageBonus: 0.2
   nextSkillBuffDuration: 4
+  hasAggroEffect: 0
+  aggroAmount: 50
+  aggroRange: 10
   animTriggerName: doThunderSlash
   animDuration: 1.2
   effectSpawnDelay: 0.9
