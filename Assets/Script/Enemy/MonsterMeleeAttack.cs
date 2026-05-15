@@ -60,7 +60,6 @@ public class MonsterMeleeAttack : AttackBase
         {
             StopCoroutine(attackCoroutine);
             attackCoroutine = null;
-            Debug.Log("[Monster] 코루틴 정지됨");
         }
         IsAttacking = false;
     }

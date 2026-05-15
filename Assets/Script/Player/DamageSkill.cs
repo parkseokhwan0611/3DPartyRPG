@@ -28,7 +28,7 @@ public class DamageSkill : SkillBase
         if (dir != Vector3.zero)
             transform.rotation = Quaternion.LookRotation(dir);
 
-        // 2. 애니메이션 즉시 실행 (대기 없음)
+        // 2. 애니메이션 즉시 실행
         if (anim != null && !string.IsNullOrEmpty(data.animTriggerName))
         {
             anim.ResetTrigger(data.animTriggerName);
@@ -46,14 +46,17 @@ public class DamageSkill : SkillBase
         if (data.isAoe) ApplyAoeDamage(data);
         else            ApplySingleDamage(data, target);
 
-        // 6. 연계 버프 적용
+        // 6. 어그로 적용
+        ApplyAggro(data);
+
+        // 7. 연계 버프 적용
         if (data.hasNextSkillBuff)
             myStat.ApplyNextSkillBuff(data.nextSkillDamageBonus, data.nextSkillBuffDuration);
 
-        // ★ 데미지 판정 완료 → 후딜 캔슬 허용
+        // ★ 판정 완료 → 후딜 캔슬 허용
         ReleaseActivating();
 
-        // 7. 후딜 대기
+        // 8. 후딜 대기
         float remaining = data.animDuration - data.effectSpawnDelay;
         if (remaining > 0f)
             yield return new WaitForSeconds(remaining);
@@ -70,11 +73,9 @@ public class DamageSkill : SkillBase
         float baseStat = data.useAp ? myStat.TotalAp : myStat.TotalAtk;
         float damage   = baseStat * data.GetDamageMultiplier(skillLevel);
 
-        // 연계 버프 소모 (1회)
         float bonus = myStat.ConsumeNextSkillBonus();
         damage *= (1f + bonus);
 
-        // 치명타 판정
         if (Random.value <= myStat.TotalCritRate)
             damage *= myStat.TotalCritDamage;
 
@@ -148,6 +149,27 @@ public class DamageSkill : SkillBase
     }
 
     // ─────────────────────────────────────────────────────────────────
+    // 어그로 적용
+    // ─────────────────────────────────────────────────────────────────
+
+    private void ApplyAggro(DamageSkillData data)
+    {
+        if (!data.hasAggroEffect) return;
+
+        // 범위 내 모든 몬스터에게 어그로 추가
+        Collider[] cols = Physics.OverlapSphere(
+            transform.position, data.aggroRange, LayerMask.GetMask("Enemy"));
+
+        foreach (Collider col in cols)
+        {
+            // IAggroable 인터페이스 방식 (나중에 몬스터 종류 늘어날 때 확장 용이)
+            GoblinThiefMaleScript goblin = col.GetComponent<GoblinThiefMaleScript>();
+            if (goblin != null)
+                goblin.AddAggro(transform, data.aggroAmount);
+        }
+    }
+
+    // ─────────────────────────────────────────────────────────────────
     // 이펙트 스폰
     // ─────────────────────────────────────────────────────────────────
 
@@ -166,11 +188,20 @@ public class DamageSkill : SkillBase
 
     private void OnDrawGizmosSelected()
     {
-        if (damageData == null || !damageData.isAoe) return;
+        if (damageData == null) return;
 
-        Gizmos.color   = Color.yellow;
-        float range    = damageData.GetRange(skillLevel);
-        Vector3 hitPos = transform.position + transform.forward * (range * 0.5f);
-        Gizmos.DrawWireSphere(hitPos, range);
+        if (damageData.isAoe)
+        {
+            Gizmos.color   = Color.yellow;
+            float range    = damageData.GetRange(skillLevel);
+            Vector3 hitPos = transform.position + transform.forward * (range * 0.5f);
+            Gizmos.DrawWireSphere(hitPos, range);
+        }
+
+        if (damageData.hasAggroEffect)
+        {
+            Gizmos.color = Color.blue;
+            Gizmos.DrawWireSphere(transform.position, damageData.aggroRange);
+        }
     }
 }

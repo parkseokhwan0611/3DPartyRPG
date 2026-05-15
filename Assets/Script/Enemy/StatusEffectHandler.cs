@@ -7,7 +7,10 @@ public class StatusEffectHandler : MonoBehaviour
 {
     private NavMeshAgent agent;
     private Animator anim;
-    private float baseSpeed;
+
+    // 원본 수치 저장 (디버프 해제 시 정확히 복구)
+    private float originalSpeed     = 0f;
+    private float originalAtkDamage = 0f;
 
     private List<StatusEffect> activeEffects = new List<StatusEffect>();
 
@@ -17,32 +20,28 @@ public class StatusEffectHandler : MonoBehaviour
     public System.Action OnDebuffRemoved;
     public System.Action OnStunEnded;
 
-    // 스턴 전용 타이머 — 코루틴 의존 안 함
-    private float stunTimer  = 0f;
-    private bool  isStunned  = false;
+    // 스턴 전용 타이머
+    private float stunTimer = 0f;
+    private bool  isStunned = false;
+
+    // ─────────────────────────────────────────────────────────────────
+    // Unity 생명주기
+    // ─────────────────────────────────────────────────────────────────
 
     void Awake()
     {
-        agent     = GetComponent<NavMeshAgent>();
-        anim      = GetComponent<Animator>();
-        baseSpeed = agent != null ? agent.speed : 3f;
+        agent         = GetComponent<NavMeshAgent>();
+        anim          = GetComponent<Animator>();
+        originalSpeed = agent != null ? agent.speed : 3f;
     }
-
-    // ─────────────────────────────────────────────────────────────────
-    // Update — 스턴 타이머를 Update에서 직접 관리
-    // AttackBase/StatusEffectHandler 코루틴 충돌 완전 회피
-    // ─────────────────────────────────────────────────────────────────
 
     void Update()
     {
         if (!isStunned) return;
 
         stunTimer -= Time.deltaTime;
-
         if (stunTimer <= 0f)
         {
-            // EndStun 전에 isStunned를 먼저 false로 설정
-            // 같은 프레임에 Update가 다시 실행되는 것을 방지
             isStunned = false;
             EndStun();
         }
@@ -60,7 +59,6 @@ public class StatusEffectHandler : MonoBehaviour
             return;
         }
 
-        // 스턴 외 효과는 기존 코루틴 방식
         CancelEffect(effect.effectType);
         activeEffects.Add(effect);
 
@@ -75,7 +73,7 @@ public class StatusEffectHandler : MonoBehaviour
     }
 
     // ─────────────────────────────────────────────────────────────────
-    // 스턴 전용 로직 — Update 타이머 방식
+    // 스턴 전용 로직
     // ─────────────────────────────────────────────────────────────────
 
     private void ApplyStun(StatusEffect effect)
@@ -86,38 +84,29 @@ public class StatusEffectHandler : MonoBehaviour
             return;
         }
 
-        // 1. isStunned를 먼저 true로 설정
-        //    AttackBase.Update()가 StopAndAttack()으로 진입 못 하게 막음
         isStunned = true;
         stunTimer = effect.duration;
         DebuffCount++;
         OnDebuffAdded?.Invoke();
 
-        // 2. NavMesh 정지
         if (agent != null) agent.isStopped = true;
 
-        // 3. 애니메이션
         if (anim != null)
         {
             anim.SetBool("isWalking", false);
             anim.SetTrigger("isStun");
         }
 
-        // 4. ForceCancelAttack 먼저 (코루틴 정지)
-        var attackBase = GetComponent<AttackBase>();
-        if (attackBase != null)
-            attackBase.ForceCancelAttack();
-
-        // 5. ResetAttackState 나중에 (IsAttacking 초기화)
+        var attackBase    = GetComponent<AttackBase>();
         var monsterAttack = GetComponent<MonsterMeleeAttack>();
-        if (monsterAttack != null)
-            monsterAttack.ResetAttackState();
+
+        if (monsterAttack != null) monsterAttack.ResetAttackState();
+        if (attackBase    != null) attackBase.ForceCancelAttack();
     }
 
     private void EndStun()
     {
-        // isStunned는 Update에서 이미 false로 설정됨
-        stunTimer = 0f;
+        stunTimer   = 0f;
         DebuffCount = Mathf.Max(0, DebuffCount - 1);
         OnDebuffRemoved?.Invoke();
 
@@ -127,8 +116,7 @@ public class StatusEffectHandler : MonoBehaviour
             agent.velocity  = Vector3.zero;
         }
 
-        if (anim != null)
-            anim.ResetTrigger("isStun");
+        if (anim != null) anim.ResetTrigger("isStun");
 
         OnStunEnded?.Invoke();
     }
@@ -150,14 +138,14 @@ public class StatusEffectHandler : MonoBehaviour
     public void RemoveEffect(StatusEffectType type)
     {
         if (type == StatusEffectType.Stun)
+        {
+            if (isStunned)
             {
-                if (isStunned)
-                {
-                    isStunned = false; // 먼저 false
-                    EndStun();
-                }
-                return;
+                isStunned = false;
+                EndStun();
             }
+            return;
+        }
 
         StatusEffect existing = activeEffects.Find(e => e.effectType == type);
         if (existing == null) return;
@@ -184,7 +172,10 @@ public class StatusEffectHandler : MonoBehaviour
             StopCoroutine(existing.routine);
 
         activeEffects.Remove(existing);
-        ApplyEffectValue(existing, false);
+
+        // 스턴 외 효과는 수치 복구
+        if (type != StatusEffectType.Stun)
+            ApplyEffectValue(existing, false);
 
         if (IsDebuff(type))
             DebuffCount = Mathf.Max(0, DebuffCount - 1);
@@ -192,10 +183,12 @@ public class StatusEffectHandler : MonoBehaviour
 
     public void RemoveAllDebuffs()
     {
-        // 스턴 해제
-        if (isStunned) EndStun();
+        if (isStunned)
+        {
+            isStunned = false;
+            EndStun();
+        }
 
-        // 나머지 디버프 해제
         List<StatusEffect> debuffs = activeEffects.FindAll(e => IsDebuff(e.effectType));
         foreach (var debuff in debuffs)
         {
@@ -211,7 +204,7 @@ public class StatusEffectHandler : MonoBehaviour
     }
 
     // ─────────────────────────────────────────────────────────────────
-    // 코루틴 (스턴 제외 효과)
+    // 코루틴
     // ─────────────────────────────────────────────────────────────────
 
     private IEnumerator EffectRoutine(StatusEffect effect)
@@ -231,24 +224,48 @@ public class StatusEffectHandler : MonoBehaviour
     }
 
     // ─────────────────────────────────────────────────────────────────
-    // 효과 수치 적용/해제 (스턴 제외)
+    // 효과 수치 적용/해제 — 원본값 저장 방식으로 정확히 복구
     // ─────────────────────────────────────────────────────────────────
 
     private void ApplyEffectValue(StatusEffect effect, bool apply)
     {
         switch (effect.effectType)
         {
+            // ── 이동속도 감소 ──
             case StatusEffectType.Slow:
             case StatusEffectType.MoveSpeedDown:
-                if (agent != null)
-                    agent.speed = apply ? baseSpeed * (1f - effect.value) : baseSpeed;
+                if (agent == null) break;
+                if (apply)
+                {
+                    originalSpeed  = agent.speed; // 현재 속도 저장
+                    agent.speed    = originalSpeed * (1f - effect.value);
+                }
+                else
+                {
+                    agent.speed    = originalSpeed; // 원본 속도로 복구
+                    originalSpeed  = agent != null ? agent.speed : 3f;
+                }
                 break;
 
+            // ── 공격력 감소 ──
             case StatusEffectType.AtkDown:
                 var monsterAttack = GetComponent<MonsterMeleeAttack>();
-                if (monsterAttack != null)
-                    monsterAttack.attackDamage -= monsterAttack.attackDamage
-                        * effect.value * (apply ? 1f : -1f);
+                if (monsterAttack == null) break;
+                if (apply)
+                {
+                    originalAtkDamage          = monsterAttack.attackDamage; // 원본값 저장
+                    monsterAttack.attackDamage = originalAtkDamage * (1f - effect.value);
+                }
+                else
+                {
+                    monsterAttack.attackDamage = originalAtkDamage; // 원본값으로 정확히 복구
+                    originalAtkDamage          = 0f;
+                }
+                break;
+
+            // ── 방어력 감소 ──
+            case StatusEffectType.DefDown:
+                // 필요 시 추가
                 break;
         }
     }

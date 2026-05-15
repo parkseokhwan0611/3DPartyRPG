@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.AI;
+using System.Collections.Generic;
 
 public class GoblinThiefMaleScript : MonoBehaviour
 {
@@ -9,11 +10,15 @@ public class GoblinThiefMaleScript : MonoBehaviour
     public NavMeshAgent navAgent;
 
     [Header("# Chase Settings")]
-    public float chaseDistance          = 10f;
-    public float targetSwitchThreshold  = 1.0f;
+    public float chaseDistance         = 10f;
+    public float targetSwitchThreshold = 1.0f;
 
     [Header("# NavMesh")]
     public float navSpeed = 3f;
+
+    [Header("# Aggro Settings")]
+    public float aggroDecayRate = 5f;   // 초당 어그로 감소량
+    public float aggroThreshold = 10f;  // 이 수치 이상이면 어그로 타겟으로 전환
 
     private const float TargetingInterval = 0.2f;
     private float targetingTimer          = 0f;
@@ -24,6 +29,12 @@ public class GoblinThiefMaleScript : MonoBehaviour
     private StatusEffectHandler statusHandler;
 
     private bool isAttacking = false;
+
+    // ─────────────────────────────────────────────────────────────────
+    // 어그로 테이블
+    // ─────────────────────────────────────────────────────────────────
+    private Dictionary<Transform, float> aggroTable = new Dictionary<Transform, float>();
+    private Transform aggroTarget = null;
 
     // ─────────────────────────────────────────────────────────────────
     // Unity 생명주기
@@ -69,10 +80,10 @@ public class GoblinThiefMaleScript : MonoBehaviour
     {
         if (GameManager.instance == null || !GameManager.instance.isLive) return;
         if (enemyHp == null || enemyHp.isDead) return;
+        if (statusHandler != null && statusHandler.HasDebuff(StatusEffectType.Stun)) return;
 
-        // 스턴 중이면 타겟팅 중단
-        if (statusHandler != null && statusHandler.HasDebuff(StatusEffectType.Stun))
-            return;
+        // 어그로 자연 감소
+        DecayAggro();
 
         targetingTimer += Time.deltaTime;
         if (targetingTimer >= TargetingInterval)
@@ -80,6 +91,61 @@ public class GoblinThiefMaleScript : MonoBehaviour
             targetingTimer = 0f;
             TargetingLogic();
         }
+    }
+
+    // ─────────────────────────────────────────────────────────────────
+    // 어그로 시스템
+    // ─────────────────────────────────────────────────────────────────
+
+    // 외부(스킬)에서 호출
+    public void AddAggro(Transform target, float amount)
+    {
+        if (target == null) return;
+
+        if (aggroTable.ContainsKey(target))
+            aggroTable[target] += amount;
+        else
+            aggroTable[target] = amount;
+
+        RefreshAggroTarget();
+    }
+
+    private void RefreshAggroTarget()
+    {
+        float maxAggro      = aggroThreshold; // 임계값 이상만 어그로 타겟
+        Transform topTarget = null;
+
+        foreach (var entry in aggroTable)
+        {
+            if (entry.Key == null) continue;
+
+            PartyMemberScript member = entry.Key.GetComponent<PartyMemberScript>();
+            if (member != null && member.CurrentState == PartyMemberScript.MemberState.Dead)
+                continue;
+
+            if (entry.Value > maxAggro)
+            {
+                maxAggro  = entry.Value;
+                topTarget = entry.Key;
+            }
+        }
+
+        aggroTarget = topTarget;
+    }
+
+    private void DecayAggro()
+    {
+        if (aggroTable.Count == 0) return;
+
+        List<Transform> keys = new List<Transform>(aggroTable.Keys);
+        foreach (var key in keys)
+        {
+            aggroTable[key] -= aggroDecayRate * Time.deltaTime;
+            if (aggroTable[key] <= 0f)
+                aggroTable.Remove(key);
+        }
+
+        RefreshAggroTarget();
     }
 
     // ─────────────────────────────────────────────────────────────────
@@ -94,28 +160,28 @@ public class GoblinThiefMaleScript : MonoBehaviour
             return;
         }
 
-        Transform nearestTarget = GetNearestPartyMember();
+        // 어그로 타겟 우선, 없으면 가장 가까운 파티원
+        Transform target = aggroTarget != null ? aggroTarget : GetNearestPartyMember();
 
-        if (nearestTarget == null)
+        if (target == null)
         {
             attackModule.SetTargetImmediate(null);
             return;
         }
 
-        float distToTarget = Vector3.Distance(transform.position, nearestTarget.position);
+        float distToTarget = Vector3.Distance(transform.position, target.position);
 
         if (distToTarget <= chaseDistance)
         {
             if (!isAttacking)
             {
-                // 같은 타겟이면 SetTarget 호출 안 함
-                if (attackModule.currentTarget != nearestTarget)
+                if (attackModule.currentTarget != target)
                 {
-                    attackModule.SetTargetImmediate(nearestTarget);
+                    attackModule.SetTargetImmediate(target);
                     navAgent.isStopped = false;
                 }
             }
-            else if (attackModule.currentTarget != nearestTarget)
+            else if (attackModule.currentTarget != target)
             {
                 float currentTargetDist = attackModule.currentTarget != null
                     ? Vector3.Distance(transform.position, attackModule.currentTarget.position)
@@ -123,13 +189,16 @@ public class GoblinThiefMaleScript : MonoBehaviour
 
                 if (distToTarget < currentTargetDist - targetSwitchThreshold)
                 {
-                    attackModule.SetTargetImmediate(nearestTarget);
+                    attackModule.SetTargetImmediate(target);
                     navAgent.isStopped = false;
                 }
             }
         }
         else
         {
+            // 범위 이탈 시 어그로 초기화
+            aggroTable.Clear();
+            aggroTarget = null;
             attackModule.SetTargetImmediate(null);
         }
     }
@@ -173,13 +242,10 @@ public class GoblinThiefMaleScript : MonoBehaviour
         isAttacking    = false;
         targetingTimer = TargetingInterval;
 
-        // ForceResetTarget + SetTargetImmediate 대신
-        // attackCooldown만 초기화하고 타겟팅 로직에 맡김
-        attackModule.ResetAttackCooldown();
-
-        // 타겟이 있으면 그대로 유지, 없으면 새로 찾기
         if (attackModule.currentTarget == null)
             TargetingLogic();
+        else
+            attackModule.ResetAttackCooldown();
     }
 
     // ─────────────────────────────────────────────────────────────────
@@ -190,6 +256,8 @@ public class GoblinThiefMaleScript : MonoBehaviour
     {
         attackModule.SetTargetImmediate(null);
         isAttacking = false;
+        aggroTable.Clear();
+        aggroTarget = null;
 
         if (navAgent.enabled)
         {

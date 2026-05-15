@@ -21,6 +21,10 @@ public class DamageSkillData : SkillData
     public bool hasNextSkillBuff       = false;
     public float nextSkillDamageBonus  = 0.2f;  // 20% 증가
     public float nextSkillBuffDuration = 4f;    // 4초
+    [Header("어그로 설정")]
+    public bool  hasAggroEffect = false;
+    public float aggroAmount    = 50f;
+    public float aggroRange     = 10f;
 
     [Header("애니메이션 / 이펙트")]
     public string animTriggerName;    // 애니메이터 트리거 이름
