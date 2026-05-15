@@ -9,6 +9,8 @@ public class CharacterStat : MonoBehaviour, IDamageable
     public GameObject playerDamageText;
     public Transform hudPos;
     public ClassData classData;
+    [Header("# 스킬 연계 버프 VFX")]
+    public GameObject nextSkillBuffAura; // 인스펙터에서 아우라 오브젝트 연결
     public event Action OnHpChanged;
     public event Action OnMpChanged;
     // [중요] 이제 모든 스탯 정보는 이 안에 들어있습니다.
@@ -24,12 +26,7 @@ public class CharacterStat : MonoBehaviour, IDamageable
     //Critical
     public float TotalCritRate   => myStatus.TotalCritRate;
     public float TotalCritDamage => myStatus.TotalCritDamage;
-    // void Awake()
-    // {
-    //     // 초기화 (StatManager에서 데이터를 받아올 수도 있음)
-    //     hp = MaxHp;
-    // }
-    // CharacterStat.cs
+
     void Awake()
     {
         if (DataManager.instance != null)
@@ -37,6 +34,24 @@ public class CharacterStat : MonoBehaviour, IDamageable
             // partyIndex가 리스트 범위를 벗어나면 IndexOutOfRangeException 발생
             if (partyIndex < DataManager.instance.partyStatuses.Count)
                 myStatus = DataManager.instance.partyStatuses[partyIndex];
+        }
+    }
+    void Update()
+    {
+        if (myStatus == null) return;
+        if (myStatus.nextSkillBonusTimer > 0)
+        {
+            myStatus.nextSkillBonusTimer -= Time.deltaTime;
+
+            // 타이머 만료
+            if (myStatus.nextSkillBonusTimer <= 0f)
+            {
+                myStatus.nextSkillDamageBonus = 0f;
+
+                // 아우라 비활성화
+                if (nextSkillBuffAura != null)
+                    nextSkillBuffAura.SetActive(false);
+            }
         }
     }
     public void TakeDamage(float damage, GameObject attacker)
@@ -101,6 +116,32 @@ public class CharacterStat : MonoBehaviour, IDamageable
     public void RaiseHpChanged()
     {
         OnHpChanged?.Invoke();
+    }
+
+    // 연계 버프 적용
+    public void ApplyNextSkillBuff(float bonus, float duration)
+    {
+        myStatus.nextSkillDamageBonus = bonus;
+        myStatus.nextSkillBonusTimer  = duration;
+
+        // 아우라 활성화
+        if (nextSkillBuffAura != null)
+            nextSkillBuffAura.SetActive(true);
+    }
+    // 연계 버프 소모 (1회용)
+    public float ConsumeNextSkillBonus()
+    {
+        if (myStatus.nextSkillBonusTimer <= 0f) return 0f;
+
+        float bonus = myStatus.nextSkillDamageBonus;
+        myStatus.nextSkillDamageBonus = 0f;
+        myStatus.nextSkillBonusTimer  = 0f;
+
+        // 아우라 비활성화
+        if (nextSkillBuffAura != null)
+            nextSkillBuffAura.SetActive(false);
+
+        return bonus;
     }
     void Die() { /* 사망 로직 */ }
 }

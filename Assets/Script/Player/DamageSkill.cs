@@ -72,18 +72,24 @@ public class DamageSkill : SkillBase
         float remaining = data.animDuration - data.effectSpawnDelay;
         if (remaining > 0f)
             yield return new WaitForSeconds(remaining);
+        
+        if (data.hasNextSkillBuff)
+            myStat.ApplyNextSkillBuff(data.nextSkillDamageBonus, data.nextSkillBuffDuration);
     }
 
     // ─────────────────────────────────────────────────────────────────
     // 데미지 계산 (공통)
     // ─────────────────────────────────────────────────────────────────
-
     private float CalculateDamage()
     {
         if (myStat == null) return 0f;
 
         float baseStat   = damageData.useAp ? myStat.TotalAp : myStat.TotalAtk;
         float damage     = baseStat * damageData.GetDamageMultiplier(skillLevel);
+
+        // 연계 버프 소모 (1회)
+        float bonus = myStat.ConsumeNextSkillBonus();
+        damage *= (1f + bonus);
 
         // 치명타 판정
         if (Random.value <= myStat.TotalCritRate)

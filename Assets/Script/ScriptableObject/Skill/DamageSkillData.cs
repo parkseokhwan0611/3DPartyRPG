@@ -17,6 +17,11 @@ public class DamageSkillData : SkillData
     [Header("부가 디버프 효과 (선택)")]
     public List<DebuffSkillData.DebuffEffect> onHitDebuffs = new List<DebuffSkillData.DebuffEffect>();
 
+    [Header("다음 스킬 연계 버프 (선택)")]
+    public bool hasNextSkillBuff       = false;
+    public float nextSkillDamageBonus  = 0.2f;  // 20% 증가
+    public float nextSkillBuffDuration = 4f;    // 4초
+
     [Header("애니메이션 / 이펙트")]
     public string animTriggerName;    // 애니메이터 트리거 이름
     public float animDuration;        // 애니메이션 전체 길이

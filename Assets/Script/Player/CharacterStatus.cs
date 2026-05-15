@@ -45,6 +45,11 @@ public string charName;
     public event Action OnHpChanged;
     public Dictionary<PassiveSkillData, int> activeTriggerPassives 
         = new Dictionary<PassiveSkillData, int>();
+
+    // 스킬 연계 버프
+    public float nextSkillDamageBonus = 0f; // 다음 스킬 데미지 증가량
+    public float nextSkillBonusTimer  = 0f; // 버프 지속시간
+    
     public void RaiseHpChanged()
     {
         OnHpChanged?.Invoke();
