@@ -18,6 +18,12 @@ public class SkillManager : MonoBehaviour
     public int attackPerSkill = 2;
     private int attackCount   = 0;
 
+    // 스킬 발동 중 플래그 (캔슬 불가 구간)
+    public bool IsActivatingSkill { get; set; } = false;
+
+    // 현재 실행 중인 스킬 (후딜 포함 전체)
+    private SkillBase currentSkill;
+
     // ─────────────────────────────────────────────────────────────────
     // Unity 생명주기
     // ─────────────────────────────────────────────────────────────────
@@ -40,6 +46,35 @@ public class SkillManager : MonoBehaviour
     {
         if (attackBase != null)
             attackBase.OnAttackExecuted -= HandleAttackCount;
+    }
+
+    // ─────────────────────────────────────────────────────────────────
+    // 현재 스킬 등록/해제
+    // ─────────────────────────────────────────────────────────────────
+
+    public void RegisterCurrentSkill(SkillBase skill)
+    {
+        // 이전 스킬이 후딜 중이면 강제 종료
+        if (currentSkill != null && currentSkill != skill)
+            currentSkill.ForceStop();
+
+        currentSkill = skill;
+    }
+
+    public void UnregisterCurrentSkill()
+    {
+        currentSkill = null;
+    }
+
+    // 후딜 캔슬 시 현재 스킬의 후딜 코루틴 강제 종료
+    public void ForceStopCurrentSkill()
+    {
+        if (currentSkill != null)
+        {
+            currentSkill.ForceStop();
+            currentSkill = null;
+        }
+        IsActivatingSkill = false;
     }
 
     // ─────────────────────────────────────────────────────────────────
@@ -99,6 +134,11 @@ public class SkillManager : MonoBehaviour
         if (skill == null) return;
 
         Transform target = attackBase.currentTarget;
+
+        // 후딜 캔슬 — 현재 스킬 후딜 강제 종료 후 다음 스킬 실행
+        if (currentSkill != null && !IsActivatingSkill)
+            ForceStopCurrentSkill();
+
         skill.TryUseSkill(target);
     }
 
@@ -120,6 +160,8 @@ public class SkillManager : MonoBehaviour
 
     private void TryAutoUseSkill()
     {
+        if (IsActivatingSkill) return;
+
         Transform target = attackBase.currentTarget;
 
         List<SkillBase> readySlots = new List<SkillBase>();
@@ -133,16 +175,11 @@ public class SkillManager : MonoBehaviour
 
         SkillBase chosen = readySlots[Random.Range(0, readySlots.Count)];
 
-        // 힐/버프 스킬은 타겟 없어도 사용 가능
         if (chosen.skillData.skillType == SkillData.SkillType.Heal ||
             chosen.skillData.skillType == SkillData.SkillType.Buff)
-        {
             chosen.TryUseSkill(null);
-        }
         else
-        {
             chosen.TryUseSkill(target);
-        }
     }
 
     // ─────────────────────────────────────────────────────────────────

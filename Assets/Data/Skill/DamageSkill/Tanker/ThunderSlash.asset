@@ -20,7 +20,7 @@ MonoBehaviour:
   skillType: 0
   skillCategory: 0
   maxLevel: 5
-  requiredCharLevel: 10
+  requiredCharLevel: 1
   mpCost:
   - 20
   - 20
@@ -33,7 +33,7 @@ MonoBehaviour:
   - 6
   - 6
   - 6
-  skillPointCost: 0200000002000000020000000200000004000000
+  skillPointCost: 0000000002000000020000000200000004000000
   baseDamageMultiplier: 1.5
   damageMultiplierPerLevel: 0.1
   useAp: 0
@@ -47,6 +47,9 @@ MonoBehaviour:
     valuePerLevel: 0
     baseDuration: 1.5
     durationPerLevel: 0.2
+  hasNextSkillBuff: 0
+  nextSkillDamageBonus: 0.2
+  nextSkillBuffDuration: 4
   animTriggerName: doThunderSlash
   animDuration: 1.2
   effectSpawnDelay: 0.9

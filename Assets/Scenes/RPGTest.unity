@@ -18656,7 +18656,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Q
+  m_text: E
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 13e4e0ad888c53f4395a44590492ba3b, type: 2}
   m_sharedMaterial: {fileID: -726750342706656786, guid: 13e4e0ad888c53f4395a44590492ba3b,
@@ -20489,6 +20489,38 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 426316795}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &512650807
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 512650808}
+  m_Layer: 6
+  m_Name: Aura
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &512650808
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 512650807}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 603481365682240146}
+  m_Father: {fileID: 7052383835653015517}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &514986546
 GameObject:
@@ -34769,7 +34801,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Q
+  m_text: W
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 13e4e0ad888c53f4395a44590492ba3b, type: 2}
   m_sharedMaterial: {fileID: -726750342706656786, guid: 13e4e0ad888c53f4395a44590492ba3b,
@@ -46440,6 +46472,38 @@ Transform:
   m_Children:
   - {fileID: 1102703552}
   m_Father: {fileID: 2026780170}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1449722107
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1449722108}
+  m_Layer: 6
+  m_Name: Aura
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1449722108
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1449722107}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 6447154747158266995}
+  m_Father: {fileID: 969498966131715737}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1450237950
 GameObject:
@@ -58553,7 +58617,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Q
+  m_text: R
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 13e4e0ad888c53f4395a44590492ba3b, type: 2}
   m_sharedMaterial: {fileID: -726750342706656786, guid: 13e4e0ad888c53f4395a44590492ba3b,
@@ -78805,7 +78869,7 @@ Transform:
   - {fileID: 603113468430734504}
   - {fileID: 603098514361570220}
   - {fileID: 603157518960658676}
-  m_Father: {fileID: 7052383835653015517}
+  m_Father: {fileID: 512650808}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!137 &606997705636855909
 SkinnedMeshRenderer:
@@ -105981,7 +106045,7 @@ Transform:
   - {fileID: 4261813977960105079}
   - {fileID: 96342697}
   - {fileID: 56977920}
-  - {fileID: 6447154747158266995}
+  - {fileID: 1449722108}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &970929365943515661
@@ -113183,12 +113247,12 @@ PrefabInstance:
     - target: {fileID: 811392039888150760, guid: b40280d1a92c91b4b825e31c1ea7c03e,
         type: 3}
       propertyPath: hp
-      value: 200
+      value: 20000
       objectReference: {fileID: 0}
     - target: {fileID: 811392039888150760, guid: b40280d1a92c91b4b825e31c1ea7c03e,
         type: 3}
       propertyPath: maxHp
-      value: 200
+      value: 20000
       objectReference: {fileID: 0}
     - target: {fileID: 1411065692898396913, guid: b40280d1a92c91b4b825e31c1ea7c03e,
         type: 3}
@@ -154188,7 +154252,7 @@ Transform:
   m_Children:
   - {fileID: 6447096013195369593}
   - {fileID: 6442043262838364551}
-  m_Father: {fileID: 969498966131715737}
+  m_Father: {fileID: 1449722108}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &6462941364029887190
 GameObject:
@@ -173993,7 +174057,7 @@ Transform:
   - {fileID: 6309053436351933747}
   - {fileID: 656990473}
   - {fileID: 3489838958915056565}
-  - {fileID: 603481365682240146}
+  - {fileID: 512650808}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &7052676710258825796

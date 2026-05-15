@@ -3,27 +3,30 @@ using System.Collections;
 
 public abstract class SkillBase : MonoBehaviour
 {
-    private AttackBase attackBase;
     protected CharacterStat myStat;
     protected Animator anim;
+    protected AttackBase attackBase;
+    protected SkillManager skillManager;
 
     public SkillData skillData;
     public int skillLevel = 1;
 
     private float cooldownTimer = 0f;
 
-    // 쿨다운 진행률 (UI용 0~1)
-    public bool IsReady      => cooldownTimer <= 0f;
-    public float CooldownRatio => skillData != null
+    // 전체 스킬 코루틴 참조 (후딜 포함 전체를 추적)
+    private Coroutine skillCoroutine;
+
+    public bool IsReady        => cooldownTimer <= 0f;
+    public float CooldownRatio => skillData != null && skillData.cooldown.Length > 0
         ? Mathf.Clamp01(cooldownTimer / skillData.cooldown[skillLevel - 1])
         : 0f;
 
     protected virtual void Awake()
     {
-        myStat = GetComponent<CharacterStat>();
-        anim   = GetComponent<Animator>();
-
-        attackBase = GetComponent<AttackBase>();
+        myStat       = GetComponent<CharacterStat>();
+        anim         = GetComponent<Animator>();
+        attackBase   = GetComponent<AttackBase>();
+        skillManager = GetComponent<SkillManager>();
     }
 
     protected virtual void Update()
@@ -32,13 +35,19 @@ public abstract class SkillBase : MonoBehaviour
             cooldownTimer -= Time.deltaTime;
     }
 
-    // 외부(SkillManager)에서 호출
+    // ─────────────────────────────────────────────────────────────────
+    // 스킬 사용 시도
+    // ─────────────────────────────────────────────────────────────────
+
     public bool TryUseSkill(Transform target = null)
     {
         if (skillData == null) return false;
         if (!IsReady) return false;
 
-        // 데미지 스킬이면 사거리 체크
+        // 발동 중인 스킬이 있으면 캔슬 불가
+        if (skillManager != null && skillManager.IsActivatingSkill) return false;
+
+        // 데미지 스킬 사거리 체크
         if (skillData.skillType == SkillData.SkillType.Damage)
         {
             if (target == null) return false;
@@ -47,8 +56,6 @@ public abstract class SkillBase : MonoBehaviour
             if (dmgData != null)
             {
                 float dist = Vector3.Distance(transform.position, target.position);
-
-                // 판정 범위(baseRange) 대신 사거리(castRange)로 체크
                 if (dist > dmgData.castRange)
                 {
                     Debug.Log("[SkillBase] 타겟이 스킬 사거리 밖입니다.");
@@ -64,28 +71,63 @@ public abstract class SkillBase : MonoBehaviour
             if (!myStat.TryUseMp(cost)) return false;
         }
 
-        StartCoroutine(SkillRoutine(target));
-        cooldownTimer = skillData.cooldown[skillLevel - 1];
+        skillCoroutine = StartCoroutine(SkillRoutine(target));
+        cooldownTimer  = skillData.cooldown[skillLevel - 1];
         return true;
     }
 
-    // ExecuteSkill을 래핑해서 시작/종료 플래그 관리
-    private IEnumerator SkillRoutine(Transform target)
+    // ─────────────────────────────────────────────────────────────────
+    // 외부에서 스킬 코루틴 강제 종료 (다음 스킬 후딜 캔슬용)
+    // ─────────────────────────────────────────────────────────────────
+
+    public void ForceStop()
     {
-        // 스킬 시작 시 firstAttackDelay도 초기화
-        if (attackBase != null)
+        if (skillCoroutine != null)
         {
-            attackBase.IsCastingSkill = true;
-            attackBase.ResetFirstAttackDelay(0.3f); // 스킬 후 공격 딜레이
+            StopCoroutine(skillCoroutine);
+            skillCoroutine = null;
         }
 
+        // IsCastingSkill 즉시 해제
+        if (attackBase != null) attackBase.IsCastingSkill = false;
+    }
+
+    // ─────────────────────────────────────────────────────────────────
+    // 스킬 루틴
+    // ─────────────────────────────────────────────────────────────────
+
+    private IEnumerator SkillRoutine(Transform target)
+    {
+
+        // 발동 시작 플래그
+        if (skillManager != null) skillManager.IsActivatingSkill = true;
+        if (attackBase   != null)
+        {
+            attackBase.IsCastingSkill = true;
+            attackBase.ResetFirstAttackDelay(0.3f);
+        }
+
+        // 현재 스킬 등록
+        skillManager?.RegisterCurrentSkill(this);
+
+        // 스킬 실행 (애니메이션 + 이펙트 + 데미지 + 후딜 전체 포함)
         yield return StartCoroutine(ExecuteSkill(target));
 
-        // 스킬 종료 후 애니메이터 정착 대기
-        yield return new WaitForSeconds(0.1f);
+        // 후딜까지 끝나면 완전 종료
+        if (attackBase != null) attackBase.IsCastingSkill = false;
+        skillManager?.UnregisterCurrentSkill();
+        skillCoroutine = null;
+    }
 
-        if (attackBase != null)
-            attackBase.IsCastingSkill = false;
+    // ─────────────────────────────────────────────────────────────────
+    // 발동 플래그 제어
+    // ─────────────────────────────────────────────────────────────────
+
+    // 후딜 캔슬 허용 — 이펙트/데미지 판정 완료 후 각 스킬에서 호출
+    protected void ReleaseActivating()
+    {
+        if (skillManager != null) skillManager.IsActivatingSkill = false;
+        // IsCastingSkill은 SkillRoutine 끝에서 해제 (후딜 중 기본 공격 방지)
     }
 
     protected abstract IEnumerator ExecuteSkill(Transform target);

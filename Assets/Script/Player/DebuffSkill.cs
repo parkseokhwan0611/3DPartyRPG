@@ -28,12 +28,10 @@ public class DebuffSkill : SkillBase
         if (dir != Vector3.zero)
             transform.rotation = Quaternion.LookRotation(dir);
 
-        // 2. 애니메이션
+        // 2. 애니메이션 즉시 실행
         if (anim != null && !string.IsNullOrEmpty(data.animTriggerName))
         {
             anim.ResetTrigger(data.animTriggerName);
-            yield return null;
-            yield return null;
             anim.SetTrigger(data.animTriggerName);
         }
 
@@ -45,41 +43,31 @@ public class DebuffSkill : SkillBase
         SpawnEffect(data, target);
 
         // 5. 디버프 적용
-        if (data.isAoe)
-            ApplyAoeDebuff(data);
-        else
-            ApplySingleDebuff(data, target);
+        if (data.isAoe) ApplyAoeDebuff(data);
+        else            ApplySingleDebuff(data, target);
 
-        // 6. 나머지 애니메이션 대기
+        // ★ 디버프 적용 완료 → 후딜 캔슬 허용
+        ReleaseActivating();
+
+        // 6. 후딜 대기
         float remaining = data.animDuration - data.effectSpawnDelay;
         if (remaining > 0f)
             yield return new WaitForSeconds(remaining);
     }
 
-    // ─────────────────────────────────────────────────────────────────
-    // 단일 디버프
-    // ─────────────────────────────────────────────────────────────────
-
     private void ApplySingleDebuff(DebuffSkillData data, Transform target)
     {
         StatusEffectHandler handler = target.GetComponent<StatusEffectHandler>();
         if (handler == null) return;
-
         ApplyDebuffEffects(handler, data);
     }
 
-    // ─────────────────────────────────────────────────────────────────
-    // 광역 디버프
-    // ─────────────────────────────────────────────────────────────────
-
     private void ApplyAoeDebuff(DebuffSkillData data)
     {
-        AttackBase attackBase  = GetComponent<AttackBase>();
-        float range            = 5f; // 기본 광역 범위
-        Vector3 center         = transform.position + transform.forward * 2f;
+        float range    = 5f;
+        Vector3 center = transform.position + transform.forward * 2f;
 
         Collider[] hitCols = Physics.OverlapSphere(center, range, LayerMask.GetMask("Enemy"));
-
         foreach (Collider col in hitCols)
         {
             StatusEffectHandler handler = col.GetComponent<StatusEffectHandler>();
@@ -100,10 +88,6 @@ public class DebuffSkill : SkillBase
             ));
         }
     }
-
-    // ─────────────────────────────────────────────────────────────────
-    // 이펙트
-    // ─────────────────────────────────────────────────────────────────
 
     private void SpawnEffect(DebuffSkillData data, Transform target)
     {

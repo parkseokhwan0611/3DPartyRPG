@@ -1,6 +1,5 @@
 using UnityEngine;
 using System.Collections;
-using System.Collections.Generic;
 
 public class HealSkill : SkillBase
 {
@@ -22,12 +21,10 @@ public class HealSkill : SkillBase
         var data = GetHealData();
         if (data == null) yield break;
 
-        // 1. 애니메이션
+        // 1. 애니메이션 즉시 실행
         if (anim != null && !string.IsNullOrEmpty(data.animTriggerName))
         {
             anim.ResetTrigger(data.animTriggerName);
-            yield return null;
-            yield return null;
             anim.SetTrigger(data.animTriggerName);
         }
 
@@ -39,24 +36,20 @@ public class HealSkill : SkillBase
         SpawnCasterEffect(data);
 
         // 4. 힐 적용
-        if (data.isAoe)
-            ApplyAoeHeal(data);
-        else
-            ApplySingleHeal(data, target);
+        if (data.isAoe) ApplyAoeHeal(data);
+        else            ApplySingleHeal(data, target);
 
-        // 5. 나머지 애니메이션 대기
+        // ★ 힐 적용 완료 → 후딜 캔슬 허용
+        ReleaseActivating();
+
+        // 5. 후딜 대기
         float remaining = data.animDuration - data.effectSpawnDelay;
         if (remaining > 0f)
             yield return new WaitForSeconds(remaining);
     }
 
-    // ─────────────────────────────────────────────────────────────────
-    // 단일 힐
-    // ─────────────────────────────────────────────────────────────────
-
     private void ApplySingleHeal(HealSkillData data, Transform target)
     {
-        // 타겟이 없으면 자신을 힐
         CharacterStat targetStat = target != null
             ? target.GetComponent<CharacterStat>()
             : myStat;
@@ -65,13 +58,8 @@ public class HealSkill : SkillBase
 
         float healAmount = CalculateHeal(data);
         ApplyHeal(targetStat, healAmount, data);
-
         SpawnTargetEffect(data, targetStat.transform);
     }
-
-    // ─────────────────────────────────────────────────────────────────
-    // 광역 힐
-    // ─────────────────────────────────────────────────────────────────
 
     private void ApplyAoeHeal(HealSkillData data)
     {
@@ -91,10 +79,6 @@ public class HealSkill : SkillBase
             SpawnTargetEffect(data, member.transform);
         }
     }
-
-    // ─────────────────────────────────────────────────────────────────
-    // 힐 적용 (도트힐 / 즉시힐)
-    // ─────────────────────────────────────────────────────────────────
 
     private void ApplyHeal(CharacterStat stat, float amount, HealSkillData data)
     {
@@ -116,13 +100,11 @@ public class HealSkill : SkillBase
         {
             yield return new WaitForSeconds(interval);
             elapsed += interval;
-
             if (stat == null) yield break;
             HealTarget(stat, amountPerTick);
         }
     }
 
-    // HealSkill.cs - HealTarget() 수정
     private void HealTarget(CharacterStat stat, float amount)
     {
         if (stat == null) return;
@@ -132,24 +114,15 @@ public class HealSkill : SkillBase
 
         status.currentHp = Mathf.Clamp(status.currentHp + amount, 0, status.MaxHp);
         status.RaiseHpChanged();
-        stat.RaiseHpChanged(); // ← 직접 Invoke 대신 메서드 호출
+        stat.RaiseHpChanged();
     }
-
-    // ─────────────────────────────────────────────────────────────────
-    // 힐량 계산
-    // ─────────────────────────────────────────────────────────────────
 
     private float CalculateHeal(HealSkillData data)
     {
         if (myStat == null) return 0f;
-
         float baseStat = data.useApRatio ? myStat.TotalAp : myStat.TotalAtk;
         return baseStat * data.GetHealMultiplier(skillLevel);
     }
-
-    // ─────────────────────────────────────────────────────────────────
-    // 이펙트
-    // ─────────────────────────────────────────────────────────────────
 
     private void SpawnCasterEffect(HealSkillData data)
     {
