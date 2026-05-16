@@ -15,7 +15,8 @@ public class PartyMemberScript : MonoBehaviour
     // ─────────────────────────────────────────
     [HideInInspector] public NavMeshAgent agent;
     private Animator anim;
-    private AttackBase attackComp; // ← Awake에서 한 번만 캐싱
+    private AttackBase attackComp;
+    private SkillManager skillManager;
 
     // ─────────────────────────────────────────
     // 파티 체인 설정
@@ -39,12 +40,11 @@ public class PartyMemberScript : MonoBehaviour
     // ─────────────────────────────────────────────────────────────────
     void Awake()
     {
-        agent      = GetComponent<NavMeshAgent>();
-        anim       = GetComponent<Animator>();
-        attackComp = GetComponent<AttackBase>();
+        agent        = GetComponent<NavMeshAgent>();
+        anim         = GetComponent<Animator>();
+        attackComp   = GetComponent<AttackBase>();
+        skillManager = GetComponent<SkillManager>();
 
-        // AttackBase의 공격 시작/종료 이벤트를 구독합니다.
-        // PartyMemberScript는 이제 AttackBase의 내부 상태를 직접 보지 않습니다.
         if (attackComp != null)
         {
             attackComp.OnAttackStarted += HandleAttackStarted;
@@ -79,13 +79,8 @@ public class PartyMemberScript : MonoBehaviour
         if (CurrentState == MemberState.Dead) return;
         if (CurrentState == MemberState.Attacking) return;
 
-        // 스킬 시전 중이면 이동 로직 중단
-        var skillManager = GetComponent<SkillManager>();
         if (skillManager != null && skillManager.IsActivatingSkill) return;
-
-        // IsCastingSkill도 체크
-        var attackBase = GetComponent<AttackBase>();
-        if (attackBase != null && attackBase.IsCastingSkill) return;
+        if (attackComp  != null && attackComp.IsCastingSkill) return;
 
         if (isLeader)
         {
@@ -195,12 +190,8 @@ public class PartyMemberScript : MonoBehaviour
     {
         if (anim == null) return;
 
-        // 스킬 시전 중이면 애니메이션 건드리지 않음
-        var skillManager = GetComponent<SkillManager>();
         if (skillManager != null && skillManager.IsActivatingSkill) return;
-
-        var attackBase = GetComponent<AttackBase>();
-        if (attackBase != null && attackBase.IsCastingSkill) return;
+        if (attackComp  != null && attackComp.IsCastingSkill) return;
 
         bool walking = isLeader
             ? agent.velocity.sqrMagnitude > 0.1f

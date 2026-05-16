@@ -67,22 +67,17 @@ public class GameManager : MonoBehaviour
         }
         HpMPChange();
     }
-    public void HpMPChange() { //HP 변화
-        //체력이 최대치 안넘게
-        if(hp > maxhp) {
-            hp = maxhp;
-        }
-        //Mana 최대치 안넘게
-        if(mana > maxMana) {
-            mana = maxMana;
-        }
-        if(exp >= maxExp) {
+    public void HpMPChange()
+    {
+        hp   = Mathf.Min(hp, maxhp);
+        mana = Mathf.Min(mana, maxMana);
+        crit = Mathf.Min(crit, 100f);
+
+        if (exp >= maxExp)
+        {
             exp = 0;
             level++;
-            maxExp = level * 10; 
-        }
-        if(crit > 100) {
-            crit = 100;
+            maxExp = level * 10;
         }
     }
     public void Stop()

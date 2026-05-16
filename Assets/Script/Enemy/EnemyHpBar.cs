@@ -15,21 +15,21 @@ public class EnemyHpBar : MonoBehaviour
 
     public float changeSpeed = 1.5f; // HP 바 변경 속도
 
+    void Awake()
+    {
+        hpAmount = enemyHp.hp;
+    }
+
     void Start()
     {
         fixedRotation = transform.rotation;
-        currentHpFill = enemyHp.hp / enemyHp.maxHp; // 현재 HP로 초기화
-        camTransform = Camera.main.transform;
+        currentHpFill = enemyHp.hp / enemyHp.maxHp;
+        camTransform  = Camera.main.transform;
     }
 
     void LateUpdate()
     {
         transform.LookAt(transform.position + camTransform.rotation * Vector3.forward, camTransform.rotation * Vector3.up);
-    }
-
-    void Awake() 
-    { 
-        hpAmount = enemyHp.hp;
     }
 
     void Update()

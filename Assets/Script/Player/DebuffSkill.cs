@@ -3,7 +3,15 @@ using System.Collections;
 
 public class DebuffSkill : SkillBase
 {
+    private int enemyLayer;
+
     private DebuffSkillData debuffData;
+
+    protected override void Awake()
+    {
+        base.Awake();
+        enemyLayer = LayerMask.GetMask("Enemy");
+    }
 
     private DebuffSkillData GetDebuffData()
     {
@@ -64,10 +72,10 @@ public class DebuffSkill : SkillBase
 
     private void ApplyAoeDebuff(DebuffSkillData data)
     {
-        float range    = 5f;
+        float range    = data.aoeRange;
         Vector3 center = transform.position + transform.forward * 2f;
 
-        Collider[] hitCols = Physics.OverlapSphere(center, range, LayerMask.GetMask("Enemy"));
+        Collider[] hitCols = Physics.OverlapSphere(center, range, enemyLayer);
         foreach (Collider col in hitCols)
         {
             StatusEffectHandler handler = col.GetComponent<StatusEffectHandler>();

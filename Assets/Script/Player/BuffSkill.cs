@@ -72,8 +72,9 @@ public class BuffSkill : SkillBase
     {
         if (stat == null) yield break;
 
-        var status = DataManager.instance?.partyStatuses[stat.partyIndex];
-        if (status == null) yield break;
+        if (DataManager.instance == null) yield break;
+        if (stat.partyIndex < 0 || stat.partyIndex >= DataManager.instance.partyStatuses.Count) yield break;
+        var status = DataManager.instance.partyStatuses[stat.partyIndex];
 
         ApplyBuffEffects(status, data, skillLevel, 1f);
         SpawnTargetEffect(data, stat.transform);

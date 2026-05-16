@@ -16,14 +16,19 @@ public class PartyManager : MonoBehaviour
     [Header("참조")]
     public LayerMask groundLayer;
     public CinemachineVirtualCamera virtualCamera;
-    public static PartyManager instance; // 선언
+    public static PartyManager instance;
+
+    private int enemyLayer;
+    private Camera mainCamera;
 
     // ─────────────────────────────────────────────────────────────────
     // Unity 생명주기
     // ─────────────────────────────────────────────────────────────────
     void Awake()
     {
-        instance = this; // 초기화
+        instance   = this;
+        mainCamera = Camera.main;
+        enemyLayer = LayerMask.GetMask("Enemy");
     }
     void Start()
     {
@@ -57,7 +62,7 @@ public class PartyManager : MonoBehaviour
         if (currentLeader == null) return;
         if (!Input.GetMouseButtonDown(1)) return;
 
-        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
 
         // 우선순위 1: 적 클릭 → 공격 명령
         if (TryGetEnemyHit(ray, out RaycastHit enemyHit))
@@ -79,7 +84,7 @@ public class PartyManager : MonoBehaviour
 
     bool TryGetEnemyHit(Ray ray, out RaycastHit hit)
     {
-        return Physics.Raycast(ray, out hit, Mathf.Infinity, LayerMask.GetMask("Enemy"));
+        return Physics.Raycast(ray, out hit, Mathf.Infinity, enemyLayer);
     }
 
     bool TryGetGroundHit(Ray ray, out RaycastHit hit)

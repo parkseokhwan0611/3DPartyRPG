@@ -116,8 +116,9 @@ public class PartyStatusEffectHandler : MonoBehaviour
     {
         if (myStat == null) return;
 
-        var status    = DataManager.instance?.partyStatuses[myStat.partyIndex];
-        if (status == null) return;
+        if (DataManager.instance == null) return;
+        if (myStat.partyIndex < 0 || myStat.partyIndex >= DataManager.instance.partyStatuses.Count) return;
+        var status = DataManager.instance.partyStatuses[myStat.partyIndex];
 
         float multiplier = apply ? 1f : -1f;
 

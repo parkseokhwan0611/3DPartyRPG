@@ -109,8 +109,9 @@ public class HealSkill : SkillBase
     {
         if (stat == null) return;
 
-        var status = DataManager.instance?.partyStatuses[stat.partyIndex];
-        if (status == null) return;
+        if (DataManager.instance == null) return;
+        if (stat.partyIndex < 0 || stat.partyIndex >= DataManager.instance.partyStatuses.Count) return;
+        var status = DataManager.instance.partyStatuses[stat.partyIndex];
 
         status.currentHp = Mathf.Clamp(status.currentHp + amount, 0, status.MaxHp);
         status.RaiseHpChanged();

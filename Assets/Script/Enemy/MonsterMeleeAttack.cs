@@ -92,10 +92,7 @@ public class MonsterMeleeAttack : AttackBase
 
         yield return new WaitForSeconds(attackDuration - damageDelay);
 
-        // 이 코루틴이 현재 등록된 attackCoroutine과 같을 때만 isStopped 해제
-        // 다른 코루틴이 이미 실행 중이면 건드리지 않음
-        var statusHandler = GetComponent<StatusEffectHandler>();
-        bool isStunned    = statusHandler != null && statusHandler.HasDebuff(StatusEffectType.Stun);
+        bool isStunned = statusHandler != null && statusHandler.HasDebuff(StatusEffectType.Stun);
 
         if (!isStunned && agent != null && agent.isOnNavMesh)
             agent.isStopped = false;

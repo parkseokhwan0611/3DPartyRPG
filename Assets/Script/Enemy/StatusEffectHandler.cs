@@ -7,6 +7,8 @@ public class StatusEffectHandler : MonoBehaviour
 {
     private NavMeshAgent agent;
     private Animator anim;
+    private AttackBase attackBase;
+    private MonsterMeleeAttack monsterAttack;
 
     // 원본 수치 저장 (디버프 해제 시 정확히 복구)
     private float originalSpeed     = 0f;
@@ -32,6 +34,8 @@ public class StatusEffectHandler : MonoBehaviour
     {
         agent         = GetComponent<NavMeshAgent>();
         anim          = GetComponent<Animator>();
+        attackBase    = GetComponent<AttackBase>();
+        monsterAttack = GetComponent<MonsterMeleeAttack>();
         originalSpeed = agent != null ? agent.speed : 3f;
     }
 
@@ -96,9 +100,6 @@ public class StatusEffectHandler : MonoBehaviour
             anim.SetBool("isWalking", false);
             anim.SetTrigger("isStun");
         }
-
-        var attackBase    = GetComponent<AttackBase>();
-        var monsterAttack = GetComponent<MonsterMeleeAttack>();
 
         if (monsterAttack != null) monsterAttack.ResetAttackState();
         if (attackBase    != null) attackBase.ForceCancelAttack();
@@ -249,7 +250,6 @@ public class StatusEffectHandler : MonoBehaviour
 
             // ── 공격력 감소 ──
             case StatusEffectType.AtkDown:
-                var monsterAttack = GetComponent<MonsterMeleeAttack>();
                 if (monsterAttack == null) break;
                 if (apply)
                 {

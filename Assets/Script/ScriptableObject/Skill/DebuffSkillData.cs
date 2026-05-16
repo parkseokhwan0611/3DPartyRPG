@@ -6,6 +6,7 @@ public class DebuffSkillData : SkillData
 {
     [Header("디버프 설정")]
     public bool isAoe = false;
+    public float aoeRange = 5f;
 
     [Header("애니메이션 / 이펙트")]
     public string animTriggerName;

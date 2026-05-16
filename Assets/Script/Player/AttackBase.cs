@@ -32,6 +32,7 @@ public abstract class AttackBase : MonoBehaviour
     public Transform currentTarget;
     protected EnemyHp targetHealth;
     public LayerMask enemyLayer;
+    protected StatusEffectHandler statusHandler;
 
     // ─────────────────────────────────────────────────────────────────
     // Unity 생명주기
@@ -39,8 +40,9 @@ public abstract class AttackBase : MonoBehaviour
 
     protected virtual void Start()
     {
-        agent = GetComponent<NavMeshAgent>();
-        anim  = GetComponent<Animator>();
+        agent         = GetComponent<NavMeshAgent>();
+        anim          = GetComponent<Animator>();
+        statusHandler = GetComponent<StatusEffectHandler>();
     }
 
     protected virtual void Update()
@@ -90,7 +92,6 @@ public abstract class AttackBase : MonoBehaviour
 
     protected virtual void StopAndAttack()
     {
-        var statusHandler = GetComponent<StatusEffectHandler>();
         if (statusHandler != null && statusHandler.HasDebuff(StatusEffectType.Stun)) return;
 
         if (IsCastingSkill)
@@ -172,7 +173,7 @@ public abstract class AttackBase : MonoBehaviour
             targetHealth = null;
             OnAttackEnded?.Invoke();
         }
-}
+    }
 
     protected void ClearTarget()
     {

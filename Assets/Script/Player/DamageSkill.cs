@@ -3,7 +3,15 @@ using System.Collections;
 
 public class DamageSkill : SkillBase
 {
+    private int enemyLayer;
+
     private DamageSkillData damageData;
+
+    protected override void Awake()
+    {
+        base.Awake();
+        enemyLayer = LayerMask.GetMask("Enemy");
+    }
 
     private DamageSkillData GetDamageData()
     {
@@ -107,7 +115,7 @@ public class DamageSkill : SkillBase
         float range    = data.GetRange(skillLevel);
         Vector3 hitPos = transform.position + transform.forward * (range * 0.5f);
 
-        Collider[] hitCols = Physics.OverlapSphere(hitPos, range, LayerMask.GetMask("Enemy"));
+        Collider[] hitCols = Physics.OverlapSphere(hitPos, range, enemyLayer);
         bool isTargetSet   = false;
 
         foreach (Collider col in hitCols)
@@ -158,7 +166,7 @@ public class DamageSkill : SkillBase
 
         // 범위 내 모든 몬스터에게 어그로 추가
         Collider[] cols = Physics.OverlapSphere(
-            transform.position, data.aggroRange, LayerMask.GetMask("Enemy"));
+            transform.position, data.aggroRange, enemyLayer);
 
         foreach (Collider col in cols)
         {

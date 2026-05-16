@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.AI;
 using System.Collections;
 
 public abstract class SkillBase : MonoBehaviour
@@ -7,6 +8,7 @@ public abstract class SkillBase : MonoBehaviour
     protected Animator anim;
     protected AttackBase attackBase;
     protected SkillManager skillManager;
+    protected NavMeshAgent agent;
 
     public SkillData skillData;
     public int skillLevel = 1;
@@ -27,6 +29,7 @@ public abstract class SkillBase : MonoBehaviour
         anim         = GetComponent<Animator>();
         attackBase   = GetComponent<AttackBase>();
         skillManager = GetComponent<SkillManager>();
+        agent        = GetComponent<NavMeshAgent>();
     }
 
     protected virtual void Update()
@@ -105,7 +108,6 @@ public abstract class SkillBase : MonoBehaviour
         }
 
         // 스킬 시전 중 이동 중단
-        var agent = GetComponent<UnityEngine.AI.NavMeshAgent>();
         if (agent != null)
         {
             agent.ResetPath();
