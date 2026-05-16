@@ -13,6 +13,9 @@ public class CharacterStat : MonoBehaviour, IDamageable
     public GameObject nextSkillBuffAura;
     [Header("# 버프 아우라 슬롯 (인덱스 0~N)")]
     public GameObject[] buffAuras;
+    [Header("# 힐 텍스트")]
+    public string healTextPoolKey = "HealText";
+    public Color  healTextColor   = new Color(0.2f, 1f, 0.2f);
     public event Action OnHpChanged;
     public event Action OnMpChanged;
     private CharacterStatus myStatus;
@@ -104,6 +107,23 @@ public class CharacterStat : MonoBehaviour, IDamageable
         myStatus.currentHp = Mathf.Clamp(myStatus.currentHp + amount, 0, myStatus.MaxHp);
         myStatus.RaiseHpChanged();
         OnHpChanged?.Invoke();
+        SpawnHealText(amount);
+    }
+
+    private void SpawnHealText(float amount)
+    {
+        if (string.IsNullOrEmpty(healTextPoolKey)) return;
+        if (ObjectPoolManager.instance == null) return;
+
+        var go = ObjectPoolManager.instance.GetGo(healTextPoolKey);
+        if (go == null) return;
+
+        Vector3 spawnPos = hudPos != null ? hudPos.position : transform.position + Vector3.up * 2f;
+        go.transform.position = spawnPos;
+        go.transform.rotation = Quaternion.Euler(60f, 0f, 0f);
+
+        HealText ht = go.GetComponent<HealText>();
+        if (ht != null) ht.Setup(amount, healTextColor);
     }
 
     private void SpawnDamageText(float damage, Color color)
