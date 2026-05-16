@@ -136,7 +136,10 @@ public class CharacterStat : MonoBehaviour, IDamageable
         go.transform.rotation = Quaternion.Euler(60f, 0f, 0f);
 
         HealText ht = go.GetComponent<HealText>();
-        if (ht != null) ht.Setup(amount, healTextColor);
+        if (ht != null)
+            ht.Setup(amount, healTextColor);
+        else
+            Debug.LogWarning($"[CharacterStat] '{healTextPoolKey}' 프리팹에 HealText 컴포넌트가 없습니다.");
     }
 
     private void SpawnDamageText(float damage, Color color)

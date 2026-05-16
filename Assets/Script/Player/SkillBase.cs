@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.AI;
 using System.Collections;
+using System;
 
 public abstract class SkillBase : MonoBehaviour
 {
@@ -14,9 +15,10 @@ public abstract class SkillBase : MonoBehaviour
     public int skillLevel = 1;
 
     private float cooldownTimer = 0f;
-
-    // 전체 스킬 코루틴 참조 (후딜 포함 전체를 추적)
     private Coroutine skillCoroutine;
+
+    // 스킬 종료 시 이동/타겟팅 재개를 알리는 이벤트
+    public event Action OnSkillFinished;
 
     public bool IsReady        => cooldownTimer <= 0f;
     public float CooldownRatio => skillData != null && skillData.cooldown.Length > 0
@@ -107,12 +109,14 @@ public abstract class SkillBase : MonoBehaviour
             attackBase.ResetFirstAttackDelay(0.3f);
         }
 
-        // 스킬 시전 중 이동 중단
+        // 스킬 시전 중 이동 중단 + 걷기 애니메이션 즉시 해제
         if (agent != null)
         {
             agent.ResetPath();
             agent.velocity = Vector3.zero;
         }
+        if (anim != null)
+            anim.SetBool("isWalking", false);
 
         if (skillManager != null) skillManager.IsActivatingSkill = true;
         skillManager?.RegisterCurrentSkill(this);
@@ -125,6 +129,7 @@ public abstract class SkillBase : MonoBehaviour
         if (attackBase != null) attackBase.IsCastingSkill = false;
         skillManager?.UnregisterCurrentSkill();
         skillCoroutine = null;
+        OnSkillFinished?.Invoke();
     }
 
     // ─────────────────────────────────────────────────────────────────

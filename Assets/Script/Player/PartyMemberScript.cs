@@ -200,6 +200,20 @@ public class PartyMemberScript : MonoBehaviour
         anim.SetBool("isWalking", walking);
     }
 
+    // 버프/힐 스킬 종료 후 상태 복귀 (SkillManager에서 호출)
+    public void ResumeAfterSkill()
+    {
+        if (CurrentState == MemberState.Dead) return;
+
+        // 팔로워: Following 상태로 복귀해 즉시 이동 재개
+        if (!isLeader && targetToFollow != null)
+        {
+            float dist = Vector3.Distance(transform.position, targetToFollow.position);
+            if (dist > stopDistance)
+                ChangeState(MemberState.Following);
+        }
+    }
+
     void SmoothLookAt(Vector3 targetPos)
     {
         Vector3 dir = (targetPos - transform.position).normalized;

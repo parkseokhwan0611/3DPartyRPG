@@ -46,6 +46,12 @@ public class SkillManager : MonoBehaviour
     {
         if (attackBase != null)
             attackBase.OnAttackExecuted -= HandleAttackCount;
+
+        foreach (var slot in slots)
+        {
+            if (slot != null)
+                slot.OnSkillFinished -= OnAnySkillFinished;
+        }
     }
 
     // ─────────────────────────────────────────────────────────────────
@@ -107,7 +113,10 @@ public class SkillManager : MonoBehaviour
         }
 
         if (skill != null)
-            skill.skillData = data;
+        {
+            skill.skillData     = data;
+            skill.OnSkillFinished += OnAnySkillFinished;
+        }
 
         return skill;
     }
@@ -208,6 +217,13 @@ public class SkillManager : MonoBehaviour
             case 2: slotE = newData; break;
             case 3: slotR = newData; break;
         }
+    }
+
+    private void OnAnySkillFinished()
+    {
+        // 버프/힐 스킬 종료 후 이동/타겟팅 즉시 재개
+        if (memberScript != null)
+            memberScript.ResumeAfterSkill();
     }
 
     public float GetCooldownRatio(int index)
