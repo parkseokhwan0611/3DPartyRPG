@@ -31,6 +31,7 @@ public class SkillDetailPanelUI : MonoBehaviour
     private SkillData currentSkill;
     private int currentCharIndex;
     private SkillWindowUI skillWindow;
+    private CharacterStat currentCaster;
 
     void Start()
     {
@@ -50,6 +51,7 @@ public class SkillDetailPanelUI : MonoBehaviour
     {
         currentSkill     = skill;
         currentCharIndex = charIndex;
+        currentCaster    = FindCasterStat(charIndex);
 
         int currentLevel = status.GetSkillLevel(skill);
         int nextLevel    = currentLevel + 1;
@@ -143,7 +145,7 @@ public class SkillDetailPanelUI : MonoBehaviour
         else if (skill is BuffSkillData buffSkill)
         {
             SetTextSafe(damageText,  "");
-            SetTextSafe(specialText, GetBuffDescription(buffSkill, level));
+            SetTextSafe(specialText, GetBuffDescription(buffSkill, level, currentCaster));
         }
         else if (skill is DebuffSkillData debuffSkill)
         {
@@ -177,7 +179,7 @@ public class SkillDetailPanelUI : MonoBehaviour
         else if (skill is BuffSkillData buffSkill)
         {
             SetTextSafe(nextDamageText,  "");
-            SetTextSafe(nextSpecialText, GetBuffDescription(buffSkill, nextLevel));
+            SetTextSafe(nextSpecialText, GetBuffDescription(buffSkill, nextLevel, currentCaster));
         }
         else if (skill is DebuffSkillData debuffSkill)
         {
@@ -196,7 +198,7 @@ public class SkillDetailPanelUI : MonoBehaviour
         }
     }
 
-    private string GetBuffDescription(BuffSkillData buff, int level)
+    private string GetBuffDescription(BuffSkillData buff, int level, CharacterStat caster)
     {
         if (buff.buffEffects == null || buff.buffEffects.Count == 0) return "";
 
@@ -205,24 +207,91 @@ public class SkillDetailPanelUI : MonoBehaviour
 
         foreach (var effect in buff.buffEffects)
         {
-            float value = effect.GetValue(level);
-            switch (effect.effectType)
-            {
-                case BuffSkillData.BuffEffectType.AtkBonus:    result += $"공격력 +{value}\n";                     break;
-                case BuffSkillData.BuffEffectType.ApBonus:     result += $"주문력 +{value}\n";                     break;
-                case BuffSkillData.BuffEffectType.DefBonus:    result += $"방어력 +{value}\n";                     break;
-                case BuffSkillData.BuffEffectType.CritRate:    result += $"치명타 확률 +{value * 100f:F1}%\n";     break;
-                case BuffSkillData.BuffEffectType.CritDamage:  result += $"치명타 배율 +{value * 100f:F1}%\n";     break;
-                case BuffSkillData.BuffEffectType.MaxHpBonus:  result += $"최대 체력 +{value}\n";                  break;
-                case BuffSkillData.BuffEffectType.SpeedBonus:  result += $"이동속도 +{value}\n";                   break;
-                case BuffSkillData.BuffEffectType.Shield:      result += $"쉴드 +{value}\n";                       break;
-                case BuffSkillData.BuffEffectType.ManaRegen:   result += $"마나 재생 +{value}/초\n";               break;
-                case BuffSkillData.BuffEffectType.HpRegen:     result += $"체력 재생 +{value}/초\n";               break;
-                case BuffSkillData.BuffEffectType.DebuffImmune: result += "디버프 면역\n";                         break;
-            }
+            float flat          = effect.GetValue(level);
+            float scalingAmount = GetScalingAmount(effect, level, caster);
+            float total         = flat + scalingAmount;
+            result += FormatBuffLine(effect, level, total, flat, scalingAmount, caster) + "\n";
         }
 
         return result.TrimEnd('\n');
+    }
+
+    // 스탯 비례 계산량 반환
+    private float GetScalingAmount(BuffSkillData.BuffEffect effect, int level, CharacterStat caster)
+    {
+        if (caster == null || effect.scalingStat == BuffSkillData.ScalingStat.None) return 0f;
+        float coeff = effect.GetScaling(level);
+        if (coeff == 0f) return 0f;
+
+        float stat = effect.scalingStat switch
+        {
+            BuffSkillData.ScalingStat.Str => caster.TotalStr,
+            BuffSkillData.ScalingStat.Vit => caster.TotalVit,
+            BuffSkillData.ScalingStat.Int => caster.TotalInt,
+            BuffSkillData.ScalingStat.Fth => caster.TotalFth,
+            _                             => 0f,
+        };
+        return stat * coeff;
+    }
+
+    // 비례 계수 표기 문자열 생성
+    private string GetScalingNote(BuffSkillData.BuffEffect effect, int level, float flat, float scalingAmount, CharacterStat caster)
+    {
+        if (effect.scalingStat == BuffSkillData.ScalingStat.None) return "";
+        float coeff = effect.GetScaling(level);
+        if (coeff == 0f) return "";
+
+        string statName = effect.scalingStat switch
+        {
+            BuffSkillData.ScalingStat.Str => "STR",
+            BuffSkillData.ScalingStat.Vit => "VIT",
+            BuffSkillData.ScalingStat.Int => "INT",
+            BuffSkillData.ScalingStat.Fth => "FTH",
+            _                             => "",
+        };
+
+        // 시전자 스탯을 알면 → "기본50 + STR×30% = +15" 형태
+        // 모르면         → "STR×30%" 형태
+        return caster != null
+            ? $" (기본{flat:F0} + {statName}×{coeff * 100f:F0}% = +{scalingAmount:F0})"
+            : $" + {statName}×{coeff * 100f:F0}%";
+    }
+
+    // 효과 한 줄 텍스트 생성
+    private string FormatBuffLine(BuffSkillData.BuffEffect effect, int level, float total, float flat, float scalingAmount, CharacterStat caster)
+    {
+        string note = GetScalingNote(effect, level, flat, scalingAmount, caster);
+
+        return effect.effectType switch
+        {
+            BuffSkillData.BuffEffectType.AtkBonus      => $"공격력 +{total:F0}{note}",
+            BuffSkillData.BuffEffectType.ApBonus        => $"주문력 +{total:F0}{note}",
+            BuffSkillData.BuffEffectType.DefBonus       => $"방어력 +{total:F0}{note}",
+            BuffSkillData.BuffEffectType.MagicResBonus  => $"마법 저항력 +{total:F0}{note}",
+            BuffSkillData.BuffEffectType.CritRate       => $"치명타 확률 +{total * 100f:F1}%{note}",
+            BuffSkillData.BuffEffectType.CritDamage     => $"치명타 배율 +{total * 100f:F1}%{note}",
+            BuffSkillData.BuffEffectType.MaxHpBonus     => $"최대 체력 +{total:F0}{note}",
+            BuffSkillData.BuffEffectType.SpeedBonus     => $"이동속도 +{total:F1}{note}",
+            BuffSkillData.BuffEffectType.Shield         => $"쉴드 +{total:F0}{note}",
+            BuffSkillData.BuffEffectType.ManaRegen      => $"마나 재생 +{total:F1}/초{note}",
+            BuffSkillData.BuffEffectType.HpRegen        => $"체력 재생 +{total:F1}/초{note}",
+            BuffSkillData.BuffEffectType.DebuffImmune   => "디버프 면역",
+            _                                           => "",
+        };
+    }
+
+    // partyIndex로 CharacterStat 탐색
+    private CharacterStat FindCasterStat(int partyIndex)
+    {
+        if (PartyManager.instance == null) return null;
+        foreach (var member in PartyManager.instance.partyMembers)
+        {
+            if (member == null) continue;
+            CharacterStat stat = member.GetComponent<CharacterStat>();
+            if (stat != null && stat.partyIndex == partyIndex)
+                return stat;
+        }
+        return null;
     }
 
     private string GetDebuffDescription(DebuffSkillData debuff, int level)
