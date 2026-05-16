@@ -33,15 +33,10 @@ public string charName;
     // 최종 치명타 수치
     public float TotalCritRate   => classData.baseCritRate + addedCritRate;
     public float TotalCritDamage => classData.baseCritDamage + addedCritDamage;
-    // 방어력 (VIT 비례)
-    public float addedDef = 0f;
+    //방어력
+    public float addedDef = 0f; // 아이템으로 추가되는 방어력
 
     public float TotalDef => ((classData.baseVit + addedVit) * classData.defPerVit) + addedDef;
-
-    // 마법 저항력 (VIT 비례 없음 — 버프/패시브/아이템으로만 증가)
-    public float addedMagicRes = 0f;
-
-    public float TotalMagicRes => classData.baseMagicRes + addedMagicRes;
 
     // 키: SkillData, 값: 현재 스킬 레벨
     public Dictionary<SkillData, int> skillLevels = new Dictionary<SkillData, int>();
@@ -126,9 +121,6 @@ public string charName;
                 break;
             case PassiveSkillData.PassiveEffectType.MaxHpPercent:
                 addedVit += classData.baseVit * passive.GetValue(level);
-                break;
-            case PassiveSkillData.PassiveEffectType.MagicResPercent:
-                addedMagicRes += TotalMagicRes * passive.GetValue(level);
                 break;
 
             // 특수 효과는 수치 적용 없이 등록만 함
