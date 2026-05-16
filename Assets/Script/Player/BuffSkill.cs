@@ -32,8 +32,9 @@ public class BuffSkill : SkillBase
         if (data.effectSpawnDelay > 0f)
             yield return new WaitForSeconds(data.effectSpawnDelay);
 
-        // 3. 이펙트 스폰
-        SpawnEffect(data);
+        // 3. 시전자 이펙트 스폰 (OneShot만 풀에서 꺼냄)
+        if (data.effectStyle == BuffSkillData.EffectStyle.OneShot)
+            SpawnEffect(data);
 
         // 4. 버프 적용
         if (data.isPartyBuff) ApplyPartyBuff(data);
@@ -76,19 +77,45 @@ public class BuffSkill : SkillBase
         if (stat.partyIndex < 0 || stat.partyIndex >= DataManager.instance.partyStatuses.Count) yield break;
         var status = DataManager.instance.partyStatuses[stat.partyIndex];
 
-        ApplyBuffEffects(status, data, skillLevel, 1f);
-        SpawnTargetEffect(data, stat.transform);
+        ApplyBuffEffects(status, data, skillLevel, 1f, myStat);
+        ShowBuffEffect(data, stat);
 
         yield return new WaitForSeconds(data.GetDuration(skillLevel));
 
-        ApplyBuffEffects(status, data, skillLevel, -1f);
+        ApplyBuffEffects(status, data, skillLevel, -1f, myStat);
+        HideBuffEffect(data, stat);
     }
 
-    private void ApplyBuffEffects(CharacterStatus status, BuffSkillData data, int level, float multiplier)
+    // 버프 시작 시 이펙트 표시
+    private void ShowBuffEffect(BuffSkillData data, CharacterStat stat)
+    {
+        switch (data.effectStyle)
+        {
+            case BuffSkillData.EffectStyle.OneShot:
+                SpawnTargetEffect(data, stat.transform);
+                break;
+
+            case BuffSkillData.EffectStyle.Aura:
+                stat.ActivateBuffAura(data.auraIndex);
+                break;
+        }
+    }
+
+    // 버프 종료 시 이펙트 정리 (OneShot은 이미 자동 반환되므로 아우라만 처리)
+    private void HideBuffEffect(BuffSkillData data, CharacterStat stat)
+    {
+        if (data.effectStyle == BuffSkillData.EffectStyle.Aura)
+            stat.DeactivateBuffAura(data.auraIndex);
+    }
+
+    private void ApplyBuffEffects(CharacterStatus status, BuffSkillData data, int level, float multiplier, CharacterStat caster)
     {
         foreach (var effect in data.buffEffects)
         {
-            float value = effect.GetValue(level) * multiplier;
+            float flat    = effect.GetValue(level);
+            float scaling = GetScalingValue(effect, level, caster);
+            float value   = (flat + scaling) * multiplier;
+
             switch (effect.effectType)
             {
                 case BuffSkillData.BuffEffectType.AtkBonus:      status.addedStr        += value; break;
@@ -100,6 +127,24 @@ public class BuffSkill : SkillBase
                 case BuffSkillData.BuffEffectType.MaxHpBonus:    status.addedVit        += value; break;
             }
         }
+    }
+
+    // 시전자 스탯 * 계수 계산
+    private float GetScalingValue(BuffSkillData.BuffEffect effect, int level, CharacterStat caster)
+    {
+        if (caster == null || effect.scalingStat == BuffSkillData.ScalingStat.None) return 0f;
+
+        float coeff = effect.GetScaling(level);
+        float stat  = effect.scalingStat switch
+        {
+            BuffSkillData.ScalingStat.Str => caster.TotalStr,
+            BuffSkillData.ScalingStat.Vit => caster.TotalVit,
+            BuffSkillData.ScalingStat.Int => caster.TotalInt,
+            BuffSkillData.ScalingStat.Fth => caster.TotalFth,
+            _                             => 0f,
+        };
+
+        return stat * coeff;
     }
 
     private void SpawnEffect(BuffSkillData data)

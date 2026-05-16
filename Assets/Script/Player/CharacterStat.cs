@@ -10,7 +10,9 @@ public class CharacterStat : MonoBehaviour, IDamageable
     public Transform hudPos;
     public ClassData classData;
     [Header("# 스킬 연계 버프 VFX")]
-    public GameObject nextSkillBuffAura; // 인스펙터에서 아우라 오브젝트 연결
+    public GameObject nextSkillBuffAura;
+    [Header("# 버프 아우라 슬롯 (인덱스 0~N)")]
+    public GameObject[] buffAuras;
     public event Action OnHpChanged;
     public event Action OnMpChanged;
     // [중요] 이제 모든 스탯 정보는 이 안에 들어있습니다.
@@ -26,6 +28,12 @@ public class CharacterStat : MonoBehaviour, IDamageable
     public float TotalMagicRes => myStatus.TotalMagicRes;
     public float TotalCritRate   => myStatus.TotalCritRate;
     public float TotalCritDamage => myStatus.TotalCritDamage;
+
+    // 원시 스탯 (base + added)
+    public float TotalStr => myStatus != null ? myStatus.classData.baseStr + myStatus.addedStr : 0f;
+    public float TotalVit => myStatus != null ? myStatus.classData.baseVit + myStatus.addedVit : 0f;
+    public float TotalInt => myStatus != null ? myStatus.classData.baseInt + myStatus.addedInt : 0f;
+    public float TotalFth => myStatus != null ? myStatus.classData.baseFht + myStatus.addedFht : 0f;
 
     void Awake()
     {
@@ -162,5 +170,17 @@ public class CharacterStat : MonoBehaviour, IDamageable
 
         return bonus;
     }
+    public void ActivateBuffAura(int index)
+    {
+        if (buffAuras == null || index < 0 || index >= buffAuras.Length) return;
+        if (buffAuras[index] != null) buffAuras[index].SetActive(true);
+    }
+
+    public void DeactivateBuffAura(int index)
+    {
+        if (buffAuras == null || index < 0 || index >= buffAuras.Length) return;
+        if (buffAuras[index] != null) buffAuras[index].SetActive(false);
+    }
+
     void Die() { /* 사망 로직 */ }
 }
