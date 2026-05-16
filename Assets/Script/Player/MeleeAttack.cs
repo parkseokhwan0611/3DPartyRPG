@@ -49,11 +49,14 @@ public class MeleeAttack : AttackBase
         Vector3 hitPos = transform.position + (transform.forward * hitOffset);
         Collider[] hitEnemies = Physics.OverlapSphere(hitPos, hitRadius, enemyLayer);
 
-        // 2. 이펙트 생성 (적을 한 명이라도 맞췄을 때)
+        // 2. 이펙트 생성 + 적중 시 체력 회복 (적을 한 명이라도 맞췄을 때)
         if (hitEnemies.Length > 0)
         {
             Vector3 effectPos = transform.position + (transform.forward * 0.3f);
             SpawnHitEffect(effectPos);
+
+            if (myStat.HpOnHit > 0f)
+                myStat.HealHp(myStat.HpOnHit);
         }
 
         float damage = myStat.TotalAtk;

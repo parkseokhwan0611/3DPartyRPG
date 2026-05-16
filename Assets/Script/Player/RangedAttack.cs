@@ -95,6 +95,9 @@ public class RangedAttack : AttackBase
 
         if (TargetHpScript.instance != null)
             TargetHpScript.instance.SetTarget(enemyStat);
+
+        if (myStat != null && myStat.HpOnHit > 0f)
+            myStat.HealHp(myStat.HpOnHit);
     }
 
     public override void OnHit() { }
