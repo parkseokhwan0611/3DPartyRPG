@@ -13,12 +13,16 @@ public class CharacterStat : MonoBehaviour, IDamageable
     public GameObject nextSkillBuffAura;
     [Header("# 버프 아우라 슬롯 (인덱스 0~N)")]
     public GameObject[] buffAuras;
+    [Header("# 힐 아우라")]
+    public int   healAuraIndex    = -1;   // buffAuras 배열에서 힐 아우라의 인덱스 (-1 = 비활성)
+    public float healAuraDuration = 1.5f; // 아우라 유지 시간 (초)
     [Header("# 힐 텍스트")]
     public string healTextPoolKey = "HealText";
     public Color  healTextColor   = new Color(0.2f, 1f, 0.2f);
     public event Action OnHpChanged;
     public event Action OnMpChanged;
     private CharacterStatus myStatus;
+    private Coroutine healAuraCoroutine;
     public int partyIndex;
     public float Hp     => myStatus.currentHp;
     public float MaxHp  => myStatus.MaxHp;
@@ -115,6 +119,28 @@ public class CharacterStat : MonoBehaviour, IDamageable
         myStatus.RaiseHpChanged();
         OnHpChanged?.Invoke();
         SpawnHealText(amount);
+        ShowHealAura();
+    }
+
+    private void ShowHealAura()
+    {
+        if (healAuraIndex < 0) return;
+        if (buffAuras == null || healAuraIndex >= buffAuras.Length) return;
+        if (buffAuras[healAuraIndex] == null) return;
+
+        // 이미 켜져 있으면 타이머만 리셋
+        if (healAuraCoroutine != null)
+            StopCoroutine(healAuraCoroutine);
+
+        healAuraCoroutine = StartCoroutine(HealAuraRoutine());
+    }
+
+    private IEnumerator HealAuraRoutine()
+    {
+        ActivateBuffAura(healAuraIndex);
+        yield return new WaitForSeconds(healAuraDuration);
+        DeactivateBuffAura(healAuraIndex);
+        healAuraCoroutine = null;
     }
 
     private void SpawnHealText(float amount)
