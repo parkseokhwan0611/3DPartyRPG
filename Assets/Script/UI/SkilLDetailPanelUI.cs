@@ -359,6 +359,10 @@ public class SkillDetailPanelUI : MonoBehaviour
     {
         switch (passive.effectType)
         {
+            case PassiveSkillData.PassiveEffectType.PhysDmgBonus:
+                return $"물리 피해 {passive.GetValue(level) * 100f:F1}% 증가 (최종 데미지 적용)";
+            case PassiveSkillData.PassiveEffectType.MagicDmgBonus:
+                return $"마법 피해 {passive.GetValue(level) * 100f:F1}% 증가 (최종 데미지 적용)";
             case PassiveSkillData.PassiveEffectType.AtkPercent:
                 return $"물리 공격력 {passive.GetValue(level) * 100f:F1}% 증가";
             case PassiveSkillData.PassiveEffectType.ApPercent:

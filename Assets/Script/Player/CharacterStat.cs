@@ -30,7 +30,14 @@ public class CharacterStat : MonoBehaviour, IDamageable
     public float TotalMagicRes  => myStatus.TotalMagicRes;
     public float TotalCritRate   => myStatus.TotalCritRate;
     public float TotalCritDamage => myStatus.TotalCritDamage;
-    public float HpOnHit => myStatus != null ? myStatus.hpOnHit : 0f;
+    public float HpOnHit       => myStatus != null ? myStatus.hpOnHit      : 0f;
+    public float PhysDmgBonus  => myStatus != null ? myStatus.physDmgBonus  : 0f;
+    public float MagicDmgBonus => myStatus != null ? myStatus.magicDmgBonus : 0f;
+
+    // 아이템/장비 평탄 보너스 (읽기 + 쓰기 모두 필요해서 프로퍼티로 래핑)
+    public float BonusAtk { get => myStatus?.bonusAtk ?? 0f; set { if (myStatus != null) myStatus.bonusAtk = value; } }
+    public float BonusAp  { get => myStatus?.bonusAp  ?? 0f; set { if (myStatus != null) myStatus.bonusAp  = value; } }
+    public float BonusDef { get => myStatus?.bonusDef ?? 0f; set { if (myStatus != null) myStatus.bonusDef = value; } }
 
     // 원시 스탯 (base + added)
     public float TotalStr => myStatus != null ? myStatus.classData.baseStr + myStatus.addedStr : 0f;

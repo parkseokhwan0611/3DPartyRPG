@@ -13,36 +13,47 @@ public string charName;
     public ClassData classData;
 
     public int statPoint = 0;  // 개인 스탯 포인트
+
+    // ── 스탯 포인트 배분으로 올라가는 수치 ──
     public float addedStr = 0;
     public float addedVit = 0;
     public float addedInt = 0;
     public float addedFht = 0;
 
+    // ── 아이템/장비/깡수치 보너스 (스탯과 별개) ──
+    public float bonusAtk = 0f;
+    public float bonusAp  = 0f;
+    public float bonusDef = 0f;
+
     public int skillPoint = 0;
 
     public float MaxHp   => classData.hp + ((classData.baseVit + addedVit) * classData.hpPerVit);
-    public float MaxMp => classData.mp; // 필요시 공식 추가
-    public float TotalAtk => (classData.baseStr + addedStr) * classData.atkPerStr;
+    public float MaxMp   => classData.mp;
+    public float TotalAtk => (classData.baseStr + addedStr) * classData.atkPerStr + bonusAtk;
     public float TotalAp  => ((classData.baseInt + addedInt) * classData.apPerInt)
-                        + ((classData.baseFht + addedFht) * classData.apPerFth);
+                           + ((classData.baseFht + addedFht) * classData.apPerFth) + bonusAp;
 
-    // 패시브/아이템으로 누적되는 추가 수치
+    // ── 아이템/패시브로 쌓이는 추가 수치 ──
     public float addedCritRate   = 0f;
     public float addedCritDamage = 0f;
 
-    // 최종 치명타 수치
     public float TotalCritRate   => classData.baseCritRate + addedCritRate;
     public float TotalCritDamage => classData.baseCritDamage + addedCritDamage;
-    // 방어력 (VIT 비례)
-    public float addedDef = 0f;
-    public float TotalDef => ((classData.baseVit + addedVit) * classData.defPerVit) + addedDef;
 
-    // 마법 저항력 (VIT 비례 없음 — 버프/패시브/아이템으로만 증가)
+    // 방어력 (VIT 비례 + 아이템 깡수치)
+    public float addedDef = 0f;
+    public float TotalDef => ((classData.baseVit + addedVit) * classData.defPerVit) + addedDef + bonusDef;
+
+    // 마법 저항력
     public float addedMagicRes = 0f;
     public float TotalMagicRes => classData.baseMagicRes + addedMagicRes;
 
     // 기본 공격 적중 시 체력 회복
     public float hpOnHit = 0f;
+
+    // 최종 피해 배율 보너스 — 패시브 스킬 전용 (0.1 = +10%)
+    public float physDmgBonus  = 0f;
+    public float magicDmgBonus = 0f;
 
     // 키: SkillData, 값: 현재 스킬 레벨
     public Dictionary<SkillData, int> skillLevels = new Dictionary<SkillData, int>();
@@ -72,7 +83,25 @@ public string charName;
         return skillLevels.ContainsKey(skill) ? skillLevels[skill] : 0;
     }
 
-    // 스킬 레벨업
+    public bool TryLevelUpSkill(SkillData skill)
+    {
+        int currentLevel = GetSkillLevel(skill);
+
+        if (currentLevel >= skill.maxLevel) return false;
+
+        int cost = skill.skillPointCost[currentLevel];
+        if (skillPoint < cost) return false;
+
+        skillPoint -= cost;
+        skillLevels[skill] = currentLevel + 1;
+
+        if (skill is PassiveSkillData passive)
+            ApplyPassive(passive, currentLevel, currentLevel + 1);
+
+        return true;
+    }
+
+    // LevelUpSkill (포인트 없이 강제 레벨업 — 디버그/이벤트용)
     public bool LevelUpSkill(SkillData skill)
     {
         int currentLevel = GetSkillLevel(skill);
@@ -80,64 +109,48 @@ public string charName;
 
         skillLevels[skill] = currentLevel + 1;
 
-        // 패시브 스킬이면 즉시 스탯 적용
         if (skill is PassiveSkillData passive)
-            ApplyPassive(passive, currentLevel + 1);
+            ApplyPassive(passive, currentLevel, currentLevel + 1);
 
         return true;
     }
 
-    public bool TryLevelUpSkill(SkillData skill)
+    // oldLevel: 적용 전 레벨 (0 = 미습득), newLevel: 적용 후 레벨
+    // 델타만 더해서 레벨업할수록 중복 누적되지 않음
+    private void ApplyPassive(PassiveSkillData passive, int oldLevel, int newLevel)
     {
-        int currentLevel = GetSkillLevel(skill);
+        float oldValue = oldLevel > 0 ? passive.GetValue(oldLevel) : 0f;
+        float delta    = passive.GetValue(newLevel) - oldValue;
 
-        // 최대 레벨 체크
-        if (currentLevel >= skill.maxLevel) return false;
-
-        // 포인트 비용 체크
-        int cost = skill.skillPointCost[currentLevel]; // 현재 레벨 인덱스
-        if (skillPoint < cost) return false;
-
-        // 포인트 차감 후 레벨업
-        skillPoint -= cost;
-        skillLevels[skill] = currentLevel + 1;
-
-        return true;
-    }
-
-    private void ApplyPassive(PassiveSkillData passive, int level)
-    {
         switch (passive.effectType)
         {
-            // 단순 수치 증가
-            case PassiveSkillData.PassiveEffectType.AtkPercent:
-                addedStr += classData.baseStr * passive.GetValue(level);
+            case PassiveSkillData.PassiveEffectType.PhysDmgBonus:
+                physDmgBonus += delta;
                 break;
-            case PassiveSkillData.PassiveEffectType.ApPercent:
-                addedInt += classData.baseInt * passive.GetValue(level);
-                break;
-            case PassiveSkillData.PassiveEffectType.DefPercent:
-                addedDef += TotalDef * passive.GetValue(level);
+            case PassiveSkillData.PassiveEffectType.MagicDmgBonus:
+                magicDmgBonus += delta;
                 break;
             case PassiveSkillData.PassiveEffectType.CritRate:
-                addedCritRate += passive.GetValue(level);
+                addedCritRate += delta;
                 break;
             case PassiveSkillData.PassiveEffectType.CritDamage:
-                addedCritDamage += passive.GetValue(level);
-                break;
-            case PassiveSkillData.PassiveEffectType.MaxHpPercent:
-                addedVit += classData.baseVit * passive.GetValue(level);
+                addedCritDamage += delta;
                 break;
             case PassiveSkillData.PassiveEffectType.MagicResPercent:
-                addedMagicRes += TotalMagicRes * passive.GetValue(level);
+                addedMagicRes += classData.baseMagicRes * delta;
+                break;
+            case PassiveSkillData.PassiveEffectType.DefPercent:
+                addedDef += ((classData.baseVit + addedVit) * classData.defPerVit) * delta;
+                break;
+            case PassiveSkillData.PassiveEffectType.MaxHpPercent:
+                addedVit += classData.baseVit * delta;
                 break;
 
-            // 특수 효과는 수치 적용 없이 등록만 함
-            // 실제 발동은 공격 스크립트에서 처리
+            // 트리거 패시브 — 수치 없이 등록만
             case PassiveSkillData.PassiveEffectType.OnCritLightning:
             case PassiveSkillData.PassiveEffectType.OnHitPoison:
             case PassiveSkillData.PassiveEffectType.OnKillHeal:
-                RegisterTriggerPassive(passive, level);
+                RegisterTriggerPassive(passive, newLevel);
                 break;
         }
     }

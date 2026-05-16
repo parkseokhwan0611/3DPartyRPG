@@ -59,7 +59,7 @@ public class MeleeAttack : AttackBase
                 myStat.HealHp(myStat.HpOnHit);
         }
 
-        float damage = myStat.TotalAtk;
+        float damage = myStat.TotalAtk * (1f + myStat.PhysDmgBonus);
         Color damageColor = myStat.GetDamageColor(); // CharacterStat에서 색상 가져옴
         bool isTargetSet = false; // UI 타겟 설정을 한 번만 하기 위한 변수
 

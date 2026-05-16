@@ -65,7 +65,7 @@ public class RangedAttack : AttackBase
         effect.transform.position = spawnPos;
         effect.transform.rotation = preciseRot;
 
-        float damage = myStat.TotalAp;
+        float damage = myStat.TotalAp * (1f + myStat.MagicDmgBonus);
 
         if (Random.value <= myStat.TotalCritRate)
         {

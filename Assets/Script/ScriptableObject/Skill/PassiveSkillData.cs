@@ -24,9 +24,11 @@ public class PassiveSkillData : SkillData
     public enum PassiveEffectType
     {
         // 수치 증가형
-        AtkPercent,          // 물리 공격력 % 증가
-        ApPercent,           // 마법 공격력 % 증가
+        AtkPercent,          // 물리 공격력 % 증가 (deprecated)
+        ApPercent,           // 마법 공격력 % 증가 (deprecated)
         DefPercent,          // 방어력 % 증가
+        PhysDmgBonus,        // 최종 물리 피해 % 증가
+        MagicDmgBonus,       // 최종 마법 피해 % 증가
         CritRate,            // 치명타 확률 증가
         CritDamage,          // 치명타 배율 증가
         MaxHpPercent,        // 최대 체력 % 증가
