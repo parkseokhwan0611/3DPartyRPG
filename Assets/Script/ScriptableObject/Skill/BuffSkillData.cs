@@ -39,13 +39,14 @@ public class BuffSkillData : SkillData
         AtkBonus,
         ApBonus,
         DefBonus,
+        MagicResBonus, // 마법 저항력 증가
         CritRate,
         CritDamage,
         MaxHpBonus,
         SpeedBonus,
-        Shield,        // 쉴드 추가
-        ManaRegen,     // 마나 재생 추가
-        HpRegen,       // 체력 재생 추가
-        DebuffImmune,  // 디버프 면역 추가
+        Shield,
+        ManaRegen,
+        HpRegen,
+        DebuffImmune,
     }
 }

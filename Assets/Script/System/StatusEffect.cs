@@ -1,5 +1,11 @@
 using UnityEngine;
 
+public enum DamageType
+{
+    Physical,
+    Magic,
+}
+
 public enum StatusEffectType
 {
     Stun,

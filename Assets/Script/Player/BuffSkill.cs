@@ -91,12 +91,13 @@ public class BuffSkill : SkillBase
             float value = effect.GetValue(level) * multiplier;
             switch (effect.effectType)
             {
-                case BuffSkillData.BuffEffectType.AtkBonus:    status.addedStr        += value; break;
-                case BuffSkillData.BuffEffectType.ApBonus:     status.addedInt        += value; break;
-                case BuffSkillData.BuffEffectType.DefBonus:    status.addedDef        += value; break;
-                case BuffSkillData.BuffEffectType.CritRate:    status.addedCritRate   += value; break;
-                case BuffSkillData.BuffEffectType.CritDamage:  status.addedCritDamage += value; break;
-                case BuffSkillData.BuffEffectType.MaxHpBonus:  status.addedVit        += value; break;
+                case BuffSkillData.BuffEffectType.AtkBonus:      status.addedStr        += value; break;
+                case BuffSkillData.BuffEffectType.ApBonus:       status.addedInt        += value; break;
+                case BuffSkillData.BuffEffectType.DefBonus:      status.addedDef        += value; break;
+                case BuffSkillData.BuffEffectType.MagicResBonus: status.addedMagicRes   += value; break;
+                case BuffSkillData.BuffEffectType.CritRate:      status.addedCritRate   += value; break;
+                case BuffSkillData.BuffEffectType.CritDamage:    status.addedCritDamage += value; break;
+                case BuffSkillData.BuffEffectType.MaxHpBonus:    status.addedVit        += value; break;
             }
         }
     }

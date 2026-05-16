@@ -20,10 +20,10 @@ public class CharacterStat : MonoBehaviour, IDamageable
     public float MaxHp => myStatus.MaxHp;
     public float Mp    => myStatus.currentMp;
     public float MaxMp => myStatus.MaxMp;
-    public float TotalAtk => myStatus.TotalAtk;
-    public float TotalAp => myStatus.TotalAp;
-    public float TotalDef => myStatus.TotalDef;
-    //Critical
+    public float TotalAtk      => myStatus.TotalAtk;
+    public float TotalAp       => myStatus.TotalAp;
+    public float TotalDef      => myStatus.TotalDef;
+    public float TotalMagicRes => myStatus.TotalMagicRes;
     public float TotalCritRate   => myStatus.TotalCritRate;
     public float TotalCritDamage => myStatus.TotalCritDamage;
 
@@ -54,21 +54,40 @@ public class CharacterStat : MonoBehaviour, IDamageable
             }
         }
     }
+    // 물리 데미지 (방어력으로 경감)
     public void TakeDamage(float damage, GameObject attacker)
     {
         if (myStatus == null) return;
 
-        // 퍼센트 감산 방식 예시 (나중에 필요하면)
-        float damageReduction = TotalDef / (TotalDef + 100f); // 100은 조정 가능한 상수
-        float finalDamage = damage * (1f - damageReduction);
+        float reduction  = TotalDef / (TotalDef + 100f);
+        float finalDamage = damage * (1f - reduction);
 
-        myStatus.currentHp -= finalDamage;
-        myStatus.currentHp = Mathf.Clamp(myStatus.currentHp, 0, myStatus.MaxHp);
+        ApplyDamage(finalDamage);
+    }
 
+    // 마법 데미지 (마법저항력으로 경감) — 마법 공격 몬스터에서 호출
+    public void TakeMagicDamage(float damage, GameObject attacker)
+    {
+        if (myStatus == null) return;
+
+        float reduction   = TotalMagicRes / (TotalMagicRes + 100f);
+        float finalDamage = damage * (1f - reduction);
+
+        ApplyDamage(finalDamage);
+    }
+
+    private void ApplyDamage(float finalDamage)
+    {
+        var shieldHandler = GetComponent<PartyStatusEffectHandler>();
+        if (shieldHandler != null)
+            finalDamage = shieldHandler.AbsorbDamage(finalDamage);
+
+        if (finalDamage <= 0f) return;
+
+        myStatus.currentHp = Mathf.Clamp(myStatus.currentHp - finalDamage, 0, myStatus.MaxHp);
         myStatus.RaiseHpChanged();
         OnHpChanged?.Invoke();
 
-        // 피격은 항상 빨간색
         SpawnDamageText(finalDamage, Color.red);
 
         if (myStatus.currentHp <= 0) Die();

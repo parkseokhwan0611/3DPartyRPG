@@ -128,8 +128,10 @@ public class PartyStatusEffectHandler : MonoBehaviour
                 status.addedStr += effect.value * multiplier;
                 break;
             case StatusEffectType.DefUp:
-            case StatusEffectType.MagicResUp:
                 status.addedDef += effect.value * multiplier;
+                break;
+            case StatusEffectType.MagicResUp:
+                status.addedMagicRes += effect.value * multiplier;
                 break;
             case StatusEffectType.AtkSpeedUp:
                 // AttackBase의 attackSpeed에 반영

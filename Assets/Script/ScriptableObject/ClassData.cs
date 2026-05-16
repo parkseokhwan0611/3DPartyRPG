@@ -22,6 +22,8 @@ public class ClassData : ScriptableObject
     public float apPerInt;  // 지능 1당 증가할 AP 계수
     public float apPerFth;  // 신앙 1당 증가할 AP 계수
     [Header("치명타")]
-    public float baseCritRate   = 0.05f; // 기본 치명타 확률 5%
-    public float baseCritDamage = 1.5f;  // 기본 치명타 배율 150%
+    public float baseCritRate   = 0.05f;
+    public float baseCritDamage = 1.5f;
+    [Header("마법 저항력")]
+    public float baseMagicRes = 0f; // VIT과 무관, 버프/패시브/아이템으로만 증가
 }
