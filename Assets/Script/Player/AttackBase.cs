@@ -94,11 +94,7 @@ public abstract class AttackBase : MonoBehaviour
     {
         if (statusHandler != null && statusHandler.HasDebuff(StatusEffectType.Stun)) return;
 
-        if (IsCastingSkill)
-        {
-            Debug.Log("[AttackBase] IsCastingSkill = true, 공격 중단");
-            return;
-        }
+        if (IsCastingSkill) return;
 
         agent.ResetPath();
         if (anim != null) anim.SetBool("isWalking", false);

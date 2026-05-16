@@ -422,11 +422,7 @@ public class SkillDetailPanelUI : MonoBehaviour
         CharacterStatus status = DataManager.instance.partyStatuses[currentCharIndex];
         bool success           = status.TryLevelUpSkill(currentSkill);
 
-        if (!success)
-        {
-            Debug.Log("[SkillDetailPanelUI] 스킬 레벨업 실패");
-            return;
-        }
+        if (!success) return;
 
         skillWindow.OnSkillLevelUp();
         ShowSkillDetail(currentSkill, status, DataManager.instance.partyLevel, currentCharIndex);

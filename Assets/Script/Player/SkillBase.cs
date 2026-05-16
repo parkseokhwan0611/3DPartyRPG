@@ -62,10 +62,7 @@ public abstract class SkillBase : MonoBehaviour
             {
                 float dist = Vector3.Distance(transform.position, target.position);
                 if (dist > dmgData.castRange)
-                {
-                    Debug.Log("[SkillBase] 타겟이 스킬 사거리 밖입니다.");
                     return false;
-                }
             }
         }
 

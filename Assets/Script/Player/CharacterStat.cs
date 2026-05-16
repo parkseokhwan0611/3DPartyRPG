@@ -113,33 +113,16 @@ public class CharacterStat : MonoBehaviour, IDamageable
     private void SpawnHealText(float amount)
     {
         if (string.IsNullOrEmpty(healTextPoolKey)) return;
-        if (ObjectPoolManager.instance == null)
-        {
-            Debug.LogWarning("[CharacterStat] ObjectPoolManager 인스턴스가 없습니다.");
-            return;
-        }
-        if (!ObjectPoolManager.instance.IsReady)
-        {
-            Debug.LogWarning("[CharacterStat] ObjectPoolManager가 아직 준비되지 않았습니다.");
-            return;
-        }
+        if (ObjectPoolManager.instance == null || !ObjectPoolManager.instance.IsReady) return;
 
         var go = ObjectPoolManager.instance.GetGo(healTextPoolKey);
-        if (go == null)
-        {
-            Debug.LogWarning($"[CharacterStat] '{healTextPoolKey}' 키가 ObjectPoolManager에 등록되지 않았습니다. Inspector에서 풀 키를 확인하세요.");
-            return;
-        }
+        if (go == null) return;
 
         Vector3 spawnPos = hudPos != null ? hudPos.position : transform.position + Vector3.up * 2f;
         go.transform.position = spawnPos;
         go.transform.rotation = Quaternion.Euler(60f, 0f, 0f);
 
-        HealText ht = go.GetComponent<HealText>();
-        if (ht != null)
-            ht.Setup(amount, healTextColor);
-        else
-            Debug.LogWarning($"[CharacterStat] '{healTextPoolKey}' 프리팹에 HealText 컴포넌트가 없습니다.");
+        go.GetComponent<HealText>()?.Setup(amount, healTextColor);
     }
 
     private void SpawnDamageText(float damage, Color color)
