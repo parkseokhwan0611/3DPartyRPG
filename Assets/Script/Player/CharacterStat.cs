@@ -113,10 +113,23 @@ public class CharacterStat : MonoBehaviour, IDamageable
     private void SpawnHealText(float amount)
     {
         if (string.IsNullOrEmpty(healTextPoolKey)) return;
-        if (ObjectPoolManager.instance == null) return;
+        if (ObjectPoolManager.instance == null)
+        {
+            Debug.LogWarning("[CharacterStat] ObjectPoolManager 인스턴스가 없습니다.");
+            return;
+        }
+        if (!ObjectPoolManager.instance.IsReady)
+        {
+            Debug.LogWarning("[CharacterStat] ObjectPoolManager가 아직 준비되지 않았습니다.");
+            return;
+        }
 
         var go = ObjectPoolManager.instance.GetGo(healTextPoolKey);
-        if (go == null) return;
+        if (go == null)
+        {
+            Debug.LogWarning($"[CharacterStat] '{healTextPoolKey}' 키가 ObjectPoolManager에 등록되지 않았습니다. Inspector에서 풀 키를 확인하세요.");
+            return;
+        }
 
         Vector3 spawnPos = hudPos != null ? hudPos.position : transform.position + Vector3.up * 2f;
         go.transform.position = spawnPos;
