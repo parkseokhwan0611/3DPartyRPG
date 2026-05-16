@@ -31,6 +31,20 @@ public class QuickSlotUI : MonoBehaviour
         PartyMemberScript member = PartyManager.instance.partyMembers[charIndex];
         SkillManager skillManager = member?.GetComponent<SkillManager>();
 
+        // 동일 스킬이 다른 슬롯에 이미 등록돼 있으면 해당 슬롯 해제
+        if (skill != null)
+        {
+            for (int i = 0; i < slots.Length; i++)
+            {
+                if (i == slotIndex) continue;
+                if (slots[i] != null && slots[i].AssignedSkill == skill)
+                {
+                    slots[i].SetSkill(null);
+                    skillManager?.SetSlot(i, null);
+                }
+            }
+        }
+
         if (skillManager != null)
             skillManager.SetSlot(slotIndex, skill);
 

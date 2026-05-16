@@ -20,7 +20,7 @@ MonoBehaviour:
   skillType: 1
   skillCategory: 1
   maxLevel: 5
-  requiredCharLevel: 1
+  requiredCharLevel: 10
   mpCost:
   - 30
   - 30
@@ -28,12 +28,12 @@ MonoBehaviour:
   - 30
   - 30
   cooldown:
-  - 10
+  - 30
   - 28
   - 26
   - 23
   - 20
-  skillPointCost: 0000000002000000020000000200000004000000
+  skillPointCost: 0200000002000000020000000200000004000000
   isPartyBuff: 0
   effectStyle: 1
   effectPoolKey: 0
