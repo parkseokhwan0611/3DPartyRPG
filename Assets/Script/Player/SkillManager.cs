@@ -150,13 +150,50 @@ public class SkillManager : MonoBehaviour
         SkillBase skill = GetSlot(index);
         if (skill == null) return;
 
-        Transform target = attackBase.currentTarget;
-
         // 후딜 캔슬 — 현재 스킬 후딜 강제 종료 후 다음 스킬 실행
         if (currentSkill != null && !IsActivatingSkill)
             ForceStopCurrentSkill();
 
+        Transform target = ResolveSkillTarget(skill);
         skill.TryUseSkill(target);
+    }
+
+    private Transform ResolveSkillTarget(SkillBase skill)
+    {
+        if (skill.skillData.skillType == SkillData.SkillType.Heal)
+        {
+            HealSkillData healData = skill.skillData as HealSkillData;
+            if (healData != null && !healData.isAoe)
+                return GetLowestHpMember();
+            return null;
+        }
+
+        return attackBase.currentTarget;
+    }
+
+    private Transform GetLowestHpMember()
+    {
+        if (PartyManager.instance == null) return null;
+
+        Transform lowestTarget = null;
+        float lowestRatio      = float.MaxValue;
+
+        foreach (var member in PartyManager.instance.partyMembers)
+        {
+            if (member == null) continue;
+            if (member.CurrentState == PartyMemberScript.MemberState.Dead) continue;
+            var stat = member.GetComponent<CharacterStat>();
+            if (stat == null || stat.MaxHp <= 0f) continue;
+
+            float hpRatio = stat.Hp / stat.MaxHp;
+            if (hpRatio < lowestRatio)
+            {
+                lowestRatio  = hpRatio;
+                lowestTarget = member.transform;
+            }
+        }
+
+        return lowestTarget;
     }
 
     // ─────────────────────────────────────────────────────────────────
