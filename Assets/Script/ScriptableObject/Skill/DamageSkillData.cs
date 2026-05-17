@@ -31,6 +31,7 @@ public class DamageSkillData : SkillData
     public float animDuration;        // 애니메이션 전체 길이
     public float effectSpawnDelay;    // 이펙트 생성 타이밍 (선딜)
     public string effectPoolKey;      // 오브젝트 풀 키
+    public Vector3 effectSpawnOffset; // 이펙트 스폰 위치 오프셋 (로컬 스페이스)
 
     // 최종 수치 계산
     public float GetDamageMultiplier(int level)

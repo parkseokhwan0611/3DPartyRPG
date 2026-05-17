@@ -31,7 +31,9 @@ public class HealSkillData : SkillData
     public float animDuration;
     public float effectSpawnDelay;
     public string effectPoolKey;
-    public string targetEffectPoolKey;   // 대상에게 생기는 이펙트
+    public Vector3 effectSpawnOffset;         // 시전자 이펙트 오프셋 (로컬 스페이스)
+    public string targetEffectPoolKey;        // 대상에게 생기는 이펙트
+    public Vector3 targetEffectSpawnOffset;   // 대상 이펙트 오프셋 (로컬 스페이스)
 
     public float GetHealMultiplier(int level)
         => baseHealMultiplier + (healMultiplierPerLevel * (level - 1));

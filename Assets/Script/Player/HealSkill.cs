@@ -126,7 +126,7 @@ public class HealSkill : SkillBase
         var effect = ObjectPoolManager.instance.GetGo(data.effectPoolKey);
         if (effect != null)
         {
-            effect.transform.position = transform.position;
+            effect.transform.position = transform.position + transform.rotation * data.effectSpawnOffset;
             effect.transform.rotation = transform.rotation;
         }
     }
@@ -139,7 +139,7 @@ public class HealSkill : SkillBase
         var effect = ObjectPoolManager.instance.GetGo(data.targetEffectPoolKey);
         if (effect != null)
         {
-            effect.transform.position = target.position;
+            effect.transform.position = target.position + target.rotation * data.targetEffectSpawnOffset;
             effect.transform.rotation = target.rotation;
         }
     }
