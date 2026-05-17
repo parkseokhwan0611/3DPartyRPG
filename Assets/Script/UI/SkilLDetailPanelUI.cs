@@ -142,9 +142,7 @@ public class SkillDetailPanelUI : MonoBehaviour
         else if (skill is HealSkillData healSkill)
         {
             SetTextSafe(damageText,  "");
-            string healType = healSkill.isAoe ? "[광역 힐]" : "[단일 힐]";
-            string dotInfo  = healSkill.isDotHeal ? $"\n도트 간격: {healSkill.dotInterval}초" : "";
-            SetTextSafe(specialText, $"{healType}\n힐량: {healSkill.GetHealMultiplier(level) * 100f:F1}%{dotInfo}");
+            SetTextSafe(specialText, BuildHealDescription(healSkill, level, currentCaster));
         }
         else if (skill is BuffSkillData buffSkill)
         {
@@ -178,7 +176,7 @@ public class SkillDetailPanelUI : MonoBehaviour
         else if (skill is HealSkillData healSkill)
         {
             SetTextSafe(nextDamageText,  "");
-            SetTextSafe(nextSpecialText, $"힐량: {healSkill.GetHealMultiplier(nextLevel) * 100f:F1}%");
+            SetTextSafe(nextSpecialText, BuildHealDescription(healSkill, nextLevel, currentCaster));
         }
         else if (skill is BuffSkillData buffSkill)
         {
@@ -200,6 +198,40 @@ public class SkillDetailPanelUI : MonoBehaviour
             SetTextSafe(nextDamageText,  "");
             SetTextSafe(nextSpecialText, "");
         }
+    }
+
+    // ─────────────────────────────────────────────────────────────────
+    // 힐 스킬 설명
+    // ─────────────────────────────────────────────────────────────────
+
+    private string BuildHealDescription(HealSkillData heal, int level, CharacterStat caster)
+    {
+        var sb = new System.Text.StringBuilder();
+
+        sb.AppendLine(heal.isAoe ? "[광역 힐]" : "[단일 힐]");
+
+        // 계산식 줄
+        string baseName = heal.useApRatio ? "마법공격력" : "공격력";
+        sb.Append($"계산식: {baseName}");
+        if (heal.intRatio > 0f) sb.Append($" + 지능×{heal.intRatio * 100f:F0}%");
+        if (heal.fthRatio > 0f) sb.Append($" + 신앙×{heal.fthRatio * 100f:F0}%");
+        sb.AppendLine($" × {heal.GetHealMultiplier(level) * 100f:F1}%");
+
+        // 실제 수치 (시전자 스탯이 있을 때)
+        if (caster != null)
+        {
+            float baseStat = heal.useApRatio ? caster.TotalAp : caster.TotalAtk;
+            float healBase = baseStat
+                           + caster.TotalInt * heal.intRatio
+                           + caster.TotalFth * heal.fthRatio;
+            float total    = healBase * heal.GetHealMultiplier(level);
+            sb.AppendLine($"예상 힐량: {total:F0}");
+        }
+
+        if (heal.isDotHeal)
+            sb.AppendLine($"도트 간격: {heal.dotInterval}초");
+
+        return sb.ToString().TrimEnd('\n', '\r');
     }
 
     // ─────────────────────────────────────────────────────────────────
