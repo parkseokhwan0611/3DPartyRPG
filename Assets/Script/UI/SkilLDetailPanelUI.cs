@@ -217,10 +217,10 @@ public class SkillDetailPanelUI : MonoBehaviour
         if (caster != null)
         {
             float baseStat = heal.useApRatio ? caster.TotalAp : caster.TotalAtk;
-            expr.Append($"{baseLabel}({baseStat:F0})");
+            expr.Append($"({baseLabel}({baseStat:F0})");
             if (heal.intRatio > 0f) expr.Append($" + 지능({caster.TotalInt:F0})×{heal.intRatio * 100f:F0}%");
             if (heal.fthRatio > 0f) expr.Append($" + 신앙({caster.TotalFth:F0})×{heal.fthRatio * 100f:F0}%");
-            expr.Append($" × {mult * 100f:F1}%");
+            expr.Append($") × {mult * 100f:F1}%");
 
             float healBase = baseStat
                            + caster.TotalInt * heal.intRatio
@@ -229,10 +229,10 @@ public class SkillDetailPanelUI : MonoBehaviour
         }
         else
         {
-            expr.Append(baseLabel);
+            expr.Append($"({baseLabel}");
             if (heal.intRatio > 0f) expr.Append($" + 지능×{heal.intRatio * 100f:F0}%");
             if (heal.fthRatio > 0f) expr.Append($" + 신앙×{heal.fthRatio * 100f:F0}%");
-            expr.Append($" × {mult * 100f:F1}%");
+            expr.Append($") × {mult * 100f:F1}%");
             sb.AppendLine($"치유량: {expr}");
         }
 
