@@ -123830,8 +123830,9 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 64f7218b64d5ca948a695aeab713bdf9, type: 2}
   - {fileID: 11400000, guid: 9d32c408ef0268741b90aa32fe2f11fd, type: 2}
   - {fileID: 11400000, guid: fdd707c29e6959b4fbf4691a21ef1e72, type: 2}
-  partyLevel: 1
+  partyLevel: 20
   partyExp: 0
+  startSkillPoint: 100
 --- !u!4 &1709394324
 Transform:
   m_ObjectHideFlags: 0
@@ -191941,12 +191942,12 @@ PrefabInstance:
     - target: {fileID: 811392039888150760, guid: b40280d1a92c91b4b825e31c1ea7c03e,
         type: 3}
       propertyPath: hp
-      value: 200
+      value: 20000
       objectReference: {fileID: 0}
     - target: {fileID: 811392039888150760, guid: b40280d1a92c91b4b825e31c1ea7c03e,
         type: 3}
       propertyPath: maxHp
-      value: 200
+      value: 20000
       objectReference: {fileID: 0}
     - target: {fileID: 1411065692898396913, guid: b40280d1a92c91b4b825e31c1ea7c03e,
         type: 3}

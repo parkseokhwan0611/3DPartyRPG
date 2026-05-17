@@ -19,6 +19,7 @@ MonoBehaviour:
   requiredClass: 0
   skillType: 1
   skillCategory: 1
+  skillPriority: 0
   maxLevel: 5
   requiredCharLevel: 10
   mpCost:
@@ -41,6 +42,7 @@ MonoBehaviour:
   animTriggerName: doBuffSkill
   animDuration: 1.2
   effectSpawnDelay: 0.6
+  effectSpawnOffset: {x: 0, y: 0, z: 0}
   baseDuration: 10
   durationPerLevel: 1
   buffEffects:
