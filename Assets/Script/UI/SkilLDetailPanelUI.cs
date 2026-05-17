@@ -208,7 +208,7 @@ public class SkillDetailPanelUI : MonoBehaviour
     {
         var sb = new System.Text.StringBuilder();
 
-        sb.AppendLine(heal.isAoe ? "[광역 힐]" : "[단일 힐]");
+        sb.AppendLine(heal.targetType == HealSkillData.HealTargetType.Party ? "[파티 힐]" : "[단일 힐]");
 
         string baseLabel = heal.useApRatio ? "마법공격력" : "공격력";
         float  mult      = heal.GetHealMultiplier(level);

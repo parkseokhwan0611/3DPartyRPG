@@ -4,8 +4,10 @@ using System.Collections.Generic;
 [CreateAssetMenu(fileName = "HealSkill", menuName = "Scriptable Object/HealSkillData")]
 public class HealSkillData : SkillData
 {
+    public enum HealTargetType { Single, Party }
+
     [Header("힐 설정")]
-    public bool isAoe = false;           // 광역 힐 여부
+    public HealTargetType targetType = HealTargetType.Single;
     public bool useApRatio = true;       // AP 비례 힐 여부
     public float baseHealMultiplier = 1f;
     public float healMultiplierPerLevel = 0.1f;

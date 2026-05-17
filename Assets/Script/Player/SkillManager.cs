@@ -163,7 +163,7 @@ public class SkillManager : MonoBehaviour
         if (skill.skillData.skillType == SkillData.SkillType.Heal)
         {
             HealSkillData healData = skill.skillData as HealSkillData;
-            if (healData != null && !healData.isAoe)
+            if (healData != null && healData.targetType == HealSkillData.HealTargetType.Single)
                 return GetLowestHpMember();
             return null;
         }
@@ -254,9 +254,9 @@ public class SkillManager : MonoBehaviour
             HealSkillData healData = slot.skillData as HealSkillData;
             if (healData == null) continue;
 
-            if (healData.isAoe)
+            if (healData.targetType == HealSkillData.HealTargetType.Party)
             {
-                // 파티원 중 누구라도 HP 50% 미만이면 광역 힐
+                // 파티원 중 누구라도 HP 50% 미만이면 파티 힐
                 if (AnyMemberBelowHpRatio(0.5f))
                     slot.TryUseSkill(null);
             }

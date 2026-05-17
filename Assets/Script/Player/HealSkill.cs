@@ -36,8 +36,10 @@ public class HealSkill : SkillBase
         SpawnCasterEffect(data);
 
         // 4. 힐 적용
-        if (data.isAoe) ApplyAoeHeal(data);
-        else            ApplySingleHeal(data, target);
+        if (data.targetType == HealSkillData.HealTargetType.Party)
+            ApplyPartyHeal(data);
+        else
+            ApplySingleHeal(data, target);
 
         // ★ 힐 적용 완료 → 후딜 캔슬 허용
         ReleaseActivating();
@@ -61,7 +63,7 @@ public class HealSkill : SkillBase
         targetStat.ShowHealAura();
     }
 
-    private void ApplyAoeHeal(HealSkillData data)
+    private void ApplyPartyHeal(HealSkillData data)
     {
         if (PartyManager.instance == null) return;
 
