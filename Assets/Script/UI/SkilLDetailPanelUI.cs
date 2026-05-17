@@ -422,7 +422,7 @@ public class SkillDetailPanelUI : MonoBehaviour
             case PassiveSkillData.PassiveEffectType.FaithToHp:
                 return $"신앙 스탯 비례 체력 증가 (계수: {passive.GetValue(level):F2})";
             case PassiveSkillData.PassiveEffectType.OnHitManaRestore:
-                return $"평타 적중 시 마나 {passive.GetProcValue(level)} 회복";
+                return $"평타 적중 시 마나 {passive.GetValue(level)} 회복";
             case PassiveSkillData.PassiveEffectType.OnHitAtkSpeedUp:
                 return $"평타 적중 시 공격속도 {passive.GetProcValue(level) * 100f:F0}% 증가 ({passive.GetProcChance(level)}초)";
             case PassiveSkillData.PassiveEffectType.OnDebuffExtraDamage:
