@@ -210,34 +210,29 @@ public class SkillDetailPanelUI : MonoBehaviour
 
         sb.AppendLine(heal.isAoe ? "[광역 힐]" : "[단일 힐]");
 
+        string baseLabel = heal.useApRatio ? "마법공격력" : "공격력";
+        float  mult      = heal.GetHealMultiplier(level);
+
+        var expr = new System.Text.StringBuilder();
         if (caster != null)
         {
             float baseStat = heal.useApRatio ? caster.TotalAp : caster.TotalAtk;
+            expr.Append($"{baseLabel}({baseStat:F0})");
+            if (heal.intRatio > 0f) expr.Append($" + 지능({caster.TotalInt:F0})×{heal.intRatio * 100f:F0}%");
+            if (heal.fthRatio > 0f) expr.Append($" + 신앙({caster.TotalFth:F0})×{heal.fthRatio * 100f:F0}%");
+            expr.Append($" × {mult * 100f:F1}%");
+
             float healBase = baseStat
                            + caster.TotalInt * heal.intRatio
                            + caster.TotalFth * heal.fthRatio;
-            float multiplier = heal.GetHealMultiplier(level);
-            float total      = healBase * multiplier;
-
-            // 계산식 조합
-            var expr = new System.Text.StringBuilder();
-            expr.Append($"{baseStat:F0}");
-            if (heal.intRatio > 0f) expr.Append($" + {caster.TotalInt * heal.intRatio:F0}");
-            if (heal.fthRatio > 0f) expr.Append($" + {caster.TotalFth * heal.fthRatio:F0}");
-            expr.Append($" × {multiplier * 100f:F1}%");
-
-            sb.AppendLine($"치유량: {expr} = {total:F0}");
+            sb.AppendLine($"치유량: {expr} = {healBase * mult:F0}");
         }
         else
         {
-            // 시전자 정보 없을 때 — 계수만 표시
-            string baseName = heal.useApRatio ? "마법공격력" : "공격력";
-            var expr = new System.Text.StringBuilder();
-            expr.Append(baseName);
+            expr.Append(baseLabel);
             if (heal.intRatio > 0f) expr.Append($" + 지능×{heal.intRatio * 100f:F0}%");
             if (heal.fthRatio > 0f) expr.Append($" + 신앙×{heal.fthRatio * 100f:F0}%");
-            expr.Append($" × {heal.GetHealMultiplier(level) * 100f:F1}%");
-
+            expr.Append($" × {mult * 100f:F1}%");
             sb.AppendLine($"치유량: {expr}");
         }
 
