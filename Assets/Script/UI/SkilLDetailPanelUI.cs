@@ -210,22 +210,35 @@ public class SkillDetailPanelUI : MonoBehaviour
 
         sb.AppendLine(heal.isAoe ? "[광역 힐]" : "[단일 힐]");
 
-        // 계산식 줄
-        string baseName = heal.useApRatio ? "마법공격력" : "공격력";
-        sb.Append($"계산식: {baseName}");
-        if (heal.intRatio > 0f) sb.Append($" + 지능×{heal.intRatio * 100f:F0}%");
-        if (heal.fthRatio > 0f) sb.Append($" + 신앙×{heal.fthRatio * 100f:F0}%");
-        sb.AppendLine($" × {heal.GetHealMultiplier(level) * 100f:F1}%");
-
-        // 실제 수치 (시전자 스탯이 있을 때)
         if (caster != null)
         {
             float baseStat = heal.useApRatio ? caster.TotalAp : caster.TotalAtk;
             float healBase = baseStat
                            + caster.TotalInt * heal.intRatio
                            + caster.TotalFth * heal.fthRatio;
-            float total    = healBase * heal.GetHealMultiplier(level);
-            sb.AppendLine($"예상 힐량: {total:F0}");
+            float multiplier = heal.GetHealMultiplier(level);
+            float total      = healBase * multiplier;
+
+            // 계산식 조합
+            var expr = new System.Text.StringBuilder();
+            expr.Append($"{baseStat:F0}");
+            if (heal.intRatio > 0f) expr.Append($" + {caster.TotalInt * heal.intRatio:F0}");
+            if (heal.fthRatio > 0f) expr.Append($" + {caster.TotalFth * heal.fthRatio:F0}");
+            expr.Append($" × {multiplier * 100f:F1}%");
+
+            sb.AppendLine($"치유량: {expr} = {total:F0}");
+        }
+        else
+        {
+            // 시전자 정보 없을 때 — 계수만 표시
+            string baseName = heal.useApRatio ? "마법공격력" : "공격력";
+            var expr = new System.Text.StringBuilder();
+            expr.Append(baseName);
+            if (heal.intRatio > 0f) expr.Append($" + 지능×{heal.intRatio * 100f:F0}%");
+            if (heal.fthRatio > 0f) expr.Append($" + 신앙×{heal.fthRatio * 100f:F0}%");
+            expr.Append($" × {heal.GetHealMultiplier(level) * 100f:F1}%");
+
+            sb.AppendLine($"치유량: {expr}");
         }
 
         if (heal.isDotHeal)
