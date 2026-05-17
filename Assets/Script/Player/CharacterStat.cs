@@ -189,19 +189,22 @@ public class CharacterStat : MonoBehaviour, IDamageable
     public bool TryUseMp(float cost)
     {
         if (myStatus == null) return false;
-
         if (myStatus.currentMp < cost) return false;
 
-        myStatus.currentMp -= cost;
-        myStatus.currentMp = Mathf.Clamp(myStatus.currentMp, 0, myStatus.MaxMp);
+        myStatus.currentMp = Mathf.Clamp(myStatus.currentMp - cost, 0, myStatus.MaxMp);
+        myStatus.RaiseMpChanged();
         OnMpChanged?.Invoke();
         return true;
     }
 
-    public void RaiseHpChanged()
+    public void RecoverMp(float amount)
     {
-        OnHpChanged?.Invoke();
+        if (myStatus == null) return;
+        myStatus.RecoverMp(amount);
+        OnMpChanged?.Invoke();
     }
+
+    public void RaiseHpChanged() => OnHpChanged?.Invoke();
 
     public void ApplyNextSkillBuff(float bonus, float duration)
     {
