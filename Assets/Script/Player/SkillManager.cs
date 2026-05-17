@@ -218,18 +218,30 @@ public class SkillManager : MonoBehaviour
 
         Transform target = attackBase.currentTarget;
 
+        // 준비된 비힐·비패시브 스킬 수집
         List<SkillBase> readySlots = new List<SkillBase>();
         foreach (var slot in slots)
         {
             if (slot == null || !slot.IsReady) continue;
-            // 힐 스킬은 HP 조건 체크 로직(TryAutoUseHealSkill)이 담당
-            if (slot.skillData.skillType == SkillData.SkillType.Heal) continue;
+            if (slot.skillData.skillType == SkillData.SkillType.Heal)    continue;
+            if (slot.skillData.skillType == SkillData.SkillType.Passive) continue;
             readySlots.Add(slot);
         }
 
         if (readySlots.Count == 0) return;
 
-        SkillBase chosen = readySlots[Random.Range(0, readySlots.Count)];
+        // 우선순위 오름차순 정렬 후 최고 우선순위 그룹에서 랜덤 선택
+        readySlots.Sort((a, b) => a.skillData.skillPriority.CompareTo(b.skillData.skillPriority));
+        int topPriority = readySlots[0].skillData.skillPriority;
+
+        List<SkillBase> topGroup = new List<SkillBase>();
+        foreach (var slot in readySlots)
+        {
+            if (slot.skillData.skillPriority != topPriority) break;
+            topGroup.Add(slot);
+        }
+
+        SkillBase chosen = topGroup[Random.Range(0, topGroup.Count)];
 
         if (chosen.skillData.skillType == SkillData.SkillType.Buff)
             chosen.TryUseSkill(null);
