@@ -15,7 +15,7 @@ MonoBehaviour:
   skillName: "\uCD95\uBCF5\uC758 \uAC00\uD638"
   description: "\uD30C\uD2F0\uC6D0\uC758 \uBB3C\uB9AC \uACF5\uACA9\uB825\uACFC \uB9C8\uBC95
     \uACF5\uACA9\uB825\uC774 \uC99D\uAC00\uD569\uB2C8\uB2E4."
-  icon: {fileID: 21300000, guid: 129be3e96294fda4f9cc871ea40355d4, type: 3}
+  icon: {fileID: 21300000, guid: 918887f1aacb71b4cb34e86339c92e1b, type: 3}
   requiredClass: 0
   skillType: 1
   skillCategory: 0
@@ -41,6 +41,7 @@ MonoBehaviour:
   animTriggerName: doHeal
   animDuration: 1
   effectSpawnDelay: 0.3
+  effectSpawnOffset: {x: 0, y: 0, z: 0}
   baseDuration: 10
   durationPerLevel: 1.25
   buffEffects:
