@@ -10,6 +10,12 @@ public class HealSkillData : SkillData
     public float baseHealMultiplier = 1f;
     public float healMultiplierPerLevel = 0.1f;
 
+    [Header("추가 스탯 계수")]
+    [Tooltip("지능(Int) 1당 힐 베이스에 더해지는 비율 (예: 0.5 → Int × 0.5 추가)")]
+    public float intRatio = 0f;
+    [Tooltip("신앙(Fth) 1당 힐 베이스에 더해지는 비율 (예: 0.5 → Fth × 0.5 추가)")]
+    public float fthRatio = 0f;
+
     [Header("도트 힐 설정")]
     public bool isDotHeal = false;       // 도트 힐 여부
     public float dotInterval = 1f;       // 힐 간격 (초)

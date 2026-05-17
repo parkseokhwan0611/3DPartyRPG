@@ -122,13 +122,12 @@ public class CharacterStat : MonoBehaviour, IDamageable
         ShowHealAura();
     }
 
-    private void ShowHealAura()
+    public void ShowHealAura()
     {
         if (healAuraIndex < 0) return;
         if (buffAuras == null || healAuraIndex >= buffAuras.Length) return;
         if (buffAuras[healAuraIndex] == null) return;
 
-        // 이미 켜져 있으면 타이머만 리셋
         if (healAuraCoroutine != null)
             StopCoroutine(healAuraCoroutine);
 
@@ -137,6 +136,9 @@ public class CharacterStat : MonoBehaviour, IDamageable
 
     private IEnumerator HealAuraRoutine()
     {
+        // 껐다가 켜기 (이미 켜진 경우에도 깜박임 효과)
+        DeactivateBuffAura(healAuraIndex);
+        yield return new WaitForSeconds(0.05f);
         ActivateBuffAura(healAuraIndex);
         yield return new WaitForSeconds(healAuraDuration);
         DeactivateBuffAura(healAuraIndex);

@@ -58,7 +58,7 @@ public class HealSkill : SkillBase
 
         float healAmount = CalculateHeal(data);
         ApplyHeal(targetStat, healAmount, data);
-        SpawnTargetEffect(data, targetStat.transform);
+        targetStat.ShowHealAura();
     }
 
     private void ApplyAoeHeal(HealSkillData data)
@@ -114,8 +114,11 @@ public class HealSkill : SkillBase
     private float CalculateHeal(HealSkillData data)
     {
         if (myStat == null) return 0f;
-        float baseStat = data.useApRatio ? myStat.TotalAp : myStat.TotalAtk;
-        return baseStat * data.GetHealMultiplier(skillLevel);
+        float baseStat  = data.useApRatio ? myStat.TotalAp : myStat.TotalAtk;
+        float healBase  = baseStat
+                        + myStat.TotalInt * data.intRatio
+                        + myStat.TotalFth * data.fthRatio;
+        return healBase * data.GetHealMultiplier(skillLevel);
     }
 
     private void SpawnCasterEffect(HealSkillData data)
