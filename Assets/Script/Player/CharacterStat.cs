@@ -35,6 +35,7 @@ public class CharacterStat : MonoBehaviour, IDamageable
     public float TotalCritRate   => myStatus.TotalCritRate;
     public float TotalCritDamage => myStatus.TotalCritDamage;
     public float HpOnHit       => myStatus != null ? myStatus.hpOnHit      : 0f;
+    public float MpOnHit       => myStatus != null ? myStatus.mpOnHit      : 0f;
     public float PhysDmgBonus  => myStatus != null ? myStatus.physDmgBonus  : 0f;
     public float MagicDmgBonus => myStatus != null ? myStatus.magicDmgBonus : 0f;
 

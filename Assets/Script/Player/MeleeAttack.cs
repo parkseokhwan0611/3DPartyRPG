@@ -57,6 +57,9 @@ public class MeleeAttack : AttackBase
 
             if (myStat.HpOnHit > 0f)
                 myStat.HealHp(myStat.HpOnHit);
+
+            if (myStat.MpOnHit > 0f)
+                myStat.RecoverMp(myStat.MpOnHit);
         }
 
         float damage = myStat.TotalAtk * (1f + myStat.PhysDmgBonus);
