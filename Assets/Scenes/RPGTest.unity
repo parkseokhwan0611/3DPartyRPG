@@ -150626,6 +150626,10 @@ MonoBehaviour:
     perfab: {fileID: 5266221001641745148, guid: 58a0e92a2d0a95441b6b08f58b98ab5c,
       type: 3}
     count: 2
+  - objectName: DotHeal
+    perfab: {fileID: 8734122359314112353, guid: 90e166aae116709449a024dc45112f59,
+      type: 3}
+    count: 1
 --- !u!4 &2115435187
 Transform:
   m_ObjectHideFlags: 0
@@ -196684,12 +196688,12 @@ PrefabInstance:
     - target: {fileID: 811392039888150760, guid: b40280d1a92c91b4b825e31c1ea7c03e,
         type: 3}
       propertyPath: hp
-      value: 20000
+      value: 200
       objectReference: {fileID: 0}
     - target: {fileID: 811392039888150760, guid: b40280d1a92c91b4b825e31c1ea7c03e,
         type: 3}
       propertyPath: maxHp
-      value: 20000
+      value: 200
       objectReference: {fileID: 0}
     - target: {fileID: 1411065692898396913, guid: b40280d1a92c91b4b825e31c1ea7c03e,
         type: 3}

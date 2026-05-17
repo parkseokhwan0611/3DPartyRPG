@@ -1,0 +1,49 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a873e38277a453e4a9645a30b21e0645, type: 3}
+  m_Name: DotHeal
+  m_EditorClassIdentifier: 
+  skillName: "\uC7AC\uC0DD\uB825 \uC99D\uAC00"
+  description: "\uC9C0\uC18D\uC2DC\uAC04 \uB3D9\uC548 \uD30C\uD2F0\uC6D0\uC744 \uCE58\uC720\uD569\uB2C8\uB2E4."
+  icon: {fileID: 21300000, guid: 9d99d011c762ace4c86ad318e1e624a3, type: 3}
+  requiredClass: 2
+  skillType: 2
+  skillCategory: 1
+  maxLevel: 5
+  requiredCharLevel: 1
+  mpCost:
+  - 100
+  - 95
+  - 90
+  - 85
+  - 80
+  cooldown:
+  - 30
+  - 30
+  - 30
+  - 30
+  - 30
+  skillPointCost: 0100000002000000020000000300000004000000
+  targetType: 1
+  useApRatio: 1
+  baseHealMultiplier: 0.2
+  healMultiplierPerLevel: 0.05
+  intRatio: 0.2
+  fthRatio: 0.3
+  isDotHeal: 1
+  dotInterval: 1
+  dotDuration: 10
+  animTriggerName: doHeal
+  animDuration: 1
+  effectSpawnDelay: 0.3
+  effectPoolKey: DotHeal
+  targetEffectPoolKey: 
