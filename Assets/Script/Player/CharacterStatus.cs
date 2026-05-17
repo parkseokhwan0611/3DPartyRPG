@@ -25,10 +25,21 @@ public string charName;
     public float bonusAp  = 0f;
     public float bonusDef = 0f;
 
+    // ── 아이템/패시브로 추가되는 재생량 ──
+    public float addedHpRegen = 0f;
+    public float addedMpRegen = 0f;
+
     public int skillPoint = 0;
 
     public float MaxHp   => classData.hp + ((classData.baseVit + addedVit) * classData.hpPerVit);
     public float MaxMp   => classData.mp;
+
+    public float TotalHpRegen => classData.baseHpRegen
+                               + (classData.baseVit + addedVit) * classData.hpRegenPerVit
+                               + addedHpRegen;
+    public float TotalMpRegen => classData.baseMpRegen
+                               + (classData.baseFht + addedFht) * classData.mpRegenPerFth
+                               + addedMpRegen;
     public float TotalAtk => (classData.baseStr + addedStr) * classData.atkPerStr + bonusAtk;
     public float TotalAp  => ((classData.baseInt + addedInt) * classData.apPerInt)
                            + ((classData.baseFht + addedFht) * classData.apPerFth) + bonusAp;
