@@ -19,6 +19,7 @@ MonoBehaviour:
   requiredClass: 2
   skillType: 1
   skillCategory: 1
+  skillPriority: 1
   maxLevel: 5
   requiredCharLevel: 10
   mpCost:
@@ -41,6 +42,7 @@ MonoBehaviour:
   animTriggerName: doHeal
   animDuration: 1
   effectSpawnDelay: 0.3
+  effectSpawnOffset: {x: 0, y: 0, z: 0}
   baseDuration: 0
   durationPerLevel: 0
   buffEffects:

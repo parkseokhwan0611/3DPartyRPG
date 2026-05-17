@@ -19,6 +19,7 @@ MonoBehaviour:
   requiredClass: 2
   skillType: 2
   skillCategory: 1
+  skillPriority: 1
   maxLevel: 5
   requiredCharLevel: 1
   mpCost:
@@ -48,4 +49,6 @@ MonoBehaviour:
   animDuration: 1
   effectSpawnDelay: 0.3
   effectPoolKey: DotHeal
+  effectSpawnOffset: {x: 0, y: 0, z: 0}
   targetEffectPoolKey: 
+  targetEffectSpawnOffset: {x: 0, y: 0, z: 0}
