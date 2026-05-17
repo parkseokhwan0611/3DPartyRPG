@@ -83,14 +83,9 @@ public class HealSkill : SkillBase
     private void ApplyHeal(CharacterStat stat, float amount, HealSkillData data)
     {
         if (data.isDotHeal)
-        {
-            float duration = data.cooldown.Length > 0 ? data.cooldown[skillLevel - 1] : 5f;
-            StartCoroutine(DotHealRoutine(stat, amount, data.dotInterval, duration));
-        }
+            StartCoroutine(DotHealRoutine(stat, amount, data.dotInterval, data.dotDuration));
         else
-        {
             HealTarget(stat, amount);
-        }
     }
 
     private IEnumerator DotHealRoutine(CharacterStat stat, float amountPerTick, float interval, float duration)
