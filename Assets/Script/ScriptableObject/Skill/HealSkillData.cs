@@ -19,9 +19,12 @@ public class HealSkillData : SkillData
     public float fthRatio = 0f;
 
     [Header("도트 힐 설정")]
-    public bool isDotHeal = false;       // 도트 힐 여부
-    public float dotInterval = 1f;       // 틱 간격 (초)
-    public float dotDuration = 5f;       // 총 지속시간 (초)
+    public bool isDotHeal = false;            // 도트 힐 여부
+    public float dotInterval = 1f;            // 틱 간격 (초)
+    public float baseDotDuration    = 5f;     // 1레벨 지속시간 (초)
+    public float dotDurationPerLevel = 0f;    // 레벨당 추가 지속시간 (초)
+
+    public float GetDotDuration(int level) => baseDotDuration + dotDurationPerLevel * (level - 1);
 
     [Header("애니메이션 / 이펙트")]
     public string animTriggerName;

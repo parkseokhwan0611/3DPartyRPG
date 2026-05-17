@@ -237,7 +237,7 @@ public class SkillDetailPanelUI : MonoBehaviour
         }
 
         if (heal.isDotHeal)
-            sb.AppendLine($"지속시간: {heal.dotDuration}초");
+            sb.AppendLine($"지속시간: {heal.GetDotDuration(level)}초");
 
         return sb.ToString().TrimEnd('\n', '\r');
     }
