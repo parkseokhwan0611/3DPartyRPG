@@ -65,9 +65,10 @@ public string charName;
     public float hpOnHit = 0f;
     public float mpOnHit = 0f;
 
-    // 최종 피해 배율 보너스 — 패시브 스킬 전용 (0.1 = +10%)
+    // 최종 피해/힐 배율 보너스 — 패시브 스킬 전용 (0.1 = +10%)
     public float physDmgBonus  = 0f;
     public float magicDmgBonus = 0f;
+    public float healBonus     = 0f;
 
     // 키: SkillData, 값: 현재 스킬 레벨
     public Dictionary<SkillData, int> skillLevels = new Dictionary<SkillData, int>();
@@ -144,6 +145,9 @@ public string charName;
                 break;
             case PassiveSkillData.PassiveEffectType.MagicDmgBonus:
                 magicDmgBonus += delta;
+                break;
+            case PassiveSkillData.PassiveEffectType.HealPercent:
+                healBonus += delta;
                 break;
             case PassiveSkillData.PassiveEffectType.CritRate:
                 addedCritRate += delta;

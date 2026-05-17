@@ -115,7 +115,7 @@ public class HealSkill : SkillBase
         float healBase  = baseStat
                         + myStat.TotalInt * data.intRatio
                         + myStat.TotalFth * data.fthRatio;
-        return healBase * data.GetHealMultiplier(skillLevel);
+        return healBase * data.GetHealMultiplier(skillLevel) * (1f + myStat.HealBonus);
     }
 
     private void SpawnCasterEffect(HealSkillData data)
