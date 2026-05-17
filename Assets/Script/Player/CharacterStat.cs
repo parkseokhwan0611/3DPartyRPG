@@ -13,10 +13,8 @@ public class CharacterStat : MonoBehaviour, IDamageable
     public GameObject nextSkillBuffAura;
     [Header("# 버프 아우라 슬롯 (인덱스 0~N)")]
     public GameObject[] buffAuras;
-    [Tooltip("아우라 생성 기준 위치 (설정 시 해당 위치 사용)")]
+    [Tooltip("아우라 생성 기준 위치 (미설정 시 자신의 Transform 사용)")]
     public Transform auraRoot;
-    [Tooltip("auraRoot 미설정 시 적용할 로컬 오프셋 (예: Y=1로 허리 높이)")]
-    public Vector3 auraOffset = Vector3.up;
     [Header("# 힐 아우라")]
     public int   healAuraIndex    = -1;   // buffAuras 배열에서 힐 아우라의 인덱스 (-1 = 비활성)
     public float healAuraDuration = 1.5f; // 아우라 유지 시간 (초)
@@ -272,16 +270,9 @@ public class CharacterStat : MonoBehaviour, IDamageable
         var aura = buffAuras[index];
         if (aura == null) return;
 
-        if (auraRoot != null)
-        {
-            aura.transform.SetParent(auraRoot, false);
-            aura.transform.localPosition = Vector3.zero;
-        }
-        else
-        {
-            aura.transform.SetParent(transform, false);
-            aura.transform.localPosition = auraOffset;
-        }
+        Transform root = auraRoot != null ? auraRoot : transform;
+        aura.transform.SetParent(root, false);
+        aura.transform.localPosition = Vector3.zero;
         aura.SetActive(true);
     }
 
