@@ -35,6 +35,7 @@ public class PassiveSkillData : SkillData
         MagicResPercent,     // 마법 저항력 % 증가
         HealPercent,         // 힐량 % 증가
         FaithToHp,           // 신앙 스탯 비례 체력 증가
+        MaxMpBonus,          // 최대 마나 수치 증가
 
         // 트리거형
         OnHitManaRestore,    // 평타 적중 시 마나 회복

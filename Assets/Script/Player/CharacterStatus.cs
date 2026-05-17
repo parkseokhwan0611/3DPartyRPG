@@ -31,8 +31,10 @@ public string charName;
 
     public int skillPoint = 0;
 
+    public float addedMp = 0f;
+
     public float MaxHp   => classData.hp + ((classData.baseVit + addedVit) * classData.hpPerVit);
-    public float MaxMp   => classData.mp;
+    public float MaxMp   => classData.mp + addedMp;
 
     public float TotalHpRegen => classData.baseHpRegen
                                + (classData.baseVit + addedVit) * classData.hpRegenPerVit
@@ -157,6 +159,10 @@ public string charName;
                 break;
             case PassiveSkillData.PassiveEffectType.MaxHpPercent:
                 addedVit += classData.baseVit * delta;
+                break;
+
+            case PassiveSkillData.PassiveEffectType.MaxMpBonus:
+                addedMp += delta;
                 break;
 
             case PassiveSkillData.PassiveEffectType.OnHitManaRestore:

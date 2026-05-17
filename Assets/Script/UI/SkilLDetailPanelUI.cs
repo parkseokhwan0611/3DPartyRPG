@@ -422,6 +422,8 @@ public class SkillDetailPanelUI : MonoBehaviour
                 return $"힐량 {passive.GetValue(level) * 100f:F1}% 증가";
             case PassiveSkillData.PassiveEffectType.FaithToHp:
                 return $"신앙 스탯 비례 체력 증가 (계수: {passive.GetValue(level):F2})";
+            case PassiveSkillData.PassiveEffectType.MaxMpBonus:
+                return $"최대 마나 +{passive.GetValue(level):F0}";
             case PassiveSkillData.PassiveEffectType.OnHitManaRestore:
                 return $"평타 적중 시 마나 {passive.GetValue(level)} 회복";
             case PassiveSkillData.PassiveEffectType.OnHitAtkSpeedUp:
