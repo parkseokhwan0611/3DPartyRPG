@@ -100,6 +100,11 @@ public class PartyStatusEffectHandler : MonoBehaviour
         }
     }
 
+    public bool HasActiveDebuff()
+    {
+        return activeBuffs.Exists(e => IsDebuff(e.effectType));
+    }
+
     // ─────────────────────────────────────────────────────────────────
     // 코루틴
     // ─────────────────────────────────────────────────────────────────
