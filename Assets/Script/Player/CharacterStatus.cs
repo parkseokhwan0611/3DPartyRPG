@@ -60,7 +60,8 @@ public string charName;
 
     // 이벤트를 데이터 클래스에 넣으면 UI 업데이트가 더 쉬워집니다.
     public event Action OnHpChanged;
-    public Dictionary<PassiveSkillData, int> activeTriggerPassives 
+    public event Action OnMpChanged;
+    public Dictionary<PassiveSkillData, int> activeTriggerPassives
         = new Dictionary<PassiveSkillData, int>();
 
     // 스킬 연계 버프
@@ -71,10 +72,14 @@ public string charName;
     {
         OnHpChanged?.Invoke();
     }
+    public void RaiseHpChanged() => OnHpChanged?.Invoke();
+    public void RaiseMpChanged() => OnMpChanged?.Invoke();
+
     // MP 회복 (자연 회복이나 힐러 스킬용)
     public void RecoverMp(float amount)
     {
         currentMp = Mathf.Clamp(currentMp + amount, 0, MaxMp);
+        RaiseMpChanged();
     }
 
     // 스킬 레벨 가져오기 (없으면 0)

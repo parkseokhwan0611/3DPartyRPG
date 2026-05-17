@@ -8,47 +8,61 @@ public class PartyHPUIScript : MonoBehaviour
 {
     public CharacterStat stat;
     public Image hpBar;
-    
-    // 부드러운 연출을 위해 여전히 Lerp/MoveTowards를 쓴다면 코루틴이 효율적입니다.
+    public Image mpBar;
+
     private Coroutine hpCoroutine;
+    private Coroutine mpCoroutine;
+
     void Start()
     {
-        // 게임 시작 시 현재 체력에 맞춰 UI 즉시 초기화
-        if (stat != null && stat.MaxHp > 0)
-        {
+        if (stat == null) return;
+
+        if (stat.MaxHp > 0 && hpBar != null)
             hpBar.fillAmount = stat.Hp / stat.MaxHp;
-        }
+
+        if (stat.MaxMp > 0 && mpBar != null)
+            mpBar.fillAmount = stat.Mp / stat.MaxMp;
     }
+
     void OnEnable()
     {
-        // 이벤트 구독 시작
+        if (stat == null) return;
         stat.OnHpChanged += UpdateHpUI;
+        stat.OnMpChanged += UpdateMpUI;
     }
 
     void OnDisable()
     {
-        // 오브젝트가 꺼질 때 구독 해제 (메모리 누수 방지)
+        if (stat == null) return;
         stat.OnHpChanged -= UpdateHpUI;
+        stat.OnMpChanged -= UpdateMpUI;
     }
 
     void UpdateHpUI()
     {
-        // 1. stat이나 MaxHp가 0인 경우를 대비해 예외 처리를 해주면 안전합니다.
-        if (stat == null || stat.MaxHp <= 0) return;
+        if (stat == null || stat.MaxHp <= 0 || hpBar == null) return;
 
-        // 2. stat.hp(소문자)를 stat.Hp(대문자 프로퍼티)로 변경합니다.
-        float targetFill = stat.Hp / stat.MaxHp;
-        
+        float target = stat.Hp / stat.MaxHp;
         if (hpCoroutine != null) StopCoroutine(hpCoroutine);
-        hpCoroutine = StartCoroutine(SmoothUpdateBar(targetFill));
+        hpCoroutine = StartCoroutine(SmoothBar(hpBar, target));
     }
 
-    System.Collections.IEnumerator SmoothUpdateBar(float targetFill)
+    void UpdateMpUI()
     {
-        while (!Mathf.Approximately(hpBar.fillAmount, targetFill))
+        if (stat == null || stat.MaxMp <= 0 || mpBar == null) return;
+
+        float target = stat.Mp / stat.MaxMp;
+        if (mpCoroutine != null) StopCoroutine(mpCoroutine);
+        mpCoroutine = StartCoroutine(SmoothBar(mpBar, target));
+    }
+
+    IEnumerator SmoothBar(Image bar, float target)
+    {
+        while (!Mathf.Approximately(bar.fillAmount, target))
         {
-            hpBar.fillAmount = Mathf.MoveTowards(hpBar.fillAmount, targetFill, Time.deltaTime * 1.5f);
+            bar.fillAmount = Mathf.MoveTowards(bar.fillAmount, target, Time.deltaTime * 1.5f);
             yield return null;
         }
+        bar.fillAmount = target;
     }
 }
