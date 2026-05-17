@@ -75,14 +75,15 @@ public class BuffSkill : SkillBase
 
         if (DataManager.instance == null) yield break;
         if (stat.partyIndex < 0 || stat.partyIndex >= DataManager.instance.partyStatuses.Count) yield break;
-        var status = DataManager.instance.partyStatuses[stat.partyIndex];
+        var status  = DataManager.instance.partyStatuses[stat.partyIndex];
+        var handler = stat.GetComponent<PartyStatusEffectHandler>();
 
-        ApplyBuffEffects(status, data, skillLevel, 1f, myStat);
+        ApplyBuffEffects(status, data, skillLevel, 1f, myStat, handler);
         ShowBuffEffect(data, stat);
 
         yield return new WaitForSeconds(data.GetDuration(skillLevel));
 
-        ApplyBuffEffects(status, data, skillLevel, -1f, myStat);
+        ApplyBuffEffects(status, data, skillLevel, -1f, myStat, handler);
         HideBuffEffect(data, stat);
     }
 
@@ -105,10 +106,18 @@ public class BuffSkill : SkillBase
             stat.DeactivateBuffAura(data.auraIndex);
     }
 
-    private void ApplyBuffEffects(CharacterStatus status, BuffSkillData data, int level, float multiplier, CharacterStat caster)
+    private void ApplyBuffEffects(CharacterStatus status, BuffSkillData data, int level, float multiplier, CharacterStat caster, PartyStatusEffectHandler targetHandler = null)
     {
         foreach (var effect in data.buffEffects)
         {
+            // DispelDebuff는 즉시 발동 전용 — 적용 시(multiplier>0)에만 실행, 만료 시 되돌리지 않음
+            if (effect.effectType == BuffSkillData.BuffEffectType.DispelDebuff)
+            {
+                if (multiplier > 0f)
+                    targetHandler?.DispelAllDebuffs();
+                continue;
+            }
+
             float flat    = effect.GetValue(level);
             float scaling = GetScalingValue(effect, level, caster);
             float value   = (flat + scaling) * multiplier;

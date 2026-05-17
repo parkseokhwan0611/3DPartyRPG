@@ -89,6 +89,17 @@ public class PartyStatusEffectHandler : MonoBehaviour
         OnBuffChanged?.Invoke(type, false);
     }
 
+    public void DispelAllDebuffs()
+    {
+        var debuffs = activeBuffs.FindAll(e => IsDebuff(e.effectType));
+        foreach (var debuff in debuffs)
+        {
+            activeBuffs.Remove(debuff);
+            ApplyBuffValue(debuff, false);
+            OnBuffChanged?.Invoke(debuff.effectType, false);
+        }
+    }
+
     // ─────────────────────────────────────────────────────────────────
     // 코루틴
     // ─────────────────────────────────────────────────────────────────
