@@ -98,6 +98,9 @@ public class HealerAttack : AttackBase
 
         if (myStat != null && myStat.HpOnHit > 0f)
             myStat.HealHp(myStat.HpOnHit);
+
+        if (myStat != null && myStat.MpOnHit > 0f)
+            myStat.RecoverMp(myStat.MpOnHit);
     }
 
     public override void OnHit() { }

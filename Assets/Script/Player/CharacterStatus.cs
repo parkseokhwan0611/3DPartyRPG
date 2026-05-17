@@ -59,8 +59,9 @@ public string charName;
     public float addedMagicRes = 0f;
     public float TotalMagicRes => classData.baseMagicRes + addedMagicRes;
 
-    // 기본 공격 적중 시 체력 회복
+    // 기본 공격 적중 시 체력/마나 회복
     public float hpOnHit = 0f;
+    public float mpOnHit = 0f;
 
     // 최종 피해 배율 보너스 — 패시브 스킬 전용 (0.1 = +10%)
     public float physDmgBonus  = 0f;
@@ -156,6 +157,10 @@ public string charName;
                 break;
             case PassiveSkillData.PassiveEffectType.MaxHpPercent:
                 addedVit += classData.baseVit * delta;
+                break;
+
+            case PassiveSkillData.PassiveEffectType.OnHitManaRestore:
+                mpOnHit += delta;
                 break;
 
             // 트리거 패시브 — 수치 없이 등록만
