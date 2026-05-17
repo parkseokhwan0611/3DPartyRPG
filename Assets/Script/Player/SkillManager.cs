@@ -225,6 +225,10 @@ public class SkillManager : MonoBehaviour
             if (slot == null || !slot.IsReady) continue;
             if (slot.skillData.skillType == SkillData.SkillType.Heal)    continue;
             if (slot.skillData.skillType == SkillData.SkillType.Passive) continue;
+
+            // DispelDebuff 효과가 있는 스킬은 파티원에 디버프가 있을 때만 후보에 포함
+            if (IsDispelSkill(slot.skillData) && !AnyMemberHasDebuff()) continue;
+
             readySlots.Add(slot);
         }
 
@@ -291,6 +295,30 @@ public class SkillManager : MonoBehaviour
             var stat = member.GetComponent<CharacterStat>();
             if (stat == null || stat.MaxHp <= 0f) continue;
             if (stat.Hp / stat.MaxHp < ratio) return true;
+        }
+        return false;
+    }
+
+    private bool IsDispelSkill(SkillData data)
+    {
+        var buffData = data as BuffSkillData;
+        if (buffData == null) return false;
+        foreach (var effect in buffData.buffEffects)
+        {
+            if (effect.effectType == BuffSkillData.BuffEffectType.DispelDebuff) return true;
+        }
+        return false;
+    }
+
+    private bool AnyMemberHasDebuff()
+    {
+        if (PartyManager.instance == null) return false;
+        foreach (var member in PartyManager.instance.partyMembers)
+        {
+            if (member == null) continue;
+            if (member.CurrentState == PartyMemberScript.MemberState.Dead) continue;
+            var handler = member.GetComponent<PartyStatusEffectHandler>();
+            if (handler != null && handler.HasActiveDebuff()) return true;
         }
         return false;
     }
