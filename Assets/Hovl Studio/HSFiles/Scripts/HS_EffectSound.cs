@@ -14,23 +14,32 @@ public class HS_EffectSound : MonoBehaviour
 
     private AudioSource soundComponent;
 
-    void Start ()
+    void Awake()
     {
         soundComponent = GetComponent<AudioSource>();
         clip = soundComponent.clip;
-        if (RandomVolume == true)
-        {
+    }
+
+    void OnEnable()
+    {
+        if (RandomVolume)
             soundComponent.volume = Random.Range(minVolume, maxVolume);
+
+        if (Repeating)
+            InvokeRepeating(nameof(RepeatSound), StartTime, RepeatTime);
+        else
             RepeatSound();
-        }
-        if (Repeating == true)
-        {
-            InvokeRepeating("RepeatSound", StartTime, RepeatTime);
-        }
+    }
+
+    void OnDisable()
+    {
+        CancelInvoke(nameof(RepeatSound));
+        soundComponent.Stop();
     }
 
     void RepeatSound()
     {
+        if (!gameObject.activeInHierarchy) return;
         soundComponent.PlayOneShot(clip);
     }
 }
