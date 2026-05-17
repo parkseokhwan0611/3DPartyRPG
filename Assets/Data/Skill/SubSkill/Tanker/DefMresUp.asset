@@ -35,12 +35,13 @@ MonoBehaviour:
   - 20
   skillPointCost: 0100000002000000020000000300000004000000
   isPartyBuff: 1
-  effectStyle: 1
-  effectPoolKey: 
-  auraIndex: 1
+  effectStyle: 0
+  effectPoolKey: DefBuff
+  auraIndex: 0
   animTriggerName: doBuffSkill
   animDuration: 1.2
   effectSpawnDelay: 0.6
+  effectSpawnOffset: {x: 0, y: 1, z: 0}
   baseDuration: 6
   durationPerLevel: 1
   buffEffects:
