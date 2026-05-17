@@ -13,7 +13,8 @@ MonoBehaviour:
   m_Name: DotHeal
   m_EditorClassIdentifier: 
   skillName: "\uC7AC\uC0DD\uB825 \uC99D\uAC00"
-  description: "\uC9C0\uC18D\uC2DC\uAC04 \uB3D9\uC548 \uD30C\uD2F0\uC6D0\uC744 \uCE58\uC720\uD569\uB2C8\uB2E4."
+  description: "\uC9C0\uC18D\uC2DC\uAC04 \uB3D9\uC548 \uD30C\uD2F0\uC6D0\uC744 \uC9C0\uC18D
+    \uCE58\uC720\uD569\uB2C8\uB2E4."
   icon: {fileID: 21300000, guid: 9d99d011c762ace4c86ad318e1e624a3, type: 3}
   requiredClass: 2
   skillType: 2
@@ -41,7 +42,8 @@ MonoBehaviour:
   fthRatio: 0.3
   isDotHeal: 1
   dotInterval: 1
-  dotDuration: 10
+  baseDotDuration: 10
+  dotDurationPerLevel: 1
   animTriggerName: doHeal
   animDuration: 1
   effectSpawnDelay: 0.3
