@@ -77,5 +77,6 @@ public class BuffSkillData : SkillData
         HpRegen,
         HpOnHit,        // 기본 공격 적중 시 체력 회복
         DebuffImmune,
+        DispelDebuff,   // 즉시 디버프 전체 제거
     }
 }

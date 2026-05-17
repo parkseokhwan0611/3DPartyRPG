@@ -359,6 +359,7 @@ public class SkillDetailPanelUI : MonoBehaviour
             BuffSkillData.BuffEffectType.HpRegen       => $"체력 재생 +{total:F1}/초{note}",
             BuffSkillData.BuffEffectType.HpOnHit       => $"공격 적중 시 체력 +{total:F0}{note}",
             BuffSkillData.BuffEffectType.DebuffImmune  => "디버프 면역",
+            BuffSkillData.BuffEffectType.DispelDebuff  => "디버프 즉시 제거",
             _                                          => "",
         };
     }
