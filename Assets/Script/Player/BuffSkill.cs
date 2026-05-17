@@ -92,7 +92,9 @@ public class BuffSkill : SkillBase
         switch (data.effectStyle)
         {
             case BuffSkillData.EffectStyle.OneShot:
-                SpawnTargetEffect(data, stat.transform);
+                // 파티 버프는 시전자 위치에서만 이펙트 생성 (ExecuteSkill의 SpawnEffect로 처리됨)
+                if (!data.isPartyBuff)
+                    SpawnTargetEffect(data, stat.transform);
                 break;
             case BuffSkillData.EffectStyle.Aura:
                 stat.ActivateBuffAura(data.auraIndex);
