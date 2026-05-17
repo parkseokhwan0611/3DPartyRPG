@@ -68,10 +68,6 @@ public string charName;
     public float nextSkillDamageBonus = 0f; // 다음 스킬 데미지 증가량
     public float nextSkillBonusTimer  = 0f; // 버프 지속시간
     
-    public void RaiseHpChanged()
-    {
-        OnHpChanged?.Invoke();
-    }
     public void RaiseHpChanged() => OnHpChanged?.Invoke();
     public void RaiseMpChanged() => OnMpChanged?.Invoke();
 
