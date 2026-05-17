@@ -189,7 +189,7 @@ public class DamageSkill : SkillBase
         var effect = ObjectPoolManager.instance.GetGo(data.effectPoolKey);
         if (effect != null)
         {
-            effect.transform.position = transform.position + transform.forward;
+            effect.transform.position = transform.position + transform.rotation * data.effectSpawnOffset;
             effect.transform.rotation = transform.rotation;
         }
     }
