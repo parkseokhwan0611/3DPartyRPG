@@ -58,6 +58,38 @@ public class CharacterStat : MonoBehaviour, IDamageable
         }
     }
 
+    void Start()
+    {
+        StartCoroutine(RegenRoutine());
+    }
+
+    // 1초 틱 — 힐 텍스트·아우라 없이 조용히 HP/MP만 회복
+    private IEnumerator RegenRoutine()
+    {
+        var tick = new WaitForSeconds(1f);
+        while (true)
+        {
+            yield return tick;
+            if (myStatus == null || myStatus.currentHp <= 0f) continue;
+
+            float hpRegen = myStatus.TotalHpRegen;
+            if (hpRegen > 0f && myStatus.currentHp < myStatus.MaxHp)
+            {
+                myStatus.currentHp = Mathf.Clamp(myStatus.currentHp + hpRegen, 0f, myStatus.MaxHp);
+                myStatus.RaiseHpChanged();
+                OnHpChanged?.Invoke();
+            }
+
+            float mpRegen = myStatus.TotalMpRegen;
+            if (mpRegen > 0f && myStatus.currentMp < myStatus.MaxMp)
+            {
+                myStatus.currentMp = Mathf.Clamp(myStatus.currentMp + mpRegen, 0f, myStatus.MaxMp);
+                myStatus.RaiseMpChanged();
+                OnMpChanged?.Invoke();
+            }
+        }
+    }
+
     void Update()
     {
         if (myStatus == null) return;

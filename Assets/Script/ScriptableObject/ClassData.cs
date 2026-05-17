@@ -25,5 +25,11 @@ public class ClassData : ScriptableObject
     public float baseCritRate   = 0.05f;
     public float baseCritDamage = 1.5f;
     [Header("마법 저항력")]
-    public float baseMagicRes = 0f; // VIT과 무관, 버프/패시브/아이템으로만 증가
+    public float baseMagicRes = 0f;
+
+    [Header("HP / MP 재생")]
+    public float baseHpRegen    = 0f;  // 초당 기본 HP 재생
+    public float hpRegenPerVit  = 0f;  // VIT 1당 초당 HP 재생
+    public float baseMpRegen    = 0f;  // 초당 기본 MP 재생
+    public float mpRegenPerFth  = 0f;  // FTH 1당 초당 MP 재생
 }
