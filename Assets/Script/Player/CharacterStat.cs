@@ -42,6 +42,7 @@ public class CharacterStat : MonoBehaviour, IDamageable
     public float MpOnHit       => myStatus != null ? myStatus.mpOnHit      : 0f;
     public float PhysDmgBonus  => myStatus != null ? myStatus.physDmgBonus  : 0f;
     public float MagicDmgBonus => myStatus != null ? myStatus.magicDmgBonus : 0f;
+    public float HealBonus     => myStatus != null ? myStatus.healBonus     : 0f;
 
     // 아이템/장비 평탄 보너스 (읽기 + 쓰기 모두 필요해서 프로퍼티로 래핑)
     public float BonusAtk { get => myStatus?.bonusAtk ?? 0f; set { if (myStatus != null) myStatus.bonusAtk = value; } }
