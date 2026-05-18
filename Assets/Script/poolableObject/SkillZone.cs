@@ -21,7 +21,6 @@ public class SkillZone : MonoBehaviour
     private Color  damageColor;
 
     private int    enemyLayer;
-    private bool   isReady = false;
     private Coroutine tickCoroutine;
 
     // ─────────────────────────────────────────────────────────────────
@@ -37,7 +36,6 @@ public class SkillZone : MonoBehaviour
         this.attacker    = attacker;
         this.damageColor = damageColor;
         this.enemyLayer  = LayerMask.GetMask("Enemy");
-        isReady = true;
 
         // OnEnable이 Setup보다 먼저 호출될 수 있으므로 여기서도 시작
         if (tickCoroutine == null && gameObject.activeInHierarchy)
@@ -48,11 +46,6 @@ public class SkillZone : MonoBehaviour
     // Unity 생명주기
     // ─────────────────────────────────────────────────────────────────
 
-    void OnEnable()
-    {
-        isReady = false; // Setup 대기 상태로 초기화
-    }
-
     void OnDisable()
     {
         if (tickCoroutine != null)
@@ -60,7 +53,6 @@ public class SkillZone : MonoBehaviour
             StopCoroutine(tickCoroutine);
             tickCoroutine = null;
         }
-        isReady = false;
     }
 
     // ─────────────────────────────────────────────────────────────────
