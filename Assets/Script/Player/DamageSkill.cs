@@ -47,12 +47,19 @@ public class DamageSkill : SkillBase
         if (data.effectSpawnDelay > 0f)
             yield return new WaitForSeconds(data.effectSpawnDelay);
 
-        // 4. 이펙트 스폰
-        SpawnEffect(data);
-
-        // 5. 데미지 판정
-        if (data.isAoe) ApplyAoeDamage(data);
-        else            ApplySingleDamage(data, target);
+        // 4. 이펙트 스폰 + 데미지 판정
+        if (data.spawnAtTarget)
+        {
+            // 장판형: 타겟 위치에 스폰, SkillZone이 직접 판정
+            SpawnZone(data, target);
+        }
+        else
+        {
+            // 일반형: 시전자 위치에 스폰, 즉시 판정
+            SpawnEffect(data);
+            if (data.isAoe) ApplyAoeDamage(data);
+            else            ApplySingleDamage(data, target);
+        }
 
         // 6. 어그로 적용
         ApplyAggro(data);
@@ -181,6 +188,7 @@ public class DamageSkill : SkillBase
     // 이펙트 스폰
     // ─────────────────────────────────────────────────────────────────
 
+    // 일반형 — 시전자 위치에 이펙트 스폰
     private void SpawnEffect(DamageSkillData data)
     {
         if (string.IsNullOrEmpty(data.effectPoolKey)) return;
@@ -191,6 +199,33 @@ public class DamageSkill : SkillBase
         {
             effect.transform.position = transform.position + transform.rotation * data.effectSpawnOffset;
             effect.transform.rotation = transform.rotation;
+        }
+    }
+
+    // 장판형 — 타겟 위치에 이펙트 스폰 후 SkillZone에 파라미터 전달
+    private void SpawnZone(DamageSkillData data, Transform target)
+    {
+        if (string.IsNullOrEmpty(data.effectPoolKey)) return;
+        if (ObjectPoolManager.instance == null) return;
+
+        var effect = ObjectPoolManager.instance.GetGo(data.effectPoolKey);
+        if (effect == null) return;
+
+        // 타겟 위치에 배치 (오프셋 적용)
+        effect.transform.position = target.position + data.effectSpawnOffset;
+        effect.transform.rotation = Quaternion.identity;
+
+        // SkillZone에 판정 파라미터 전달
+        var zone = effect.GetComponent<SkillZone>();
+        if (zone != null)
+        {
+            float damage = CalculateDamage(data);
+            float range  = data.GetRange(skillLevel);
+            zone.Setup(damage, range, data.zoneDamageInterval, gameObject, myStat.GetDamageColor());
+        }
+        else
+        {
+            Debug.LogWarning($"[DamageSkill] '{data.effectPoolKey}' 오브젝트에 SkillZone 컴포넌트가 없습니다.");
         }
     }
 

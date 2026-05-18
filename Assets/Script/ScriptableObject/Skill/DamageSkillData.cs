@@ -26,6 +26,12 @@ public class DamageSkillData : SkillData
     public float aggroAmount    = 50f;
     public float aggroRange     = 10f;
 
+    [Header("장판 설정")]
+    [Tooltip("true = 타겟 위치에 이펙트 스폰, 풀 오브젝트의 SkillZone이 직접 데미지 판정")]
+    public bool spawnAtTarget = false;
+    [Tooltip("장판 데미지 틱 간격 (초). spawnAtTarget = true일 때만 사용")]
+    public float zoneDamageInterval = 0.5f;
+
     [Header("애니메이션 / 이펙트")]
     public string animTriggerName;    // 애니메이터 트리거 이름
     public float animDuration;        // 애니메이션 전체 길이
