@@ -16,7 +16,7 @@ public class SkillZone : MonoBehaviour
     private float  damage;
     private float  range;
     private float  interval;
-    private bool   useAp;
+    private bool   hitOnce;
     private GameObject attacker;
     private Color  damageColor;
 
@@ -27,12 +27,13 @@ public class SkillZone : MonoBehaviour
     // 초기화 (DamageSkill에서 스폰 직후 호출)
     // ─────────────────────────────────────────────────────────────────
 
-    public void Setup(float damage, float range, float interval,
+    public void Setup(float damage, float range, float interval, bool hitOnce,
                       GameObject attacker, Color damageColor)
     {
         this.damage      = damage;
         this.range       = range;
         this.interval    = interval;
+        this.hitOnce     = hitOnce;
         this.attacker    = attacker;
         this.damageColor = damageColor;
         this.enemyLayer  = LayerMask.GetMask("Enemy");
@@ -61,8 +62,16 @@ public class SkillZone : MonoBehaviour
 
     private IEnumerator TickRoutine()
     {
-        var wait = new WaitForSeconds(interval);
+        if (hitOnce)
+        {
+            // 단발: 즉시 한 번 판정 후 종료
+            ApplyDamage();
+            tickCoroutine = null;
+            yield break;
+        }
 
+        // 반복: interval마다 판정
+        var wait = new WaitForSeconds(interval);
         while (true)
         {
             ApplyDamage();
