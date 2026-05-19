@@ -35,8 +35,8 @@ MonoBehaviour:
   - 4.5
   - 4
   skillPointCost: 0100000002000000020000000300000004000000
-  baseDamageMultiplier: 1.5
-  damageMultiplierPerLevel: 0.1
+  baseDamageMultiplier: 2
+  damageMultiplierPerLevel: 0.5
   useAp: 1
   castRange: 7
   baseRange: 2
@@ -51,7 +51,7 @@ MonoBehaviour:
   aggroRange: 10
   spawnAtTarget: 1
   zoneHitOnce: 1
-  zoneActivationDelay: 1
+  zoneActivationDelay: 0.8
   zoneDamageInterval: 0
   animTriggerName: doZoneSkill
   animDuration: 1.3

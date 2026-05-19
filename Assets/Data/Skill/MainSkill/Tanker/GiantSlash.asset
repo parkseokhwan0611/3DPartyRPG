@@ -35,8 +35,8 @@ MonoBehaviour:
   - 15
   - 15
   skillPointCost: 0200000002000000020000000200000004000000
-  baseDamageMultiplier: 1
-  damageMultiplierPerLevel: 0.08
+  baseDamageMultiplier: 1.5
+  damageMultiplierPerLevel: 0.3
   useAp: 0
   castRange: 2
   baseRange: 3
@@ -54,6 +54,10 @@ MonoBehaviour:
   hasAggroEffect: 1
   aggroAmount: 50
   aggroRange: 3
+  spawnAtTarget: 0
+  zoneHitOnce: 0
+  zoneActivationDelay: 0
+  zoneDamageInterval: 0.5
   animTriggerName: doGiantSlash
   animDuration: 1.2
   effectSpawnDelay: 0.75

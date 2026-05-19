@@ -35,8 +35,8 @@ MonoBehaviour:
   - 6
   - 6
   skillPointCost: 0100000002000000020000000300000004000000
-  baseDamageMultiplier: 1.3
-  damageMultiplierPerLevel: 0.1
+  baseDamageMultiplier: 1.5
+  damageMultiplierPerLevel: 0.3
   useAp: 0
   castRange: 2
   baseRange: 2
@@ -49,6 +49,10 @@ MonoBehaviour:
   hasAggroEffect: 0
   aggroAmount: 50
   aggroRange: 10
+  spawnAtTarget: 0
+  zoneHitOnce: 0
+  zoneActivationDelay: 0
+  zoneDamageInterval: 0.5
   animTriggerName: doHolyPierce
   animDuration: 1.2
   effectSpawnDelay: 0.6
