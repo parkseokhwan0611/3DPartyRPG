@@ -16,6 +16,7 @@ public class SkillZone : MonoBehaviour
     private float  damage;
     private float  range;
     private float  interval;
+    private float  activationDelay;
     private bool   hitOnce;
     private GameObject attacker;
     private Color  damageColor;
@@ -27,16 +28,17 @@ public class SkillZone : MonoBehaviour
     // 초기화 (DamageSkill에서 스폰 직후 호출)
     // ─────────────────────────────────────────────────────────────────
 
-    public void Setup(float damage, float range, float interval, bool hitOnce,
-                      GameObject attacker, Color damageColor)
+    public void Setup(float damage, float range, float interval, float activationDelay,
+                      bool hitOnce, GameObject attacker, Color damageColor)
     {
-        this.damage      = damage;
-        this.range       = range;
-        this.interval    = interval;
-        this.hitOnce     = hitOnce;
-        this.attacker    = attacker;
-        this.damageColor = damageColor;
-        this.enemyLayer  = LayerMask.GetMask("Enemy");
+        this.damage          = damage;
+        this.range           = range;
+        this.interval        = interval;
+        this.activationDelay = activationDelay;
+        this.hitOnce         = hitOnce;
+        this.attacker        = attacker;
+        this.damageColor     = damageColor;
+        this.enemyLayer      = LayerMask.GetMask("Enemy");
 
         // OnEnable이 Setup보다 먼저 호출될 수 있으므로 여기서도 시작
         if (tickCoroutine == null && gameObject.activeInHierarchy)
@@ -62,9 +64,13 @@ public class SkillZone : MonoBehaviour
 
     private IEnumerator TickRoutine()
     {
+        // 선딜: 이펙트가 먼저 보이고 데미지는 나중에
+        if (activationDelay > 0f)
+            yield return new WaitForSeconds(activationDelay);
+
         if (hitOnce)
         {
-            // 단발: 즉시 한 번 판정 후 종료
+            // 단발: 한 번 판정 후 종료
             ApplyDamage();
             tickCoroutine = null;
             yield break;

@@ -29,8 +29,10 @@ public class DamageSkillData : SkillData
     [Header("장판 설정")]
     [Tooltip("true = 타겟 위치에 이펙트 스폰, 풀 오브젝트의 SkillZone이 직접 데미지 판정")]
     public bool spawnAtTarget = false;
-    [Tooltip("true = 스폰 즉시 한 번만 판정 / false = zoneDamageInterval마다 반복 판정")]
+    [Tooltip("true = 한 번만 판정 / false = zoneDamageInterval마다 반복 판정")]
     public bool zoneHitOnce = false;
+    [Tooltip("스폰 후 첫 판정까지의 대기 시간 (초). 베이가 W처럼 이펙트 먼저 보여주고 뒤늦게 데미지를 줄 때 사용")]
+    public float zoneActivationDelay = 0f;
     [Tooltip("장판 데미지 틱 간격 (초). zoneHitOnce = false일 때만 사용")]
     public float zoneDamageInterval = 0.5f;
 
