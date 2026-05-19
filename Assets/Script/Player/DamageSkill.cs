@@ -221,8 +221,8 @@ public class DamageSkill : SkillBase
         {
             float damage = CalculateDamage(data);
             float range  = data.GetRange(skillLevel);
-            zone.Setup(damage, range, data.zoneDamageInterval, data.zoneHitOnce,
-                       gameObject, myStat.GetDamageColor());
+            zone.Setup(damage, range, data.zoneDamageInterval, data.zoneActivationDelay,
+                       data.zoneHitOnce, gameObject, myStat.GetDamageColor());
         }
         else
         {
