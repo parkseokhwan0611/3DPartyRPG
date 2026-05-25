@@ -39,7 +39,7 @@ MonoBehaviour:
   damageMultiplierPerLevel: 0.5
   useAp: 1
   castRange: 7
-  baseRange: 2
+  baseRange: 1
   rangePerLevel: 0
   isAoe: 1
   onHitDebuffs: []
@@ -58,3 +58,4 @@ MonoBehaviour:
   effectSpawnDelay: 0.3
   effectPoolKey: DarkMagicLightning
   effectSpawnOffset: {x: 0, y: 0, z: 0}
+  effectSpawnRotation: {x: 0, y: 180, z: 0}

@@ -184088,7 +184088,7 @@ NavMeshAgent:
   m_Radius: 0.5
   m_Speed: 3
   m_Acceleration: 12
-  avoidancePriority: 10
+  avoidancePriority: 4
   m_AngularSpeed: 800
   m_StoppingDistance: 0
   m_AutoTraverseOffMeshLink: 1
@@ -330817,7 +330817,7 @@ MonoBehaviour:
     perfab: {fileID: 4885993744736997009, guid: 4b859d2329e20154ab747500e1953c3a,
       type: 3}
     count: 1
-  - objectName: AtkBuff
+  - objectName: MPRegen
     perfab: {fileID: 8689840811846480658, guid: fbc6bd2e27f2ed849a77b1af74af7de1,
       type: 3}
     count: 1
@@ -330829,6 +330829,10 @@ MonoBehaviour:
     perfab: {fileID: 5086033594084904282, guid: b970957b50cad9545ac7bab7acdf36b6,
       type: 3}
     count: 5
+  - objectName: FirePillar
+    perfab: {fileID: 2141267316498306331, guid: c56299558572b684f913523c83a82c02,
+      type: 3}
+    count: 2
 --- !u!4 &2115435187
 Transform:
   m_ObjectHideFlags: 0
@@ -575191,7 +575195,7 @@ NavMeshAgent:
   m_Radius: 0.5
   m_Speed: 3
   m_Acceleration: 12
-  avoidancePriority: 10
+  avoidancePriority: 2
   m_AngularSpeed: 800
   m_StoppingDistance: 0
   m_AutoTraverseOffMeshLink: 1
