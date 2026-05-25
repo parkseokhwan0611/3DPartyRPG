@@ -166,7 +166,7 @@ public class BuffSkill : SkillBase
         if (effect != null)
         {
             effect.transform.position = transform.position + transform.rotation * data.effectSpawnOffset;
-            effect.transform.rotation = transform.rotation;
+            effect.transform.rotation = transform.rotation * Quaternion.Euler(data.effectSpawnRotation);
         }
     }
 
@@ -179,7 +179,7 @@ public class BuffSkill : SkillBase
         if (effect != null)
         {
             effect.transform.position = target.position + target.rotation * data.effectSpawnOffset;
-            effect.transform.rotation = target.rotation;
+            effect.transform.rotation = target.rotation * Quaternion.Euler(data.effectSpawnRotation);
         }
     }
 }

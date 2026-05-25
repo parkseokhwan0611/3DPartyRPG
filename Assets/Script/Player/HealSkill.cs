@@ -127,7 +127,7 @@ public class HealSkill : SkillBase
         if (effect != null)
         {
             effect.transform.position = transform.position + transform.rotation * data.effectSpawnOffset;
-            effect.transform.rotation = transform.rotation;
+            effect.transform.rotation = transform.rotation * Quaternion.Euler(data.effectSpawnRotation);
         }
     }
 
@@ -140,7 +140,7 @@ public class HealSkill : SkillBase
         if (effect != null)
         {
             effect.transform.position = target.position + target.rotation * data.targetEffectSpawnOffset;
-            effect.transform.rotation = target.rotation;
+            effect.transform.rotation = target.rotation * Quaternion.Euler(data.targetEffectSpawnRotation);
         }
     }
 }

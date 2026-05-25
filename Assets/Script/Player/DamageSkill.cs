@@ -198,7 +198,7 @@ public class DamageSkill : SkillBase
         if (effect != null)
         {
             effect.transform.position = transform.position + transform.rotation * data.effectSpawnOffset;
-            effect.transform.rotation = transform.rotation;
+            effect.transform.rotation = transform.rotation * Quaternion.Euler(data.effectSpawnRotation);
         }
     }
 
@@ -213,7 +213,7 @@ public class DamageSkill : SkillBase
 
         // 타겟 위치에 배치 (오프셋 적용)
         effect.transform.position = target.position + data.effectSpawnOffset;
-        effect.transform.rotation = Quaternion.identity;
+        effect.transform.rotation = Quaternion.Euler(data.effectSpawnRotation);
 
         // SkillZone에 판정 파라미터 전달
         var zone = effect.GetComponent<SkillZone>();

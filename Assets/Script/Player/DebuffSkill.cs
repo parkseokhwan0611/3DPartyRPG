@@ -105,8 +105,9 @@ public class DebuffSkill : SkillBase
         var effect = ObjectPoolManager.instance.GetGo(data.effectPoolKey);
         if (effect != null)
         {
-            effect.transform.position = target != null ? target.position : transform.position;
-            effect.transform.rotation = transform.rotation;
+            Transform origin = target != null ? target : transform;
+            effect.transform.position = origin.position + origin.rotation * data.effectSpawnOffset;
+            effect.transform.rotation = origin.rotation * Quaternion.Euler(data.effectSpawnRotation);
         }
     }
 }
