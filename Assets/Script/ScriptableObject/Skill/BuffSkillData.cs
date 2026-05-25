@@ -25,7 +25,8 @@ public class BuffSkillData : SkillData
     public string animTriggerName;
     public float animDuration;
     public float effectSpawnDelay;
-    public Vector3 effectSpawnOffset; // 이펙트 스폰 위치 오프셋 (로컬 스페이스)
+    public Vector3 effectSpawnOffset;   // 스폰 위치 오프셋 (로컬 스페이스)
+    public Vector3 effectSpawnRotation; // 스폰 회전 오프셋 (오일러각, 로컬 스페이스)
 
     [Header("버프 지속시간 (레벨별)")]
     public float baseDuration = 5f;

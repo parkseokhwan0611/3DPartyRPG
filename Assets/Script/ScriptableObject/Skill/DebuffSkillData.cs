@@ -13,6 +13,8 @@ public class DebuffSkillData : SkillData
     public float animDuration;
     public float effectSpawnDelay;
     public string effectPoolKey;
+    public Vector3 effectSpawnOffset;   // 스폰 위치 오프셋 (로컬 스페이스)
+    public Vector3 effectSpawnRotation; // 스폰 회전 오프셋 (오일러각, 로컬 스페이스)
 
     [Header("디버프 효과 목록 (최대 3개)")]
     public List<DebuffEffect> debuffEffects = new List<DebuffEffect>();
