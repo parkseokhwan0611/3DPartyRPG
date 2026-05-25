@@ -75,7 +75,7 @@ public class HealerAttack : AttackBase
 
         ProjectileScript proj = effect.GetComponent<ProjectileScript>();
         if (proj != null)
-            proj.SetProjectileData(damage, gameObject, OnProjectileHit, myStat.GetDamageColor());
+            proj.SetProjectileData(damage, gameObject, OnProjectileHit, myStat.GetDamageColor(false)); // AP 기반 = 마법 피해
 
         Rigidbody rb = effect.GetComponent<Rigidbody>();
         if (rb != null)

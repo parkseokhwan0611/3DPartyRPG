@@ -106,7 +106,7 @@ public class DamageSkill : SkillBase
         EnemyHp enemyHp = target.GetComponent<EnemyHp>();
         if (enemyHp == null) return;
 
-        enemyHp.TakeDamage(CalculateDamage(data), gameObject, myStat.GetDamageColor());
+        enemyHp.TakeDamage(CalculateDamage(data), gameObject, myStat.GetDamageColor(!data.useAp));
         ApplyOnHitDebuffs(data, target);
 
         if (TargetHpScript.instance != null)
@@ -130,7 +130,7 @@ public class DamageSkill : SkillBase
             EnemyHp enemyHp = col.GetComponent<EnemyHp>();
             if (enemyHp == null) continue;
 
-            enemyHp.TakeDamage(CalculateDamage(data), gameObject, myStat.GetDamageColor());
+            enemyHp.TakeDamage(CalculateDamage(data), gameObject, myStat.GetDamageColor(!data.useAp));
             ApplyOnHitDebuffs(data, col.transform);
 
             if (!isTargetSet && TargetHpScript.instance != null)
@@ -222,7 +222,7 @@ public class DamageSkill : SkillBase
             float damage = CalculateDamage(data);
             float range  = data.GetRange(skillLevel);
             zone.Setup(damage, range, data.zoneDamageInterval, data.zoneActivationDelay,
-                       data.zoneHitOnce, gameObject, myStat.GetDamageColor());
+                       data.zoneHitOnce, gameObject, myStat.GetDamageColor(!data.useAp));
         }
         else
         {

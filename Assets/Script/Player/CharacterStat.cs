@@ -207,17 +207,12 @@ public class CharacterStat : MonoBehaviour, IDamageable
             dt.Setup(damage, color);
     }
 
-    public Color GetDamageColor()
+    // isPhysical: true = 물리 피해 (연한 붉은색), false = 마법 피해 (연한 파란색)
+    public Color GetDamageColor(bool isPhysical)
     {
-        if (classData == null) return Color.white;
-
-        switch (classData.classType)
-        {
-            case ClassData.ClassType.Tanker: return new Color(1f, 0.5f, 0f);
-            case ClassData.ClassType.Dealer: return new Color(0.6f, 0f, 1f);
-            case ClassData.ClassType.Healer: return new Color(1f, 0.9f, 0f);
-            default: return Color.white;
-        }
+        return isPhysical
+            ? new Color(1f, 0.45f, 0.45f)   // 연한 붉은색
+            : new Color(0.45f, 0.75f, 1f);   // 연한 파란색
     }
 
     public bool TryUseMp(float cost)
