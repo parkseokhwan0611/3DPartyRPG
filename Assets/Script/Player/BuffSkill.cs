@@ -3,6 +3,16 @@ using System.Collections;
 
 public class BuffSkill : SkillBase
 {
+    // 시전자 기준 버프 남은 시간 (UI 표시용)
+    public float BuffRemaining { get; private set; } = 0f;
+
+    protected override void Update()
+    {
+        base.Update();
+        if (BuffRemaining > 0f)
+            BuffRemaining -= Time.deltaTime;
+    }
+
     private BuffSkillData buffData;
 
     private BuffSkillData GetBuffData()
@@ -81,7 +91,13 @@ public class BuffSkill : SkillBase
         ApplyBuffEffects(status, data, skillLevel, 1f, myStat, handler);
         ShowBuffEffect(data, stat);
 
-        yield return new WaitForSeconds(data.GetDuration(skillLevel));
+        float duration = data.GetDuration(skillLevel);
+
+        // 시전자 본인 버프일 때 UI용 타이머 설정
+        if (stat == myStat)
+            BuffRemaining = duration;
+
+        yield return new WaitForSeconds(duration);
 
         ApplyBuffEffects(status, data, skillLevel, -1f, myStat, handler);
         HideBuffEffect(data, stat);

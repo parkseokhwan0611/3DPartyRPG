@@ -20,8 +20,9 @@ public abstract class SkillBase : MonoBehaviour
     // 스킬 종료 시 이동/타겟팅 재개를 알리는 이벤트
     public event Action OnSkillFinished;
 
-    public bool IsReady        => cooldownTimer <= 0f;
-    public float CooldownRatio => skillData != null && skillData.cooldown.Length > 0
+    public bool IsReady           => cooldownTimer <= 0f;
+    public float CooldownRemaining => Mathf.Max(cooldownTimer, 0f);
+    public float CooldownRatio    => skillData != null && skillData.cooldown.Length > 0
         ? Mathf.Clamp01(cooldownTimer / skillData.cooldown[skillLevel - 1])
         : 0f;
 

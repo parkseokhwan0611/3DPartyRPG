@@ -5,9 +5,11 @@ using TMPro;
 public class CombatQuickSlot : MonoBehaviour
 {
     [Header("# UI 참조")]
-    public Image iconImage;           // Icon 오브젝트의 Image
-    public Image cooldownOverlay;     // 쿨다운 오버레이 Image
-    public TextMeshProUGUI keyText;   // Q/W/E/R 텍스트 (있으면)
+    public Image iconImage;                     // 스킬 아이콘
+    public Image cooldownOverlay;               // 쿨다운 오버레이
+    public TextMeshProUGUI keyText;             // Q/W/E/R 텍스트
+    public TextMeshProUGUI cooldownText;        // 쿨다운 남은 시간
+    public TextMeshProUGUI buffDurationText;    // 버프 지속 시간
 
     // ─────────────────────────────────────────────────────────────────
     // 스킬 표시
@@ -33,11 +35,49 @@ public class CombatQuickSlot : MonoBehaviour
     // 쿨다운 오버레이
     // ─────────────────────────────────────────────────────────────────
 
-    public void UpdateCooldown(float ratio)
+    public void UpdateCooldown(float ratio, float remaining, float buffRemaining)
     {
-        if (cooldownOverlay == null) return;
+        // 오버레이
+        if (cooldownOverlay != null)
+        {
+            cooldownOverlay.gameObject.SetActive(ratio > 0f);
+            cooldownOverlay.fillAmount = ratio;
+        }
 
-        cooldownOverlay.gameObject.SetActive(ratio > 0f);
-        cooldownOverlay.fillAmount = ratio;
+        // 쿨다운 텍스트
+        if (cooldownText != null)
+        {
+            if (remaining > 0f)
+            {
+                cooldownText.gameObject.SetActive(true);
+                cooldownText.text = FormatTime(remaining);
+            }
+            else
+            {
+                cooldownText.gameObject.SetActive(false);
+            }
+        }
+
+        // 버프 지속시간 텍스트
+        if (buffDurationText != null)
+        {
+            if (buffRemaining > 0f)
+            {
+                buffDurationText.gameObject.SetActive(true);
+                buffDurationText.text = FormatTime(buffRemaining);
+            }
+            else
+            {
+                buffDurationText.gameObject.SetActive(false);
+            }
+        }
+    }
+
+    // 1 이상: 정수, 1 미만: 소수점 한 자리
+    private string FormatTime(float time)
+    {
+        return time >= 1f
+            ? Mathf.CeilToInt(time).ToString()
+            : time.ToString("F1");
     }
 }
