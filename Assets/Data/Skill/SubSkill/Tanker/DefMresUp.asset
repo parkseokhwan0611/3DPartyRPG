@@ -19,6 +19,7 @@ MonoBehaviour:
   requiredClass: 0
   skillType: 1
   skillCategory: 1
+  skillPriority: 0
   maxLevel: 5
   requiredCharLevel: 1
   mpCost:
@@ -35,9 +36,9 @@ MonoBehaviour:
   - 20
   skillPointCost: 0100000002000000020000000300000004000000
   isPartyBuff: 1
-  effectStyle: 0
+  effectStyle: 1
   effectPoolKey: DefBuff
-  auraIndex: 0
+  auraIndex: 2
   animTriggerName: doBuffSkill
   animDuration: 1.2
   effectSpawnDelay: 0.6
