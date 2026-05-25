@@ -20,7 +20,7 @@ MonoBehaviour:
   skillCategory: 0
   skillPriority: 1
   maxLevel: 5
-  requiredCharLevel: 10
+  requiredCharLevel: 20
   mpCost:
   - 30
   - 32
@@ -34,8 +34,8 @@ MonoBehaviour:
   - 15
   - 15
   skillPointCost: 0200000002000000020000000200000004000000
-  baseDamageMultiplier: 0.1
-  damageMultiplierPerLevel: 0.025
+  baseDamageMultiplier: 1
+  damageMultiplierPerLevel: 0.25
   useAp: 1
   castRange: 7
   baseRange: 2
