@@ -10,33 +10,23 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 72fc38e46b28c16479c1fcb1332fbc1a, type: 3}
-  m_Name: CritIncrease
+  m_Name: MagicDMGIncrease
   m_EditorClassIdentifier: 
-  skillName: "\uD589\uC6B4\uC758 \uC77C\uACA9"
-  description: "\uCE58\uBA85\uD0C0 \uD655\uB960\uC774 \uC99D\uAC00\uD569\uB2C8\uB2E4."
-  icon: {fileID: 21300000, guid: f30d24ae22e16d847909033c850ab569, type: 3}
-  requiredClass: 0
+  skillName: "\uB9C8\uB825 \uAC15\uD654"
+  description: "\uB9C8\uBC95 \uB370\uBBF8\uC9C0\uAC00 \uC99D\uAC00\uD569\uB2C8\uB2E4."
+  icon: {fileID: 21300000, guid: bb286fbbb93a8b74e8d35ca31b23b7e6, type: 3}
+  requiredClass: 1
   skillType: 4
   skillCategory: 2
   skillPriority: 0
   maxLevel: 5
-  requiredCharLevel: 20
-  mpCost:
-  - 0
-  - 0
-  - 0
-  - 0
-  - 0
-  cooldown:
-  - 0
-  - 0
-  - 0
-  - 0
-  - 0
+  requiredCharLevel: 10
+  mpCost: []
+  cooldown: []
   skillPointCost: 0200000002000000020000000200000004000000
-  effectType: 5
-  baseValue: 0.04
-  valuePerLevel: 0.04
+  effectType: 4
+  baseValue: 0.1
+  valuePerLevel: 0.025
   baseProcChance: 0
   procChancePerLevel: 0
   baseProcValue: 0
