@@ -74,7 +74,11 @@ public class CombatQuickSlotUI : MonoBehaviour
         for (int i = 0; i < slots.Length; i++)
         {
             if (slots[i] == null) continue;
-            slots[i].UpdateCooldown(currentSkillManager.GetCooldownRatio(i));
+            slots[i].UpdateCooldown(
+                currentSkillManager.GetCooldownRatio(i),
+                currentSkillManager.GetCooldownRemaining(i),
+                currentSkillManager.GetBuffRemaining(i)
+            );
         }
     }
 }

@@ -387,6 +387,20 @@ public class SkillManager : MonoBehaviour
         return skill != null ? skill.CooldownRatio : 0f;
     }
 
+    public float GetCooldownRemaining(int index)
+    {
+        SkillBase skill = GetSlot(index);
+        return skill != null ? skill.CooldownRemaining : 0f;
+    }
+
+    public float GetBuffRemaining(int index)
+    {
+        SkillBase skill = GetSlot(index);
+        if (skill is BuffSkill buffSkill)
+            return buffSkill.BuffRemaining;
+        return 0f;
+    }
+
     public Sprite GetSkillIcon(int index)
     {
         SkillBase skill = GetSlot(index);
