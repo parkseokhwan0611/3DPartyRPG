@@ -5,11 +5,11 @@ using TMPro;
 public class CombatQuickSlot : MonoBehaviour
 {
     [Header("# UI 참조")]
-    public Image iconImage;                     // 스킬 아이콘
-    public Image cooldownOverlay;               // 쿨다운 오버레이
-    public TextMeshProUGUI keyText;             // Q/W/E/R 텍스트
-    public TextMeshProUGUI cooldownText;        // 쿨다운 남은 시간
-    public TextMeshProUGUI buffDurationText;    // 버프 지속 시간
+    public Image iconImage;                  // 스킬 아이콘
+    public Image cooldownOverlay;            // 쿨다운 오버레이
+    public TextMeshProUGUI keyText;          // Q/W/E/R 텍스트
+    public TextMeshProUGUI cooldownText;     // 쿨다운 남은 시간
+    public Image buffDurationBar;            // 버프 지속시간 바
 
     // ─────────────────────────────────────────────────────────────────
     // 스킬 표시
@@ -35,9 +35,9 @@ public class CombatQuickSlot : MonoBehaviour
     // 쿨다운 오버레이
     // ─────────────────────────────────────────────────────────────────
 
-    public void UpdateCooldown(float ratio, float remaining, float buffRemaining)
+    public void UpdateCooldown(float ratio, float remaining, float buffRemainingRatio)
     {
-        // 오버레이
+        // 쿨다운 오버레이
         if (cooldownOverlay != null)
         {
             cooldownOverlay.gameObject.SetActive(ratio > 0f);
@@ -58,18 +58,11 @@ public class CombatQuickSlot : MonoBehaviour
             }
         }
 
-        // 버프 지속시간 텍스트
-        if (buffDurationText != null)
+        // 버프 지속시간 바
+        if (buffDurationBar != null)
         {
-            if (buffRemaining > 0f)
-            {
-                buffDurationText.gameObject.SetActive(true);
-                buffDurationText.text = FormatTime(buffRemaining);
-            }
-            else
-            {
-                buffDurationText.gameObject.SetActive(false);
-            }
+            buffDurationBar.gameObject.SetActive(buffRemainingRatio > 0f);
+            buffDurationBar.fillAmount = buffRemainingRatio;
         }
     }
 

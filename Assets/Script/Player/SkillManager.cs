@@ -393,11 +393,11 @@ public class SkillManager : MonoBehaviour
         return skill != null ? skill.CooldownRemaining : 0f;
     }
 
-    public float GetBuffRemaining(int index)
+    public float GetBuffRemainingRatio(int index)
     {
         SkillBase skill = GetSlot(index);
         if (skill is BuffSkill buffSkill)
-            return buffSkill.BuffRemaining;
+            return buffSkill.BuffRemainingRatio;
         return 0f;
     }
 
