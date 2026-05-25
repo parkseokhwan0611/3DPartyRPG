@@ -3,8 +3,10 @@ using System.Collections;
 
 public class BuffSkill : SkillBase
 {
-    // 시전자 기준 버프 남은 시간 (UI 표시용)
+    // 시전자 기준 버프 남은 시간 / 총 시간 (UI 표시용)
     public float BuffRemaining { get; private set; } = 0f;
+    private float buffTotal = 0f;
+    public float BuffRemainingRatio => buffTotal > 0f ? Mathf.Clamp01(BuffRemaining / buffTotal) : 0f;
 
     protected override void Update()
     {
@@ -95,7 +97,10 @@ public class BuffSkill : SkillBase
 
         // 시전자 본인 버프일 때 UI용 타이머 설정
         if (stat == myStat)
+        {
+            buffTotal     = duration;
             BuffRemaining = duration;
+        }
 
         yield return new WaitForSeconds(duration);
 

@@ -77,7 +77,7 @@ public class CombatQuickSlotUI : MonoBehaviour
             slots[i].UpdateCooldown(
                 currentSkillManager.GetCooldownRatio(i),
                 currentSkillManager.GetCooldownRemaining(i),
-                currentSkillManager.GetBuffRemaining(i)
+                currentSkillManager.GetBuffRemainingRatio(i)
             );
         }
     }
