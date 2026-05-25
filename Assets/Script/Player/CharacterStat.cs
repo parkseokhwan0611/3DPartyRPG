@@ -211,8 +211,8 @@ public class CharacterStat : MonoBehaviour, IDamageable
     public Color GetDamageColor(bool isPhysical)
     {
         return isPhysical
-            ? new Color(1f, 0.5f, 0.5f)   // 붉은색 (빨강~흰색 중간)
-            : new Color(0.5f, 0.5f, 1f);  // 파란색 (파랑~흰색 중간)
+            ? new Color(1f, 0.75f, 0.75f)   // 붉은색
+            : new Color(0.75f, 0.75f, 1f);  // 파란색
     }
 
     public bool TryUseMp(float cost)
