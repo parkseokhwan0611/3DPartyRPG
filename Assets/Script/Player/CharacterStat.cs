@@ -141,7 +141,7 @@ public class CharacterStat : MonoBehaviour, IDamageable
         myStatus.RaiseHpChanged();
         OnHpChanged?.Invoke();
 
-        SpawnDamageText(finalDamage, Color.red);
+        SpawnDamageText(finalDamage, new Color(1f, 0.55f, 0f)); // 주황색 피격 텍스트
 
         if (myStatus.currentHp <= 0) Die();
     }
@@ -204,7 +204,7 @@ public class CharacterStat : MonoBehaviour, IDamageable
 
         DamageText dt = textObj.GetComponent<DamageText>();
         if (dt != null)
-            dt.Setup(damage, color);
+            dt.Setup(damage, color, showMinus: true);
     }
 
     // isPhysical: true = 물리 피해 (연한 붉은색), false = 마법 피해 (연한 파란색)

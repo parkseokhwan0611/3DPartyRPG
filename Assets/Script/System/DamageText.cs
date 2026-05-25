@@ -22,8 +22,8 @@ public class DamageText : MonoBehaviour
         Setup(damageAmount, Color.white);
     }
 
-    // 색상 있는 버전 (플레이어 직업별 색상)
-    public void Setup(float damageAmount, Color color)
+    // 색상 있는 버전
+    public void Setup(float damageAmount, Color color, bool showMinus = false)
     {
         if (text == null) text = GetComponent<TextMeshPro>();
 
@@ -33,7 +33,8 @@ public class DamageText : MonoBehaviour
             return;
         }
 
-        text.text  = ((int)damageAmount).ToString(); // 소수점 제거
+        string prefix = showMinus ? "-" : "";
+        text.text  = prefix + ((int)damageAmount).ToString();
         alpha      = color;
         alpha.a    = 1f;
         text.color = alpha;
