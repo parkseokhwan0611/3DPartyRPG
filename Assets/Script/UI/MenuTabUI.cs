@@ -121,10 +121,10 @@ public class MenuTabUI : MonoBehaviour
     // 헬퍼
     // ─────────────────────────────────────────────────────────────────
 
-    private void PlayAnim(Animator anim, string triggerName)
+    private void PlayAnim(Animator anim, string stateName)
     {
         if (anim != null)
-            anim.SetTrigger(triggerName);
+            anim.Play(stateName);
     }
 
     private IEnumerator DeactivateAfter(GameObject target, float delay)
