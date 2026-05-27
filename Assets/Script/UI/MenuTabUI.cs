@@ -21,6 +21,14 @@ public class MenuTabUI : MonoBehaviour
     public Button questButton;
     public Button settingButton;
 
+    [Header("# 애니메이터 (Inspector에서 직접 연결)")]
+    public Animator menuAnim;
+    public Animator statAnim;
+    public Animator itemAnim;
+    public Animator skillAnim;
+    public Animator questAnim;
+    public Animator settingAnim;
+
     [Header("# 애니메이션 설정")]
     [Tooltip("Panel Out 애니메이션 길이 (초) — 이 시간 후 오브젝트 비활성화")]
     public float panelOutDuration = 0.3f;
@@ -32,32 +40,16 @@ public class MenuTabUI : MonoBehaviour
     private Animator   currentPanelAnim;
     private Coroutine  closeMenuCoroutine;
 
-    // Animator 캐시 (SetActive(false) 전에 미리 가져옴)
-    private Animator menuAnim;
-    private Animator statAnim;
-    private Animator itemAnim;
-    private Animator skillAnim;
-    private Animator questAnim;
-    private Animator settingAnim;
-
     // ─────────────────────────────────────────────────────────────────
     // Unity 생명주기
     // ─────────────────────────────────────────────────────────────────
 
     void Start()
     {
-        // Animator를 SetActive(false) 전에 미리 캐싱
-        menuAnim    = CacheAnim(menuWindow);
-        statAnim    = CacheAnim(statWindow);
-        itemAnim    = CacheAnim(itemWindow);
-        skillAnim   = CacheAnim(skillWindow);
-        questAnim   = CacheAnim(questWindow);
-        settingAnim = CacheAnim(settingWindow);
-
-        if (statButton != null)    statButton.onClick.AddListener(() => ShowPanel(statWindow,    statAnim));
-        if (itemButton != null)    itemButton.onClick.AddListener(() => ShowPanel(itemWindow,    itemAnim));
-        if (skillButton != null)   skillButton.onClick.AddListener(() => ShowPanel(skillWindow,  skillAnim));
-        if (questButton != null)   questButton.onClick.AddListener(() => ShowPanel(questWindow,  questAnim));
+        if (statButton != null)    statButton.onClick.AddListener(() => ShowPanel(statWindow,       statAnim));
+        if (itemButton != null)    itemButton.onClick.AddListener(() => ShowPanel(itemWindow,       itemAnim));
+        if (skillButton != null)   skillButton.onClick.AddListener(() => ShowPanel(skillWindow,     skillAnim));
+        if (questButton != null)   questButton.onClick.AddListener(() => ShowPanel(questWindow,     questAnim));
         if (settingButton != null) settingButton.onClick.AddListener(() => ShowPanel(settingWindow, settingAnim));
 
         // 시작 시 메뉴 닫기 (애니메이션 없이 즉시)
@@ -128,11 +120,6 @@ public class MenuTabUI : MonoBehaviour
     // ─────────────────────────────────────────────────────────────────
     // 헬퍼
     // ─────────────────────────────────────────────────────────────────
-
-    private Animator CacheAnim(GameObject target)
-    {
-        return target != null ? target.GetComponent<Animator>() : null;
-    }
 
     private void PlayAnim(Animator anim, string triggerName)
     {
