@@ -29,7 +29,16 @@ public class MenuTabUI : MonoBehaviour
     private const string ANIM_OUT = "Panel Out";
 
     private GameObject currentPanel;
-    private Coroutine closeMenuCoroutine;
+    private Animator   currentPanelAnim;
+    private Coroutine  closeMenuCoroutine;
+
+    // Animator 캐시 (SetActive(false) 전에 미리 가져옴)
+    private Animator menuAnim;
+    private Animator statAnim;
+    private Animator itemAnim;
+    private Animator skillAnim;
+    private Animator questAnim;
+    private Animator settingAnim;
 
     // ─────────────────────────────────────────────────────────────────
     // Unity 생명주기
@@ -37,11 +46,19 @@ public class MenuTabUI : MonoBehaviour
 
     void Start()
     {
-        if (statButton != null)    statButton.onClick.AddListener(() => ShowPanel(statWindow));
-        if (itemButton != null)    itemButton.onClick.AddListener(() => ShowPanel(itemWindow));
-        if (skillButton != null)   skillButton.onClick.AddListener(() => ShowPanel(skillWindow));
-        if (questButton != null)   questButton.onClick.AddListener(() => ShowPanel(questWindow));
-        if (settingButton != null) settingButton.onClick.AddListener(() => ShowPanel(settingWindow));
+        // Animator를 SetActive(false) 전에 미리 캐싱
+        menuAnim    = CacheAnim(menuWindow);
+        statAnim    = CacheAnim(statWindow);
+        itemAnim    = CacheAnim(itemWindow);
+        skillAnim   = CacheAnim(skillWindow);
+        questAnim   = CacheAnim(questWindow);
+        settingAnim = CacheAnim(settingWindow);
+
+        if (statButton != null)    statButton.onClick.AddListener(() => ShowPanel(statWindow,    statAnim));
+        if (itemButton != null)    itemButton.onClick.AddListener(() => ShowPanel(itemWindow,    itemAnim));
+        if (skillButton != null)   skillButton.onClick.AddListener(() => ShowPanel(skillWindow,  skillAnim));
+        if (questButton != null)   questButton.onClick.AddListener(() => ShowPanel(questWindow,  questAnim));
+        if (settingButton != null) settingButton.onClick.AddListener(() => ShowPanel(settingWindow, settingAnim));
 
         // 시작 시 메뉴 닫기 (애니메이션 없이 즉시)
         if (menuWindow != null) menuWindow.SetActive(false);
@@ -67,7 +84,6 @@ public class MenuTabUI : MonoBehaviour
 
     private void OpenMenu()
     {
-        // 닫히는 도중이면 코루틴 취소
         if (closeMenuCoroutine != null)
         {
             StopCoroutine(closeMenuCoroutine);
@@ -75,15 +91,15 @@ public class MenuTabUI : MonoBehaviour
         }
 
         menuWindow.SetActive(true);
-        PlayAnim(menuWindow, ANIM_IN);
+        PlayAnim(menuAnim, ANIM_IN);
 
         // 기본 스탯 창 표시
-        ShowPanel(statWindow);
+        ShowPanel(statWindow, statAnim);
     }
 
     private void CloseMenu()
     {
-        PlayAnim(menuWindow, ANIM_OUT);
+        PlayAnim(menuAnim, ANIM_OUT);
         closeMenuCoroutine = StartCoroutine(DeactivateAfter(menuWindow, panelOutDuration));
     }
 
@@ -91,31 +107,35 @@ public class MenuTabUI : MonoBehaviour
     // 패널 전환 (Out/In 동시 재생)
     // ─────────────────────────────────────────────────────────────────
 
-    public void ShowPanel(GameObject panel)
+    public void ShowPanel(GameObject panel, Animator anim)
     {
         if (panel == null || panel == currentPanel) return;
 
         // 현재 패널 Out (동시에 시작)
         if (currentPanel != null)
         {
-            PlayAnim(currentPanel, ANIM_OUT);
+            PlayAnim(currentPanelAnim, ANIM_OUT);
             StartCoroutine(DeactivateAfter(currentPanel, panelOutDuration));
         }
 
         // 새 패널 In
         panel.SetActive(true);
-        PlayAnim(panel, ANIM_IN);
-        currentPanel = panel;
+        PlayAnim(anim, ANIM_IN);
+        currentPanel     = panel;
+        currentPanelAnim = anim;
     }
 
     // ─────────────────────────────────────────────────────────────────
     // 헬퍼
     // ─────────────────────────────────────────────────────────────────
 
-    private void PlayAnim(GameObject target, string triggerName)
+    private Animator CacheAnim(GameObject target)
     {
-        if (target == null) return;
-        Animator anim = target.GetComponent<Animator>();
+        return target != null ? target.GetComponent<Animator>() : null;
+    }
+
+    private void PlayAnim(Animator anim, string triggerName)
+    {
         if (anim != null)
             anim.SetTrigger(triggerName);
     }
