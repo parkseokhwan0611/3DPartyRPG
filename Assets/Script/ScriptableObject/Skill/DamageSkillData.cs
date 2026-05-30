@@ -5,10 +5,27 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "DamageSkill", menuName = "Scriptable Object/DamageSkillData")]
 public class DamageSkillData : SkillData
 {
+    public enum ScalingStat
+    {
+        None, // 스탯 비례 없음
+        Str,  // 힘
+        Vit,  // 체력
+        Int,  // 지능
+        Fth,  // 신앙
+    }
+
     [Header("데미지 설정")]
     public float baseDamageMultiplier = 1.0f;  // 기본 배율
     public float damageMultiplierPerLevel = 0.1f; // 레벨당 증가 배율
     public bool useAp; //True면 AP, False면 AD
+
+    [Header("스탯 배율 (선택)")]
+    [Tooltip("추가로 비례할 스탯. None이면 비활성.")]
+    public ScalingStat scalingStat     = ScalingStat.None;
+    [Tooltip("기본 계수 (예: 0.5 = 해당 스탯의 50%를 데미지에 추가)")]
+    public float       scalingCoeff    = 0f;
+    [Tooltip("레벨당 계수 증가")]
+    public float       scalingPerLevel = 0f;
     [Header("사거리 설정")]
     public float castRange = 3f;  
     public float baseRange = 3f;
@@ -50,4 +67,7 @@ public class DamageSkillData : SkillData
 
     public float GetRange(int level)
         => baseRange + (rangePerLevel * (level - 1));
+
+    public float GetScaling(int level)
+        => scalingCoeff + (scalingPerLevel * (level - 1));
 }
