@@ -18,6 +18,7 @@ MonoBehaviour:
   requiredClass: 2
   skillType: 2
   skillCategory: 0
+  skillPriority: 0
   maxLevel: 5
   requiredCharLevel: 1
   mpCost:
@@ -33,16 +34,27 @@ MonoBehaviour:
   - 7
   - 7
   skillPointCost: 0100000002000000020000000300000004000000
-  isAoe: 0
+  targetType: 0
   useApRatio: 1
   baseHealMultiplier: 4
   healMultiplierPerLevel: 0.5
-  intRatio: 1
-  fthRatio: 1.5
+  statScalings:
+  - stat: 3
+    coeff: 0.3
+    coeffPerLevel: 0
+  - stat: 4
+    coeff: 1.2
+    coeffPerLevel: 0
   isDotHeal: 0
   dotInterval: 1
+  baseDotDuration: 5
+  dotDurationPerLevel: 0
   animTriggerName: doHeal
   animDuration: 1
   effectSpawnDelay: 0.3
   effectPoolKey: 
+  effectSpawnOffset: {x: 0, y: 0, z: 0}
+  effectSpawnRotation: {x: 0, y: 0, z: 0}
   targetEffectPoolKey: 
+  targetEffectSpawnOffset: {x: 0, y: 0, z: 0}
+  targetEffectSpawnRotation: {x: 0, y: 0, z: 0}

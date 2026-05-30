@@ -18,6 +18,7 @@ MonoBehaviour:
   requiredClass: 2
   skillType: 2
   skillCategory: 0
+  skillPriority: 0
   maxLevel: 5
   requiredCharLevel: 20
   mpCost:
@@ -37,8 +38,13 @@ MonoBehaviour:
   useApRatio: 1
   baseHealMultiplier: 3
   healMultiplierPerLevel: 0.5
-  intRatio: 0.8
-  fthRatio: 1.2
+  statScalings:
+  - stat: 3
+    coeff: 0.2
+    coeffPerLevel: 0
+  - stat: 4
+    coeff: 1
+    coeffPerLevel: 0
   isDotHeal: 0
   dotInterval: 1
   baseDotDuration: 5
@@ -48,5 +54,7 @@ MonoBehaviour:
   effectSpawnDelay: 0.3
   effectPoolKey: PartyHeal
   effectSpawnOffset: {x: 0, y: 0, z: 0}
+  effectSpawnRotation: {x: 0, y: 0, z: 0}
   targetEffectPoolKey: 
   targetEffectSpawnOffset: {x: 0, y: 0, z: 0}
+  targetEffectSpawnRotation: {x: 0, y: 0, z: 0}

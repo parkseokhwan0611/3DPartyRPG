@@ -38,6 +38,13 @@ MonoBehaviour:
   baseDamageMultiplier: 5
   damageMultiplierPerLevel: 0.7
   useAp: 1
+  statScalings:
+  - stat: 3
+    coeff: 0.7
+    coeffPerLevel: 0
+  - stat: 4
+    coeff: 0.3
+    coeffPerLevel: 0
   castRange: 7
   baseRange: 1
   rangePerLevel: 0
