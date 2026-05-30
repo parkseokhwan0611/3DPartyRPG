@@ -112,10 +112,21 @@ public class HealSkill : SkillBase
     {
         if (myStat == null) return 0f;
         float baseStat  = data.useApRatio ? myStat.TotalAp : myStat.TotalAtk;
-        float healBase  = baseStat
-                        + myStat.TotalInt * data.intRatio
-                        + myStat.TotalFth * data.fthRatio;
-        return healBase * data.GetHealMultiplier(skillLevel) * (1f + myStat.HealBonus);
+        float statBonus = data.GetTotalStatBonus(skillLevel, GetScalingStatValue);
+        return (baseStat + statBonus) * data.GetHealMultiplier(skillLevel) * (1f + myStat.HealBonus);
+    }
+
+    private float GetScalingStatValue(DamageSkillData.ScalingStat stat)
+    {
+        if (myStat == null) return 0f;
+        return stat switch
+        {
+            DamageSkillData.ScalingStat.Str => myStat.TotalStr,
+            DamageSkillData.ScalingStat.Vit => myStat.TotalVit,
+            DamageSkillData.ScalingStat.Int => myStat.TotalInt,
+            DamageSkillData.ScalingStat.Fth => myStat.TotalFth,
+            _                               => 0f,
+        };
     }
 
     private void SpawnCasterEffect(HealSkillData data)

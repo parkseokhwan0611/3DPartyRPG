@@ -12,11 +12,8 @@ public class HealSkillData : SkillData
     public float baseHealMultiplier = 1f;
     public float healMultiplierPerLevel = 0.1f;
 
-    [Header("추가 스탯 계수")]
-    [Tooltip("지능(Int) 1당 힐 베이스에 더해지는 비율 (예: 0.5 → Int × 0.5 추가)")]
-    public float intRatio = 0f;
-    [Tooltip("신앙(Fth) 1당 힐 베이스에 더해지는 비율 (예: 0.5 → Fth × 0.5 추가)")]
-    public float fthRatio = 0f;
+    [Header("스탯 배율 (선택, 최대 2개)")]
+    public List<DamageSkillData.StatScaling> statScalings = new List<DamageSkillData.StatScaling>();
 
     [Header("도트 힐 설정")]
     public bool isDotHeal = false;            // 도트 힐 여부
@@ -39,4 +36,15 @@ public class HealSkillData : SkillData
 
     public float GetHealMultiplier(int level)
         => baseHealMultiplier + (healMultiplierPerLevel * (level - 1));
+
+    public float GetTotalStatBonus(int level, System.Func<DamageSkillData.ScalingStat, float> getStatValue)
+    {
+        float total = 0f;
+        foreach (var s in statScalings)
+        {
+            if (s.stat == DamageSkillData.ScalingStat.None) continue;
+            total += getStatValue(s.stat) * s.GetScaling(level);
+        }
+        return total;
+    }
 }
