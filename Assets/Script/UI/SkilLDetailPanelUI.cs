@@ -216,22 +216,28 @@ public class SkillDetailPanelUI : MonoBehaviour
         var expr = new System.Text.StringBuilder();
         if (caster != null)
         {
-            float baseStat = heal.useApRatio ? caster.TotalAp : caster.TotalAtk;
+            float baseStat  = heal.useApRatio ? caster.TotalAp : caster.TotalAtk;
+            float statBonus = 0f;
             expr.Append($"({baseLabel}({baseStat:F0})");
-            if (heal.intRatio > 0f) expr.Append($" + 지능({caster.TotalInt:F0})×{heal.intRatio * 100f:F0}%");
-            if (heal.fthRatio > 0f) expr.Append($" + 신앙({caster.TotalFth:F0})×{heal.fthRatio * 100f:F0}%");
+            foreach (var s in heal.statScalings)
+            {
+                if (s.stat == DamageSkillData.ScalingStat.None) continue;
+                float statVal   = GetStatValue(caster, s.stat);
+                float coeff     = s.GetScaling(level);
+                statBonus      += statVal * coeff;
+                expr.Append($" + {StatName(s.stat)}({statVal:F0})×{coeff * 100f:F0}%");
+            }
             expr.Append($") × {mult * 100f:F1}%");
-
-            float healBase = baseStat
-                           + caster.TotalInt * heal.intRatio
-                           + caster.TotalFth * heal.fthRatio;
-            sb.AppendLine($"치유량: {expr} = {healBase * mult:F0}");
+            sb.AppendLine($"치유량: {expr} = {(baseStat + statBonus) * mult:F0}");
         }
         else
         {
             expr.Append($"({baseLabel}");
-            if (heal.intRatio > 0f) expr.Append($" + 지능×{heal.intRatio * 100f:F0}%");
-            if (heal.fthRatio > 0f) expr.Append($" + 신앙×{heal.fthRatio * 100f:F0}%");
+            foreach (var s in heal.statScalings)
+            {
+                if (s.stat == DamageSkillData.ScalingStat.None) continue;
+                expr.Append($" + {StatName(s.stat)}×{s.GetScaling(level) * 100f:F0}%");
+            }
             expr.Append($") × {mult * 100f:F1}%");
             sb.AppendLine($"치유량: {expr}");
         }
@@ -240,6 +246,34 @@ public class SkillDetailPanelUI : MonoBehaviour
             sb.AppendLine($"지속시간: {heal.GetDotDuration(level)}초");
 
         return sb.ToString().TrimEnd('\n', '\r');
+    }
+
+    // ─────────────────────────────────────────────────────────────────
+    // StatScaling 헬퍼
+    // ─────────────────────────────────────────────────────────────────
+
+    private float GetStatValue(CharacterStat caster, DamageSkillData.ScalingStat stat)
+    {
+        return stat switch
+        {
+            DamageSkillData.ScalingStat.Str => caster.TotalStr,
+            DamageSkillData.ScalingStat.Vit => caster.TotalVit,
+            DamageSkillData.ScalingStat.Int => caster.TotalInt,
+            DamageSkillData.ScalingStat.Fth => caster.TotalFth,
+            _                               => 0f,
+        };
+    }
+
+    private string StatName(DamageSkillData.ScalingStat stat)
+    {
+        return stat switch
+        {
+            DamageSkillData.ScalingStat.Str => "힘",
+            DamageSkillData.ScalingStat.Vit => "체력",
+            DamageSkillData.ScalingStat.Int => "지능",
+            DamageSkillData.ScalingStat.Fth => "신앙",
+            _                               => "",
+        };
     }
 
     // ─────────────────────────────────────────────────────────────────
