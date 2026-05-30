@@ -19,13 +19,21 @@ public class DamageSkillData : SkillData
     public float damageMultiplierPerLevel = 0.1f; // 레벨당 증가 배율
     public bool useAp; //True면 AP, False면 AD
 
-    [Header("스탯 배율 (선택)")]
-    [Tooltip("추가로 비례할 스탯. None이면 비활성.")]
-    public ScalingStat scalingStat     = ScalingStat.None;
-    [Tooltip("기본 계수 (예: 0.5 = 해당 스탯의 50%를 데미지에 추가)")]
-    public float       scalingCoeff    = 0f;
-    [Tooltip("레벨당 계수 증가")]
-    public float       scalingPerLevel = 0f;
+    [System.Serializable]
+    public class StatScaling
+    {
+        [Tooltip("비례할 스탯. None이면 비활성.")]
+        public ScalingStat stat         = ScalingStat.None;
+        [Tooltip("기본 계수 (예: 0.5 = 해당 스탯의 50%를 데미지에 추가)")]
+        public float       coeff        = 0f;
+        [Tooltip("레벨당 계수 증가")]
+        public float       coeffPerLevel = 0f;
+
+        public float GetScaling(int level) => coeff + (coeffPerLevel * (level - 1));
+    }
+
+    [Header("스탯 배율 (선택, 최대 2개)")]
+    public List<StatScaling> statScalings = new List<StatScaling>();
     [Header("사거리 설정")]
     public float castRange = 3f;  
     public float baseRange = 3f;
@@ -68,6 +76,15 @@ public class DamageSkillData : SkillData
     public float GetRange(int level)
         => baseRange + (rangePerLevel * (level - 1));
 
-    public float GetScaling(int level)
-        => scalingCoeff + (scalingPerLevel * (level - 1));
+    // statScalings 전체 합산
+    public float GetTotalStatBonus(int level, System.Func<ScalingStat, float> getStatValue)
+    {
+        float total = 0f;
+        foreach (var s in statScalings)
+        {
+            if (s.stat == ScalingStat.None) continue;
+            total += getStatValue(s.stat) * s.GetScaling(level);
+        }
+        return total;
+    }
 }

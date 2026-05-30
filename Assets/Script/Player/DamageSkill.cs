@@ -87,13 +87,9 @@ public class DamageSkill : SkillBase
 
         float baseStat = data.useAp ? myStat.TotalAp : myStat.TotalAtk;
 
-        // (물리/마법 데미지 + 스탯 배율) * 스킬 계수
-        float statBonus = 0f;
-        float scaling   = data.GetScaling(skillLevel);
-        if (data.scalingStat != DamageSkillData.ScalingStat.None && scaling > 0f)
-            statBonus = GetScalingStatValue(data.scalingStat) * scaling;
-
-        float damage = (baseStat + statBonus) * data.GetDamageMultiplier(skillLevel);
+        // (물리/마법 데미지 + 스탯 배율 합산) * 스킬 계수
+        float statBonus = data.GetTotalStatBonus(skillLevel, GetScalingStatValue);
+        float damage    = (baseStat + statBonus) * data.GetDamageMultiplier(skillLevel);
 
         float bonus = myStat.ConsumeNextSkillBonus();
         damage *= (1f + bonus);
@@ -106,6 +102,7 @@ public class DamageSkill : SkillBase
 
     private float GetScalingStatValue(DamageSkillData.ScalingStat stat)
     {
+        if (myStat == null) return 0f;
         return stat switch
         {
             DamageSkillData.ScalingStat.Str => myStat.TotalStr,
