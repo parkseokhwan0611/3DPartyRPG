@@ -136,7 +136,7 @@ public class SkillDetailPanelUI : MonoBehaviour
     {
         if (skill is DamageSkillData dmgSkill)
         {
-            SetTextSafe(damageText,  $"데미지: {dmgSkill.GetDamageMultiplier(level) * 100f:F1}%");
+            SetTextSafe(damageText,  BuildDamageDescription(dmgSkill, level, currentCaster));
             SetTextSafe(specialText, GetDamageSkillSpecial(dmgSkill, level));
         }
         else if (skill is HealSkillData healSkill)
@@ -170,7 +170,7 @@ public class SkillDetailPanelUI : MonoBehaviour
     {
         if (skill is DamageSkillData dmgSkill)
         {
-            SetTextSafe(nextDamageText,  $"데미지: {dmgSkill.GetDamageMultiplier(nextLevel) * 100f:F1}%");
+            SetTextSafe(nextDamageText,  BuildDamageDescription(dmgSkill, nextLevel, currentCaster));
             SetTextSafe(nextSpecialText, GetDamageSkillSpecial(dmgSkill, nextLevel));
         }
         else if (skill is HealSkillData healSkill)
@@ -198,6 +198,51 @@ public class SkillDetailPanelUI : MonoBehaviour
             SetTextSafe(nextDamageText,  "");
             SetTextSafe(nextSpecialText, "");
         }
+    }
+
+    // ─────────────────────────────────────────────────────────────────
+    // 데미지 스킬 설명
+    // ─────────────────────────────────────────────────────────────────
+
+    private string BuildDamageDescription(DamageSkillData dmg, int level, CharacterStat caster)
+    {
+        var sb = new System.Text.StringBuilder();
+
+        sb.AppendLine(dmg.isAoe ? "[광역]" : "[단일]");
+
+        string baseLabel = dmg.useAp ? "마법공격력" : "공격력";
+        float  mult      = dmg.GetDamageMultiplier(level);
+
+        var expr = new System.Text.StringBuilder();
+        if (caster != null)
+        {
+            float baseStat  = dmg.useAp ? caster.TotalAp : caster.TotalAtk;
+            float statBonus = 0f;
+            expr.Append($"({baseLabel}({baseStat:F0})");
+            foreach (var s in dmg.statScalings)
+            {
+                if (s.stat == DamageSkillData.ScalingStat.None) continue;
+                float statVal   = GetStatValue(caster, s.stat);
+                float coeff     = s.GetScaling(level);
+                statBonus      += statVal * coeff;
+                expr.Append($" + {StatName(s.stat)}({statVal:F0})×{coeff * 100f:F0}%");
+            }
+            expr.Append($") × {mult * 100f:F1}%");
+            sb.Append($"데미지: {expr} = {(baseStat + statBonus) * mult:F0}");
+        }
+        else
+        {
+            expr.Append($"({baseLabel}");
+            foreach (var s in dmg.statScalings)
+            {
+                if (s.stat == DamageSkillData.ScalingStat.None) continue;
+                expr.Append($" + {StatName(s.stat)}×{s.GetScaling(level) * 100f:F0}%");
+            }
+            expr.Append($") × {mult * 100f:F1}%");
+            sb.Append($"데미지: {expr}");
+        }
+
+        return sb.ToString().TrimEnd('\n', '\r');
     }
 
     // ─────────────────────────────────────────────────────────────────
