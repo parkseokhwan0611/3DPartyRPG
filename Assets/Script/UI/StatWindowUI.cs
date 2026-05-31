@@ -59,6 +59,14 @@ public class StatWindowUI : MonoBehaviour
 
     void OnEnable()
     {
+        // 창 열릴 때 현재 리더 기준으로 자동 선택
+        if (PartyManager.instance?.currentLeader != null)
+        {
+            CharacterStat leaderStat = PartyManager.instance.currentLeader.GetComponent<CharacterStat>();
+            if (leaderStat != null)
+                selectedIndex = leaderStat.partyIndex;
+        }
+
         Refresh();
     }
 
