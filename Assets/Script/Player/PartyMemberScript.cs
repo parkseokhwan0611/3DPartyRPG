@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.AI;
+using System.Collections;
 using System.Collections.Generic;
 
 public class PartyMemberScript : MonoBehaviour
@@ -26,8 +27,10 @@ public class PartyMemberScript : MonoBehaviour
     public Transform targetToFollow;
     [Header("리더 표시 VFX")]
     public GameObject leaderVFX;
-    [Header("사망 애니메이션")]
+    [Header("사망 처리")]
     public string deathAnimTrigger = "Die";
+    [Tooltip("사망 애니메이션 후 오브젝트 숨기기까지 대기 시간 (초)")]
+    public float deathHideDelay = 2f;
 
     // ─────────────────────────────────────────
     // 이동 설정
@@ -152,6 +155,7 @@ public class PartyMemberScript : MonoBehaviour
 
     void HandleLeaderMovement()
     {
+        if (!agent.enabled) return;
         if (!agent.pathPending && agent.remainingDistance <= agent.stoppingDistance)
         {
             if (agent.hasPath)
@@ -191,12 +195,13 @@ public class PartyMemberScript : MonoBehaviour
     void UpdateAnimation()
     {
         if (anim == null) return;
+        if (CurrentState == MemberState.Dead) return; // 사망 후 애니 파라미터 변경 차단
 
         if (skillManager != null && skillManager.IsActivatingSkill) return;
         if (attackComp  != null && attackComp.IsCastingSkill) return;
 
         bool walking = isLeader
-            ? agent.velocity.sqrMagnitude > 0.1f
+            ? (agent.enabled && agent.velocity.sqrMagnitude > 0.1f)
             : CurrentState == MemberState.Following;
 
         anim.SetBool("isWalking", walking);
@@ -235,6 +240,14 @@ public class PartyMemberScript : MonoBehaviour
             anim.SetTrigger(deathAnimTrigger);
 
         if (leaderVFX != null) leaderVFX.SetActive(false);
+
+        StartCoroutine(HideAfterDeath());
+    }
+
+    private IEnumerator HideAfterDeath()
+    {
+        yield return new WaitForSeconds(deathHideDelay);
+        gameObject.SetActive(false);
     }
 
     void SmoothLookAt(Vector3 targetPos)

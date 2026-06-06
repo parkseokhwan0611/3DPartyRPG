@@ -72,7 +72,7 @@ public abstract class AttackBase : MonoBehaviour
 
     protected virtual void HandleAttackLogic()
     {
-        // 스킬 시전 중이면 이동/공격 로직 건드리지 않음
+        if (!agent.enabled) return; // 사망으로 agent 비활성화된 경우 차단
         if (IsCastingSkill) return;
 
         float distance         = Vector3.Distance(transform.position, currentTarget.position);
