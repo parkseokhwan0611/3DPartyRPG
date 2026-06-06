@@ -213,8 +213,17 @@ public class PartyManager : MonoBehaviour
     private System.Collections.IEnumerator ShowGameOverAfterDelay(float delay)
     {
         yield return new WaitForSeconds(delay);
+        // yield 도중 gameOverUI가 파괴됐을 경우를 대비해 재확인
+        if (gameOverUI == null) yield break;
         gameOverUI.SetActive(true);
         Time.timeScale = 0f;
+    }
+
+    /// <summary>게임오버 UI에서 재시작/타이틀 복귀 시 호출 — timeScale 복구</summary>
+    public void ResumeGame()
+    {
+        Time.timeScale = 1f;
+        if (gameOverUI != null) gameOverUI.SetActive(false);
     }
 
     // ─────────────────────────────────────────────────────────────────

@@ -285,8 +285,9 @@ public class CharacterStat : MonoBehaviour, IDamageable
         // Revive 패시브 체크 (쿨타임이 0이고 스킬 보유 시 부활)
         if (TryRevive()) return;
 
-        // 실제 사망 처리
-        myMember?.Die();
+        // 실제 사망 처리 (myMember 없으면 파티원이 아님 → 파티 알림 스킵)
+        if (myMember == null) return;
+        myMember.Die();
         PartyManager.instance?.OnMemberDied(myMember);
     }
 
