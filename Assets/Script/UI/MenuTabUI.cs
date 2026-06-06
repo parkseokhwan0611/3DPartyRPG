@@ -20,6 +20,9 @@ public class MenuTabUI : MonoBehaviour
     public Button questButton;
     public Button settingButton;
 
+    // 메뉴 열림 여부 (PartyManager 등에서 입력 차단용)
+    public static bool IsOpen { get; private set; }
+
     // 현재 열린 패널
     private GameObject currentPanel;
 
@@ -63,14 +66,14 @@ public class MenuTabUI : MonoBehaviour
 
     private void OpenMenu()
     {
+        IsOpen = true;
         menuWindow.SetActive(true);
-
-        // 기본으로 스탯 창 표시
         ShowPanel(statWindow);
     }
 
     private void CloseMenu()
     {
+        IsOpen = false;
         menuWindow.SetActive(false);
     }
 
