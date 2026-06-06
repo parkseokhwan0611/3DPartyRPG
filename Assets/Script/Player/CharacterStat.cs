@@ -37,9 +37,13 @@ public class CharacterStat : MonoBehaviour, IDamageable
     public float TotalCritDamage => myStatus != null ? myStatus.TotalCritDamage : 0f;
     public float HpOnHit       => myStatus != null ? myStatus.hpOnHit      : 0f;
     public float MpOnHit       => myStatus != null ? myStatus.mpOnHit      : 0f;
-    public float PhysDmgBonus  => myStatus != null ? myStatus.physDmgBonus  : 0f;
-    public float MagicDmgBonus => myStatus != null ? myStatus.magicDmgBonus : 0f;
-    public float HealBonus     => myStatus != null ? myStatus.healBonus     : 0f;
+    // 패시브 + 장비 합산 (TotalPhysDmgBonus / TotalMagicDmgBonus 사용)
+    public float PhysDmgBonus  => myStatus != null ? myStatus.TotalPhysDmgBonus  : 0f;
+    public float MagicDmgBonus => myStatus != null ? myStatus.TotalMagicDmgBonus : 0f;
+    public float HealBonus     => myStatus != null ? myStatus.healBonus           : 0f;
+    // 스킬 쿨타임·마나 소모 감소
+    public float TotalCDReduce => myStatus != null ? myStatus.TotalCDReduce : 0f;
+    public float TotalMpReduce => myStatus != null ? myStatus.TotalMpReduce : 0f;
 
     // 아이템/장비 평탄 보너스 (읽기 + 쓰기 모두 필요해서 프로퍼티로 래핑)
     public float BonusAtk { get => myStatus?.bonusAtk ?? 0f; set { if (myStatus != null) myStatus.bonusAtk = value; } }

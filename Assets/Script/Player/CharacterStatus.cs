@@ -25,6 +25,23 @@ public string charName;
     public float bonusAp  = 0f;
     public float bonusDef = 0f;
 
+    // ── 장비 장착으로 추가되는 수치 (CharacterEquipment.RecalculateStats가 매번 초기화 후 재계산) ──
+    public float equipStr      = 0f;
+    public float equipVit      = 0f;
+    public float equipInt      = 0f;
+    public float equipFht      = 0f;
+    public float equipAtk      = 0f;   // 무기 메인: 물리 공격력
+    public float equipAp       = 0f;   // 무기 메인: 마법 공격력
+    public float equipMaxHp    = 0f;   // 방어구 메인: 최대 체력 고정 보너스
+    public float equipDef      = 0f;   // 방어구 메인/서브: 방어력
+    public float equipMagicRes = 0f;   // 방어구 메인/서브: 마법 저항력
+    public float equipCritRate = 0f;
+    public float equipCritDmg  = 0f;
+    public float equipCDReduce = 0f;   // 스킬 쿨타임 감소 (0.1 = 10%)
+    public float equipMpReduce = 0f;   // 마나 소모 감소  (0.1 = 10%)
+    public float equipPhysDmg  = 0f;   // 물리 피해 증가  (0.1 = 10%)
+    public float equipMagicDmg = 0f;   // 마법 피해 증가  (0.1 = 10%)
+
     // ── 아이템/패시브로 추가되는 재생량 ──
     public float addedHpRegen = 0f;
     public float addedMpRegen = 0f;
@@ -33,33 +50,46 @@ public string charName;
 
     public float addedMp = 0f;
 
-    public float MaxHp   => classData.hp + ((classData.baseVit + addedVit) * classData.hpPerVit);
-    public float MaxMp   => classData.mp + addedMp;
+    public float MaxHp => classData.hp
+                        + ((classData.baseVit + addedVit + equipVit) * classData.hpPerVit)
+                        + equipMaxHp;
+    public float MaxMp => classData.mp + addedMp;
 
     public float TotalHpRegen => classData.baseHpRegen
-                               + (classData.baseVit + addedVit) * classData.hpRegenPerVit
+                               + (classData.baseVit + addedVit + equipVit) * classData.hpRegenPerVit
                                + addedHpRegen;
     public float TotalMpRegen => classData.baseMpRegen
-                               + (classData.baseFht + addedFht) * classData.mpRegenPerFth
+                               + (classData.baseFht + addedFht + equipFht) * classData.mpRegenPerFth
                                + addedMpRegen;
-    public float TotalAtk => (classData.baseStr + addedStr) * classData.atkPerStr + bonusAtk;
-    public float TotalAp  => ((classData.baseInt + addedInt) * classData.apPerInt)
-                           + ((classData.baseFht + addedFht) * classData.apPerFth) + bonusAp;
+    public float TotalAtk => (classData.baseStr + addedStr + equipStr) * classData.atkPerStr
+                           + bonusAtk + equipAtk;
+    public float TotalAp  => ((classData.baseInt + addedInt + equipInt) * classData.apPerInt)
+                           + ((classData.baseFht + addedFht + equipFht) * classData.apPerFth)
+                           + bonusAp + equipAp;
 
     // ── 아이템/패시브로 쌓이는 추가 수치 ──
     public float addedCritRate   = 0f;
     public float addedCritDamage = 0f;
 
-    public float TotalCritRate   => classData.baseCritRate + addedCritRate;
-    public float TotalCritDamage => classData.baseCritDamage + addedCritDamage;
+    public float TotalCritRate   => classData.baseCritRate   + addedCritRate  + equipCritRate;
+    public float TotalCritDamage => classData.baseCritDamage + addedCritDamage + equipCritDmg;
 
-    // 방어력 (VIT 비례 + 아이템 깡수치)
+    // 방어력 (VIT 비례 + 패시브 + 장비)
     public float addedDef = 0f;
-    public float TotalDef => ((classData.baseVit + addedVit) * classData.defPerVit) + addedDef + bonusDef;
+    public float TotalDef => ((classData.baseVit + addedVit + equipVit) * classData.defPerVit)
+                           + addedDef + bonusDef + equipDef;
 
     // 마법 저항력
     public float addedMagicRes = 0f;
-    public float TotalMagicRes => classData.baseMagicRes + addedMagicRes;
+    public float TotalMagicRes => classData.baseMagicRes + addedMagicRes + equipMagicRes;
+
+    // 피해 증가 합산 (패시브 + 장비)
+    public float TotalPhysDmgBonus  => physDmgBonus  + equipPhysDmg;
+    public float TotalMagicDmgBonus => magicDmgBonus + equipMagicDmg;
+
+    // 스킬 쿨타임·마나 소모 감소 (현재는 장비만, 추후 패시브 확장 가능)
+    public float TotalCDReduce => equipCDReduce;
+    public float TotalMpReduce => equipMpReduce;
 
     // 기본 공격 적중 시 체력/마나 회복
     public float hpOnHit = 0f;

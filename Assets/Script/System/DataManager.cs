@@ -7,7 +7,9 @@ public class DataManager : MonoBehaviour
     public static DataManager instance;
 
     // 현재 파티원들의 실시간 정보를 담는 리스트나 사전(Dictionary)
-    public List<CharacterStatus> partyStatuses = new List<CharacterStatus>();
+    public List<CharacterStatus>    partyStatuses   = new List<CharacterStatus>();
+    public List<CharacterEquipment> partyEquipments = new List<CharacterEquipment>();
+    public Inventory                sharedInventory = new Inventory();
     public List<ClassData> baseDataList;
     public List<ClassSkillTree> skillTrees;
     
@@ -36,22 +38,23 @@ public class DataManager : MonoBehaviour
             return;
         }
         partyStatuses.Clear();
+        partyEquipments.Clear();
 
         foreach (var baseData in baseDataList)
         {
             CharacterStatus newStatus = new CharacterStatus();
-            
+
             // 1. 핵심: SO(원본)를 먼저 할당해줘야 MaxHp, TotalAtk 계산식이 작동합니다.
             newStatus.classData = baseData;
-            newStatus.charName = baseData.name; // 혹은 ClassData에 name 변수 추가
+            newStatus.charName  = baseData.name;
 
             // 2. 실시간 변수 초기화
-            // MaxHp는 이제 classData를 기반으로 자동 계산되므로 currentHp에 바로 대입 가능합니다.
-            newStatus.currentHp = newStatus.MaxHp; 
-            newStatus.currentMp = newStatus.MaxMp;
+            newStatus.currentHp  = newStatus.MaxHp;
+            newStatus.currentMp  = newStatus.MaxMp;
             newStatus.skillPoint = startSkillPoint;
-            
+
             partyStatuses.Add(newStatus);
+            partyEquipments.Add(new CharacterEquipment());
         }
     }
     public void AddExp(float exp)

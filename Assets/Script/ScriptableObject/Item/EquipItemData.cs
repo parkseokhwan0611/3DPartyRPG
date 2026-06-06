@@ -28,18 +28,20 @@ public enum MainOptionType
 }
 
 // 서브 옵션 종류
+// - 무기/방어구: STR~CritDmg
+// - 장신구:      STR~MagicDmgBonus (SkillCDReduce·MpCostReduce·PhysDmgBonus·MagicDmgBonus 추가)
 public enum SubOptionType
 {
     // 기본 스탯
     STR, VIT, INT, FTH,
     // 전투 수치
-    PhysAtk, MagicAtk, PhysDef, MagicRes,
+    PhysDef, MagicRes,
     CritRate, CritDmg,
-    // 특수 (장신구 전용 권장, 단 제한 없음)
-    SkillCDReduce,    // 스킬 쿨타임 감소 (%)
-    MpCostReduce,     // 마나 소모 감소 (%)
-    PhysDmgBonus,     // 물리 피해 증가 (%)
-    MagicDmgBonus,    // 마법 피해 증가 (%)
+    // 특수 (장신구 전용 권장)
+    SkillCDReduce,  // 스킬 쿨타임 감소 (0.1 = 10%)
+    MpCostReduce,   // 마나 소모 감소  (0.1 = 10%)
+    PhysDmgBonus,   // 물리 피해 증가  (0.1 = 10%)
+    MagicDmgBonus,  // 마법 피해 증가  (0.1 = 10%)
 }
 
 // ─────────────────────────────────────────────────────────────────
