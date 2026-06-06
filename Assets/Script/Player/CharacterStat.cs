@@ -234,6 +234,7 @@ public class CharacterStat : MonoBehaviour, IDamageable
     }
 
     public void RaiseHpChanged() => OnHpChanged?.Invoke();
+    public void RaiseMpChanged() => OnMpChanged?.Invoke();
 
     public void ApplyNextSkillBuff(float bonus, float duration)
     {

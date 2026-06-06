@@ -100,9 +100,16 @@ public class StatWindowUI : MonoBehaviour
             case StatType.Fth: status.addedFht++; break;
         }
 
-        // MaxHp/Mp 변동 가능성 → 파티원 UI 갱신 통지
+        // 스탯 변동 → 파티원 UI 갱신 통지
         CharacterStat charStat = GetCharStat(selectedIndex);
-        charStat?.RaiseHpChanged();
+        if (charStat != null)
+        {
+            // VIT: MaxHp 변동 / INT·FTH: TotalAp·MpRegen 변동
+            if (type == StatType.Vit)
+                charStat.RaiseHpChanged();
+            else if (type == StatType.Int || type == StatType.Fth)
+                charStat.RaiseMpChanged();
+        }
 
         Refresh();
     }
