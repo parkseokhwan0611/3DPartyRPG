@@ -179,7 +179,7 @@ public class PartyManager : MonoBehaviour
 
         if (allDead)
         {
-            TriggerGameOver();
+            TriggerGameOver(deadMember.deathHideDelay);
             return;
         }
 
@@ -217,14 +217,18 @@ public class PartyManager : MonoBehaviour
             member.UpdateChainOrder(newOrder);
     }
 
-    private void TriggerGameOver()
+    private void TriggerGameOver(float delay)
     {
         if (gameOverUI != null)
-        {
-            gameOverUI.SetActive(true);
-            Time.timeScale = 0f;
-        }
-        // gameOverUI 미연결 시 멈추지 않음 (나중에 UI 완성 후 연결)
+            StartCoroutine(ShowGameOverAfterDelay(delay));
+        // gameOverUI 미연결 시 아무것도 하지 않음
+    }
+
+    private System.Collections.IEnumerator ShowGameOverAfterDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        gameOverUI.SetActive(true);
+        Time.timeScale = 0f;
     }
 
     // ─────────────────────────────────────────────────────────────────
