@@ -229,7 +229,7 @@ public class PartyMemberScript : MonoBehaviour
     {
         ChangeState(MemberState.Dead);
 
-        if (agent != null)
+        if (agent != null && agent.enabled)
         {
             agent.ResetPath();
             agent.velocity = Vector3.zero;

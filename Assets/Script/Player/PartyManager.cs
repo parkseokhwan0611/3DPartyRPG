@@ -216,8 +216,12 @@ public class PartyManager : MonoBehaviour
 
     private void TriggerGameOver()
     {
-        if (gameOverUI != null) gameOverUI.SetActive(true);
-        Time.timeScale = 0f;
+        if (gameOverUI != null)
+        {
+            gameOverUI.SetActive(true);
+            Time.timeScale = 0f;
+        }
+        // gameOverUI 미연결 시 멈추지 않음 (나중에 UI 완성 후 연결)
     }
 
     // ─────────────────────────────────────────────────────────────────
