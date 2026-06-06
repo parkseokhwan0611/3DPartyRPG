@@ -183,21 +183,16 @@ public class PartyManager : MonoBehaviour
             return;
         }
 
-        // 죽은 멤버가 리더였으면 → 가장 낮은 인덱스의 생존자로 교체
+        // 죽은 멤버가 리더였으면 → 가장 낮은 인덱스의 생존자로 교체, 아니면 체인 재건
         if (deadMember == currentLeader)
         {
-            for (int i = 0; i < partyMembers.Count; i++)
-            {
-                if (partyMembers[i].CurrentState != PartyMemberScript.MemberState.Dead)
-                {
-                    ChangeLeader(i);
-                    return;
-                }
-            }
+            int idx = partyMembers.FindIndex(
+                m => m.CurrentState != PartyMemberScript.MemberState.Dead);
+            if (idx >= 0) ChangeLeader(idx);
         }
         else
         {
-            // 팔로워 사망 → 체인만 재건 (죽은 멤버 제외)
+            // 팔로워 사망 → 현재 리더 기준으로 체인 재건 (ChangeLeader가 dead 제외 처리)
             RebuildChain();
         }
     }
@@ -205,16 +200,7 @@ public class PartyManager : MonoBehaviour
     private void RebuildChain()
     {
         if (currentLeader == null) return;
-
-        List<PartyMemberScript> newOrder = new List<PartyMemberScript> { currentLeader };
-        foreach (var member in partyMembers)
-        {
-            if (member != currentLeader && member.CurrentState != PartyMemberScript.MemberState.Dead)
-                newOrder.Add(member);
-        }
-
-        foreach (var member in newOrder)
-            member.UpdateChainOrder(newOrder);
+        ChangeLeader(partyMembers.IndexOf(currentLeader));
     }
 
     private void TriggerGameOver(float delay)

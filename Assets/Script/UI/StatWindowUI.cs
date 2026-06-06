@@ -102,14 +102,9 @@ public class StatWindowUI : MonoBehaviour
 
         // 스탯 변동 → 파티원 UI 갱신 통지
         CharacterStat charStat = GetCharStat(selectedIndex);
-        if (charStat != null)
-        {
-            // VIT: MaxHp 변동 / INT·FTH: TotalAp·MpRegen 변동
-            if (type == StatType.Vit)
-                charStat.RaiseHpChanged();
-            else if (type == StatType.Int || type == StatType.Fth)
-                charStat.RaiseMpChanged();
-        }
+        // VIT: MaxHp 변동 / INT·FTH: TotalAp·MpRegen 변동
+        if (type == StatType.Vit)             charStat?.RaiseHpChanged();
+        else if (type == StatType.Int || type == StatType.Fth) charStat?.RaiseMpChanged();
 
         Refresh();
     }

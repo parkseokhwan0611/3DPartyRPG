@@ -79,9 +79,10 @@ public class PartyMemberScript : MonoBehaviour
 
     void Update()
     {
+        if (CurrentState == MemberState.Dead) return;
+
         UpdateAnimation();
 
-        if (CurrentState == MemberState.Dead) return;
         if (CurrentState == MemberState.Attacking) return;
 
         if (skillManager != null && skillManager.IsActivatingSkill) return;
@@ -195,13 +196,12 @@ public class PartyMemberScript : MonoBehaviour
     void UpdateAnimation()
     {
         if (anim == null) return;
-        if (CurrentState == MemberState.Dead) return; // 사망 후 애니 파라미터 변경 차단
 
         if (skillManager != null && skillManager.IsActivatingSkill) return;
         if (attackComp  != null && attackComp.IsCastingSkill) return;
 
         bool walking = isLeader
-            ? (agent.enabled && agent.velocity.sqrMagnitude > 0.1f)
+            ? agent.velocity.sqrMagnitude > 0.1f
             : CurrentState == MemberState.Following;
 
         anim.SetBool("isWalking", walking);

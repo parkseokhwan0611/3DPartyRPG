@@ -22,6 +22,7 @@ public class CharacterStat : MonoBehaviour, IDamageable
     public event Action OnHpChanged;
     public event Action OnMpChanged;
     private CharacterStatus myStatus;
+    private PartyMemberScript myMember;
     private Coroutine healAuraCoroutine;
     public int partyIndex;
     public float Hp     => myStatus != null ? myStatus.currentHp   : 0f;
@@ -53,6 +54,7 @@ public class CharacterStat : MonoBehaviour, IDamageable
 
     void Awake()
     {
+        myMember = GetComponent<PartyMemberScript>();
         if (DataManager.instance != null)
         {
             if (partyIndex < DataManager.instance.partyStatuses.Count)
@@ -284,10 +286,8 @@ public class CharacterStat : MonoBehaviour, IDamageable
         if (TryRevive()) return;
 
         // 실제 사망 처리
-        var member = GetComponent<PartyMemberScript>();
-        member?.Die();
-
-        PartyManager.instance?.OnMemberDied(member);
+        myMember?.Die();
+        PartyManager.instance?.OnMemberDied(myMember);
     }
 
     private bool TryRevive()
