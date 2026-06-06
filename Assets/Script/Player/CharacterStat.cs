@@ -95,6 +95,7 @@ public class CharacterStat : MonoBehaviour, IDamageable
     void Update()
     {
         if (myStatus == null) return;
+
         if (myStatus.nextSkillBonusTimer > 0)
         {
             myStatus.nextSkillBonusTimer -= Time.deltaTime;
@@ -107,6 +108,10 @@ public class CharacterStat : MonoBehaviour, IDamageable
                     nextSkillBuffAura.SetActive(false);
             }
         }
+
+        // 부활 쿨타임 카운트다운
+        if (myStatus.reviveCooldownTimer > 0f)
+            myStatus.reviveCooldownTimer -= Time.deltaTime;
     }
 
     // 물리 데미지 (방어력으로 경감)
@@ -271,5 +276,40 @@ public class CharacterStat : MonoBehaviour, IDamageable
         if (buffAuras[index] != null) buffAuras[index].SetActive(false);
     }
 
-    void Die() { /* 사망 로직 */ }
+    void Die()
+    {
+        if (myStatus == null) return;
+
+        // Revive 패시브 체크 (쿨타임이 0이고 스킬 보유 시 부활)
+        if (TryRevive()) return;
+
+        // 실제 사망 처리
+        var member = GetComponent<PartyMemberScript>();
+        member?.Die();
+
+        PartyManager.instance?.OnMemberDied(member);
+    }
+
+    private bool TryRevive()
+    {
+        if (myStatus.reviveCooldownTimer > 0f) return false;
+
+        foreach (var kvp in myStatus.skillLevels)
+        {
+            if (kvp.Key is PassiveSkillData passive &&
+                passive.effectType == PassiveSkillData.PassiveEffectType.Revive &&
+                kvp.Value > 0)
+            {
+                float ratio = passive.GetValue(kvp.Value);
+                if (ratio <= 0f) ratio = 0.2f; // SO에 값 미설정 시 기본 20%
+
+                myStatus.currentHp           = myStatus.MaxHp * ratio;
+                myStatus.reviveCooldownTimer = 600f; // 10분
+                myStatus.RaiseHpChanged();
+                OnHpChanged?.Invoke();
+                return true;
+            }
+        }
+        return false;
+    }
 }

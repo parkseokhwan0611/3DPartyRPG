@@ -82,6 +82,9 @@ public string charName;
     // 스킬 연계 버프
     public float nextSkillDamageBonus = 0f; // 다음 스킬 데미지 증가량
     public float nextSkillBonusTimer  = 0f; // 버프 지속시간
+
+    // 부활 패시브 쿨타임 (초)
+    public float reviveCooldownTimer = 0f;
     
     public void RaiseHpChanged() => OnHpChanged?.Invoke();
     public void RaiseMpChanged() => OnMpChanged?.Invoke();

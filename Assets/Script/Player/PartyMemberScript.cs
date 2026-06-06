@@ -25,7 +25,9 @@ public class PartyMemberScript : MonoBehaviour
     public bool isLeader = false;
     public Transform targetToFollow;
     [Header("리더 표시 VFX")]
-    public GameObject leaderVFX; // 인스펙터에서 VFX 오브젝트 할당
+    public GameObject leaderVFX;
+    [Header("사망 애니메이션")]
+    public string deathAnimTrigger = "Die";
 
     // ─────────────────────────────────────────
     // 이동 설정
@@ -212,6 +214,27 @@ public class PartyMemberScript : MonoBehaviour
             if (dist > stopDistance)
                 ChangeState(MemberState.Following);
         }
+    }
+
+    // ─────────────────────────────────────────────────────────────────
+    // 사망 처리 (CharacterStat에서 호출)
+    // ─────────────────────────────────────────────────────────────────
+
+    public void Die()
+    {
+        ChangeState(MemberState.Dead);
+
+        if (agent != null)
+        {
+            agent.ResetPath();
+            agent.velocity = Vector3.zero;
+            agent.enabled  = false;
+        }
+
+        if (anim != null && !string.IsNullOrEmpty(deathAnimTrigger))
+            anim.SetTrigger(deathAnimTrigger);
+
+        if (leaderVFX != null) leaderVFX.SetActive(false);
     }
 
     void SmoothLookAt(Vector3 targetPos)

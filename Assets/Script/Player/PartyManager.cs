@@ -17,6 +17,8 @@ public class PartyManager : MonoBehaviour
     public LayerMask groundLayer;
     public CinemachineVirtualCamera virtualCamera;
     public static PartyManager instance;
+    [Header("게임 오버 UI")]
+    public GameObject gameOverUI;
 
     private int enemyLayer;
     private Camera mainCamera;
@@ -52,6 +54,7 @@ public class PartyManager : MonoBehaviour
 
     void HandleLeaderChangeInput()
     {
+        // 죽은 캐릭터는 ChangeLeader 내부에서 걸러짐
         if (Input.GetKeyDown(KeyCode.Alpha1)) ChangeLeader(0);
         if (Input.GetKeyDown(KeyCode.Alpha2)) ChangeLeader(1);
         if (Input.GetKeyDown(KeyCode.Alpha3)) ChangeLeader(2);
@@ -135,6 +138,10 @@ public class PartyManager : MonoBehaviour
         if (index < 0 || index >= partyMembers.Count) return;
 
         PartyMemberScript newLeader = partyMembers[index];
+
+        // 죽은 캐릭터로는 교체 불가
+        if (newLeader.CurrentState == PartyMemberScript.MemberState.Dead) return;
+
         currentLeader = newLeader;
 
         // 카메라 타겟 변경
@@ -144,18 +151,73 @@ public class PartyManager : MonoBehaviour
             virtualCamera.LookAt = newLeader.transform;
         }
 
-        // 새 체인 순서 생성: 선택된 리더를 맨 앞으로
+        // 죽은 멤버 제외하고 체인 순서 생성
         List<PartyMemberScript> newOrder = new List<PartyMemberScript> { newLeader };
         foreach (var member in partyMembers)
         {
-            if (member != newLeader) newOrder.Add(member);
+            if (member != newLeader && member.CurrentState != PartyMemberScript.MemberState.Dead)
+                newOrder.Add(member);
         }
 
-        // 모든 멤버에게 새 순서 통보
+        // 생존 멤버에게만 새 순서 통보
+        foreach (var member in newOrder)
+            member.UpdateChainOrder(newOrder);
+    }
+
+    // ─────────────────────────────────────────────────────────────────
+    // 사망 처리 (CharacterStat에서 호출)
+    // ─────────────────────────────────────────────────────────────────
+
+    public void OnMemberDied(PartyMemberScript deadMember)
+    {
+        // 전원 사망 체크
+        bool allDead = partyMembers.TrueForAll(
+            m => m.CurrentState == PartyMemberScript.MemberState.Dead);
+
+        if (allDead)
+        {
+            TriggerGameOver();
+            return;
+        }
+
+        // 죽은 멤버가 리더였으면 → 가장 낮은 인덱스의 생존자로 교체
+        if (deadMember == currentLeader)
+        {
+            for (int i = 0; i < partyMembers.Count; i++)
+            {
+                if (partyMembers[i].CurrentState != PartyMemberScript.MemberState.Dead)
+                {
+                    ChangeLeader(i);
+                    return;
+                }
+            }
+        }
+        else
+        {
+            // 팔로워 사망 → 체인만 재건 (죽은 멤버 제외)
+            RebuildChain();
+        }
+    }
+
+    private void RebuildChain()
+    {
+        if (currentLeader == null) return;
+
+        List<PartyMemberScript> newOrder = new List<PartyMemberScript> { currentLeader };
         foreach (var member in partyMembers)
         {
-            member.UpdateChainOrder(newOrder);
+            if (member != currentLeader && member.CurrentState != PartyMemberScript.MemberState.Dead)
+                newOrder.Add(member);
         }
+
+        foreach (var member in newOrder)
+            member.UpdateChainOrder(newOrder);
+    }
+
+    private void TriggerGameOver()
+    {
+        if (gameOverUI != null) gameOverUI.SetActive(true);
+        Time.timeScale = 0f;
     }
 
     // ─────────────────────────────────────────────────────────────────
