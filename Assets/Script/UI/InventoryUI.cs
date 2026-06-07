@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public class InventoryUI : MonoBehaviour
 {
@@ -30,12 +31,12 @@ public class InventoryUI : MonoBehaviour
     [Header("DetailPopup")]
     [SerializeField] RectTransform detailPopup;
     [SerializeField] Image         itemGradeBG;
-    [SerializeField] Text          nameText;
-    [SerializeField] Text          gradeText;
-    [SerializeField] Text          itemTypeText;
-    [SerializeField] Text[]        mainOptionTexts;  // Main 0, 1, 2
-    [SerializeField] Text[]        subOptionTexts;   // Sub 0, 1, 2, 3
-    [SerializeField] Text          descriptionText;
+    [SerializeField] TextMeshProUGUI          nameText;
+    [SerializeField] TextMeshProUGUI          gradeText;
+    [SerializeField] TextMeshProUGUI          itemTypeText;
+    [SerializeField] TextMeshProUGUI[]        mainOptionTexts;  // Main 0, 1, 2
+    [SerializeField] TextMeshProUGUI[]        subOptionTexts;   // Sub 0, 1, 2, 3
+    [SerializeField] TextMeshProUGUI          descriptionText;
     [SerializeField] Button        equipButton;
     [SerializeField] Button        unequipButton;
 
@@ -55,7 +56,7 @@ public class InventoryUI : MonoBehaviour
     private Dictionary<EquipSlot, Button> equipButtons    = new Dictionary<EquipSlot, Button>();
     private Dictionary<EquipSlot, Image>  equipIcons      = new Dictionary<EquipSlot, Image>();
     private Dictionary<EquipSlot, Image>  equipEmptyIcons = new Dictionary<EquipSlot, Image>();
-    private Dictionary<EquipSlot, Text>   equipEnhTexts   = new Dictionary<EquipSlot, Text>();
+    private Dictionary<EquipSlot, TextMeshProUGUI>   equipEnhTexts   = new Dictionary<EquipSlot, TextMeshProUGUI>();
 
     private List<GameObject> inventorySlotObjs = new List<GameObject>();
 
@@ -81,7 +82,7 @@ public class InventoryUI : MonoBehaviour
             Transform t = kvp.Value.transform;
             equipIcons[kvp.Key]      = t.Find("Icon")?      .GetComponent<Image>();
             equipEmptyIcons[kvp.Key] = t.Find("EmptyIcon")? .GetComponent<Image>();
-            equipEnhTexts[kvp.Key]   = t.Find("EnhanceText")?.GetComponent<Text>();
+            equipEnhTexts[kvp.Key]   = t.Find("EnhanceText")?.GetComponent<TextMeshProUGUI>();
         }
     }
 
@@ -187,13 +188,13 @@ public class InventoryUI : MonoBehaviour
             }
 
             // 강화 텍스트 (+N, 장비만)
-            var enhText = slotObj.transform.Find("EnhanceText")?.GetComponent<Text>();
+            var enhText = slotObj.transform.Find("EnhanceText")?.GetComponent<TextMeshProUGUI>();
             if (enhText != null)
                 enhText.text = captured.IsEquipment && captured.enhancementLevel > 0
                     ? $"+{captured.enhancementLevel}" : "";
 
             // 스택 텍스트 (x99, 소비·재료만)
-            var stackText = slotObj.transform.Find("StackText")?.GetComponent<Text>();
+            var stackText = slotObj.transform.Find("StackText")?.GetComponent<TextMeshProUGUI>();
             if (stackText != null)
                 stackText.text = !captured.IsEquipment && captured.stackCount > 1
                     ? $"x{captured.stackCount}" : "";
