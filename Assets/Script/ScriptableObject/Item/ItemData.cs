@@ -4,7 +4,6 @@ using UnityEngine;
 // 공통 열거형
 // ─────────────────────────────────────────────────────────────────
 
-public enum ItemType  { Weapon, Armor, Accessory, Consumable, Material }
 public enum ItemGrade { Normal, Advanced, Elite, Legendary, Mythic }
 
 // ─────────────────────────────────────────────────────────────────
@@ -17,7 +16,6 @@ public class ItemData : ScriptableObject
     public string itemName;
     public string description;
     public Sprite icon;
-    public ItemType  itemType;
     public ItemGrade grade;
     public int       sellPrice;
 }

@@ -2,6 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+[System.Serializable]
+public class StartEquipEntry
+{
+    [Tooltip("장착시킬 파티원 인덱스 (0=첫번째, 1=두번째, 2=세번째)")]
+    public int characterIndex;
+    public EquipItemData item;
+}
+
 public class DataManager : MonoBehaviour
 {
     public static DataManager instance;
@@ -19,6 +27,12 @@ public class DataManager : MonoBehaviour
     [Header("테스트 설정")]
     [Tooltip("게임 시작 시 각 캐릭터에게 지급할 스킬 포인트")]
     public int startSkillPoint = 1;
+
+    [Header("시작 아이템")]
+    [Tooltip("게임 시작 시 인벤토리에 지급할 아이템 목록")]
+    public List<ItemData> startItems;
+    [Tooltip("게임 시작 시 캐릭터에게 미리 장착시킬 아이템 목록")]
+    public List<StartEquipEntry> startEquips;
 
     public event System.Action OnLevelUp;
     public event System.Action OnExpGained;
@@ -40,6 +54,14 @@ public class DataManager : MonoBehaviour
         partyStatuses.Clear();
         partyEquipments.Clear();
 
+        // 시작 아이템 지급
+        sharedInventory = new Inventory();
+        if (startItems != null)
+        {
+            foreach (var itemData in startItems)
+                sharedInventory.TryAddItem(new ItemInstance(itemData));
+        }
+
         foreach (var baseData in baseDataList)
         {
             CharacterStatus newStatus = new CharacterStatus();
@@ -55,6 +77,20 @@ public class DataManager : MonoBehaviour
 
             partyStatuses.Add(newStatus);
             partyEquipments.Add(new CharacterEquipment());
+        }
+
+        // 시작 장착 아이템 적용
+        if (startEquips != null)
+        {
+            foreach (var entry in startEquips)
+            {
+                if (entry.item == null) continue;
+                if (entry.characterIndex < 0 || entry.characterIndex >= partyEquipments.Count) continue;
+
+                var instance = new ItemInstance(entry.item);
+                partyEquipments[entry.characterIndex].Equip(instance);
+                partyEquipments[entry.characterIndex].RecalculateStats(partyStatuses[entry.characterIndex]);
+            }
         }
     }
     public void AddExp(float exp)

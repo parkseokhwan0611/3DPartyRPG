@@ -39,6 +39,7 @@ public class InventoryUI : MonoBehaviour
     [SerializeField] TextMeshProUGUI          descriptionText;
     [SerializeField] Button        equipButton;
     [SerializeField] Button        unequipButton;
+    [SerializeField] Button        sellButton;
 
     [Header("등급 스프라이트 (0:일반 ~ 4:신화)")]
     [SerializeField] Sprite[] gradeSprites;
@@ -102,11 +103,21 @@ public class InventoryUI : MonoBehaviour
             kvp.Value.onClick.AddListener(() => OnEquipSlotClicked(slot));
         }
 
-        sortButton  .onClick.AddListener(OnSortClicked);
+        sortButton   .onClick.AddListener(OnSortClicked);
         equipButton  .onClick.AddListener(OnEquipClicked);
         unequipButton.onClick.AddListener(OnUnequipClicked);
+        sellButton   .onClick.AddListener(OnSellClicked);
 
         detailPopup.gameObject.SetActive(false);
+    }
+
+    void Update()
+    {
+        if (detailPopup.gameObject.activeSelf && Input.GetMouseButtonDown(0))
+        {
+            if (!RectTransformUtility.RectangleContainsScreenPoint(detailPopup, Input.mousePosition))
+                CloseDetailPopup();
+        }
     }
 
     void OnEnable()
@@ -170,38 +181,42 @@ public class InventoryUI : MonoBehaviour
         foreach (var obj in inventorySlotObjs) Destroy(obj);
         inventorySlotObjs.Clear();
 
-        if (DataManager.instance == null) return;
-        var items = DataManager.instance.sharedInventory.Items;
+        var items = DataManager.instance != null
+            ? DataManager.instance.sharedInventory.Items
+            : System.Array.Empty<ItemInstance>() as IReadOnlyList<ItemInstance>;
 
-        foreach (var item in items)
+        for (int i = 0; i < Inventory.MaxSlots; i++)
         {
-            ItemInstance captured = item; // 클로저 캡처용
-            GameObject   slotObj  = Instantiate(itemSlotPrefab, content);
+            GameObject slotObj = Instantiate(itemSlotPrefab, content);
             inventorySlotObjs.Add(slotObj);
+
+            bool hasItem = i < items.Count;
+            ItemInstance captured = hasItem ? items[i] : null;
 
             // 아이콘
             var icon = slotObj.transform.Find("Icon")?.GetComponent<Image>();
             if (icon != null)
             {
-                icon.sprite  = captured.data.icon;
-                icon.enabled = captured.data.icon != null;
+                icon.sprite  = hasItem ? captured.data.icon : null;
+                icon.enabled = hasItem && captured.data.icon != null;
             }
 
             // 강화 텍스트 (+N, 장비만)
             var enhText = slotObj.transform.Find("EnhanceText")?.GetComponent<TextMeshProUGUI>();
             if (enhText != null)
-                enhText.text = captured.IsEquipment && captured.enhancementLevel > 0
+                enhText.text = hasItem && captured.IsEquipment && captured.enhancementLevel > 0
                     ? $"+{captured.enhancementLevel}" : "";
 
             // 스택 텍스트 (x99, 소비·재료만)
             var stackText = slotObj.transform.Find("StackText")?.GetComponent<TextMeshProUGUI>();
             if (stackText != null)
-                stackText.text = !captured.IsEquipment && captured.stackCount > 1
+                stackText.text = hasItem && !captured.IsEquipment && captured.stackCount > 1
                     ? $"x{captured.stackCount}" : "";
 
-            // 클릭 이벤트
-            slotObj.GetComponent<Button>()?.onClick.AddListener(
-                () => OnInventorySlotClicked(captured));
+            // 클릭 이벤트 (빈 슬롯은 무시)
+            if (hasItem)
+                slotObj.GetComponent<Button>()?.onClick.AddListener(
+                    () => OnInventorySlotClicked(captured));
         }
     }
 
@@ -230,7 +245,7 @@ public class InventoryUI : MonoBehaviour
         selectedItem        = item;
         isEquipSlotSelected = false;
 
-        ShowDetailPopup(item, new Vector2(-400f, 40f));
+        ShowDetailPopup(item, new Vector2(-400f, -40f));
     }
 
     // ─────────────────────────────────────────────────────────────────
@@ -290,11 +305,13 @@ public class InventoryUI : MonoBehaviour
         // 설명
         descriptionText.text = item.data.description;
 
-        // 버튼 표시
-        // 장착 버튼: 인벤토리에서 장비 아이템 선택 시만 표시
-        // 해제 버튼: 장착 슬롯 선택 시만 표시
-        equipButton  .gameObject.SetActive(!isEquipSlotSelected && item.IsEquipment);
-        unequipButton.gameObject.SetActive(isEquipSlotSelected);
+        // 장착/해제 버튼 (같은 위치에서 하나만 활성화)
+        bool isEquip = item.IsEquipment;
+        equipButton  .gameObject.SetActive(isEquip && !isEquipSlotSelected);
+        unequipButton.gameObject.SetActive(isEquip && isEquipSlotSelected);
+
+        // 판매 버튼 (항상 표시)
+        sellButton.gameObject.SetActive(true);
     }
 
     void CloseDetailPopup()
@@ -348,6 +365,11 @@ public class InventoryUI : MonoBehaviour
         RefreshInventory();
     }
 
+    void OnSellClicked()
+    {
+        // TODO: 판매 기능 구현
+    }
+
     // ─────────────────────────────────────────────────────────────────
     // 헬퍼
     // ─────────────────────────────────────────────────────────────────
@@ -372,33 +394,24 @@ public class InventoryUI : MonoBehaviour
         _                   => ""
     };
 
-    string GetItemTypeName(ItemInstance item, EquipItemData equip) =>
-        item.data.itemType switch
+    string GetItemTypeName(ItemInstance item, EquipItemData equip)
+    {
+        if (equip != null) return equip.equipType switch
         {
-            ItemType.Weapon    => equip?.weaponType switch
-            {
-                WeaponType.Sword  => "검",
-                WeaponType.Staff  => "지팡이",
-                _                 => "무기"
-            },
-            ItemType.Armor     => equip?.armorType switch
-            {
-                ArmorType.Hat    => "모자",
-                ArmorType.Chest  => "갑옷",
-                ArmorType.Gloves => "장갑",
-                ArmorType.Boots  => "신발",
-                _                => "방어구"
-            },
-            ItemType.Accessory => equip?.accessoryType switch
-            {
-                AccessoryType.Necklace => "목걸이",
-                AccessoryType.Ring     => "반지",
-                _                      => "장신구"
-            },
-            ItemType.Consumable => "소비 아이템",
-            ItemType.Material   => "재료",
-            _                   => ""
+            EquipType.Sword    => "검",
+            EquipType.Staff    => "지팡이",
+            EquipType.Hat      => "모자",
+            EquipType.Chest    => "갑옷",
+            EquipType.Gloves   => "장갑",
+            EquipType.Boots    => "신발",
+            EquipType.Necklace => "목걸이",
+            EquipType.Ring     => "반지",
+            _                  => ""
         };
+        if (item.IsConsumable) return "소비 아이템";
+        if (item.IsMaterial)   return "재료";
+        return "";
+    }
 
     string GetMainOptionName(MainOptionType type) => type switch
     {

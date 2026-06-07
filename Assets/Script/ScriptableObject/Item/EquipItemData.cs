@@ -5,9 +5,16 @@ using System.Collections.Generic;
 // 장비 관련 열거형
 // ─────────────────────────────────────────────────────────────────
 
-public enum WeaponType    { Sword, Staff }
-public enum ArmorType     { Hat, Chest, Gloves, Boots }
-public enum AccessoryType { Necklace, Ring }
+/// <summary>장비 종류 — 이 하나로 슬롯과 카테고리를 모두 결정합니다.</summary>
+public enum EquipType
+{
+    // 무기
+    Sword, Staff,
+    // 방어구
+    Hat, Chest, Gloves, Boots,
+    // 장신구
+    Necklace, Ring,
+}
 
 // 장비 슬롯 (캐릭터 장착 슬롯 인덱스)
 public enum EquipSlot
@@ -79,9 +86,7 @@ public class EquipItemData : ItemData
 {
     // ── 장비 종류 ──────────────────────────────
     [Header("장비 분류")]
-    public WeaponType    weaponType;    // itemType == Weapon 일 때
-    public ArmorType     armorType;     // itemType == Armor  일 때
-    public AccessoryType accessoryType; // itemType == Accessory 일 때
+    public EquipType equipType;
 
     // ── 메인 옵션 ──────────────────────────────
     [Header("메인 옵션")]
@@ -108,26 +113,16 @@ public class EquipItemData : ItemData
     };
 
     /// <summary>이 장비가 들어가는 슬롯 (Ring은 Ring1 반환 — 런타임에서 빈 슬롯 판별)</summary>
-    public EquipSlot GetEquipSlot()
+    public EquipSlot GetEquipSlot() => equipType switch
     {
-        return itemType switch
-        {
-            ItemType.Weapon    => EquipSlot.Weapon,
-            ItemType.Armor     => armorType switch
-            {
-                ArmorType.Hat    => EquipSlot.Hat,
-                ArmorType.Chest  => EquipSlot.Chest,
-                ArmorType.Gloves => EquipSlot.Gloves,
-                ArmorType.Boots  => EquipSlot.Boots,
-                _                => EquipSlot.Hat,
-            },
-            ItemType.Accessory => accessoryType switch
-            {
-                AccessoryType.Necklace => EquipSlot.Necklace,
-                AccessoryType.Ring     => EquipSlot.Ring1, // 런타임에서 Ring2 여부 결정
-                _                      => EquipSlot.Necklace,
-            },
-            _ => EquipSlot.Weapon,
-        };
-    }
+        EquipType.Sword    => EquipSlot.Weapon,
+        EquipType.Staff    => EquipSlot.Weapon,
+        EquipType.Hat      => EquipSlot.Hat,
+        EquipType.Chest    => EquipSlot.Chest,
+        EquipType.Gloves   => EquipSlot.Gloves,
+        EquipType.Boots    => EquipSlot.Boots,
+        EquipType.Necklace => EquipSlot.Necklace,
+        EquipType.Ring     => EquipSlot.Ring1, // 런타임에서 Ring2 여부 결정
+        _                  => EquipSlot.Weapon,
+    };
 }
