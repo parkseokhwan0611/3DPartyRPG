@@ -89,15 +89,17 @@ public class CharacterEquipment
         {
             if (kvp.Value?.data is not EquipItemData equip) continue;
 
-            // 메인 옵션 (강화 포함)
-            float mainVal = kvp.Value.GetMainValue();
-            switch (equip.mainOptionType)
+            // 메인 옵션 (강화 포함, 무기 1개 / 방어구 3개 / 장신구 0개)
+            foreach (var (type, val) in kvp.Value.GetMainValues())
             {
-                case MainOptionType.PhysAtk:  status.equipAtk      += mainVal; break;
-                case MainOptionType.MagicAtk: status.equipAp       += mainVal; break;
-                case MainOptionType.MaxHP:    status.equipMaxHp    += mainVal; break;
-                case MainOptionType.PhysDef:  status.equipDef      += mainVal; break;
-                case MainOptionType.MagicRes: status.equipMagicRes += mainVal; break;
+                switch (type)
+                {
+                    case MainOptionType.PhysAtk:  status.equipAtk      += val; break;
+                    case MainOptionType.MagicAtk: status.equipAp       += val; break;
+                    case MainOptionType.MaxHP:    status.equipMaxHp    += val; break;
+                    case MainOptionType.PhysDef:  status.equipDef      += val; break;
+                    case MainOptionType.MagicRes: status.equipMagicRes += val; break;
+                }
             }
 
             // 서브 옵션 (고정값)

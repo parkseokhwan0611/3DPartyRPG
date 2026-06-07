@@ -249,25 +249,32 @@ public class InventoryUI : MonoBehaviour
         if (itemGradeBG != null && gradeSprites != null && gi < gradeSprites.Length)
             itemGradeBG.sprite = gradeSprites[gi];
 
-        // 기본 정보
-        nameText.text     = item.data.itemName;
+        // 기본 정보 (강화 단계는 이름 앞에 표시)
+        nameText.text     = item.enhancementLevel > 0
+            ? $"+{item.enhancementLevel} {item.data.itemName}"
+            : item.data.itemName;
         gradeText.text    = $"등급: {GetGradeName(item.data.grade)}";
         itemTypeText.text = GetItemTypeName(item, equip);
 
-        // 메인 옵션
-        // Main 0: 강화 단계 (+N) — 강화 0이거나 장신구면 숨김
-        // Main 1: 메인 옵션 이름 + 수치 — 장신구는 숨김
-        // Main 2: 미사용 (항상 숨김)
-        bool hasMainOption = equip != null && item.data.itemType != ItemType.Accessory;
+        // 메인 옵션 (무기: 1개 / 방어구: 3개 / 장신구: 0개)
+        // Main 0~2 슬롯에 순서대로 채우고 남는 슬롯은 숨김
+        var mainValues = equip != null
+            ? new System.Collections.Generic.List<(MainOptionType, float)>(item.GetMainValues())
+            : null;
 
-        mainOptionTexts[0].gameObject.SetActive(equip != null && item.enhancementLevel > 0);
-        mainOptionTexts[0].text = $"+{item.enhancementLevel}";
-
-        mainOptionTexts[1].gameObject.SetActive(hasMainOption);
-        mainOptionTexts[1].text = hasMainOption
-            ? $"{GetMainOptionName(equip.mainOptionType)}: {item.GetMainValue():F0}" : "";
-
-        mainOptionTexts[2].gameObject.SetActive(false);
+        for (int i = 0; i < mainOptionTexts.Length; i++)
+        {
+            if (mainValues != null && i < mainValues.Count)
+            {
+                mainOptionTexts[i].gameObject.SetActive(true);
+                mainOptionTexts[i].text =
+                    $"{GetMainOptionName(mainValues[i].Item1)}: {mainValues[i].Item2:F0}";
+            }
+            else
+            {
+                mainOptionTexts[i].gameObject.SetActive(false);
+            }
+        }
 
         // 서브 옵션
         int maxSub = GetMaxSubCount(item.data.grade);

@@ -66,11 +66,11 @@ public class ItemInstance
         return success;
     }
 
-    /// <summary>강화 포함 메인 옵션 최종값 (장비만).</summary>
-    public float GetMainValue()
+    /// <summary>강화 포함 메인 옵션 최종값 목록 (장비만). 순회용.</summary>
+    public System.Collections.Generic.IEnumerable<(MainOptionType type, float value)> GetMainValues()
     {
-        if (data is EquipItemData equip)
-            return equip.GetEnhancedMainValue(enhancementLevel);
-        return 0f;
+        if (data is not EquipItemData equip) yield break;
+        foreach (var opt in equip.mainOptions)
+            yield return (opt.type, opt.GetEnhancedValue(enhancementLevel));
     }
 }

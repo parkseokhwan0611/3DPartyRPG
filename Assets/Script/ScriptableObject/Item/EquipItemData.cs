@@ -45,6 +45,21 @@ public enum SubOptionType
 }
 
 // ─────────────────────────────────────────────────────────────────
+// 메인 옵션 (강화 포함)
+// ─────────────────────────────────────────────────────────────────
+
+[System.Serializable]
+public class MainOption
+{
+    public MainOptionType type;
+    public float          value;
+    [Tooltip("강화 1단계당 증가량. 장신구는 0.")]
+    public float          enhancementBonusPerLevel = 0f;
+
+    public float GetEnhancedValue(int level) => value + enhancementBonusPerLevel * level;
+}
+
+// ─────────────────────────────────────────────────────────────────
 // 서브 옵션 (값 고정, SO에서 직접 설정)
 // ─────────────────────────────────────────────────────────────────
 
@@ -68,18 +83,12 @@ public class EquipItemData : ItemData
     public ArmorType     armorType;     // itemType == Armor  일 때
     public AccessoryType accessoryType; // itemType == Accessory 일 때
 
-    // ── 메인 옵션 (무기·방어구만) ──────────────
-    [Header("메인 옵션 (무기·방어구)")]
-    [Tooltip("장신구는 메인 옵션 없음")]
-    public MainOptionType mainOptionType;
-    public float          mainOptionValue;
+    // ── 메인 옵션 ──────────────────────────────
+    [Header("메인 옵션")]
+    [Tooltip("무기: 1개 / 방어구: 3개 (MaxHP·PhysDef·MagicRes) / 장신구: 0개")]
+    public List<MainOption> mainOptions = new List<MainOption>();
 
-    // ── 강화 (무기·방어구만) ───────────────────
-    [Header("강화 (무기·방어구)")]
-    [Tooltip("강화 1단계당 메인 옵션 증가량. 장신구는 0.")]
-    public float enhancementBonusPerLevel = 0f;
-
-    // ── 서브 옵션 (등급에 따라 1~3개 설정) ────
+    // ── 서브 옵션 (등급에 따라 1~4개 설정) ────
     [Header("서브 옵션")]
     public List<SubOption> subOptions = new List<SubOption>();
 
@@ -97,10 +106,6 @@ public class EquipItemData : ItemData
         ItemGrade.Mythic    => 12,
         _                   => 0,
     };
-
-    /// <summary>현재 강화 단계의 메인 옵션 최종값</summary>
-    public float GetEnhancedMainValue(int enhancementLevel)
-        => mainOptionValue + enhancementBonusPerLevel * enhancementLevel;
 
     /// <summary>이 장비가 들어가는 슬롯 (Ring은 Ring1 반환 — 런타임에서 빈 슬롯 판별)</summary>
     public EquipSlot GetEquipSlot()
