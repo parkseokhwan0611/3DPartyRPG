@@ -59,13 +59,9 @@ public class StatWindowUI : MonoBehaviour
 
     void OnEnable()
     {
-        // 창 열릴 때 현재 리더 기준으로 자동 선택
-        if (PartyManager.instance?.currentLeader != null)
-        {
-            CharacterStat leaderStat = PartyManager.instance.currentLeader.GetComponent<CharacterStat>();
-            if (leaderStat != null)
-                selectedIndex = leaderStat.partyIndex;
-        }
+        // 인벤토리창 등 다른 창에서 선택한 캐릭터 유지
+        if (DataManager.instance != null)
+            selectedIndex = DataManager.instance.selectedPartyIndex;
 
         Refresh();
     }
@@ -77,6 +73,8 @@ public class StatWindowUI : MonoBehaviour
     private void SelectChar(int index)
     {
         selectedIndex = index;
+        if (DataManager.instance != null)
+            DataManager.instance.selectedPartyIndex = index;
         Refresh();
     }
 
@@ -123,11 +121,11 @@ public class StatWindowUI : MonoBehaviour
         // ── 스탯 포인트 ──
         SetText(statPointText, $"스탯 포인트: {status.statPoint}");
 
-        // ── 기본 스탯 수치 ──
-        SetText(strText, $"힘: {status.classData.baseStr + status.addedStr:F0}");
-        SetText(vitText, $"체력: {status.classData.baseVit + status.addedVit:F0}");
-        SetText(intText, $"지능: {status.classData.baseInt + status.addedInt:F0}");
-        SetText(fthText, $"신앙: {status.classData.baseFht + status.addedFht:F0}");
+        // ── 기본 스탯 수치 (장비 보너스 포함) ──
+        SetText(strText, $"힘: {status.classData.baseStr + status.addedStr + status.equipStr:F0}");
+        SetText(vitText, $"체력: {status.classData.baseVit + status.addedVit + status.equipVit:F0}");
+        SetText(intText, $"지능: {status.classData.baseInt + status.addedInt + status.equipInt:F0}");
+        SetText(fthText, $"신앙: {status.classData.baseFht + status.addedFht + status.equipFht:F0}");
 
         // ── + 버튼 활성/비활성 ──
         bool canSpend = status.statPoint > 0;

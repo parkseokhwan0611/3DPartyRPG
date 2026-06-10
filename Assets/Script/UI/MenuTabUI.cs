@@ -48,6 +48,10 @@ public class MenuTabUI : MonoBehaviour
         // 탭키로 메뉴 토글
         if (Input.GetKeyDown(KeyCode.Tab))
             ToggleMenu();
+
+        // ESC로 메뉴 닫기
+        if (Input.GetKeyDown(KeyCode.Escape) && menuWindow.activeSelf)
+            CloseMenu();
     }
 
     void OnDestroy()

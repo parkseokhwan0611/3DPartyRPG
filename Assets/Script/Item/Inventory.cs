@@ -81,7 +81,9 @@ public class Inventory
     // ─────────────────────────────────────────────────────────────────
 
     /// <summary>
-    /// 장비 → 소비 → 재료 순, 같은 카테고리 내에서는 등급 높은 순으로 정렬.
+    /// 소비 → 장비 → 재료 순.
+    /// 소비 아이템 내: HP물약 → MP물약 → 주문서.
+    /// 같은 카테고리/타입 내에서는 등급 높은 순.
     /// </summary>
     public void Sort()
     {
@@ -95,8 +97,18 @@ public class Inventory
 
     private static int GetTypeOrder(ItemInstance item)
     {
-        if (item.IsEquipment)  return 0;
-        if (item.IsConsumable) return 1;
-        return 2; // Material
+        if (item.IsConsumable)
+        {
+            var consumable = (ConsumableData)item.data;
+            return consumable.consumableType switch
+            {
+                ConsumableType.HpPotion          => 0,
+                ConsumableType.MpPotion          => 1,
+                ConsumableType.EnhancementScroll => 2,
+                _                                => 3,
+            };
+        }
+        if (item.IsEquipment) return 4;
+        return 5; // Material
     }
 }

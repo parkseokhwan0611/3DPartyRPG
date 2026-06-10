@@ -122,6 +122,10 @@ public class InventoryUI : MonoBehaviour
 
     void OnEnable()
     {
+        // 스탯창 등 다른 창에서 선택한 캐릭터 유지
+        if (DataManager.instance != null)
+            selectedCharIndex = DataManager.instance.selectedPartyIndex;
+
         SelectCharacter(selectedCharIndex);
         RefreshInventory();
     }
@@ -133,6 +137,8 @@ public class InventoryUI : MonoBehaviour
     void SelectCharacter(int index)
     {
         selectedCharIndex = index;
+        if (DataManager.instance != null)
+            DataManager.instance.selectedPartyIndex = index;
 
         for (int i = 0; i < displayModels.Length; i++)
             displayModels[i].SetActive(i == index);

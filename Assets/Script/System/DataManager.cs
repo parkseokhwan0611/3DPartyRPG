@@ -24,6 +24,9 @@ public class DataManager : MonoBehaviour
     public int partyLevel = 1;
     public int partyExp = 0;
 
+    // 스탯창·인벤토리창이 공유하는 선택된 파티원 인덱스
+    public int selectedPartyIndex = 0;
+
     [Header("테스트 설정")]
     [Tooltip("게임 시작 시 각 캐릭터에게 지급할 스킬 포인트")]
     public int startSkillPoint = 1;
