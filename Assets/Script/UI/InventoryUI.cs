@@ -131,6 +131,9 @@ public class InventoryUI : MonoBehaviour
         }
 
         detailPopup.gameObject.SetActive(false);
+
+        // OnEnable이 Start보다 먼저 실행되므로 슬롯 생성 후 다시 갱신
+        RefreshInventory();
     }
 
     void Update()

@@ -2836,6 +2836,8 @@ MonoBehaviour:
   chaseDistance: 10
   targetSwitchThreshold: 1
   navSpeed: 1.5
+  aggroDecayRate: 5
+  aggroThreshold: 10
 --- !u!114 &1045097644406216187
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2879,6 +2881,7 @@ MonoBehaviour:
   hudPos: {fileID: 5511221066833110898}
   expReward: 10
   destroyDelay: 2
+  dropTable: {fileID: 11400000, guid: f25a15cdb79af0b419076849aec8d354, type: 2}
 --- !u!114 &-327002959743040393
 MonoBehaviour:
   m_ObjectHideFlags: 0

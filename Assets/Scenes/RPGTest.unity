@@ -366240,7 +366240,9 @@ MonoBehaviour:
     item: {fileID: 11400000, guid: fd23787e5d867214a8000ae17c9bea2d, type: 2}
   - characterIndex: 2
     item: {fileID: 11400000, guid: fd23787e5d867214a8000ae17c9bea2d, type: 2}
-  itemRegistry: []
+  itemRegistry:
+  - {fileID: 11400000, guid: 360ee5c4417b22a47b5f196268d678de, type: 2}
+  - {fileID: 11400000, guid: fd23787e5d867214a8000ae17c9bea2d, type: 2}
 --- !u!4 &1709394324
 Transform:
   m_ObjectHideFlags: 0
@@ -549850,6 +549852,12 @@ PrefabInstance:
       propertyPath: maxHp
       value: 400
       objectReference: {fileID: 0}
+    - target: {fileID: 811392039888150760, guid: b40280d1a92c91b4b825e31c1ea7c03e,
+        type: 3}
+      propertyPath: dropTable
+      value: 
+      objectReference: {fileID: 11400000, guid: f25a15cdb79af0b419076849aec8d354,
+        type: 2}
     - target: {fileID: 811392039888150760, guid: b40280d1a92c91b4b825e31c1ea7c03e,
         type: 3}
       propertyPath: expReward
