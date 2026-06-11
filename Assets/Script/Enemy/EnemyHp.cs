@@ -15,7 +15,8 @@ public class EnemyHp : MonoBehaviour, IDamageable
     public Transform hudPos;
 
     [Header("# Death Settings")]
-    public float expReward   = 5f;
+    public float expReward    = 5f;
+    public int   goldReward   = 10;
     public float destroyDelay = 2f;
 
     [Header("# Drop Settings")]
@@ -127,6 +128,7 @@ public class EnemyHp : MonoBehaviour, IDamageable
         if (DataManager.instance != null)
         {
             DataManager.instance.AddExp(expReward);
+            DataManager.instance.AddGold(goldReward);
             dropTable?.SpawnDrops(transform.position);
         }
 

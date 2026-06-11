@@ -27,6 +27,7 @@ public class InventoryUI : MonoBehaviour
     [SerializeField] Transform  content;
     [SerializeField] GameObject itemSlotPrefab;
     [SerializeField] Button     sortButton;
+    [SerializeField] TextMeshProUGUI goldText;
 
     [Header("DetailPopup")]
     [SerializeField] RectTransform detailPopup;
@@ -147,12 +148,21 @@ public class InventoryUI : MonoBehaviour
 
     void OnEnable()
     {
-        // 스탯창 등 다른 창에서 선택한 캐릭터 유지
         if (DataManager.instance != null)
+        {
             selectedCharIndex = DataManager.instance.selectedPartyIndex;
+            DataManager.instance.OnGoldChanged += RefreshGold;
+        }
 
         SelectCharacter(selectedCharIndex);
         RefreshInventory();
+        RefreshGold();
+    }
+
+    void OnDisable()
+    {
+        if (DataManager.instance != null)
+            DataManager.instance.OnGoldChanged -= RefreshGold;
     }
 
     // ─────────────────────────────────────────────────────────────────
@@ -382,6 +392,12 @@ public class InventoryUI : MonoBehaviour
         RefreshInventory();
     }
 
+    void RefreshGold()
+    {
+        if (goldText == null || DataManager.instance == null) return;
+        goldText.text = $"{DataManager.instance.gold:N0}";
+    }
+
     void OnSortClicked()
     {
         DataManager.instance?.sharedInventory.Sort();
@@ -390,7 +406,16 @@ public class InventoryUI : MonoBehaviour
 
     void OnSellClicked()
     {
-        // TODO: 판매 기능 구현
+        if (selectedItem == null || DataManager.instance == null) return;
+        // 장착 중인 슬롯에서는 판매 불가
+        if (isEquipSlotSelected) return;
+
+        int price = selectedItem.data.sellPrice;
+        DataManager.instance.sharedInventory.Remove(selectedItem);
+        DataManager.instance.AddGold(price);
+
+        CloseDetailPopup();
+        RefreshInventory();
     }
 
     // ─────────────────────────────────────────────────────────────────

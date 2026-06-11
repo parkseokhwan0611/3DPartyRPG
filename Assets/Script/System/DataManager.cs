@@ -21,6 +21,7 @@ public class DataManager : MonoBehaviour
 
     public int partyLevel = 1;
     public int partyExp   = 0;
+    public int gold       = 0;
 
     // 스탯창·인벤토리창이 공유하는 선택된 파티원 인덱스
     public int selectedPartyIndex = 0;
@@ -41,6 +42,7 @@ public class DataManager : MonoBehaviour
 
     public event System.Action OnLevelUp;
     public event System.Action OnExpGained;
+    public event System.Action OnGoldChanged;
     // InitData / LoadSaveData 완료 후 발생 — CharacterStat 재바인딩용
     public event System.Action OnDataInitialized;
 
@@ -72,6 +74,7 @@ public class DataManager : MonoBehaviour
         sharedInventory    = new Inventory();
         partyLevel         = 1;
         partyExp           = 0;
+        gold               = 0;
         selectedPartyIndex = 0;
 
         // 시작 아이템 지급
@@ -119,6 +122,7 @@ public class DataManager : MonoBehaviour
             partyLevel         = partyLevel,
             partyExp           = partyExp,
             selectedPartyIndex = selectedPartyIndex,
+            gold               = gold,
         };
 
         // 캐릭터
@@ -187,6 +191,7 @@ public class DataManager : MonoBehaviour
         partyLevel         = save.partyLevel;
         partyExp           = save.partyExp;
         selectedPartyIndex = save.selectedPartyIndex;
+        gold               = save.gold;
 
         partyStatuses.Clear();
         partyEquipments.Clear();
@@ -274,6 +279,26 @@ public class DataManager : MonoBehaviour
     }
 
     public int GetRequiredExp(int level) => level * 100;
+
+    // ─────────────────────────────────────────────────────────────────
+    // 골드
+    // ─────────────────────────────────────────────────────────────────
+
+    public void AddGold(int amount)
+    {
+        if (amount <= 0) return;
+        gold += amount;
+        OnGoldChanged?.Invoke();
+    }
+
+    // 골드가 부족하면 false 반환
+    public bool SpendGold(int amount)
+    {
+        if (amount <= 0 || gold < amount) return false;
+        gold -= amount;
+        OnGoldChanged?.Invoke();
+        return true;
+    }
 
     public ClassSkillTree GetSkillTree(ClassData.ClassType classType)
         => skillTrees.Find(t => t.classType == classType);

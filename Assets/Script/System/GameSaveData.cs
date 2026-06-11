@@ -10,6 +10,7 @@ public class GameSaveData
     public int partyLevel;
     public int partyExp;
     public int selectedPartyIndex;
+    public int gold;
     public List<CharacterSaveData> characters = new List<CharacterSaveData>();
     public List<ItemSaveEntry>     inventory  = new List<ItemSaveEntry>();
     public List<EquipSaveEntry>    equipped   = new List<EquipSaveEntry>();
