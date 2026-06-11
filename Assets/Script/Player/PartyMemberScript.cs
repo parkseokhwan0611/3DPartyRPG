@@ -39,6 +39,12 @@ public class PartyMemberScript : MonoBehaviour
     public float stopDistance   = 2.0f;
     public float resumeDistance = 3.5f;
     public float rotationSpeed  = 8.0f;
+    [Tooltip("Idle 진입 후 Following 재진입을 막는 쿨다운 (초)")]
+    public float followCooldown = 0.3f;
+
+    private float _followCooldownTimer = 0f;
+    private float _walkAnimTimer       = 0f;   // 걷기 애니메이션 진입 지연
+    private const float WALK_ANIM_DELAY = 0.12f;
 
     // ─────────────────────────────────────────────────────────────────
     // Unity 생명주기
@@ -111,8 +117,30 @@ public class PartyMemberScript : MonoBehaviour
 
     private void HandleAttackEnded()
     {
-        // 공격이 끝나면 리더/팔로워에 맞게 상태 복귀
-        ChangeState(isLeader ? MemberState.Idle : MemberState.Following);
+        if (isLeader)
+        {
+            ChangeState(MemberState.Idle);
+            return;
+        }
+
+        // 팔로워: 공격 후 현재 거리 체크해서 가까우면 Idle 유지
+        if (targetToFollow != null)
+        {
+            float sqrDist = (transform.position - targetToFollow.position).sqrMagnitude;
+            if (sqrDist <= stopDistance * stopDistance)
+            {
+                ChangeState(MemberState.Idle);
+                _followCooldownTimer = followCooldown;
+            }
+            else
+            {
+                ChangeState(MemberState.Following);
+            }
+        }
+        else
+        {
+            ChangeState(MemberState.Idle);
+        }
     }
 
     public void ChangeState(MemberState newState)
@@ -169,17 +197,22 @@ public class PartyMemberScript : MonoBehaviour
 
     void HandleFollowLogic()
     {
+        if (_followCooldownTimer > 0f) _followCooldownTimer -= Time.deltaTime;
+
         float sqrDist   = (transform.position - targetToFollow.position).sqrMagnitude;
         float sqrResume = resumeDistance * resumeDistance;
         float sqrStop   = stopDistance   * stopDistance;
 
         if (CurrentState != MemberState.Following && sqrDist > sqrResume)
         {
-            ChangeState(MemberState.Following);
+            // 쿨다운 중이어도 resumeDistance의 2배 이상 멀어지면 즉시 따라감
+            if (_followCooldownTimer <= 0f || sqrDist > sqrResume * 4f)
+                ChangeState(MemberState.Following);
         }
         else if (CurrentState == MemberState.Following && sqrDist <= sqrStop)
         {
             ChangeState(MemberState.Idle);
+            _followCooldownTimer = followCooldown;
             agent.ResetPath();
             agent.velocity = Vector3.zero;
         }
@@ -198,15 +231,25 @@ public class PartyMemberScript : MonoBehaviour
     void UpdateAnimation()
     {
         if (anim == null) return;
-
         if (skillManager != null && skillManager.IsActivatingSkill) return;
-        if (attackComp  != null && attackComp.IsCastingSkill) return;
+        if (attackComp   != null && attackComp.IsCastingSkill) return;
 
-        bool walking = isLeader
-            ? agent.velocity.sqrMagnitude > 0.1f
-            : CurrentState == MemberState.Following;
+        // 공격 애니메이션 재생 중: 타이머 즉시 초기화 후 walk 강제 해제
+        if (attackComp != null && attackComp.IsAttackAnimPlaying)
+        {
+            _walkAnimTimer = 0f;
+            anim.SetBool("isWalking", false);
+            return;
+        }
 
-        anim.SetBool("isWalking", walking);
+        bool isMoving = agent.velocity.sqrMagnitude > 0.01f;
+
+        if (isMoving)
+            _walkAnimTimer += Time.deltaTime;
+        else
+            _walkAnimTimer = 0f;
+
+        anim.SetBool("isWalking", _walkAnimTimer >= WALK_ANIM_DELAY);
     }
 
     // 버프/힐 스킬 종료 후 상태 복귀 (SkillManager에서 호출)
@@ -214,12 +257,13 @@ public class PartyMemberScript : MonoBehaviour
     {
         if (CurrentState == MemberState.Dead) return;
 
-        // 팔로워: Following 상태로 복귀해 즉시 이동 재개
         if (!isLeader && targetToFollow != null)
         {
             float sqrDist = (transform.position - targetToFollow.position).sqrMagnitude;
-            if (sqrDist > stopDistance * stopDistance)
+            if (sqrDist > resumeDistance * resumeDistance)
                 ChangeState(MemberState.Following);
+            else
+                _followCooldownTimer = followCooldown;
         }
     }
 

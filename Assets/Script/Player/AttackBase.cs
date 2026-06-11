@@ -21,6 +21,7 @@ public abstract class AttackBase : MonoBehaviour
     public float attackDuration = 1.0f;
     protected float attackCooldown  = 0f;
     public bool IsCastingSkill { get; set; } = false;
+    public bool IsAttackAnimPlaying { get; protected set; } = false;
     private float firstAttackDelay  = 0f;
 
     // ─────────────────────────────────────────
@@ -80,13 +81,11 @@ public abstract class AttackBase : MonoBehaviour
 
         if (distance <= attackRange)
         {
-            if (anim != null) anim.SetBool("isWalking", false);
             StopAndAttack();
         }
         else
         {
             agent.SetDestination(currentTarget.position);
-            if (anim != null) anim.SetBool("isWalking", true);
         }
     }
 
@@ -97,8 +96,7 @@ public abstract class AttackBase : MonoBehaviour
         if (IsCastingSkill) return;
 
         agent.ResetPath();
-        if (anim != null) anim.SetBool("isWalking", false);
-
+        agent.velocity = Vector3.zero;
         LookAtTarget();
 
         if (IsCastingSkill) return;
@@ -213,14 +211,17 @@ public abstract class AttackBase : MonoBehaviour
         StopAttackCoroutine();
 
         if (anim != null)
-        {
             anim.ResetTrigger("doNormalAttack");
-            anim.SetBool("isWalking", false);
+
+        if (agent != null && agent.enabled)
+        {
+            agent.ResetPath();
+            agent.velocity         = Vector3.zero;
+            agent.stoppingDistance = 0.1f;
         }
 
-        attackCooldown        = 0f;
-        firstAttackDelay      = 0f;
-        agent.stoppingDistance = 0.1f;
+        attackCooldown   = 0f;
+        firstAttackDelay = 0f;
     }
 
     protected virtual void StopAttackCoroutine()

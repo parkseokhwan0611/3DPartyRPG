@@ -7,38 +7,42 @@ public class MeleeAttack : AttackBase
     [Header("근접 공격 판정 설정")]
     public float hitRadius = 1.5f;
     public float hitOffset = 1.0f;
-    
+
     [Header("타이밍 설정 (초 단위)")]
-    public float damageDelay = 0.33f; // 애니메이션 시작 후 타격판정까지 걸리는 시간
+    public float damageDelay = 0.33f;
     public string hitEffectName = "Yellow Sword Slash 1";
     private Coroutine attackCoroutine;
+    private bool _isAttacking = false;
+
     void Awake()
     {
-        // 같은 오브젝트에 붙어있는 스탯 스크립트를 참조
         myStat = GetComponent<CharacterStat>();
     }
-    // 부모의 StopAndAttack을 오버라이드하여 코루틴을 실행합니다.
+
     protected override void Update()
     {
         base.Update();
     }
+
     private IEnumerator AttackRoutine()
     {
-        agent.ResetPath();
-        anim.SetBool("isWalking", false);
-        LookAtTarget();
+        _isAttacking = true;
+        IsAttackAnimPlaying = true;
 
-        // 이전 트리거 초기화
+        LookAtTarget();
         anim.ResetTrigger("doNormalAttack");
 
-        // 애니메이터가 현재 프레임 처리를 완전히 마칠 때까지 대기
-        yield return null; // 1프레임
-        yield return null; // 2프레임 (확실하게)
+        yield return null;
+        yield return null;
 
         anim.SetTrigger("doNormalAttack");
 
         yield return new WaitForSeconds(damageDelay);
         OnHit();
+
+        IsAttackAnimPlaying = false;
+        _isAttacking = false;
+        attackCoroutine = null;
     }
     public override void OnHit()
     {
@@ -117,6 +121,7 @@ public class MeleeAttack : AttackBase
     }
     protected override void ExecuteAttack()
     {
+        if (_isAttacking) return;
         attackCoroutine = StartCoroutine(AttackRoutine());
     }
 
@@ -127,5 +132,7 @@ public class MeleeAttack : AttackBase
             StopCoroutine(attackCoroutine);
             attackCoroutine = null;
         }
+        IsAttackAnimPlaying = false;
+        _isAttacking = false;
     }
 }

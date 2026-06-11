@@ -82,6 +82,10 @@ public class GoblinThiefMaleScript : MonoBehaviour
         if (enemyHp == null || enemyHp.isDead) return;
         if (statusHandler != null && statusHandler.HasDebuff(StatusEffectType.Stun)) return;
 
+        // 이동 애니메이션
+        if (animator != null)
+            animator.SetBool("isWalking", navAgent.velocity.sqrMagnitude > 0.01f);
+
         // 어그로 자연 감소
         DecayAggro();
 

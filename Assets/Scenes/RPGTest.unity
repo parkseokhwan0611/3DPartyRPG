@@ -275905,6 +275905,7 @@ MonoBehaviour:
   stopDistance: 3
   resumeDistance: 4.5
   rotationSpeed: 8
+  followCooldown: 0.3
 --- !u!95 &1458811747
 Animator:
   serializedVersion: 5
@@ -275918,7 +275919,7 @@ Animator:
   m_Controller: {fileID: 9100000, guid: f04df896986652a4db6dc4260b199eba, type: 2}
   m_CullingMode: 1
   m_UpdateMode: 0
-  m_ApplyRootMotion: 0
+  m_ApplyRootMotion: 1
   m_LinearVelocityBlending: 0
   m_StabilizeFeet: 0
   m_WarningMessage: 
@@ -550196,12 +550197,12 @@ PrefabInstance:
     - target: {fileID: 811392039888150760, guid: b40280d1a92c91b4b825e31c1ea7c03e,
         type: 3}
       propertyPath: hp
-      value: 400
+      value: 40000
       objectReference: {fileID: 0}
     - target: {fileID: 811392039888150760, guid: b40280d1a92c91b4b825e31c1ea7c03e,
         type: 3}
       propertyPath: maxHp
-      value: 400
+      value: 40000
       objectReference: {fileID: 0}
     - target: {fileID: 811392039888150760, guid: b40280d1a92c91b4b825e31c1ea7c03e,
         type: 3}
@@ -593282,7 +593283,7 @@ Animator:
   m_Controller: {fileID: 9100000, guid: 4f90f404db88da745808311093e58a43, type: 2}
   m_CullingMode: 1
   m_UpdateMode: 0
-  m_ApplyRootMotion: 0
+  m_ApplyRootMotion: 1
   m_LinearVelocityBlending: 0
   m_StabilizeFeet: 0
   m_WarningMessage: 
@@ -709373,7 +709374,7 @@ Animator:
   m_Controller: {fileID: 9100000, guid: 719122b095dddbe4a84eb8a7a93bed5b, type: 2}
   m_CullingMode: 1
   m_UpdateMode: 0
-  m_ApplyRootMotion: 0
+  m_ApplyRootMotion: 1
   m_LinearVelocityBlending: 0
   m_StabilizeFeet: 0
   m_WarningMessage: 
@@ -709424,6 +709425,7 @@ MonoBehaviour:
   stopDistance: 2
   resumeDistance: 3.5
   rotationSpeed: 8
+  followCooldown: 0.3
 --- !u!114 &6599030164936357094
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -734267,6 +734269,7 @@ MonoBehaviour:
   stopDistance: 2
   resumeDistance: 3.5
   rotationSpeed: 8
+  followCooldown: 0.3
 --- !u!114 &7679984365824007530
 MonoBehaviour:
   m_ObjectHideFlags: 0
