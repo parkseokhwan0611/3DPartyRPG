@@ -6,23 +6,23 @@ public class DamageText : MonoBehaviour
     public float moveSpeed = 2f;
     public float alphaSpeed = 1f;
     public float destroyTime = 1f;
-    
+
     private TextMeshPro text;
     private Color alpha;
     private bool isInitialized = false;
+    private PoolAble poolAble;
 
     void Awake()
     {
-        text = GetComponent<TextMeshPro>();
+        text     = GetComponent<TextMeshPro>();
+        poolAble = GetComponent<PoolAble>(); // 없으면 null → Destroy fallback
     }
 
-    // 색상 없는 버전 (몬스터 데미지텍스트 등 기존 호환용)
     public void Setup(float damageAmount)
     {
         Setup(damageAmount, Color.white);
     }
 
-    // 색상 있는 버전
     public void Setup(float damageAmount, Color color, bool showMinus = false)
     {
         if (text == null) text = GetComponent<TextMeshPro>();
@@ -41,8 +41,8 @@ public class DamageText : MonoBehaviour
 
         isInitialized = true;
 
-        CancelInvoke("DestroyObject");
-        Invoke("DestroyObject", destroyTime);
+        CancelInvoke(nameof(Release));
+        Invoke(nameof(Release), destroyTime);
     }
 
     void Update()
@@ -55,8 +55,12 @@ public class DamageText : MonoBehaviour
         text.color = alpha;
     }
 
-    private void DestroyObject()
+    private void Release()
     {
-        Destroy(gameObject);
+        isInitialized = false;
+        if (poolAble != null)
+            poolAble.ReleaseObject();
+        else
+            Destroy(gameObject);
     }
 }

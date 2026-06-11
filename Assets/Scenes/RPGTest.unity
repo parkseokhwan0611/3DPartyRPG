@@ -275770,6 +275770,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerDamageText: {fileID: 441271096938680117, guid: 3c8906c7b6fa8f84dbc52f88a9a69776,
     type: 3}
+  playerDamageTextPoolKey: PlayerDamageText
   hudPos: {fileID: 1950691702}
   classData: {fileID: 11400000, guid: 5d131dd64cea89a4d8589ee810cb2583, type: 2}
   nextSkillBuffAura: {fileID: 0}
@@ -366229,6 +366230,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: fdd707c29e6959b4fbf4691a21ef1e72, type: 2}
   partyLevel: 1
   partyExp: 0
+  selectedPartyIndex: 0
   startSkillPoint: 1
   startItems: []
   startEquips:
@@ -463068,6 +463070,9 @@ MonoBehaviour:
   - objectName: NormalDamageText
     perfab: {fileID: 441271096938680117, guid: 684230b9243a97b48b1153cdbb963f76, type: 3}
     count: 5
+  - objectName: PlayerDamageText
+    perfab: {fileID: 441271096938680117, guid: 3c8906c7b6fa8f84dbc52f88a9a69776, type: 3}
+    count: 10
   - objectName: PlayerHealText
     perfab: {fileID: 441271096938680117, guid: d2e86ef16b4a21147b6bb9259bda67aa, type: 3}
     count: 5
@@ -709096,6 +709101,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerDamageText: {fileID: 441271096938680117, guid: 3c8906c7b6fa8f84dbc52f88a9a69776,
     type: 3}
+  playerDamageTextPoolKey: PlayerDamageText
   hudPos: {fileID: 245067817}
   classData: {fileID: 11400000, guid: 9cf2668ef38f4794c96ee30e10d51d69, type: 2}
   nextSkillBuffAura: {fileID: 6446290653141164835}
@@ -733939,6 +733945,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerDamageText: {fileID: 441271096938680117, guid: 3c8906c7b6fa8f84dbc52f88a9a69776,
     type: 3}
+  playerDamageTextPoolKey: PlayerDamageText
   hudPos: {fileID: 1639017430}
   classData: {fileID: 11400000, guid: 7364cb022d14fb149badfc133d4349ed, type: 2}
   nextSkillBuffAura: {fileID: 597644538095907126}

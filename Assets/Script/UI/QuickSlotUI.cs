@@ -9,6 +9,7 @@ public class QuickSlotUI : MonoBehaviour
     public QuickSlot slotR;
 
     private QuickSlot[] slots;
+    private int currentCharIndex = -1; // -1 = 리더 기준
 
     void Awake()
     {
@@ -66,11 +67,9 @@ public class QuickSlotUI : MonoBehaviour
 
     void Update()
     {
-        if (PartyManager.instance?.currentLeader == null) return;
+        if (PartyManager.instance == null) return;
 
-        SkillManager skillManager = PartyManager.instance.currentLeader
-            .GetComponent<SkillManager>();
-
+        SkillManager skillManager = GetCurrentSkillManager();
         if (skillManager == null) return;
 
         for (int i = 0; i < slots.Length; i++)
@@ -79,9 +78,22 @@ public class QuickSlotUI : MonoBehaviour
                 slots[i].UpdateCooldown(skillManager.GetCooldownRatio(i));
         }
     }
+
+    private SkillManager GetCurrentSkillManager()
+    {
+        if (currentCharIndex >= 0
+            && currentCharIndex < PartyManager.instance.partyMembers.Count)
+        {
+            var member = PartyManager.instance.partyMembers[currentCharIndex];
+            return member?.GetComponent<SkillManager>();
+        }
+
+        return PartyManager.instance.currentLeader?.GetComponent<SkillManager>();
+    }
     public void RefreshByCharIndex(int charIndex)
     {
-        // slots가 초기화 안 됐으면 초기화
+        currentCharIndex = charIndex;
+
         if (slots == null)
             slots = new QuickSlot[] { slotQ, slotW, slotE, slotR };
             

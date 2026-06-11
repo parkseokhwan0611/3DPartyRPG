@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
@@ -35,6 +36,7 @@ public class StatWindowUI : MonoBehaviour
     public TextMeshProUGUI cdmgText;
 
     private int selectedIndex = 0;
+    private Dictionary<int, CharacterStat> statCache = new Dictionary<int, CharacterStat>();
 
     // ─────────────────────────────────────────────────────────────────
     // Unity 생명주기
@@ -59,11 +61,24 @@ public class StatWindowUI : MonoBehaviour
 
     void OnEnable()
     {
-        // 인벤토리창 등 다른 창에서 선택한 캐릭터 유지
+        BuildStatCache();
+
         if (DataManager.instance != null)
             selectedIndex = DataManager.instance.selectedPartyIndex;
 
         Refresh();
+    }
+
+    private void BuildStatCache()
+    {
+        statCache.Clear();
+        if (PartyManager.instance == null) return;
+        foreach (var member in PartyManager.instance.partyMembers)
+        {
+            if (member == null) continue;
+            var cs = member.GetComponent<CharacterStat>();
+            if (cs != null) statCache[cs.partyIndex] = cs;
+        }
     }
 
     // ─────────────────────────────────────────────────────────────────
@@ -162,17 +177,7 @@ public class StatWindowUI : MonoBehaviour
     }
 
     private CharacterStat GetCharStat(int partyIndex)
-    {
-        if (PartyManager.instance == null) return null;
-        foreach (var member in PartyManager.instance.partyMembers)
-        {
-            if (member == null) continue;
-            var stat = member.GetComponent<CharacterStat>();
-            if (stat != null && stat.partyIndex == partyIndex)
-                return stat;
-        }
-        return null;
-    }
+        => statCache.TryGetValue(partyIndex, out var cs) ? cs : null;
 
     private void SetText(TextMeshProUGUI tmp, string text)
     {

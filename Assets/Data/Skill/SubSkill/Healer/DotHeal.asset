@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a873e38277a453e4a9645a30b21e0645, type: 3}
   m_Name: DotHeal
   m_EditorClassIdentifier: 
+  skillId: 6
   skillName: "\uC7AC\uC0DD\uB825 \uC99D\uAC00"
   description: "\uC9C0\uC18D\uC2DC\uAC04 \uB3D9\uC548 \uD30C\uD2F0\uC6D0\uC744 \uC9C0\uC18D
     \uCE58\uC720\uD569\uB2C8\uB2E4."
@@ -39,8 +40,7 @@ MonoBehaviour:
   useApRatio: 1
   baseHealMultiplier: 0.2
   healMultiplierPerLevel: 0.05
-  intRatio: 0.2
-  fthRatio: 0.3
+  statScalings: []
   isDotHeal: 1
   dotInterval: 1
   baseDotDuration: 10
@@ -50,5 +50,7 @@ MonoBehaviour:
   effectSpawnDelay: 0.3
   effectPoolKey: DotHeal
   effectSpawnOffset: {x: 0, y: 0, z: 0}
+  effectSpawnRotation: {x: 0, y: 0, z: 0}
   targetEffectPoolKey: 
   targetEffectSpawnOffset: {x: 0, y: 0, z: 0}
+  targetEffectSpawnRotation: {x: 0, y: 0, z: 0}

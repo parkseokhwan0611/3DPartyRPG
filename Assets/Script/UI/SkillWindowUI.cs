@@ -29,16 +29,11 @@ public class SkillWindowUI : MonoBehaviour
 
     void OnEnable()
     {
-        if (PartyManager.instance?.currentLeader != null)
-        {
-            CharacterStat stat = PartyManager.instance.currentLeader.GetComponent<CharacterStat>();
-            if (stat != null)
-            {
-                currentCharIndex = stat.partyIndex;
-                RefreshSkillTree();
-                quickSlotPanel.RefreshByCharIndex(currentCharIndex); // 추가
-            }
-        }
+        if (DataManager.instance != null)
+            currentCharIndex = DataManager.instance.selectedPartyIndex;
+
+        RefreshSkillTree();
+        quickSlotPanel.RefreshByCharIndex(currentCharIndex);
     }
     // ─────────────────────────────────────────────────────────────────
     // 캐릭터 탭 전환 (CharacterTabGroup 버튼에서 호출)
@@ -47,10 +42,11 @@ public class SkillWindowUI : MonoBehaviour
     public void OnCharacterTabClicked(int charIndex)
     {
         currentCharIndex = charIndex;
+        if (DataManager.instance != null)
+            DataManager.instance.selectedPartyIndex = charIndex;
+
         RefreshSkillTree();
         detailPanel.Clear();
-
-        // 해당 캐릭터의 퀵슬롯으로 갱신
         quickSlotPanel.RefreshByCharIndex(charIndex);
     }
 

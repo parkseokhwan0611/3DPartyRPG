@@ -59,7 +59,15 @@ public class InventoryUI : MonoBehaviour
     private Dictionary<EquipSlot, Image>  equipEmptyIcons = new Dictionary<EquipSlot, Image>();
     private Dictionary<EquipSlot, TextMeshProUGUI>   equipEnhTexts   = new Dictionary<EquipSlot, TextMeshProUGUI>();
 
-    private List<GameObject> inventorySlotObjs = new List<GameObject>();
+    // 인벤토리 슬롯 캐시 (Start에서 MaxSlots개 미리 생성)
+    private struct SlotCache
+    {
+        public Image           icon;
+        public TextMeshProUGUI enhText;
+        public TextMeshProUGUI stackText;
+        public Button          button;
+    }
+    private SlotCache[] slotCaches;
 
     // ─────────────────────────────────────────────────────────────────
     // Unity 생명주기
@@ -107,6 +115,20 @@ public class InventoryUI : MonoBehaviour
         equipButton  .onClick.AddListener(OnEquipClicked);
         unequipButton.onClick.AddListener(OnUnequipClicked);
         sellButton   .onClick.AddListener(OnSellClicked);
+
+        // 인벤토리 슬롯 미리 생성 및 컴포넌트 캐싱
+        slotCaches = new SlotCache[Inventory.MaxSlots];
+        for (int i = 0; i < Inventory.MaxSlots; i++)
+        {
+            var slotObj = Instantiate(itemSlotPrefab, content);
+            slotCaches[i] = new SlotCache
+            {
+                icon      = slotObj.transform.Find("Icon")      ?.GetComponent<Image>(),
+                enhText   = slotObj.transform.Find("EnhanceText")?.GetComponent<TextMeshProUGUI>(),
+                stackText = slotObj.transform.Find("StackText")  ?.GetComponent<TextMeshProUGUI>(),
+                button    = slotObj.GetComponent<Button>(),
+            };
+        }
 
         detailPopup.gameObject.SetActive(false);
     }
@@ -183,46 +205,38 @@ public class InventoryUI : MonoBehaviour
 
     void RefreshInventory()
     {
-        // 기존 슬롯 제거
-        foreach (var obj in inventorySlotObjs) Destroy(obj);
-        inventorySlotObjs.Clear();
+        if (slotCaches == null) return;
 
         var items = DataManager.instance != null
             ? DataManager.instance.sharedInventory.Items
-            : System.Array.Empty<ItemInstance>() as IReadOnlyList<ItemInstance>;
+            : (IReadOnlyList<ItemInstance>)System.Array.Empty<ItemInstance>();
 
         for (int i = 0; i < Inventory.MaxSlots; i++)
         {
-            GameObject slotObj = Instantiate(itemSlotPrefab, content);
-            inventorySlotObjs.Add(slotObj);
-
-            bool hasItem = i < items.Count;
+            bool         hasItem  = i < items.Count;
             ItemInstance captured = hasItem ? items[i] : null;
+            SlotCache    c        = slotCaches[i];
 
-            // 아이콘
-            var icon = slotObj.transform.Find("Icon")?.GetComponent<Image>();
-            if (icon != null)
+            if (c.icon != null)
             {
-                icon.sprite  = hasItem ? captured.data.icon : null;
-                icon.enabled = hasItem && captured.data.icon != null;
+                c.icon.sprite  = hasItem ? captured.data.icon : null;
+                c.icon.enabled = hasItem && captured.data.icon != null;
             }
 
-            // 강화 텍스트 (+N, 장비만)
-            var enhText = slotObj.transform.Find("EnhanceText")?.GetComponent<TextMeshProUGUI>();
-            if (enhText != null)
-                enhText.text = hasItem && captured.IsEquipment && captured.enhancementLevel > 0
+            if (c.enhText != null)
+                c.enhText.text = hasItem && captured.IsEquipment && captured.enhancementLevel > 0
                     ? $"+{captured.enhancementLevel}" : "";
 
-            // 스택 텍스트 (x99, 소비·재료만)
-            var stackText = slotObj.transform.Find("StackText")?.GetComponent<TextMeshProUGUI>();
-            if (stackText != null)
-                stackText.text = hasItem && !captured.IsEquipment && captured.stackCount > 1
+            if (c.stackText != null)
+                c.stackText.text = hasItem && !captured.IsEquipment && captured.stackCount > 1
                     ? $"x{captured.stackCount}" : "";
 
-            // 클릭 이벤트 (빈 슬롯은 무시)
-            if (hasItem)
-                slotObj.GetComponent<Button>()?.onClick.AddListener(
-                    () => OnInventorySlotClicked(captured));
+            if (c.button != null)
+            {
+                c.button.onClick.RemoveAllListeners();
+                if (hasItem)
+                    c.button.onClick.AddListener(() => OnInventorySlotClicked(captured));
+            }
         }
     }
 

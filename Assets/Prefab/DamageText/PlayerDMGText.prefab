@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 8299767588811401763}
   - component: {fileID: 5061443190230770819}
   - component: {fileID: 7672357626516180481}
+  - component: {fileID: -593025738272147916}
   m_Layer: 0
   m_Name: PlayerDMGText
   m_TagString: Untagged
@@ -187,3 +188,16 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &-593025738272147916
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 441271096938680117}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cf64fc6259a876740a52a59b82243437, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  destroyTime: 1

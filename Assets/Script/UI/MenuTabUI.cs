@@ -45,6 +45,8 @@ public class MenuTabUI : MonoBehaviour
 
     void Update()
     {
+        if (menuWindow == null) return;
+
         // 탭키로 메뉴 토글
         if (Input.GetKeyDown(KeyCode.Tab))
             ToggleMenu();

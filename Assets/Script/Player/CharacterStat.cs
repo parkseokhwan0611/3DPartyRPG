@@ -7,6 +7,8 @@ public class CharacterStat : MonoBehaviour, IDamageable
 {
     [Header("# Refences")]
     public GameObject playerDamageText;
+    [Tooltip("ObjectPoolManager에 등록된 플레이어 피격 텍스트 풀 키")]
+    public string playerDamageTextPoolKey = "PlayerDamageText";
     public Transform hudPos;
     public ClassData classData;
     [Header("# 스킬 연계 버프 VFX")]
@@ -59,11 +61,37 @@ public class CharacterStat : MonoBehaviour, IDamageable
     void Awake()
     {
         myMember = GetComponent<PartyMemberScript>();
+        BindStatus();
+
         if (DataManager.instance != null)
+            DataManager.instance.OnDataInitialized += BindStatus;
+    }
+
+    void OnDestroy()
+    {
+        if (DataManager.instance != null)
+            DataManager.instance.OnDataInitialized -= BindStatus;
+
+        // 구독자가 죽은 오브젝트를 참조하지 않도록 이벤트 초기화
+        OnHpChanged = null;
+        OnMpChanged = null;
+    }
+
+    private void BindStatus()
+    {
+        if (DataManager.instance == null)
         {
-            if (partyIndex < DataManager.instance.partyStatuses.Count)
-                myStatus = DataManager.instance.partyStatuses[partyIndex];
+            Debug.LogWarning($"[CharacterStat] {gameObject.name}: DataManager가 없습니다.");
+            return;
         }
+
+        if (partyIndex < 0 || partyIndex >= DataManager.instance.partyStatuses.Count)
+        {
+            Debug.LogWarning($"[CharacterStat] {gameObject.name}: partyIndex({partyIndex})가 범위를 벗어났습니다. Inspector를 확인하세요.");
+            return;
+        }
+
+        myStatus = DataManager.instance.partyStatuses[partyIndex];
     }
 
     void Start()
@@ -207,15 +235,25 @@ public class CharacterStat : MonoBehaviour, IDamageable
 
     private void SpawnDamageText(float damage, Color color)
     {
-        if (playerDamageText == null) return;
+        Vector3    spawnPos = hudPos != null ? hudPos.position : transform.position + Vector3.up * 2f;
+        Quaternion spawnRot = Quaternion.Euler(60f, 0f, 0f);
 
-        Quaternion spawnRotation = Quaternion.Euler(60f, 0f, 0f);
-        Vector3 spawnPos = hudPos != null ? hudPos.position : transform.position + Vector3.up * 2f;
-        GameObject textObj = Instantiate(playerDamageText, spawnPos, spawnRotation);
+        GameObject textObj = null;
 
-        DamageText dt = textObj.GetComponent<DamageText>();
-        if (dt != null)
-            dt.Setup(damage, color, showMinus: true);
+        if (!string.IsNullOrEmpty(playerDamageTextPoolKey)
+            && ObjectPoolManager.instance != null
+            && ObjectPoolManager.instance.IsReady)
+        {
+            textObj = ObjectPoolManager.instance.GetGo(playerDamageTextPoolKey);
+        }
+
+        if (textObj == null && playerDamageText != null)
+            textObj = Instantiate(playerDamageText); // 풀 미등록 시 fallback
+
+        if (textObj == null) return;
+
+        textObj.transform.SetPositionAndRotation(spawnPos, spawnRot);
+        textObj.GetComponent<DamageText>()?.Setup(damage, color, showMinus: true);
     }
 
     // isPhysical: true = 물리 피해 (연한 붉은색), false = 마법 피해 (연한 파란색)
