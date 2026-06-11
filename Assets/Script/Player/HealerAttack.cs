@@ -11,6 +11,7 @@ public class HealerAttack : AttackBase
     public float damageDelay = 0.35f;
 
     private Coroutine attackCoroutine;
+    private bool _isAttacking = false;
 
     protected override void Start()
     {
@@ -23,12 +24,10 @@ public class HealerAttack : AttackBase
 
     protected override void ExecuteAttack()
     {
+        if (_isAttacking) return;
         attackCoroutine = StartCoroutine(AttackRoutine());
     }
 
-    // ─────────────────────────────────────────────────────────────────
-    // 공격 코루틴만 정확히 멈춤 (StatusEffectHandler 코루틴 건드리지 않음)
-    // ─────────────────────────────────────────────────────────────────
     protected override void StopAttackCoroutine()
     {
         if (attackCoroutine != null)
@@ -36,31 +35,58 @@ public class HealerAttack : AttackBase
             StopCoroutine(attackCoroutine);
             attackCoroutine = null;
         }
+        IsAttackAnimPlaying = false;
+        _isAttacking = false;
     }
 
     private IEnumerator AttackRoutine()
     {
         if (currentTarget == null) yield break;
 
-        // 공격 중 이동 중단
+        _isAttacking = true;
+        IsAttackAnimPlaying = true;
+
         if (agent != null)
         {
             agent.ResetPath();
             agent.velocity = Vector3.zero;
         }
 
-        anim.SetTrigger("doNormalAttack");
+        if (anim != null)
+        {
+            anim.ResetTrigger("doNormalAttack");
+            yield return null;
+            yield return null;
+            anim.SetTrigger("doNormalAttack");
+        }
+        else
+        {
+            yield return null;
+            yield return null;
+        }
 
         yield return new WaitForSeconds(damageDelay);
 
-        if (currentTarget == null) yield break;
+        IsAttackAnimPlaying = false;
+
+        if (currentTarget == null)
+        {
+            _isAttacking = false;
+            attackCoroutine = null;
+            yield break;
+        }
 
         Vector3 spawnPos      = firePoint != null ? firePoint.position : transform.position;
         Vector3 preciseDir    = (TargetPosition - spawnPos).normalized;
         Quaternion preciseRot = Quaternion.LookRotation(preciseDir);
 
         var effect = ObjectPoolManager.instance.GetGo(projectileName);
-        if (effect == null) yield break;
+        if (effect == null)
+        {
+            _isAttacking = false;
+            attackCoroutine = null;
+            yield break;
+        }
 
         effect.transform.position = spawnPos;
         effect.transform.rotation = preciseRot;
@@ -75,7 +101,7 @@ public class HealerAttack : AttackBase
 
         ProjectileScript proj = effect.GetComponent<ProjectileScript>();
         if (proj != null)
-            proj.SetProjectileData(damage, gameObject, OnProjectileHit, myStat.GetDamageColor(false)); // AP 기반 = 마법 피해
+            proj.SetProjectileData(damage, gameObject, OnProjectileHit, myStat.GetDamageColor(false));
 
         Rigidbody rb = effect.GetComponent<Rigidbody>();
         if (rb != null)
@@ -86,6 +112,7 @@ public class HealerAttack : AttackBase
             rb.angularVelocity = Vector3.zero;
         }
 
+        _isAttacking = false;
         attackCoroutine = null;
     }
 

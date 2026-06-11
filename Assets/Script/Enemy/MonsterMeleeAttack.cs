@@ -40,6 +40,12 @@ public class MonsterMeleeAttack : AttackBase
     // 공격 실행
     // ─────────────────────────────────────────────────────────────────
 
+    protected override void HandleAttackLogic()
+    {
+        if (IsAttacking) return;
+        base.HandleAttackLogic();
+    }
+
     protected override void ExecuteAttack()
     {
         if (IsAttacking) return;

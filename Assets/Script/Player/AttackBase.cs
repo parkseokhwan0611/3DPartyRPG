@@ -34,6 +34,7 @@ public abstract class AttackBase : MonoBehaviour
     protected EnemyHp targetHealth;
     public LayerMask enemyLayer;
     protected StatusEffectHandler statusHandler;
+    private Transform _aimPoint; // currentTarget의 AimTarget 자식 (타겟 변경 시만 갱신)
 
     // ─────────────────────────────────────────────────────────────────
     // Unity 생명주기
@@ -92,15 +93,10 @@ public abstract class AttackBase : MonoBehaviour
     protected virtual void StopAndAttack()
     {
         if (statusHandler != null && statusHandler.HasDebuff(StatusEffectType.Stun)) return;
-
         if (IsCastingSkill) return;
 
         agent.ResetPath();
         agent.velocity = Vector3.zero;
-        LookAtTarget();
-
-        if (IsCastingSkill) return;
-        if (firstAttackDelay > 0) return;
 
         if (attackCooldown <= 0)
         {
@@ -128,6 +124,7 @@ public abstract class AttackBase : MonoBehaviour
             anim.ResetTrigger("doNormalAttack");
 
         currentTarget = target;
+        CacheAimPoint(currentTarget);
 
         if (currentTarget != null)
         {
@@ -148,7 +145,6 @@ public abstract class AttackBase : MonoBehaviour
     {
         if (currentTarget == target) return;
 
-        // StopAttackCoroutine 제거 — 몬스터용이라 코루틴 중단 불필요
         attackCooldown   = 0f;
         firstAttackDelay = 0f;
 
@@ -156,6 +152,7 @@ public abstract class AttackBase : MonoBehaviour
             anim.ResetTrigger("doNormalAttack");
 
         currentTarget = target;
+        CacheAimPoint(currentTarget);
 
         if (currentTarget != null)
         {
@@ -185,9 +182,13 @@ public abstract class AttackBase : MonoBehaviour
         get
         {
             if (currentTarget == null) return transform.position + transform.forward;
-            Transform aimPoint = currentTarget.Find("AimTarget");
-            return aimPoint != null ? aimPoint.position : currentTarget.position;
+            return _aimPoint != null ? _aimPoint.position : currentTarget.position;
         }
+    }
+
+    private void CacheAimPoint(Transform target)
+    {
+        _aimPoint = target != null ? target.Find("AimTarget") : null;
     }
 
     protected void LookAtTarget()

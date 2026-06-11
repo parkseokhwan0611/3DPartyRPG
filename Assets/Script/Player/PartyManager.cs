@@ -16,6 +16,7 @@ public class PartyManager : MonoBehaviour
     [Header("참조")]
     public LayerMask groundLayer;
     public CinemachineVirtualCamera virtualCamera;
+    public CameraFollowTarget cameraFollowTarget;
     public static PartyManager instance;
     [Header("게임 오버 UI")]
     public GameObject gameOverUI;
@@ -148,7 +149,16 @@ public class PartyManager : MonoBehaviour
         currentLeader = newLeader;
 
         // 카메라 타겟 변경
-        if (virtualCamera != null)
+        if (cameraFollowTarget != null)
+        {
+            cameraFollowTarget.SetTarget(newLeader.transform);
+            if (virtualCamera != null)
+            {
+                virtualCamera.Follow = cameraFollowTarget.transform;
+                virtualCamera.LookAt = cameraFollowTarget.transform;
+            }
+        }
+        else if (virtualCamera != null)
         {
             virtualCamera.Follow = newLeader.transform;
             virtualCamera.LookAt = newLeader.transform;

@@ -101,7 +101,7 @@ public class MeleeAttack : AttackBase
     {
         if (ObjectPoolManager.instance != null)
         {
-            var effect = ObjectPoolManager.instance.GetGo("Yellow Sword Slash 1");
+            var effect = ObjectPoolManager.instance.GetGo(hitEffectName);
             if (effect != null)
             {
                 // 1. 위치 설정
