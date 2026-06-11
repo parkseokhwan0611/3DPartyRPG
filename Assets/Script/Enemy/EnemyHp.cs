@@ -18,6 +18,10 @@ public class EnemyHp : MonoBehaviour, IDamageable
     public float expReward   = 5f;
     public float destroyDelay = 2f;
 
+    [Header("# Drop Settings")]
+    [Tooltip("이 몬스터의 드랍 테이블 (없으면 드랍 없음)")]
+    public MonsterDropTable dropTable;
+
     // 이벤트
     public System.Action<float, float> OnHpChanged;
     public System.Action OnDied; // 사망 이벤트 추가 (외부 구독용)
@@ -121,7 +125,10 @@ public class EnemyHp : MonoBehaviour, IDamageable
     IEnumerator DeathRoutine()
     {
         if (DataManager.instance != null)
+        {
             DataManager.instance.AddExp(expReward);
+            dropTable?.SpawnDrops(transform.position);
+        }
 
         yield return new WaitForSeconds(destroyDelay);
 
