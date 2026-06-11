@@ -8,6 +8,12 @@ public class WorldItem : MonoBehaviour
 
     private ItemInstance _item;
     private bool _playerInRange;
+    private Camera _camera;
+
+    void Start()
+    {
+        _camera = Camera.main;
+    }
 
     public void Setup(ItemInstance item)
     {
@@ -18,8 +24,8 @@ public class WorldItem : MonoBehaviour
     void Update()
     {
         // 라벨 카메라 방향 고정
-        if (Camera.main != null && nameLabel != null)
-            nameLabel.transform.rotation = Camera.main.transform.rotation;
+        if (_camera != null && nameLabel != null)
+            nameLabel.transform.rotation = _camera.transform.rotation;
 
         // F키 줍기
         if (_playerInRange && Input.GetKeyDown(KeyCode.F))

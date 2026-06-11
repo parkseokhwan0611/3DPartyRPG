@@ -24,11 +24,12 @@ public class EnemyHpBar : MonoBehaviour
     {
         fixedRotation = transform.rotation;
         currentHpFill = enemyHp.hp / enemyHp.maxHp;
-        camTransform  = Camera.main.transform;
+        if (Camera.main != null) camTransform = Camera.main.transform;
     }
 
     void LateUpdate()
     {
+        if (camTransform == null) return;
         transform.LookAt(transform.position + camTransform.rotation * Vector3.forward, camTransform.rotation * Vector3.up);
     }
 

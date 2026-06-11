@@ -6,6 +6,7 @@ using System.Collections.Generic;
 public class PartyStatusEffectHandler : MonoBehaviour
 {
     private CharacterStat myStat;
+    private AttackBase attackBase;
 
     // 쉴드 수치
     public float CurrentShield { get; private set; } = 0f;
@@ -22,7 +23,8 @@ public class PartyStatusEffectHandler : MonoBehaviour
 
     void Awake()
     {
-        myStat = GetComponent<CharacterStat>();
+        myStat     = GetComponent<CharacterStat>();
+        attackBase = GetComponent<AttackBase>();
     }
 
     // ─────────────────────────────────────────────────────────────────
@@ -150,8 +152,6 @@ public class PartyStatusEffectHandler : MonoBehaviour
                 status.addedMagicRes += effect.value * multiplier;
                 break;
             case StatusEffectType.AtkSpeedUp:
-                // AttackBase의 attackSpeed에 반영
-                var attackBase = GetComponent<AttackBase>();
                 if (attackBase != null)
                     attackBase.attackSpeed += effect.value * multiplier;
                 break;

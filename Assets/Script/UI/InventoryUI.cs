@@ -38,6 +38,7 @@ public class InventoryUI : MonoBehaviour
     [SerializeField] TextMeshProUGUI[]        mainOptionTexts;  // Main 0, 1, 2
     [SerializeField] TextMeshProUGUI[]        subOptionTexts;   // Sub 0, 1, 2, 3
     [SerializeField] TextMeshProUGUI          descriptionText;
+    [SerializeField] TextMeshProUGUI          sellPriceText;
     [SerializeField] Button        equipButton;
     [SerializeField] Button        unequipButton;
     [SerializeField] Button        sellButton;
@@ -149,14 +150,23 @@ public class InventoryUI : MonoBehaviour
     void OnEnable()
     {
         if (DataManager.instance != null)
-        {
-            selectedCharIndex = DataManager.instance.selectedPartyIndex;
             DataManager.instance.OnGoldChanged += RefreshGold;
-        }
+
+        // 열 때는 항상 현재 리더 캐릭터로 시작
+        selectedCharIndex = GetLeaderPartyIndex();
+        if (DataManager.instance != null)
+            DataManager.instance.selectedPartyIndex = selectedCharIndex;
 
         SelectCharacter(selectedCharIndex);
         RefreshInventory();
         RefreshGold();
+    }
+
+    private int GetLeaderPartyIndex()
+    {
+        if (PartyManager.instance?.currentLeader == null) return 0;
+        var stat = PartyManager.instance.currentLeader.GetComponent<CharacterStat>();
+        return stat != null ? stat.partyIndex : 0;
     }
 
     void OnDisable()
@@ -342,6 +352,10 @@ public class InventoryUI : MonoBehaviour
         bool isEquip = item.IsEquipment;
         equipButton  .gameObject.SetActive(isEquip && !isEquipSlotSelected);
         unequipButton.gameObject.SetActive(isEquip && isEquipSlotSelected);
+
+        // 판매 가격
+        if (sellPriceText != null)
+            sellPriceText.text = $"가격: {item.data.sellPrice:N0}원";
 
         // 판매 버튼 (항상 표시)
         sellButton.gameObject.SetActive(true);

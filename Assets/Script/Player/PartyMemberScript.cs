@@ -169,13 +169,15 @@ public class PartyMemberScript : MonoBehaviour
 
     void HandleFollowLogic()
     {
-        float dist = Vector3.Distance(transform.position, targetToFollow.position);
+        float sqrDist   = (transform.position - targetToFollow.position).sqrMagnitude;
+        float sqrResume = resumeDistance * resumeDistance;
+        float sqrStop   = stopDistance   * stopDistance;
 
-        if (CurrentState != MemberState.Following && dist > resumeDistance)
+        if (CurrentState != MemberState.Following && sqrDist > sqrResume)
         {
             ChangeState(MemberState.Following);
         }
-        else if (CurrentState == MemberState.Following && dist <= stopDistance)
+        else if (CurrentState == MemberState.Following && sqrDist <= sqrStop)
         {
             ChangeState(MemberState.Idle);
             agent.ResetPath();
@@ -215,8 +217,8 @@ public class PartyMemberScript : MonoBehaviour
         // 팔로워: Following 상태로 복귀해 즉시 이동 재개
         if (!isLeader && targetToFollow != null)
         {
-            float dist = Vector3.Distance(transform.position, targetToFollow.position);
-            if (dist > stopDistance)
+            float sqrDist = (transform.position - targetToFollow.position).sqrMagnitude;
+            if (sqrDist > stopDistance * stopDistance)
                 ChangeState(MemberState.Following);
         }
     }

@@ -25,6 +25,7 @@ public class CharacterStat : MonoBehaviour, IDamageable
     public event Action OnMpChanged;
     private CharacterStatus myStatus;
     private PartyMemberScript myMember;
+    private PartyStatusEffectHandler shieldHandler;
     private Coroutine healAuraCoroutine;
     public int partyIndex;
     public float Hp     => myStatus != null ? myStatus.currentHp   : 0f;
@@ -60,7 +61,8 @@ public class CharacterStat : MonoBehaviour, IDamageable
 
     void Awake()
     {
-        myMember = GetComponent<PartyMemberScript>();
+        myMember      = GetComponent<PartyMemberScript>();
+        shieldHandler = GetComponent<PartyStatusEffectHandler>();
         BindStatus();
 
         if (DataManager.instance != null)
@@ -170,7 +172,6 @@ public class CharacterStat : MonoBehaviour, IDamageable
 
     private void ApplyDamage(float finalDamage)
     {
-        var shieldHandler = GetComponent<PartyStatusEffectHandler>();
         if (shieldHandler != null)
             finalDamage = shieldHandler.AbsorbDamage(finalDamage);
 
