@@ -194,9 +194,9 @@ public class DamageSkill : SkillBase
         foreach (Collider col in cols)
         {
             // IAggroable 인터페이스 방식 (나중에 몬스터 종류 늘어날 때 확장 용이)
-            GoblinThiefMaleScript goblin = col.GetComponent<GoblinThiefMaleScript>();
-            if (goblin != null)
-                goblin.AddAggro(transform, data.aggroAmount);
+            BasicMonsterScript monster = col.GetComponent<BasicMonsterScript>();
+            if (monster != null)
+                monster.AddAggro(transform, data.aggroAmount);
         }
     }
 

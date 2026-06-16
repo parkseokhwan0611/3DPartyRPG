@@ -18,6 +18,7 @@ public class PartyMemberScript : MonoBehaviour
     private Animator anim;
     private AttackBase attackComp;
     private SkillManager skillManager;
+    private int _chainIndex = 0;
 
     // ─────────────────────────────────────────
     // 파티 체인 설정
@@ -43,8 +44,11 @@ public class PartyMemberScript : MonoBehaviour
     public float followCooldown = 0.3f;
 
     private float _followCooldownTimer = 0f;
-    private float _walkAnimTimer       = 0f;   // 걷기 애니메이션 진입 지연
+    private float _walkAnimTimer       = 0f;
     private const float WALK_ANIM_DELAY = 0.12f;
+
+    private Vector3 _lastFollowDestination = Vector3.positiveInfinity;
+    private const float FOLLOW_DEST_THRESHOLD = 0.3f;
 
     // ─────────────────────────────────────────────────────────────────
     // Unity 생명주기
@@ -112,6 +116,7 @@ public class PartyMemberScript : MonoBehaviour
 
     private void HandleAttackStarted()
     {
+        if (CurrentState == MemberState.Dead) return;
         ChangeState(MemberState.Attacking);
     }
 
@@ -159,22 +164,26 @@ public class PartyMemberScript : MonoBehaviour
         if (myIndex == 0) // 내가 리더
         {
             isLeader               = true;
+            _chainIndex            = 0;
             targetToFollow         = null;
             agent.updateRotation   = true;
             agent.stoppingDistance = 0.1f;
             ChangeState(MemberState.Idle);
 
-            if (leaderVFX != null) leaderVFX.SetActive(true); // ← 추가
+            if (leaderVFX != null) leaderVFX.SetActive(true);
         }
         else // 내가 팔로워
         {
             isLeader               = false;
+            _chainIndex            = myIndex;
             targetToFollow         = newOrder[myIndex - 1].transform;
+            _lastFollowDestination = Vector3.positiveInfinity; // 타겟 바뀌면 즉시 재경로
             agent.updateRotation   = false;
             agent.stoppingDistance = stopDistance;
             ChangeState(MemberState.Following);
 
-            if (leaderVFX != null) leaderVFX.SetActive(false); // ← 추가
+            skillManager?.ResetAttackCount();
+            if (leaderVFX != null) leaderVFX.SetActive(false);
         }
     }
 
@@ -207,20 +216,30 @@ public class PartyMemberScript : MonoBehaviour
         {
             // 쿨다운 중이어도 resumeDistance의 2배 이상 멀어지면 즉시 따라감
             if (_followCooldownTimer <= 0f || sqrDist > sqrResume * 4f)
+            {
                 ChangeState(MemberState.Following);
+                _lastFollowDestination = Vector3.positiveInfinity; // 진입 시 강제 재경로
+            }
         }
         else if (CurrentState == MemberState.Following && sqrDist <= sqrStop)
         {
             ChangeState(MemberState.Idle);
-            _followCooldownTimer = followCooldown;
+            _followCooldownTimer   = followCooldown;
+            _lastFollowDestination = Vector3.positiveInfinity;
             agent.ResetPath();
             agent.velocity = Vector3.zero;
         }
 
         if (CurrentState == MemberState.Following)
         {
-            agent.SetDestination(targetToFollow.position);
-            SmoothLookAt(targetToFollow.position);
+            Vector3 dest = targetToFollow.position;
+            // 목표 위치가 충분히 변했을 때만 경로 재계산 — 매 프레임 재계산 방지
+            if ((_lastFollowDestination - dest).sqrMagnitude > FOLLOW_DEST_THRESHOLD * FOLLOW_DEST_THRESHOLD)
+            {
+                agent.SetDestination(dest);
+                _lastFollowDestination = dest;
+            }
+            SmoothLookAt(dest);
         }
     }
 
@@ -231,8 +250,16 @@ public class PartyMemberScript : MonoBehaviour
     void UpdateAnimation()
     {
         if (anim == null) return;
-        if (skillManager != null && skillManager.IsActivatingSkill) return;
-        if (attackComp   != null && attackComp.IsCastingSkill) return;
+        if (skillManager != null && skillManager.IsActivatingSkill)
+        {
+            _walkAnimTimer = 0f;
+            return;
+        }
+        if (attackComp != null && attackComp.IsCastingSkill)
+        {
+            _walkAnimTimer = 0f;
+            return;
+        }
 
         // 공격 애니메이션 재생 중: 타이머 즉시 초기화 후 walk 강제 해제
         if (attackComp != null && attackComp.IsAttackAnimPlaying)
@@ -274,6 +301,10 @@ public class PartyMemberScript : MonoBehaviour
     public void Die()
     {
         ChangeState(MemberState.Dead);
+
+        // 진행 중인 공격·스킬 코루틴 즉시 취소
+        attackComp?.ForceCancelAttack();
+        skillManager?.ForceStopCurrentSkill();
 
         if (agent != null && agent.enabled)
         {

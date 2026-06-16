@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.AI;
 using System.Collections.Generic;
 
-public class GoblinThiefMaleScript : MonoBehaviour
+public class BasicMonsterScript : MonoBehaviour
 {
     [Header("# References")]
     public Animator animator;
@@ -17,15 +17,14 @@ public class GoblinThiefMaleScript : MonoBehaviour
     public float navSpeed = 3f;
 
     [Header("# Aggro Settings")]
-    public float aggroDecayRate = 5f;   // 초당 어그로 감소량
-    public float aggroThreshold = 10f;  // 이 수치 이상이면 어그로 타겟으로 전환
+    public float aggroDecayRate = 5f;
+    public float aggroThreshold = 10f;
 
     private const float TargetingInterval = 0.2f;
     private float targetingTimer          = 0f;
 
     private Rigidbody rigid;
     private AttackBase attackModule;
-    private MonsterMeleeAttack monsterMeleeAttack;
     private StatusEffectHandler statusHandler;
 
     private bool isAttacking = false;
@@ -42,12 +41,11 @@ public class GoblinThiefMaleScript : MonoBehaviour
 
     void Awake()
     {
-        animator           = GetComponent<Animator>();
-        rigid              = GetComponent<Rigidbody>();
-        navAgent           = GetComponent<NavMeshAgent>();
-        attackModule       = GetComponent<AttackBase>();
-        monsterMeleeAttack = GetComponent<MonsterMeleeAttack>();
-        statusHandler      = GetComponent<StatusEffectHandler>();
+        animator      = GetComponent<Animator>();
+        rigid         = GetComponent<Rigidbody>();
+        navAgent      = GetComponent<NavMeshAgent>();
+        attackModule  = GetComponent<AttackBase>();
+        statusHandler = GetComponent<StatusEffectHandler>();
 
         if (statusHandler != null)
             statusHandler.OnStunEnded += HandleStunEnded;
@@ -64,7 +62,9 @@ public class GoblinThiefMaleScript : MonoBehaviour
 
     void Start()
     {
-        navAgent.speed = navSpeed;
+        navAgent.speed           = navSpeed;
+        navAgent.autoBraking     = false;
+        navAgent.obstacleAvoidanceType = ObstacleAvoidanceType.NoObstacleAvoidance;
     }
 
     void OnDestroy()
@@ -82,11 +82,9 @@ public class GoblinThiefMaleScript : MonoBehaviour
         if (enemyHp == null || enemyHp.isDead) return;
         if (statusHandler != null && statusHandler.HasDebuff(StatusEffectType.Stun)) return;
 
-        // 이동 애니메이션
         if (animator != null)
             animator.SetBool("isWalking", navAgent.velocity.sqrMagnitude > 0.01f);
 
-        // 어그로 자연 감소
         DecayAggro();
 
         targetingTimer += Time.deltaTime;
@@ -101,7 +99,6 @@ public class GoblinThiefMaleScript : MonoBehaviour
     // 어그로 시스템
     // ─────────────────────────────────────────────────────────────────
 
-    // 외부(스킬)에서 호출
     public void AddAggro(Transform target, float amount)
     {
         if (target == null) return;
@@ -116,7 +113,7 @@ public class GoblinThiefMaleScript : MonoBehaviour
 
     private void RefreshAggroTarget()
     {
-        float maxAggro      = aggroThreshold; // 임계값 이상만 어그로 타겟
+        float maxAggro      = aggroThreshold;
         Transform topTarget = null;
 
         foreach (var entry in aggroTable)
@@ -164,7 +161,6 @@ public class GoblinThiefMaleScript : MonoBehaviour
             return;
         }
 
-        // 어그로 타겟 우선, 없으면 가장 가까운 파티원
         Transform target = aggroTarget != null ? aggroTarget : GetNearestPartyMember();
 
         if (target == null)
@@ -200,7 +196,6 @@ public class GoblinThiefMaleScript : MonoBehaviour
         }
         else
         {
-            // 범위 이탈 시 어그로 초기화
             aggroTable.Clear();
             aggroTarget = null;
             attackModule.SetTargetImmediate(null);

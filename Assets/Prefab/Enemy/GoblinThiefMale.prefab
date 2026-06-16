@@ -2765,7 +2765,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2096447415685113954}
   - component: {fileID: 1166745447245037662}
-  - component: {fileID: 3135441985344593845}
+  - component: {fileID: 1917383205244102972}
   - component: {fileID: 1045097644406216187}
   - component: {fileID: 811392039888150760}
   - component: {fileID: -327002959743040393}
@@ -2818,7 +2818,7 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!114 &3135441985344593845
+--- !u!114 &1917383205244102972
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -2827,7 +2827,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 8762004475818107220}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1e7c9d69a67c9034990f9123616743d3, type: 3}
+  m_Script: {fileID: 11500000, guid: d4a459222c1b3cc4c97807fce7a4ef91, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   animator: {fileID: 1166745447245037662}
@@ -2835,7 +2835,7 @@ MonoBehaviour:
   navAgent: {fileID: 7954425702217469426}
   chaseDistance: 10
   targetSwitchThreshold: 1
-  navSpeed: 1.5
+  navSpeed: 1
   aggroDecayRate: 5
   aggroThreshold: 10
 --- !u!114 &1045097644406216187
@@ -2851,14 +2851,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   attackDamage: 50
-  attackRange: 2
+  attackRange: 1.5
   attackSpeed: 1
   attackDuration: 1.8
   currentTarget: {fileID: 0}
   enemyLayer:
     serializedVersion: 2
     m_Bits: 64
-  hitRadius: 1.5
+  hitRadius: 1.2
   hitOffset: 1
   damageDelay: 0.7
 --- !u!114 &811392039888150760
@@ -2880,6 +2880,7 @@ MonoBehaviour:
   damageTextPoolKey: NormalDamageText
   hudPos: {fileID: 5511221066833110898}
   expReward: 10
+  goldReward: 10
   destroyDelay: 2
   dropTable: {fileID: 11400000, guid: f25a15cdb79af0b419076849aec8d354, type: 2}
 --- !u!114 &-327002959743040393
@@ -2908,7 +2909,7 @@ NavMeshAgent:
   m_Acceleration: 8
   avoidancePriority: 50
   m_AngularSpeed: 0
-  m_StoppingDistance: 1.5
+  m_StoppingDistance: 1.2
   m_AutoTraverseOffMeshLink: 1
   m_AutoBraking: 1
   m_AutoRepath: 1

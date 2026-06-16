@@ -393,6 +393,8 @@ public class SkillManager : MonoBehaviour
         return skill != null ? skill.CooldownRemaining : 0f;
     }
 
+    public void ResetAttackCount() => attackCount = 0;
+
     public float GetBuffRemainingRatio(int index)
     {
         SkillBase skill = GetSlot(index);

@@ -48,6 +48,8 @@ public class PartyManager : MonoBehaviour
         HandleLeaderChangeInput();
         HandleCommandInput();
 
+        if (currentLeader == null || currentLeader.CurrentState == PartyMemberScript.MemberState.Dead) return;
+
         var skillManager = currentLeader.GetComponent<SkillManager>();
         if (skillManager != null) skillManager.HandleKeyInput();
     }
@@ -67,6 +69,7 @@ public class PartyManager : MonoBehaviour
     void HandleCommandInput()
     {
         if (currentLeader == null) return;
+        if (currentLeader.CurrentState == PartyMemberScript.MemberState.Dead) return;
         if (!Input.GetMouseButtonDown(1)) return;
 
         Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
@@ -107,6 +110,7 @@ public class PartyManager : MonoBehaviour
     {
         foreach (var member in partyMembers)
         {
+            if (member.CurrentState == PartyMemberScript.MemberState.Dead) continue;
             var attack = member.GetComponent<AttackBase>();
             if (attack != null) attack.SetTarget(hit.transform);
         }
@@ -116,9 +120,9 @@ public class PartyManager : MonoBehaviour
 
     void DispatchMoveCommand(Vector3 destination)
     {
-        // 모든 멤버의 공격 타겟 해제 및 정지 거리 설정
         foreach (var member in partyMembers)
         {
+            if (member.CurrentState == PartyMemberScript.MemberState.Dead) continue;
             var attack = member.GetComponent<AttackBase>();
             if (attack != null) attack.SetTarget(null);
 

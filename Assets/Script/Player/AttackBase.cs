@@ -78,7 +78,7 @@ public abstract class AttackBase : MonoBehaviour
         if (IsCastingSkill) return;
 
         float distance         = Vector3.Distance(transform.position, currentTarget.position);
-        agent.stoppingDistance = attackRange;
+        agent.stoppingDistance = 0.1f;
 
         if (distance <= attackRange)
         {
