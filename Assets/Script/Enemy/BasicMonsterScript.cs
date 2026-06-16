@@ -20,6 +20,13 @@ public class BasicMonsterScript : MonoBehaviour
     public float aggroDecayRate = 5f;
     public float aggroThreshold = 10f;
 
+    [Header("# Wander Settings")]
+    public float wanderRadius   = 5f;
+    [Tooltip("배회 이동 속도 (navSpeed보다 느리게 설정 권장)")]
+    public float wanderSpeed    = 1.5f;
+    [Tooltip("다음 배회 지점으로 이동하는 간격 (초)")]
+    public float wanderInterval = 3f;
+
     private const float TargetingInterval = 0.2f;
     private float targetingTimer          = 0f;
 
@@ -28,6 +35,10 @@ public class BasicMonsterScript : MonoBehaviour
     private StatusEffectHandler statusHandler;
 
     private bool isAttacking = false;
+
+    // 배회
+    private Vector3 _spawnPosition;
+    private float   _wanderTimer = 0f;
 
     // ─────────────────────────────────────────────────────────────────
     // 어그로 테이블
@@ -62,9 +73,12 @@ public class BasicMonsterScript : MonoBehaviour
 
     void Start()
     {
-        navAgent.speed           = navSpeed;
-        navAgent.autoBraking     = false;
+        navAgent.speed                 = navSpeed;
+        navAgent.autoBraking           = false;
         navAgent.obstacleAvoidanceType = ObstacleAvoidanceType.NoObstacleAvoidance;
+
+        _spawnPosition = transform.position;
+        _wanderTimer   = wanderInterval; // 스폰 직후 바로 첫 배회 지점 선택
     }
 
     void OnDestroy()
@@ -92,6 +106,53 @@ public class BasicMonsterScript : MonoBehaviour
         {
             targetingTimer = 0f;
             TargetingLogic();
+        }
+
+        // 타겟 없을 때만 배회
+        if (attackModule.currentTarget == null)
+            HandleWander();
+        else
+            _wanderTimer = 0f; // 전투 중 타이머 리셋 — 전투 종료 후 즉시 배회 시작 방지
+    }
+
+    // ─────────────────────────────────────────────────────────────────
+    // 배회
+    // ─────────────────────────────────────────────────────────────────
+
+    void HandleWander()
+    {
+        _wanderTimer += Time.deltaTime;
+
+        bool reachedDest = !navAgent.pathPending
+                        && navAgent.remainingDistance <= navAgent.stoppingDistance + 0.1f;
+
+        if (_wanderTimer >= wanderInterval || reachedDest)
+        {
+            _wanderTimer = 0f;
+            TrySetWanderDestination();
+        }
+
+        // 이동 방향 바라보기
+        Vector3 moveDir = navAgent.velocity;
+        moveDir.y = 0f;
+        if (moveDir.sqrMagnitude > 0.01f)
+        {
+            Quaternion targetRot = Quaternion.LookRotation(moveDir.normalized);
+            transform.rotation   = Quaternion.Slerp(transform.rotation, targetRot, Time.deltaTime * 8f);
+        }
+    }
+
+    void TrySetWanderDestination()
+    {
+        // 스폰 위치 기준 랜덤 방향·거리 선택
+        Vector2 circle    = Random.insideUnitCircle * wanderRadius;
+        Vector3 candidate = _spawnPosition + new Vector3(circle.x, 0f, circle.y);
+
+        // NavMesh 위 유효한 위치로 보정
+        if (NavMesh.SamplePosition(candidate, out NavMeshHit hit, wanderRadius, NavMesh.AllAreas))
+        {
+            navAgent.speed = wanderSpeed;
+            navAgent.SetDestination(hit.position);
         }
     }
 
@@ -178,6 +239,7 @@ public class BasicMonsterScript : MonoBehaviour
                 if (attackModule.currentTarget != target)
                 {
                     attackModule.SetTargetImmediate(target);
+                    navAgent.speed     = navSpeed; // 배회 속도 → 추격 속도 복귀
                     navAgent.isStopped = false;
                 }
             }
@@ -190,6 +252,7 @@ public class BasicMonsterScript : MonoBehaviour
                 if (distToTarget < currentTargetDist - targetSwitchThreshold)
                 {
                     attackModule.SetTargetImmediate(target);
+                    navAgent.speed     = navSpeed;
                     navAgent.isStopped = false;
                 }
             }
