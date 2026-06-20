@@ -31,6 +31,13 @@ public class CombatQuickSlot : MonoBehaviour
         }
     }
 
+    public void SetIcon(Sprite icon)
+    {
+        if (iconImage == null) return;
+        iconImage.sprite = icon;
+        iconImage.color  = icon != null ? Color.white : new Color(1f, 1f, 1f, 0f);
+    }
+
     // ─────────────────────────────────────────────────────────────────
     // 쿨다운 오버레이
     // ─────────────────────────────────────────────────────────────────

@@ -2,6 +2,14 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [System.Serializable]
+public class StartItemEntry
+{
+    public ItemData item;
+    [Min(1)]
+    public int count = 1;
+}
+
+[System.Serializable]
 public class StartEquipEntry
 {
     [Tooltip("장착시킬 파티원 인덱스 (0=첫번째, 1=두번째, 2=세번째)")]
@@ -31,8 +39,8 @@ public class DataManager : MonoBehaviour
     public int startSkillPoint = 1;
 
     [Header("시작 아이템")]
-    [Tooltip("게임 시작 시 인벤토리에 지급할 아이템 목록")]
-    public List<ItemData> startItems;
+    [Tooltip("게임 시작 시 인벤토리에 지급할 아이템 목록 (count로 수량 설정)")]
+    public List<StartItemEntry> startItems;
     [Tooltip("게임 시작 시 캐릭터에게 미리 장착시킬 아이템 목록")]
     public List<StartEquipEntry> startEquips;
 
@@ -79,8 +87,9 @@ public class DataManager : MonoBehaviour
 
         // 시작 아이템 지급
         if (startItems != null)
-            foreach (var itemData in startItems)
-                sharedInventory.TryAddItem(new ItemInstance(itemData));
+            foreach (var entry in startItems)
+                if (entry?.item != null)
+                    sharedInventory.TryAddItem(new ItemInstance(entry.item, Mathf.Max(1, entry.count)));
 
         // 파티원 초기화
         foreach (var baseData in baseDataList)

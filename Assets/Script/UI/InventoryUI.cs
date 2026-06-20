@@ -42,6 +42,8 @@ public class InventoryUI : MonoBehaviour
     [SerializeField] Button        equipButton;
     [SerializeField] Button        unequipButton;
     [SerializeField] Button        sellButton;
+    [SerializeField] Button        registerPotionButton;
+    [SerializeField] Button        deregisterPotionButton;
 
     [Header("등급 스프라이트 (0:일반 ~ 4:신화)")]
     [SerializeField] Sprite[] gradeSprites;
@@ -117,6 +119,9 @@ public class InventoryUI : MonoBehaviour
         equipButton  .onClick.AddListener(OnEquipClicked);
         unequipButton.onClick.AddListener(OnUnequipClicked);
         sellButton   .onClick.AddListener(OnSellClicked);
+
+        if (registerPotionButton   != null) registerPotionButton  .onClick.AddListener(OnRegisterPotionClicked);
+        if (deregisterPotionButton != null) deregisterPotionButton.onClick.AddListener(OnDeregisterPotionClicked);
 
         // 인벤토리 슬롯 미리 생성 및 컴포넌트 캐싱
         slotCaches = new SlotCache[Inventory.MaxSlots];
@@ -353,6 +358,16 @@ public class InventoryUI : MonoBehaviour
         equipButton  .gameObject.SetActive(isEquip && !isEquipSlotSelected);
         unequipButton.gameObject.SetActive(isEquip && isEquipSlotSelected);
 
+        // 포션 등록/해제 버튼 (HP·MP 포션이고 인벤토리 슬롯일 때만)
+        bool isPotionSlot = !isEquipSlotSelected
+            && item.IsConsumable
+            && item.data is ConsumableData potionCheck
+            && (potionCheck.consumableType == ConsumableType.HpPotion
+                || potionCheck.consumableType == ConsumableType.MpPotion);
+
+        if (registerPotionButton   != null) registerPotionButton  .gameObject.SetActive(isPotionSlot);
+        if (deregisterPotionButton != null) deregisterPotionButton.gameObject.SetActive(isPotionSlot);
+
         // 판매 가격
         if (sellPriceText != null)
             sellPriceText.text = $"가격: {item.data.sellPrice:N0}원";
@@ -365,6 +380,8 @@ public class InventoryUI : MonoBehaviour
     {
         detailPopup.gameObject.SetActive(false);
         selectedItem = null;
+        if (registerPotionButton   != null) registerPotionButton  .gameObject.SetActive(false);
+        if (deregisterPotionButton != null) deregisterPotionButton.gameObject.SetActive(false);
     }
 
     // ─────────────────────────────────────────────────────────────────
@@ -430,6 +447,20 @@ public class InventoryUI : MonoBehaviour
 
         CloseDetailPopup();
         RefreshInventory();
+    }
+
+    void OnRegisterPotionClicked()
+    {
+        if (selectedItem == null) return;
+        PotionQuickSlotManager.instance?.RegisterPotion(selectedItem);
+        CloseDetailPopup();
+    }
+
+    void OnDeregisterPotionClicked()
+    {
+        if (selectedItem?.data is not ConsumableData cd) return;
+        PotionQuickSlotManager.instance?.DeregisterPotion(cd.consumableType);
+        CloseDetailPopup();
     }
 
     // ─────────────────────────────────────────────────────────────────
