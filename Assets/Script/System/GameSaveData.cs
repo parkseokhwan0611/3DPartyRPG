@@ -14,6 +14,14 @@ public class GameSaveData
     public List<CharacterSaveData> characters = new List<CharacterSaveData>();
     public List<ItemSaveEntry>     inventory  = new List<ItemSaveEntry>();
     public List<EquipSaveEntry>    equipped   = new List<EquipSaveEntry>();
+
+    // 포션 퀵슬롯
+    public string hpPotionSlotItemId = "";
+    public string mpPotionSlotItemId = "";
+
+    // 씬 / 위치
+    public string         sceneName      = "";
+    public UnityEngine.Vector3 playerPosition;
 }
 
 // ─────────────────────────────────────────────────────────────────
