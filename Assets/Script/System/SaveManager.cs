@@ -50,9 +50,33 @@ public class SaveManager : MonoBehaviour
 
             // 씬 / 위치
             data.sceneName = SceneManager.GetActiveScene().name;
-            var leader = PartyManager.instance?.currentLeader;
-            if (leader != null)
-                data.playerPosition = leader.transform.position;
+            data.partyPositions.Clear();
+            if (PartyManager.instance != null)
+                foreach (var member in PartyManager.instance.partyMembers)
+                    data.partyPositions.Add(member != null ? member.transform.position : Vector3.zero);
+
+            // 스킬 퀵슬롯 / 쿨타임
+            data.quickSlots.Clear();
+            if (PartyManager.instance != null)
+            {
+                foreach (var member in PartyManager.instance.partyMembers)
+                {
+                    var sm    = member?.GetComponent<SkillManager>();
+                    var entry = new CharacterQuickSlotSave();
+                    if (sm != null)
+                    {
+                        entry.slot0 = sm.GetSlot(0)?.skillData?.skillId ?? "";
+                        entry.slot1 = sm.GetSlot(1)?.skillData?.skillId ?? "";
+                        entry.slot2 = sm.GetSlot(2)?.skillData?.skillId ?? "";
+                        entry.slot3 = sm.GetSlot(3)?.skillData?.skillId ?? "";
+                        entry.cd0   = sm.GetCooldownRemaining(0);
+                        entry.cd1   = sm.GetCooldownRemaining(1);
+                        entry.cd2   = sm.GetCooldownRemaining(2);
+                        entry.cd3   = sm.GetCooldownRemaining(3);
+                    }
+                    data.quickSlots.Add(entry);
+                }
+            }
 
             string json = JsonUtility.ToJson(data, prettyPrint: true);
             File.WriteAllText(SavePath, json);
@@ -113,27 +137,59 @@ public class SaveManager : MonoBehaviour
 
     private IEnumerator RestorePosition(GameSaveData data)
     {
-        // 저장된 씬이 다르면 씬 전환 후 대기
-        if (!string.IsNullOrEmpty(data.sceneName)
-            && data.sceneName != SceneManager.GetActiveScene().name)
+        if (string.IsNullOrEmpty(data.sceneName) || data.partyPositions.Count == 0) yield break;
+
+        // 씬 전환은 호출자(TitleMenuUI 등)가 담당 — 여기서는 씬이 준비될 때까지만 대기
+        yield return new WaitUntil(() => SceneManager.GetActiveScene().name == data.sceneName);
+        yield return null; // 오브젝트 초기화 1프레임 대기
+
+        var party = PartyManager.instance?.partyMembers;
+        if (party == null) yield break;
+
+        for (int i = 0; i < party.Count && i < data.partyPositions.Count; i++)
         {
-            SceneManager.LoadScene(data.sceneName);
-            yield return new WaitUntil(
-                () => SceneManager.GetActiveScene().name == data.sceneName);
-            yield return null; // 오브젝트 초기화 1프레임 대기
+            if (party[i] == null) continue;
+            Vector3 pos = data.partyPositions[i];
+            if (pos == Vector3.zero) continue;
+
+            NavMeshAgent agent = party[i].GetComponent<NavMeshAgent>();
+            if (agent != null && agent.enabled && agent.isOnNavMesh)
+                agent.Warp(pos);
+            else
+                party[i].transform.position = pos;
         }
 
-        // 파티 리더 위치 복원 (NavMeshAgent.Warp로 NavMesh 위에 정확히 배치)
-        if (data.playerPosition == Vector3.zero) yield break;
+        RestoreQuickSlots(data);
+    }
 
-        var leader = PartyManager.instance?.currentLeader;
-        if (leader == null) yield break;
+    private void RestoreQuickSlots(GameSaveData data)
+    {
+        if (PartyManager.instance == null || DataManager.instance == null) return;
+        var party = PartyManager.instance.partyMembers;
 
-        NavMeshAgent agent = leader.GetComponent<NavMeshAgent>();
-        if (agent != null && agent.enabled && agent.isOnNavMesh)
-            agent.Warp(data.playerPosition);
-        else
-            leader.transform.position = data.playerPosition;
+        for (int i = 0; i < party.Count && i < data.quickSlots.Count; i++)
+        {
+            var sm    = party[i]?.GetComponent<SkillManager>();
+            if (sm == null) continue;
+
+            var    entry    = data.quickSlots[i];
+            string[] ids    = { entry.slot0, entry.slot1, entry.slot2, entry.slot3 };
+            float[]  cds    = { entry.cd0,   entry.cd1,   entry.cd2,   entry.cd3   };
+
+            for (int j = 0; j < 4; j++)
+            {
+                if (string.IsNullOrEmpty(ids[j])) continue;
+                SkillData sd = DataManager.instance.FindSkillById(ids[j]);
+                if (sd == null) continue;
+
+                sm.SetSlot(j, sd);
+                if (cds[j] > 0f)
+                    sm.GetSlot(j)?.SetCooldown(cds[j]);
+            }
+        }
+
+        // 전투 퀵슬롯 UI 갱신
+        FindObjectOfType<CombatQuickSlotUI>()?.RefreshSlots();
     }
 
     // ─────────────────────────────────────────────────────────────────

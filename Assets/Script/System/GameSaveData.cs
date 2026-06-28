@@ -20,8 +20,22 @@ public class GameSaveData
     public string mpPotionSlotItemId = "";
 
     // 씬 / 위치
-    public string         sceneName      = "";
-    public UnityEngine.Vector3 playerPosition;
+    public string                    sceneName      = "";
+    public List<UnityEngine.Vector3> partyPositions = new List<UnityEngine.Vector3>();
+
+    // 스킬 퀵슬롯 / 쿨타임
+    public List<CharacterQuickSlotSave> quickSlots = new List<CharacterQuickSlotSave>();
+}
+
+// ─────────────────────────────────────────────────────────────────
+// 스킬 퀵슬롯 세이브 데이터 (캐릭터 1명분)
+// ─────────────────────────────────────────────────────────────────
+
+[System.Serializable]
+public class CharacterQuickSlotSave
+{
+    public string slot0 = "", slot1 = "", slot2 = "", slot3 = "";
+    public float  cd0,   cd1,   cd2,   cd3;
 }
 
 // ─────────────────────────────────────────────────────────────────

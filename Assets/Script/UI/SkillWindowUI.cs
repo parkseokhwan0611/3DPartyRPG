@@ -90,6 +90,12 @@ public class SkillWindowUI : MonoBehaviour
                 continue;
             }
 
+            if (skills[i] == null)
+            {
+                slots[i].SetEmpty();
+                continue;
+            }
+
             bool isUnlocked = partyLevel >= requiredLevels[i];
             slots[i].Setup(skills[i], status.GetSkillLevel(skills[i]), isUnlocked, this);
         }

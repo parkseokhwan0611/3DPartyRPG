@@ -26,6 +26,8 @@ public abstract class SkillBase : MonoBehaviour
         ? Mathf.Clamp01(cooldownTimer / skillData.cooldown[skillLevel - 1])
         : 0f;
 
+    public void SetCooldown(float remaining) => cooldownTimer = remaining;
+
     protected virtual void Awake()
     {
         myStat       = GetComponent<CharacterStat>();
