@@ -20,4 +20,6 @@ public class ItemData : ScriptableObject
     public Sprite icon;
     public ItemGrade grade;
     public int       sellPrice;
+    [Tooltip("상점 구매가. 0이면 판매 불가(구매 전용 목록에 등록된 경우에도 표시됨).")]
+    public int       buyPrice;
 }
