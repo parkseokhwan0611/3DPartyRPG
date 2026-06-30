@@ -91,6 +91,10 @@ public string charName;
     public float TotalCDReduce => equipCDReduce;
     public float TotalMpReduce => equipMpReduce;
 
+    // 이동속도
+    public float moveSpeedMultiplier = 1f; // 버프/디버프로 조정 (1.0 = 기본)
+    public float TotalMoveSpeed => classData.baseMoveSpeed * moveSpeedMultiplier;
+
     // 기본 공격 적중 시 체력/마나 회복
     public float hpOnHit = 0f;
     public float mpOnHit = 0f;

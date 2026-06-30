@@ -158,6 +158,15 @@ public class PartyStatusEffectHandler : MonoBehaviour
             case StatusEffectType.DebuffImmune:
                 IsDebuffImmune = apply;
                 break;
+
+            // 이동속도 감소 (value = 0.3 → 30% 감속)
+            case StatusEffectType.Slow:
+            case StatusEffectType.MoveSpeedDown:
+                if (apply)
+                    status.moveSpeedMultiplier *= (1f - effect.value);
+                else
+                    status.moveSpeedMultiplier /= (1f - effect.value);
+                break;
         }
     }
 

@@ -44,6 +44,8 @@ public class CharacterStat : MonoBehaviour, IDamageable
     public float PhysDmgBonus  => myStatus != null ? myStatus.TotalPhysDmgBonus  : 0f;
     public float MagicDmgBonus => myStatus != null ? myStatus.TotalMagicDmgBonus : 0f;
     public float HealBonus     => myStatus != null ? myStatus.healBonus           : 0f;
+    public float TotalMoveSpeed      => myStatus != null ? myStatus.TotalMoveSpeed          : 3f;
+    public float MoveSpeedMultiplier => myStatus != null ? myStatus.moveSpeedMultiplier     : 1f;
     // 스킬 쿨타임·마나 소모 감소
     public float TotalCDReduce => myStatus != null ? myStatus.TotalCDReduce : 0f;
     public float TotalMpReduce => myStatus != null ? myStatus.TotalMpReduce : 0f;

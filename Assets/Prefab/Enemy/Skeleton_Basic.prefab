@@ -1720,6 +1720,9 @@ MonoBehaviour:
   navSpeed: 1.5
   aggroDecayRate: 5
   aggroThreshold: 10
+  wanderRadius: 5
+  wanderSpeed: 1.5
+  wanderInterval: 3
 --- !u!114 &2341397149004027399
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1760,7 +1763,7 @@ MonoBehaviour:
   isDead: 0
   enemyName: "\uC2A4\uCF08\uB808\uD1A4 (LV.1)"
   damageTextPoolKey: NormalDamageText
-  hudPos: {fileID: 6989975316000471827}
+  hudPos: {fileID: 6243967598665347060}
   expReward: 5
   goldReward: 10
   destroyDelay: 2

@@ -27,6 +27,9 @@ public class ClassData : ScriptableObject
     [Header("마법 저항력")]
     public float baseMagicRes = 0f;
 
+    [Header("이동속도")]
+    public float baseMoveSpeed = 3f;
+
     [Header("HP / MP 재생")]
     public float baseHpRegen    = 0f;  // 초당 기본 HP 재생
     public float hpRegenPerVit  = 0f;  // VIT 1당 초당 HP 재생

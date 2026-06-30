@@ -206306,6 +206306,12 @@ ParticleSystem:
         m_PostInfinity: 2
         m_RotationOrder: 4
     vectorLabel1_3: W
+--- !u!224 &1010142398 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 1052886653308842876, guid: 1a57ffe93211cf743a193fb56a6c90fe,
+    type: 3}
+  m_PrefabInstance: {fileID: 1714364488}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1010339620
 GameObject:
   m_ObjectHideFlags: 0
@@ -265919,6 +265925,12 @@ MonoBehaviour:
   nextDamageText: {fileID: 0}
   nextSpecialText: {fileID: 0}
   learnButton: {fileID: 0}
+--- !u!224 &1382369847 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 6243967598665347060, guid: e56e07b194b8f844ba454cc19056ecce,
+    type: 3}
+  m_PrefabInstance: {fileID: 1383550772569161621}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1382424091
 GameObject:
   m_ObjectHideFlags: 0
@@ -277016,8 +277028,8 @@ MonoBehaviour:
   leaderVFX: {fileID: 2028355268}
   deathAnimTrigger: Die
   deathHideDelay: 2
-  stopDistance: 3
-  resumeDistance: 4.5
+  stopDistance: 1.5
+  resumeDistance: 3
   rotationSpeed: 8
   followCooldown: 0.3
 --- !u!95 &1458811747
@@ -277075,7 +277087,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   attackDamage: 10
-  attackRange: 8
+  attackRange: 6.5
   attackSpeed: 1
   attackDuration: 1.167
   currentTarget: {fileID: 0}
@@ -368665,6 +368677,11 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1439802179768294338, guid: 1a57ffe93211cf743a193fb56a6c90fe,
+        type: 3}
+      propertyPath: hudPos
+      value: 
+      objectReference: {fileID: 1010142398}
     - target: {fileID: 4394724053476291776, guid: 1a57ffe93211cf743a193fb56a6c90fe,
         type: 3}
       propertyPath: m_Name
@@ -405185,6 +405202,7 @@ GameObject:
   - component: {fileID: 1849586277}
   - component: {fileID: 1849586276}
   - component: {fileID: 1849586278}
+  - component: {fileID: 1849586279}
   m_Layer: 0
   m_Name: Virtual Camera
   m_TagString: Untagged
@@ -405259,6 +405277,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a1802ff0246741746aaeddb40ca89039, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &1849586279
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1849586275}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 944964a7c3dbbf64a98ace12e0133b69, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  virtualCamera: {fileID: 1849586276}
+  zoomOutOffset: {x: 0, y: 7, z: -6}
+  zoomInOffset: {x: 0, y: 3, z: -2}
+  scrollSpeed: 3
+  smoothTime: 0.15
 --- !u!1 &1850081796
 GameObject:
   m_ObjectHideFlags: 0
@@ -548544,6 +548579,11 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 491061582447124497, guid: e56e07b194b8f844ba454cc19056ecce,
+        type: 3}
+      propertyPath: hudPos
+      value: 
+      objectReference: {fileID: 1382369847}
     - target: {fileID: 6724196507479747451, guid: e56e07b194b8f844ba454cc19056ecce,
         type: 3}
       propertyPath: m_Name
@@ -711755,7 +711795,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   attackDamage: 10
-  attackRange: 7
+  attackRange: 5
   attackSpeed: 1
   attackDuration: 1.017
   currentTarget: {fileID: 0}
@@ -730489,7 +730529,7 @@ Transform:
   m_GameObject: {fileID: 7679984365824007527}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 30.775894, y: 0, z: 3.0001812}
+  m_LocalPosition: {x: 30, y: 0, z: 3}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:

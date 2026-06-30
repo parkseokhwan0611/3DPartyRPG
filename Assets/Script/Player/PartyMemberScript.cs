@@ -18,6 +18,7 @@ public class PartyMemberScript : MonoBehaviour
     private Animator anim;
     private AttackBase attackComp;
     private SkillManager skillManager;
+    private CharacterStat statComp;
     private int _chainIndex = 0;
 
     // ─────────────────────────────────────────
@@ -59,6 +60,7 @@ public class PartyMemberScript : MonoBehaviour
         anim         = GetComponent<Animator>();
         attackComp   = GetComponent<AttackBase>();
         skillManager = GetComponent<SkillManager>();
+        statComp     = GetComponent<CharacterStat>();
 
         if (attackComp != null)
         {
@@ -90,6 +92,8 @@ public class PartyMemberScript : MonoBehaviour
     void Update()
     {
         if (CurrentState == MemberState.Dead) return;
+
+        if (statComp != null) agent.speed = statComp.TotalMoveSpeed;
 
         UpdateAnimation();
 
@@ -277,6 +281,7 @@ public class PartyMemberScript : MonoBehaviour
             _walkAnimTimer = 0f;
 
         anim.SetBool("isWalking", _walkAnimTimer >= WALK_ANIM_DELAY);
+        anim.SetFloat("speed", statComp != null ? statComp.MoveSpeedMultiplier : 1f);
     }
 
     // 버프/힐 스킬 종료 후 상태 복귀 (SkillManager에서 호출)
