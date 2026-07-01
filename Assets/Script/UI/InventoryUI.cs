@@ -66,10 +66,11 @@ public class InventoryUI : MonoBehaviour
     // 인벤토리 슬롯 캐시 (Start에서 MaxSlots개 미리 생성)
     private struct SlotCache
     {
-        public Image           icon;
-        public TextMeshProUGUI enhText;
-        public TextMeshProUGUI stackText;
-        public Button          button;
+        public Image             icon;
+        public TextMeshProUGUI   enhText;
+        public TextMeshProUGUI   stackText;
+        public Button            button;
+        public InventoryDragItem dragItem;
     }
     private SlotCache[] slotCaches;
 
@@ -89,13 +90,17 @@ public class InventoryUI : MonoBehaviour
         equipButtons[EquipSlot.Ring1]    = slotRing1;
         equipButtons[EquipSlot.Ring2]    = slotRing2;
 
-        // 슬롯 하위 컴포넌트 캐싱
+        // 슬롯 하위 컴포넌트 캐싱 + 드롭 타겟 추가
         foreach (var kvp in equipButtons)
         {
             Transform t = kvp.Value.transform;
             equipIcons[kvp.Key]      = t.Find("Icon")?      .GetComponent<Image>();
             equipEmptyIcons[kvp.Key] = t.Find("EmptyIcon")? .GetComponent<Image>();
             equipEnhTexts[kvp.Key]   = t.Find("EnhanceText")?.GetComponent<TextMeshProUGUI>();
+
+            var drop = kvp.Value.gameObject.AddComponent<EquipSlotDropTarget>();
+            drop.slot        = kvp.Key;
+            drop.inventoryUI = this;
         }
     }
 
@@ -128,12 +133,17 @@ public class InventoryUI : MonoBehaviour
         for (int i = 0; i < Inventory.MaxSlots; i++)
         {
             var slotObj = Instantiate(itemSlotPrefab, content);
+
+            var drag = slotObj.AddComponent<InventoryDragItem>();
+            drag.inventoryUI = this;
+
             slotCaches[i] = new SlotCache
             {
                 icon      = slotObj.transform.Find("Icon")      ?.GetComponent<Image>(),
                 enhText   = slotObj.transform.Find("EnhanceText")?.GetComponent<TextMeshProUGUI>(),
                 stackText = slotObj.transform.Find("StackText")  ?.GetComponent<TextMeshProUGUI>(),
                 button    = slotObj.GetComponent<Button>(),
+                dragItem  = drag,
             };
         }
 
@@ -265,6 +275,8 @@ public class InventoryUI : MonoBehaviour
                 if (hasItem)
                     c.button.onClick.AddListener(() => OnInventorySlotClicked(captured));
             }
+
+            if (c.dragItem != null) c.dragItem.item = captured;
         }
     }
 
@@ -400,6 +412,25 @@ public class InventoryUI : MonoBehaviour
         inv.Remove(selectedItem);
         if (prev != null) inv.TryAddItem(prev);
         equip.RecalculateStats(stat);
+
+        CloseDetailPopup();
+        RefreshEquipSlots();
+        RefreshInventory();
+    }
+
+    /// <summary>드래그 앤 드롭으로 장착 — EquipSlotDropTarget에서 호출.</summary>
+    public void EquipFromDrag(ItemInstance item, EquipSlot targetSlot)
+    {
+        if (item == null || DataManager.instance == null) return;
+
+        var inv       = DataManager.instance.sharedInventory;
+        var charEquip = DataManager.instance.partyEquipments[selectedCharIndex];
+        var stat      = DataManager.instance.partyStatuses[selectedCharIndex];
+
+        ItemInstance prev = charEquip.EquipToSlot(item, targetSlot);
+        inv.Remove(item);
+        if (prev != null) inv.TryAddItem(prev);
+        charEquip.RecalculateStats(stat);
 
         CloseDetailPopup();
         RefreshEquipSlots();
