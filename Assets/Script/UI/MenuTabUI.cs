@@ -47,23 +47,27 @@ public class MenuTabUI : MonoBehaviour
     {
         if (menuWindow == null) return;
 
-        // 상점 또는 강화 탭이 열려 있으면 인벤토리 입력 무시
-        if (IsBlockingUIOpen()) return;
-
-        // 탭키로 메뉴 토글
         if (Input.GetKeyDown(KeyCode.Tab))
+        {
+            // 상점·강화 등이 열려있으면 Tab으로 해당 UI를 닫고 인벤토리는 열지 않음
+            if (TryCloseBlockingUI()) return;
             ToggleMenu();
+        }
 
-        // ESC로 메뉴 닫기
+        // ESC: 인벤토리 내 팝업 먼저 닫기, 없으면 메뉴 전체 닫기
         if (Input.GetKeyDown(KeyCode.Escape) && menuWindow.activeSelf)
+        {
+            if (InventoryUI.instance != null && InventoryUI.instance.TryCloseSubPanel()) return;
             CloseMenu();
+        }
     }
 
-    // 상점·강화 등 단독 UI가 열려 있는지 확인 (추후 EnhancementUI.IsOpen 등 추가)
-    private static bool IsBlockingUIOpen()
+    // 단독 UI가 열려있으면 닫고 true 반환 (Tab·ESC 입력 소비용)
+    private static bool TryCloseBlockingUI()
     {
-        if (ShopUI.IsOpen) return true;
-        // if (EnhancementUI.IsOpen) return true;
+        if (DialogueUI.IsOpen) return true;  // 대화 중엔 Tab 무시
+        if (ShopUI.IsOpen) { ShopUI.instance?.Close(); return true; }
+        // if (EnhancementUI.IsOpen) { EnhancementUI.instance?.Close(); return true; }
         return false;
     }
 

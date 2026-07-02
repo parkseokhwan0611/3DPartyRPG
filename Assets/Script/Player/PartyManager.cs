@@ -42,8 +42,8 @@ public class PartyManager : MonoBehaviour
     {
         if (partyMembers.Count == 0) return;
 
-        // 인벤토리/메뉴 열려있으면 캐릭터 입력 전부 차단
-        if (MenuTabUI.IsOpen) return;
+        // 인벤토리/메뉴/상점/대화 열려있으면 캐릭터 입력 전부 차단
+        if (MenuTabUI.IsOpen || ShopUI.IsOpen || DialogueUI.IsOpen) return;
 
         HandleLeaderChangeInput();
         HandleCommandInput();

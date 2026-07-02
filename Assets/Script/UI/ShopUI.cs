@@ -51,8 +51,15 @@ public class ShopUI : MonoBehaviour
     [SerializeField] Slider         quantitySlider;
     [Tooltip("수량 패널 구매 버튼")]
     [SerializeField] Button         buyButtonQuantity;
-    [Tooltip("수량 패널 취소 버튼 — 팝업 닫고 그리드 조작 복원")]
+    [Tooltip("수량 패널 취소 버튼")]
     [SerializeField] Button         cancelButtonQuantity;
+
+    [Header("판매 수량 패널 (소비·재료 판매 시)")]
+    [SerializeField] GameObject     sellQuantityPanel;
+    [SerializeField] TMP_InputField sellQuantityInput;
+    [SerializeField] Slider         sellQuantitySlider;
+    [SerializeField] Button         confirmSellButton;
+    [SerializeField] Button         cancelSellButton;
 
 
     [Header("등급 스프라이트 (0:일반 ~ 4:신화)")]
@@ -65,7 +72,8 @@ public class ShopUI : MonoBehaviour
     private NpcInteractable _currentNpc;
     private int             _selectedShopIndex = -1;
     private ItemInstance    _selectedInvItem;
-    private bool            _syncLock;          // 슬라이더↔인풋 동기화 무한루프 방지
+    private bool            _syncLock;          // 구매 슬라이더↔인풋 동기화 무한루프 방지
+    private bool            _sellSyncLock;      // 판매 슬라이더↔인풋 동기화 무한루프 방지
     private CanvasGroup     _shopGridCG;
     private CanvasGroup     _invGridCG;
 
@@ -146,29 +154,54 @@ public class ShopUI : MonoBehaviour
         }
 
         buyButton           ?.onClick.AddListener(OnBuyClicked);
-        buyButtonQuantity   ?.onClick.AddListener(OnBuyClicked);
+        buyButtonQuantity   ?.onClick.AddListener(OnBuyQuantityConfirmed);
         sellButton          ?.onClick.AddListener(OnSellClicked);
         cancelButton        ?.onClick.AddListener(CloseDetailPopup);
-        cancelButtonQuantity?.onClick.AddListener(CloseDetailPopup);
+        cancelButtonQuantity?.onClick.AddListener(CloseQuantityPanel);
         closeButton         ?.onClick.AddListener(Close);
+
+        // 판매 수량 슬라이더/인풋 연동
+        if (sellQuantitySlider != null)
+        {
+            sellQuantitySlider.minValue     = 1;
+            sellQuantitySlider.maxValue     = 99;
+            sellQuantitySlider.wholeNumbers = true;
+            sellQuantitySlider.onValueChanged.AddListener(OnSellSliderChanged);
+        }
+        if (sellQuantityInput != null)
+        {
+            sellQuantityInput.contentType = TMP_InputField.ContentType.IntegerNumber;
+            sellQuantityInput.onValueChanged.AddListener(OnSellInputValueChanged);
+            sellQuantityInput.onEndEdit.AddListener(OnSellInputEndEdit);
+        }
+        confirmSellButton?.onClick.AddListener(OnConfirmSellClicked);
+        cancelSellButton ?.onClick.AddListener(CloseSellQuantityPanel);
 
         detailPopup?.gameObject.SetActive(false);
         quantityPanel?.SetActive(false);
+        sellQuantityPanel?.SetActive(false);
     }
 
     void Update()
     {
         if (panel == null || !panel.activeSelf) return;
 
-        // ESC / Tab → 상점 닫기
-        if (Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.Tab))
+        // ESC 우선순위: 판매수량 → 구매수량 → 디테일팝업 → 상점 전체 닫기
+        if (Input.GetKeyDown(KeyCode.Escape))
         {
+            if (sellQuantityPanel != null && sellQuantityPanel.activeSelf) { CloseSellQuantityPanel(); return; }
+            if (quantityPanel     != null && quantityPanel.activeSelf)     { CloseQuantityPanel();     return; }
+            if (detailPopup       != null && detailPopup.gameObject.activeSelf) { CloseDetailPopup(); return; }
             Close();
             return;
         }
 
-        // 팝업 외부 클릭 시 닫기
-        if (detailPopup != null && detailPopup.gameObject.activeSelf && Input.GetMouseButtonDown(0))
+        // 구매 또는 판매 수량 패널 열려있으면 외부 클릭 감지 비활성화
+        bool qtyOpen = (quantityPanel     != null && quantityPanel.activeSelf)
+                    || (sellQuantityPanel != null && sellQuantityPanel.activeSelf);
+
+        // 팝업 외부 클릭 시 닫기 (수량 패널 닫혀있을 때만)
+        if (!qtyOpen && detailPopup != null && detailPopup.gameObject.activeSelf && Input.GetMouseButtonDown(0))
         {
             if (!RectTransformUtility.RectangleContainsScreenPoint(detailPopup, Input.mousePosition))
                 CloseDetailPopup();
@@ -388,38 +421,21 @@ public class ShopUI : MonoBehaviour
         descriptionText.text = item.data.description;
         priceText.text = isBuying ? $"구매가: {price:N0} G" : $"판매가: {price:N0} G";
 
-        // 수량 선택 패널: 소비·재료 구매 시만 표시
-        bool showQty = isBuying && !(item.data is EquipItemData);
-
-        // 수량 패널이 뜰 때는 일반 구매 버튼 숨기고 수량 패널 전용 버튼 사용
-        buyButton ?.gameObject.SetActive(isBuying && !showQty);
+        // 구매 시: 구매 버튼 표시 / 판매 시: 판매 버튼 표시
+        buyButton ?.gameObject.SetActive(isBuying);
         sellButton?.gameObject.SetActive(!isBuying);
-        cancelButton?.gameObject.SetActive(!showQty);   // 수량 패널 없을 때만 일반 취소 버튼 표시
+        cancelButton?.gameObject.SetActive(true);
 
-        quantityPanel?.SetActive(showQty);
-        SetGridsInteractable(!showQty);                  // 수량 패널 표시 중 그리드 잠금
-
-        if (showQty && DataManager.instance != null)
-        {
-            int stockMax = (_currentNpc.ShopData.entries[_selectedShopIndex].hasStockLimit)
-                ? _currentNpc.GetRemainingStock(_selectedShopIndex)
-                : 99;
-            int goldMax = price > 0
-                ? Mathf.FloorToInt((float)DataManager.instance.gold / price)
-                : 99;
-            int maxQty = Mathf.Clamp(Mathf.Min(stockMax, goldMax), 1, 99);
-
-            _syncLock = true;
-            if (quantitySlider != null) { quantitySlider.maxValue = maxQty; quantitySlider.value = 1; }
-            if (quantityInput  != null) quantityInput.text = "1";
-            _syncLock = false;
-        }
+        // 수량 패널은 구매 버튼 클릭 시 열리므로, 팝업 열 때는 항상 닫아둠
+        quantityPanel?.SetActive(false);
+        SetGridsInteractable(true);
     }
 
     void CloseDetailPopup()
     {
         detailPopup?.gameObject.SetActive(false);
         quantityPanel?.SetActive(false);
+        sellQuantityPanel?.SetActive(false);
         SetGridsInteractable(true);
         _selectedShopIndex = -1;
         _selectedInvItem   = null;
@@ -450,10 +466,64 @@ public class ShopUI : MonoBehaviour
         if (entry?.item == null || DataManager.instance == null) return;
 
         bool isEquip = entry.item is EquipItemData;
-        int  qty     = 1;
-        if (!isEquip && quantityInput != null)
-            qty = int.TryParse(quantityInput.text, out int v) ? Mathf.Clamp(v, 1, 99) : 1;
 
+        if (!isEquip)
+        {
+            // 소비·재료 → 수량 패널 열기
+            OpenQuantityPanel(entry.item.buyPrice);
+            return;
+        }
+
+        // 장비 → 바로 구매
+        ExecutePurchase(entry, 1);
+    }
+
+    void OpenQuantityPanel(int unitPrice)
+    {
+        if (_currentNpc?.ShopData == null || _selectedShopIndex < 0) return;
+        var entry = _currentNpc.ShopData.entries[_selectedShopIndex];
+
+        // 재고 제한만 반영. 골드 제한은 구매 버튼 클릭 시 검증.
+        int stockMax = entry.hasStockLimit
+            ? _currentNpc.GetRemainingStock(_selectedShopIndex)
+            : 99;
+        int maxQty = Mathf.Clamp(stockMax, 1, 99);
+
+        _syncLock = true;
+        if (quantitySlider != null) { quantitySlider.maxValue = maxQty; quantitySlider.value = 1; }
+        if (quantityInput  != null) quantityInput.text = "1";
+        _syncLock = false;
+
+        // 구매 버튼·취소 버튼 숨기고 수량 패널 표시, 그리드 잠금
+        buyButton   ?.gameObject.SetActive(false);
+        cancelButton?.gameObject.SetActive(false);
+        quantityPanel?.SetActive(true);
+        SetGridsInteractable(false);
+    }
+
+    void CloseQuantityPanel()
+    {
+        quantityPanel?.SetActive(false);
+        buyButton   ?.gameObject.SetActive(true);
+        cancelButton?.gameObject.SetActive(true);
+        SetGridsInteractable(true);
+    }
+
+    void OnBuyQuantityConfirmed()
+    {
+        if (_currentNpc?.ShopData == null || _selectedShopIndex < 0) return;
+        var entry = _currentNpc.ShopData.entries[_selectedShopIndex];
+        if (entry?.item == null || DataManager.instance == null) return;
+
+        int qty = quantityInput != null && int.TryParse(quantityInput.text, out int v)
+            ? Mathf.Clamp(v, 1, 99) : 1;
+        ExecutePurchase(entry, qty);
+    }
+
+    void ExecutePurchase(ShopEntry entry, int qty)
+    {
+        if (DataManager.instance == null) return;
+        bool isEquip   = entry.item is EquipItemData;
         int  totalCost = entry.item.buyPrice * qty;
         var  inv       = DataManager.instance.sharedInventory;
 
@@ -470,8 +540,7 @@ public class ShopUI : MonoBehaviour
         }
         bool hasSpace = isEquip
             ? !inv.IsFull
-            : inv.Items.Count < Inventory.MaxSlots ||
-              HasExistingStack(inv, entry.item);
+            : inv.Items.Count < Inventory.MaxSlots || HasExistingStack(inv, entry.item);
         if (!hasSpace)
         {
             Debug.Log("[ShopUI] 인벤토리 가득 참");
@@ -496,12 +565,95 @@ public class ShopUI : MonoBehaviour
     {
         if (_selectedInvItem == null || DataManager.instance == null) return;
 
-        int price = _selectedInvItem.data.sellPrice;
-        DataManager.instance.sharedInventory.Remove(_selectedInvItem);
-        DataManager.instance.AddGold(price);
+        // 소비·재료는 판매 수량 패널 열기
+        if (!_selectedInvItem.IsEquipment)
+        {
+            OpenSellQuantityPanel();
+            return;
+        }
 
-        CloseDetailPopup();
+        // 장비는 바로 판매
+        ExecuteSell(1);
+    }
+
+    void OpenSellQuantityPanel()
+    {
+        if (_selectedInvItem == null) return;
+        int maxQty = Mathf.Clamp(_selectedInvItem.stackCount, 1, 99);
+
+        _sellSyncLock = true;
+        if (sellQuantitySlider != null) { sellQuantitySlider.maxValue = maxQty; sellQuantitySlider.value = 1; }
+        if (sellQuantityInput  != null) sellQuantityInput.text = "1";
+        _sellSyncLock = false;
+
+        sellButton       ?.gameObject.SetActive(false);
+        cancelButton     ?.gameObject.SetActive(false);
+        sellQuantityPanel?.SetActive(true);
+        SetGridsInteractable(false);
+    }
+
+    void CloseSellQuantityPanel()
+    {
+        sellQuantityPanel?.SetActive(false);
+        sellButton  ?.gameObject.SetActive(true);
+        cancelButton?.gameObject.SetActive(true);
+        SetGridsInteractable(true);
+    }
+
+    void OnConfirmSellClicked()
+    {
+        if (_selectedInvItem == null || DataManager.instance == null) return;
+        int qty = sellQuantityInput != null && int.TryParse(sellQuantityInput.text, out int v)
+            ? Mathf.Clamp(v, 1, _selectedInvItem.stackCount) : 1;
+        ExecuteSell(qty);
+    }
+
+    void ExecuteSell(int qty)
+    {
+        if (_selectedInvItem == null || DataManager.instance == null) return;
+        var inv        = DataManager.instance.sharedInventory;
+        int totalPrice = _selectedInvItem.data.sellPrice * qty;
+
+        if (_selectedInvItem.IsEquipment)
+            inv.Remove(_selectedInvItem);
+        else
+            inv.ConsumeItem(_selectedInvItem, qty);
+
+        DataManager.instance.AddGold(totalPrice);
+
         RefreshInventory();
+        CloseDetailPopup();
+    }
+
+    // 판매 수량 슬라이더 ↔ 인풋 동기화
+    void OnSellSliderChanged(float value)
+    {
+        if (_sellSyncLock || sellQuantityInput == null) return;
+        _sellSyncLock = true;
+        sellQuantityInput.text = ((int)value).ToString();
+        _sellSyncLock = false;
+    }
+
+    void OnSellInputValueChanged(string s)
+    {
+        if (_sellSyncLock || sellQuantitySlider == null || string.IsNullOrEmpty(s)) return;
+        if (!int.TryParse(s, out int v) || v < 1) return;
+        float clamped = Mathf.Clamp(v, sellQuantitySlider.minValue, sellQuantitySlider.maxValue);
+        if (Mathf.Approximately(sellQuantitySlider.value, clamped)) return;
+        _sellSyncLock = true;
+        sellQuantitySlider.value = clamped;
+        _sellSyncLock = false;
+    }
+
+    void OnSellInputEndEdit(string s)
+    {
+        if (_sellSyncLock) return;
+        int max = sellQuantitySlider != null ? (int)sellQuantitySlider.maxValue : 99;
+        int clamped = int.TryParse(s, out int v) ? Mathf.Clamp(v, 1, max) : 1;
+        _sellSyncLock = true;
+        if (sellQuantityInput  != null) sellQuantityInput.text   = clamped.ToString();
+        if (sellQuantitySlider != null) sellQuantitySlider.value = clamped;
+        _sellSyncLock = false;
     }
 
     // 같은 아이템의 기존 스택이 인벤토리에 있는지 (stackable 공간 체크용)

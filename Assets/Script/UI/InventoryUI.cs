@@ -45,6 +45,13 @@ public class InventoryUI : MonoBehaviour
     [SerializeField] Button        registerPotionButton;
     [SerializeField] Button        deregisterPotionButton;
 
+    [Header("판매 수량 패널 (소비·재료 판매 시)")]
+    [SerializeField] GameObject     sellQuantityPanel;
+    [SerializeField] TMP_InputField sellQuantityInput;
+    [SerializeField] Slider         sellQuantitySlider;
+    [SerializeField] Button         confirmSellButton;
+    [SerializeField] Button         cancelSellButton;
+
     [Header("등급 스프라이트 (0:일반 ~ 4:신화)")]
     [SerializeField] Sprite[] gradeSprites;
 
@@ -52,10 +59,13 @@ public class InventoryUI : MonoBehaviour
     // 내부 상태
     // ─────────────────────────────────────────────────────────────────
 
+    public static InventoryUI instance;
+
     private int          selectedCharIndex   = 0;
     private ItemInstance selectedItem        = null;
     private EquipSlot    selectedEquipSlot;
     private bool         isEquipSlotSelected = false;
+    private bool         _sellSyncLock       = false;
 
     // 장착 슬롯 컴포넌트 캐시
     private Dictionary<EquipSlot, Button> equipButtons    = new Dictionary<EquipSlot, Button>();
@@ -80,6 +90,8 @@ public class InventoryUI : MonoBehaviour
 
     void Awake()
     {
+        instance = this;
+
         // 슬롯 딕셔너리 초기화
         equipButtons[EquipSlot.Weapon]   = slotWeapon;
         equipButtons[EquipSlot.Hat]      = slotHat;
@@ -128,6 +140,24 @@ public class InventoryUI : MonoBehaviour
         if (registerPotionButton   != null) registerPotionButton  .onClick.AddListener(OnRegisterPotionClicked);
         if (deregisterPotionButton != null) deregisterPotionButton.onClick.AddListener(OnDeregisterPotionClicked);
 
+        // 판매 수량 슬라이더/인풋 연동
+        if (sellQuantitySlider != null)
+        {
+            sellQuantitySlider.minValue     = 1;
+            sellQuantitySlider.maxValue     = 99;
+            sellQuantitySlider.wholeNumbers = true;
+            sellQuantitySlider.onValueChanged.AddListener(OnSellSliderChanged);
+        }
+        if (sellQuantityInput != null)
+        {
+            sellQuantityInput.contentType = TMP_InputField.ContentType.IntegerNumber;
+            sellQuantityInput.onValueChanged.AddListener(OnSellInputValueChanged);
+            sellQuantityInput.onEndEdit.AddListener(OnSellInputEndEdit);
+        }
+        confirmSellButton?.onClick.AddListener(OnConfirmSellClicked);
+        cancelSellButton ?.onClick.AddListener(CloseSellQuantityPanel);
+        sellQuantityPanel?.SetActive(false);
+
         // 인벤토리 슬롯 미리 생성 및 컴포넌트 캐싱
         slotCaches = new SlotCache[Inventory.MaxSlots];
         for (int i = 0; i < Inventory.MaxSlots; i++)
@@ -155,7 +185,10 @@ public class InventoryUI : MonoBehaviour
 
     void Update()
     {
-        if (detailPopup.gameObject.activeSelf && Input.GetMouseButtonDown(0))
+        // 판매 수량 패널 열려있으면 외부 클릭 감지 비활성화
+        bool sellQtyOpen = sellQuantityPanel != null && sellQuantityPanel.activeSelf;
+
+        if (!sellQtyOpen && detailPopup.gameObject.activeSelf && Input.GetMouseButtonDown(0))
         {
             if (!RectTransformUtility.RectangleContainsScreenPoint(detailPopup, Input.mousePosition))
                 CloseDetailPopup();
@@ -370,26 +403,46 @@ public class InventoryUI : MonoBehaviour
         equipButton  .gameObject.SetActive(isEquip && !isEquipSlotSelected);
         unequipButton.gameObject.SetActive(isEquip && isEquipSlotSelected);
 
-        // 포션 등록/해제 버튼 (HP·MP 포션이고 인벤토리 슬롯일 때만)
+        // 포션 등록/해제 버튼 (HP·MP 포션이고 인벤토리 슬롯일 때만, 등록 여부로 하나만 표시)
+        var  cd           = item.data as ConsumableData;
         bool isPotionSlot = !isEquipSlotSelected
-            && item.IsConsumable
-            && item.data is ConsumableData potionCheck
-            && (potionCheck.consumableType == ConsumableType.HpPotion
-                || potionCheck.consumableType == ConsumableType.MpPotion);
+            && cd != null
+            && (cd.consumableType == ConsumableType.HpPotion
+                || cd.consumableType == ConsumableType.MpPotion);
 
-        if (registerPotionButton   != null) registerPotionButton  .gameObject.SetActive(isPotionSlot);
-        if (deregisterPotionButton != null) deregisterPotionButton.gameObject.SetActive(isPotionSlot);
+        if (isPotionSlot)
+        {
+            bool isRegistered = PotionQuickSlotManager.instance != null
+                && PotionQuickSlotManager.instance.GetSlot(cd.consumableType) == item;
+            if (registerPotionButton   != null) registerPotionButton  .gameObject.SetActive(!isRegistered);
+            if (deregisterPotionButton != null) deregisterPotionButton.gameObject.SetActive(isRegistered);
+        }
+        else
+        {
+            if (registerPotionButton   != null) registerPotionButton  .gameObject.SetActive(false);
+            if (deregisterPotionButton != null) deregisterPotionButton.gameObject.SetActive(false);
+        }
 
-        // 판매 가격
+        // 판매 가격 (단가 표시, 실제 합산은 수량 확정 시)
         if (sellPriceText != null)
             sellPriceText.text = $"가격: {item.data.sellPrice:N0}원";
 
         // 판매 버튼 (항상 표시)
         sellButton.gameObject.SetActive(true);
+        sellQuantityPanel?.SetActive(false);
+    }
+
+    /// <summary>ESC 우선순위 처리 — MenuTabUI에서 호출. 닫을 패널이 있으면 true 반환.</summary>
+    public bool TryCloseSubPanel()
+    {
+        if (sellQuantityPanel != null && sellQuantityPanel.activeSelf) { CloseSellQuantityPanel(); return true; }
+        if (detailPopup != null && detailPopup.gameObject.activeSelf)  { CloseDetailPopup();       return true; }
+        return false;
     }
 
     void CloseDetailPopup()
     {
+        sellQuantityPanel?.SetActive(false);
         detailPopup.gameObject.SetActive(false);
         selectedItem = null;
         if (registerPotionButton   != null) registerPotionButton  .gameObject.SetActive(false);
@@ -469,15 +522,94 @@ public class InventoryUI : MonoBehaviour
     void OnSellClicked()
     {
         if (selectedItem == null || DataManager.instance == null) return;
-        // 장착 중인 슬롯에서는 판매 불가
         if (isEquipSlotSelected) return;
 
-        int price = selectedItem.data.sellPrice;
-        DataManager.instance.sharedInventory.Remove(selectedItem);
-        DataManager.instance.AddGold(price);
+        // 소비·재료는 수량 패널 열기
+        if (!selectedItem.IsEquipment)
+        {
+            OpenSellQuantityPanel();
+            return;
+        }
+
+        // 장비는 바로 판매
+        ExecuteSell(1);
+    }
+
+    void OpenSellQuantityPanel()
+    {
+        if (selectedItem == null) return;
+        int maxQty = Mathf.Clamp(selectedItem.stackCount, 1, 99);
+
+        _sellSyncLock = true;
+        if (sellQuantitySlider != null) { sellQuantitySlider.maxValue = maxQty; sellQuantitySlider.value = 1; }
+        if (sellQuantityInput  != null) sellQuantityInput.text = "1";
+        _sellSyncLock = false;
+
+        sellButton       ?.gameObject.SetActive(false);
+        sellQuantityPanel?.SetActive(true);
+    }
+
+    void CloseSellQuantityPanel()
+    {
+        sellQuantityPanel?.SetActive(false);
+        sellButton?.gameObject.SetActive(true);
+    }
+
+    void OnConfirmSellClicked()
+    {
+        if (selectedItem == null || DataManager.instance == null) return;
+        int qty = sellQuantityInput != null && int.TryParse(sellQuantityInput.text, out int v)
+            ? Mathf.Clamp(v, 1, selectedItem.stackCount) : 1;
+        ExecuteSell(qty);
+    }
+
+    void ExecuteSell(int qty)
+    {
+        if (selectedItem == null || DataManager.instance == null) return;
+        var inv = DataManager.instance.sharedInventory;
+
+        int totalPrice = selectedItem.data.sellPrice * qty;
+
+        if (selectedItem.IsEquipment)
+            inv.Remove(selectedItem);
+        else
+            inv.ConsumeItem(selectedItem, qty);
+
+        DataManager.instance.AddGold(totalPrice);
 
         CloseDetailPopup();
         RefreshInventory();
+    }
+
+    // 판매 수량 슬라이더 ↔ 인풋 동기화
+    void OnSellSliderChanged(float value)
+    {
+        if (_sellSyncLock || sellQuantityInput == null) return;
+        _sellSyncLock = true;
+        sellQuantityInput.text = ((int)value).ToString();
+        _sellSyncLock = false;
+    }
+
+    void OnSellInputValueChanged(string s)
+    {
+        if (_sellSyncLock || sellQuantitySlider == null || string.IsNullOrEmpty(s)) return;
+        if (!int.TryParse(s, out int v) || v < 1) return;
+        float clamped = Mathf.Clamp(v, sellQuantitySlider.minValue, sellQuantitySlider.maxValue);
+        if (Mathf.Approximately(sellQuantitySlider.value, clamped)) return;
+        _sellSyncLock = true;
+        sellQuantitySlider.value = clamped;
+        _sellSyncLock = false;
+    }
+
+    void OnSellInputEndEdit(string s)
+    {
+        if (_sellSyncLock) return;
+        int max = sellQuantitySlider != null ? (int)sellQuantitySlider.maxValue : 99;
+        int clamped = int.TryParse(s, out int v) ? Mathf.Clamp(v, 1, max) : 1;
+        _sellSyncLock = true;
+        if (sellQuantityInput  != null) sellQuantityInput.text   = clamped.ToString();
+        if (sellQuantitySlider != null) sellQuantitySlider.value = clamped;
+        _sellSyncLock = false;
     }
 
     void OnRegisterPotionClicked()

@@ -30,7 +30,7 @@ public class DialogueUI : MonoBehaviour
     [Tooltip("글자 1자당 출력 대기 시간 (초)")]
     [SerializeField] float charDelay = 0.03f;
 
-    public bool IsOpen => panel != null && panel.activeSelf;
+    public static bool IsOpen { get; private set; }
 
     private DialogueLine[] _lines;
     private int            _lineIndex;
@@ -69,6 +69,7 @@ public class DialogueUI : MonoBehaviour
         _lineIndex  = 0;
         _onComplete = onComplete;
 
+        IsOpen = true;
         panel.SetActive(true);
         SetCombatUI(false);
 
@@ -77,6 +78,7 @@ public class DialogueUI : MonoBehaviour
 
     public void Close()
     {
+        IsOpen = false;
         StopTyping();
         panel?.SetActive(false);
         SetCombatUI(true);
