@@ -7,14 +7,14 @@ using UnityEngine;
 /// </summary>
 public class NpcInteractable : MonoBehaviour
 {
-    public enum NpcType { Shop, Enhancement }
+    public enum NpcType { Shop, Enhancement, Story }
 
     [Header("NPC 정보")]
     [SerializeField] string  npcName = "상인";
     [SerializeField] NpcType npcType = NpcType.Shop;
 
     [Header("대화 (순서대로 출력)")]
-    [SerializeField] [TextArea(2, 4)] string[] dialogueLines;
+    [SerializeField] DialogueLine[] dialogueLines;
 
     [Header("상점 데이터 (Shop 타입만)")]
     [SerializeField] ShopData shopData;
@@ -115,9 +115,9 @@ public class NpcInteractable : MonoBehaviour
         _isDialogueActive = true;
         ShowPrompt(false);
 
-        string[] lines = (dialogueLines != null && dialogueLines.Length > 0)
+        DialogueLine[] lines = (dialogueLines != null && dialogueLines.Length > 0)
             ? dialogueLines
-            : new[] { "어서 오세요." };
+            : new[] { new DialogueLine { speaker = DialogueLine.Speaker.NPC, text = "어서 오세요." } };
 
         DialogueUI.instance.Open(npcName, lines, OnDialogueComplete);
     }
@@ -136,6 +136,10 @@ public class NpcInteractable : MonoBehaviour
             case NpcType.Enhancement:
                 // EnhancementUI 구현 후 연결: EnhancementUI.instance?.Open();
                 Debug.Log($"[NPC] {npcName} 강화 UI 오픈 (EnhancementUI 미구현)");
+                break;
+
+            case NpcType.Story:
+                // 스토리 NPC는 대화 완료 후 별도 처리 없음
                 break;
         }
     }
