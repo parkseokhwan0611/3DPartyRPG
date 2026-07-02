@@ -129,8 +129,7 @@ public class NpcInteractable : MonoBehaviour
         switch (npcType)
         {
             case NpcType.Shop:
-                // ShopUI 구현 후 연결: ShopUI.instance?.Open(this);
-                Debug.Log($"[NPC] {npcName} 상점 오픈 (ShopUI 미구현)");
+                ShopUI.instance?.Open(this);
                 break;
 
             case NpcType.Enhancement:

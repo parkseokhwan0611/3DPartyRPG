@@ -47,6 +47,9 @@ public class MenuTabUI : MonoBehaviour
     {
         if (menuWindow == null) return;
 
+        // 상점 또는 강화 탭이 열려 있으면 인벤토리 입력 무시
+        if (IsBlockingUIOpen()) return;
+
         // 탭키로 메뉴 토글
         if (Input.GetKeyDown(KeyCode.Tab))
             ToggleMenu();
@@ -54,6 +57,14 @@ public class MenuTabUI : MonoBehaviour
         // ESC로 메뉴 닫기
         if (Input.GetKeyDown(KeyCode.Escape) && menuWindow.activeSelf)
             CloseMenu();
+    }
+
+    // 상점·강화 등 단독 UI가 열려 있는지 확인 (추후 EnhancementUI.IsOpen 등 추가)
+    private static bool IsBlockingUIOpen()
+    {
+        if (ShopUI.IsOpen) return true;
+        // if (EnhancementUI.IsOpen) return true;
+        return false;
     }
 
     void OnDestroy()
