@@ -17,9 +17,10 @@ public class DialogueUI : MonoBehaviour
     [SerializeField] TextMeshProUGUI speakerNameText;  // NPC 또는 플레이어 이름 표시
     [SerializeField] TextMeshProUGUI dialogueText;
 
-    [Header("플레이어 이름")]
-    [Tooltip("DialogueLine.Speaker.Player일 때 표시할 이름")]
-    [SerializeField] string playerName = "주인공";
+    [Header("캐릭터 기본 이름 (DataManager charName 미설정 시 사용)")]
+    [SerializeField] string fallbackChar0 = "캐릭터1";
+    [SerializeField] string fallbackChar1 = "캐릭터2";
+    [SerializeField] string fallbackChar2 = "캐릭터3";
 
     [Header("대화 중 숨길 전투 UI")]
     [Tooltip("대화창이 열릴 때 비활성화할 전투 UI 루트 오브젝트들")]
@@ -112,9 +113,7 @@ public class DialogueUI : MonoBehaviour
 
         // 발화자 이름 전환
         if (speakerNameText != null)
-            speakerNameText.text = line.speaker == DialogueLine.Speaker.Player
-                ? playerName
-                : _npcName;
+            speakerNameText.text = ResolveSpeakerName(line.speaker);
 
         _typeRoutine = StartCoroutine(TypeLine(line.text));
     }
@@ -132,6 +131,34 @@ public class DialogueUI : MonoBehaviour
         }
 
         _isTyping = false;
+    }
+
+    string ResolveSpeakerName(DialogueLine.Speaker speaker)
+    {
+        if (speaker == DialogueLine.Speaker.NPC) return _npcName;
+
+        int index = speaker switch
+        {
+            DialogueLine.Speaker.Character0 => 0,
+            DialogueLine.Speaker.Character1 => 1,
+            DialogueLine.Speaker.Character2 => 2,
+            _                               => -1,
+        };
+
+        string fallback = index switch
+        {
+            0 => fallbackChar0,
+            1 => fallbackChar1,
+            2 => fallbackChar2,
+            _ => "?",
+        };
+
+        if (index < 0 || DataManager.instance == null) return fallback;
+        var statuses = DataManager.instance.partyStatuses;
+        if (index >= statuses.Count) return fallback;
+
+        string charName = statuses[index].charName;
+        return string.IsNullOrEmpty(charName) ? fallback : charName;
     }
 
     void StopTyping()
