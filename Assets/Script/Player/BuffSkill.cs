@@ -63,7 +63,9 @@ public class BuffSkill : SkillBase
 
     private void ApplySelfBuff(BuffSkillData data)
     {
-        StartCoroutine(BuffRoutine(myStat, data));
+        // PartyManager에서 코루틴 실행: 시전자가 죽어 SetActive(false)되어도 코루틴 유지
+        if (PartyManager.instance != null)
+            PartyManager.instance.StartCoroutine(BuffRoutine(myStat, data));
     }
 
     private void ApplyPartyBuff(BuffSkillData data)
@@ -77,7 +79,7 @@ public class BuffSkill : SkillBase
 
             CharacterStat stat = member.GetComponent<CharacterStat>();
             if (stat != null)
-                StartCoroutine(BuffRoutine(stat, data));
+                PartyManager.instance.StartCoroutine(BuffRoutine(stat, data));
         }
     }
 
@@ -104,8 +106,12 @@ public class BuffSkill : SkillBase
 
         yield return new WaitForSeconds(duration);
 
+        if (stat == null) yield break;
+        var buffMember = stat.GetComponent<PartyMemberScript>();
+        // 사망 여부와 관계없이 스탯 버프를 항상 되돌려 CharacterStatus 영구 오염 방지
         ApplyBuffEffects(status, data, skillLevel, -1f, myStat, handler);
-        HideBuffEffect(data, stat);
+        if (buffMember == null || buffMember.CurrentState != PartyMemberScript.MemberState.Dead)
+            HideBuffEffect(data, stat);
     }
 
     private void ShowBuffEffect(BuffSkillData data, CharacterStat stat)

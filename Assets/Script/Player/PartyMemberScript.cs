@@ -184,6 +184,9 @@ public class PartyMemberScript : MonoBehaviour
             _lastFollowDestination = Vector3.positiveInfinity; // 타겟 바뀌면 즉시 재경로
             agent.updateRotation   = false;
             agent.stoppingDistance = stopDistance;
+            // 이전 리더 경로 즉시 초기화 — 남은 경로가 팔로우 로직을 방해하지 않도록
+            agent.ResetPath();
+            agent.velocity = Vector3.zero;
             ChangeState(MemberState.Following);
 
             skillManager?.ResetAttackCount();
@@ -237,8 +240,11 @@ public class PartyMemberScript : MonoBehaviour
         if (CurrentState == MemberState.Following)
         {
             Vector3 dest = targetToFollow.position;
-            // 목표 위치가 충분히 변했을 때만 경로 재계산 — 매 프레임 재계산 방지
-            if ((_lastFollowDestination - dest).sqrMagnitude > FOLLOW_DEST_THRESHOLD * FOLLOW_DEST_THRESHOLD)
+            float approachZoneSqr = stopDistance * 1.5f * (stopDistance * 1.5f);
+
+            // 정지 거리 1.5배 이내에 들어오면 목표 재설정 중단 — 도착 직전 경로 재계산으로 인한 빙빙돌기 방지
+            if (sqrDist >= approachZoneSqr &&
+                (_lastFollowDestination - dest).sqrMagnitude > FOLLOW_DEST_THRESHOLD * FOLLOW_DEST_THRESHOLD)
             {
                 agent.SetDestination(dest);
                 _lastFollowDestination = dest;
@@ -328,7 +334,7 @@ public class PartyMemberScript : MonoBehaviour
 
     private IEnumerator HideAfterDeath()
     {
-        yield return new WaitForSeconds(deathHideDelay);
+        yield return new WaitForSecondsRealtime(deathHideDelay);
         gameObject.SetActive(false);
     }
 

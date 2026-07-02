@@ -59,7 +59,7 @@ public class ItemInstance
         if (data is not EquipItemData equip) return false;
         if (enhancementLevel >= equip.MaxEnhancement) return false;
 
-        bool success = UnityEngine.Random.value <= scroll.successRate;
+        bool success = UnityEngine.Random.value < scroll.successRate;
         if (success)
             enhancementLevel++;
 

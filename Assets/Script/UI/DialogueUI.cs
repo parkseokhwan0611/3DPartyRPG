@@ -46,6 +46,11 @@ public class DialogueUI : MonoBehaviour
         panel?.SetActive(false);
     }
 
+    void OnDestroy()
+    {
+        IsOpen = false;
+    }
+
     void Update()
     {
         if (!IsOpen) return;

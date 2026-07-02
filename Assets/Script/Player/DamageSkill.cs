@@ -94,7 +94,7 @@ public class DamageSkill : SkillBase
         float bonus = myStat.ConsumeNextSkillBonus();
         damage *= (1f + bonus);
 
-        if (Random.value <= myStat.TotalCritRate)
+        if (Random.value < myStat.TotalCritRate)
             damage *= myStat.TotalCritDamage;
 
         return damage;

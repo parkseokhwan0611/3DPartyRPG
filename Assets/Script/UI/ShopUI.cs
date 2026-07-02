@@ -84,9 +84,11 @@ public class ShopUI : MonoBehaviour
     private struct ShopSlotCache
     {
         public Image           icon;
+        public TextMeshProUGUI enhText;     // 강화 텍스트 (상점에선 항상 빈 문자열)
         public TextMeshProUGUI stackText;   // 재고 수량 표시
         public Button          button;
         public CanvasGroup     cg;
+        public int             entryIndex; // ShopData.entries 내 원래 인덱스
     }
     private struct InvSlotCache
     {
@@ -220,9 +222,16 @@ public class ShopUI : MonoBehaviour
             DataManager.instance.OnGoldChanged -= RefreshGold;
     }
 
+    void OnDestroy()
+    {
+        IsOpen = false;
+    }
+
     // ─────────────────────────────────────────────────────────────────
     // 공개 API
     // ─────────────────────────────────────────────────────────────────
+
+    public NpcInteractable CurrentNpc => _currentNpc;
 
     public void Open(NpcInteractable npc)
     {
@@ -265,11 +274,16 @@ public class ShopUI : MonoBehaviour
 
             var cache = new ShopSlotCache
             {
-                icon      = obj.transform.Find("Icon")      ?.GetComponent<Image>(),
-                stackText = obj.transform.Find("StackText")  ?.GetComponent<TextMeshProUGUI>(),
-                button    = obj.GetComponent<Button>(),
-                cg        = cg,
+                icon       = obj.transform.Find("Icon")        ?.GetComponent<Image>(),
+                enhText    = obj.transform.Find("EnhanceText") ?.GetComponent<TextMeshProUGUI>(),
+                stackText  = obj.transform.Find("StackText")   ?.GetComponent<TextMeshProUGUI>(),
+                button     = obj.GetComponent<Button>(),
+                cg         = cg,
+                entryIndex = idx,
             };
+
+            // 상점 아이템은 강화 수치 없음 — 텍스트 비워서 프리팹 기본값 숨기기
+            if (cache.enhText != null) cache.enhText.text = "";
 
             if (cache.icon != null)
             {
@@ -302,7 +316,7 @@ public class ShopUI : MonoBehaviour
     void RefreshAllShopSlots()
     {
         for (int i = 0; i < _shopSlots.Count; i++)
-            ApplyShopSlotState(i, _shopSlots[i]);
+            ApplyShopSlotState(_shopSlots[i].entryIndex, _shopSlots[i]);
     }
 
     void RefreshInventory()
@@ -548,13 +562,16 @@ public class ShopUI : MonoBehaviour
         }
 
         // 확정: 골드 차감 → 재고 차감 → 아이템 지급
-        DataManager.instance.SpendGold(totalCost);
+        if (!DataManager.instance.SpendGold(totalCost)) return;
         _currentNpc.TryConsumeStock(_selectedShopIndex, qty);
 
         var newInst = isEquip
             ? new ItemInstance(entry.item)
             : new ItemInstance(entry.item, qty);
         inv.TryAddItem(newInst);
+
+        // 퀵슬롯에 등록된 포션이면 전투 UI 수량 갱신
+        PotionQuickSlotManager.instance?.RefreshIfRegistered(entry.item);
 
         RefreshAllShopSlots();
         RefreshInventory();
@@ -681,10 +698,13 @@ public class ShopUI : MonoBehaviour
     void OnInputValueChanged(string s)
     {
         if (_syncLock || quantitySlider == null || string.IsNullOrEmpty(s)) return;
-        if (!int.TryParse(s, out int v)) return;
+        if (!int.TryParse(s, out int v) || v < 1) return;
         int max     = (int)quantitySlider.maxValue;
         int clamped = Mathf.Clamp(v, 1, max);
         _syncLock = true;
+        // 최대치 초과 입력 시 텍스트도 즉시 보정
+        if (clamped != v && quantityInput != null)
+            quantityInput.text = clamped.ToString();
         quantitySlider.value = clamped;
         _syncLock = false;
     }

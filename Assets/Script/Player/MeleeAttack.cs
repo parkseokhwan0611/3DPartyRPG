@@ -70,7 +70,7 @@ public class MeleeAttack : AttackBase
         Color damageColor = myStat.GetDamageColor(true); // 근접 = 물리 피해
         bool isTargetSet = false; // UI 타겟 설정을 한 번만 하기 위한 변수
 
-        if (Random.value <= myStat.TotalCritRate)
+        if (Random.value < myStat.TotalCritRate)
         {
             damage *= myStat.TotalCritDamage;
             CinemachineShake.Instance.ShakeCamera(10f, .2f);

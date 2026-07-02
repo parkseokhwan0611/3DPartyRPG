@@ -84,17 +84,6 @@ public class PotionQuickSlotManager : MonoBehaviour
         CharacterStat stat = leader.GetComponent<CharacterStat>();
         if (stat == null) return;
 
-        if (type == ConsumableType.HpPotion)
-        {
-            stat.HealHp(cd.healAmount);
-            _hpCooldownRemaining = cd.cooldown;
-        }
-        else
-        {
-            stat.RecoverMp(cd.healAmount);
-            _mpCooldownRemaining = cd.cooldown;
-        }
-
         if (DataManager.instance != null)
         {
             DataManager.instance.sharedInventory.ConsumeItem(slot, 1);
@@ -105,6 +94,17 @@ public class PotionQuickSlotManager : MonoBehaviour
             else
                 OnMpSlotChanged?.Invoke();
         }
+
+        if (type == ConsumableType.HpPotion)
+        {
+            stat.HealHp(cd.healAmount);
+            _hpCooldownRemaining = cd.cooldown;
+        }
+        else
+        {
+            stat.RecoverMp(cd.healAmount);
+            _mpCooldownRemaining = cd.cooldown;
+        }
     }
 
     // ─────────────────────────────────────────────────────────────────
@@ -113,6 +113,13 @@ public class PotionQuickSlotManager : MonoBehaviour
 
     public ItemInstance GetSlot(ConsumableType type)
         => type == ConsumableType.HpPotion ? _hpSlot : _mpSlot;
+
+    /// <summary>인벤토리 스택 변경 후 호출 — 등록된 포션이면 UI 갱신 이벤트 발생.</summary>
+    public void RefreshIfRegistered(ItemData data)
+    {
+        if (_hpSlot?.data == data) OnHpSlotChanged?.Invoke();
+        if (_mpSlot?.data == data) OnMpSlotChanged?.Invoke();
+    }
 
     public float GetCooldownRemaining(ConsumableType type)
         => type == ConsumableType.HpPotion ? _hpCooldownRemaining : _mpCooldownRemaining;

@@ -98,6 +98,9 @@ public class NpcInteractable : MonoBehaviour
 
         _playerInRange = inRange;
         ShowPrompt(inRange && !_isDialogueActive);
+
+        if (!inRange && ShopUI.IsOpen && ShopUI.instance?.CurrentNpc == this)
+            ShopUI.instance.Close();
     }
 
     void ShowPrompt(bool active)

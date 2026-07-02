@@ -98,6 +98,8 @@ public class HealSkill : SkillBase
             yield return new WaitForSeconds(interval);
             elapsed += interval;
             if (stat == null) yield break;
+            var member = stat.GetComponent<PartyMemberScript>();
+            if (member != null && member.CurrentState == PartyMemberScript.MemberState.Dead) yield break;
             HealTarget(stat, amountPerTick);
         }
     }

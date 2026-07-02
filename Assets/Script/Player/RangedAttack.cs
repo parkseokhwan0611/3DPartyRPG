@@ -93,7 +93,7 @@ public class RangedAttack : AttackBase
 
         float damage = myStat.TotalAp * (1f + myStat.MagicDmgBonus);
 
-        if (Random.value <= myStat.TotalCritRate)
+        if (Random.value < myStat.TotalCritRate)
         {
             damage *= myStat.TotalCritDamage;
             CinemachineShake.Instance.ShakeCamera(10f, .2f);

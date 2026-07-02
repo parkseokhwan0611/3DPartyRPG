@@ -61,9 +61,9 @@ public class PartyManager : MonoBehaviour
     void HandleLeaderChangeInput()
     {
         // 죽은 캐릭터는 ChangeLeader 내부에서 걸러짐
-        if (Input.GetKeyDown(KeyCode.Alpha1)) ChangeLeader(0);
-        if (Input.GetKeyDown(KeyCode.Alpha2)) ChangeLeader(1);
-        if (Input.GetKeyDown(KeyCode.Alpha3)) ChangeLeader(2);
+        if (Input.GetKeyDown(KeyCode.A)) ChangeLeader(0);
+        if (Input.GetKeyDown(KeyCode.S)) ChangeLeader(1);
+        if (Input.GetKeyDown(KeyCode.D)) ChangeLeader(2);
     }
 
     void HandleCommandInput()
@@ -226,7 +226,7 @@ public class PartyManager : MonoBehaviour
 
     private System.Collections.IEnumerator ShowGameOverAfterDelay(float delay)
     {
-        yield return new WaitForSeconds(delay);
+        yield return new WaitForSecondsRealtime(delay);
         // yield 도중 gameOverUI가 파괴됐을 경우를 대비해 재확인
         if (gameOverUI == null) yield break;
         gameOverUI.SetActive(true);
