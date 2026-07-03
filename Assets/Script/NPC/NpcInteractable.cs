@@ -11,6 +11,8 @@ public class NpcInteractable : MonoBehaviour
 
     [Header("NPC 정보")]
     [SerializeField] string  npcName = "상인";
+    [Tooltip("세이브/로드용 고유 ID. 비워두면 GameObject 이름을 사용.")]
+    [SerializeField] string  npcId;
     [SerializeField] NpcType npcType = NpcType.Shop;
 
     [Header("대화 (순서대로 출력)")]
@@ -36,11 +38,12 @@ public class NpcInteractable : MonoBehaviour
     private bool _isDialogueActive = false;
 
     // ─────────────────────────────────────────────────────────────────
-    // 공개 접근자 (ShopUI에서 사용)
+    // 공개 접근자 (ShopUI / SaveManager에서 사용)
     // ─────────────────────────────────────────────────────────────────
 
-    public ShopData  ShopData  => shopData;
-    public string    NpcName   => npcName;
+    public ShopData ShopData => shopData;
+    public string   NpcName  => npcName;
+    public string   NpcId    => !string.IsNullOrEmpty(npcId) ? npcId : gameObject.name;
 
     /// <summary>해당 ShopEntry 인덱스의 남은 재고. 제한 없으면 int.MaxValue.</summary>
     public int GetRemainingStock(int entryIndex)
@@ -65,6 +68,24 @@ public class NpcInteractable : MonoBehaviour
         return true;
     }
 
+    /// <summary>세이브용: 현재 재고 상태 반환 (hasStockLimit 항목만).</summary>
+    public NpcStockSave GetStockSave()
+    {
+        var save = new NpcStockSave { npcId = NpcId };
+        foreach (var kvp in _remainingStock)
+            save.stocks.Add(new NpcStockEntry { entryIndex = kvp.Key, remaining = kvp.Value });
+        return save;
+    }
+
+    /// <summary>로드용: 저장된 재고 상태 복원.</summary>
+    public void RestoreStock(NpcStockSave save)
+    {
+        _remainingStock.Clear();
+        if (save?.stocks == null) return;
+        foreach (var entry in save.stocks)
+            _remainingStock[entry.entryIndex] = entry.remaining;
+    }
+
     // ─────────────────────────────────────────────────────────────────
     // Unity 생명주기
     // ─────────────────────────────────────────────────────────────────
@@ -78,7 +99,9 @@ public class NpcInteractable : MonoBehaviour
     {
         UpdateProximity();
 
-        if (_playerInRange && !_isDialogueActive && Input.GetKeyDown(KeyCode.F))
+        // 인벤토리·상점·대화 UI가 열려있으면 F키 차단
+        bool anyUiOpen = MenuTabUI.IsOpen || ShopUI.IsOpen || DialogueUI.IsOpen;
+        if (_playerInRange && !_isDialogueActive && !anyUiOpen && Input.GetKeyDown(KeyCode.F))
             StartDialogue();
     }
 
@@ -141,7 +164,6 @@ public class NpcInteractable : MonoBehaviour
                 break;
 
             case NpcType.Story:
-                // 스토리 NPC는 대화 완료 후 별도 처리 없음
                 break;
         }
     }

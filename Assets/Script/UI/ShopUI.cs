@@ -72,10 +72,8 @@ public class ShopUI : MonoBehaviour
     private NpcInteractable _currentNpc;
     private int             _selectedShopIndex = -1;
     private ItemInstance    _selectedInvItem;
-    private bool            _syncLock;          // 구매 슬라이더↔인풋 동기화 무한루프 방지
-    private bool            _sellSyncLock;      // 판매 슬라이더↔인풋 동기화 무한루프 방지
-    private CanvasGroup     _shopGridCG;
-    private CanvasGroup     _invGridCG;
+    private bool            _syncLock;     // 구매 슬라이더↔인풋 동기화 무한루프 방지
+    private bool            _sellSyncLock; // 판매 슬라이더↔인풋 동기화 무한루프 방지
 
     // ─────────────────────────────────────────────────────────────────
     // 슬롯 캐시
@@ -84,10 +82,9 @@ public class ShopUI : MonoBehaviour
     private struct ShopSlotCache
     {
         public Image           icon;
-        public TextMeshProUGUI enhText;     // 강화 텍스트 (상점에선 항상 빈 문자열)
-        public TextMeshProUGUI stackText;   // 재고 수량 표시
+        public TextMeshProUGUI enhText;    // 강화 텍스트 (상점에선 항상 빈 문자열)
+        public TextMeshProUGUI stackText;  // 재고 수량 표시
         public Button          button;
-        public CanvasGroup     cg;
         public int             entryIndex; // ShopData.entries 내 원래 인덱스
     }
     private struct InvSlotCache
@@ -126,18 +123,6 @@ public class ShopUI : MonoBehaviour
                 stackText = obj.transform.Find("StackText")  ?.GetComponent<TextMeshProUGUI>(),
                 button    = obj.GetComponent<Button>(),
             };
-        }
-
-        // 그리드 CanvasGroup 자동 생성 (Inspector 연결 불필요)
-        if (shopContent != null)
-        {
-            _shopGridCG = shopContent.GetComponent<CanvasGroup>();
-            if (_shopGridCG == null) _shopGridCG = shopContent.gameObject.AddComponent<CanvasGroup>();
-        }
-        if (inventoryContent != null)
-        {
-            _invGridCG = inventoryContent.GetComponent<CanvasGroup>();
-            if (_invGridCG == null) _invGridCG = inventoryContent.gameObject.AddComponent<CanvasGroup>();
         }
 
         // 수량 슬라이더/인풋 연동
@@ -256,48 +241,69 @@ public class ShopUI : MonoBehaviour
     // 슬롯 빌드 / 갱신
     // ─────────────────────────────────────────────────────────────────
 
+    // 상점 그리드는 항상 5×5 = 25칸으로 표시
+    private const int SHOP_GRID_SIZE = 25;
+
     void BuildShopSlots()
     {
         foreach (Transform t in shopContent) Destroy(t.gameObject);
         _shopSlots.Clear();
-        if (_currentNpc?.ShopData?.entries == null) return;
 
-        for (int i = 0; i < _currentNpc.ShopData.entries.Count; i++)
+        if (_currentNpc?.ShopData?.entries != null)
         {
-            int   idx   = i;
-            var   entry = _currentNpc.ShopData.entries[i];
-            if (entry?.item == null) continue;
-
-            var obj = Instantiate(shopSlotPrefab, shopContent);
-            var cg = obj.GetComponent<CanvasGroup>();
-            if (cg == null) cg = obj.AddComponent<CanvasGroup>();
-
-            var cache = new ShopSlotCache
+            for (int i = 0; i < _currentNpc.ShopData.entries.Count; i++)
             {
-                icon       = obj.transform.Find("Icon")        ?.GetComponent<Image>(),
-                enhText    = obj.transform.Find("EnhanceText") ?.GetComponent<TextMeshProUGUI>(),
-                stackText  = obj.transform.Find("StackText")   ?.GetComponent<TextMeshProUGUI>(),
-                button     = obj.GetComponent<Button>(),
-                cg         = cg,
-                entryIndex = idx,
-            };
+                int   idx   = i;
+                var   entry = _currentNpc.ShopData.entries[i];
+                if (entry?.item == null) continue;
 
-            // 상점 아이템은 강화 수치 없음 — 텍스트 비워서 프리팹 기본값 숨기기
-            if (cache.enhText != null) cache.enhText.text = "";
+                var obj = Instantiate(shopSlotPrefab, shopContent);
+                var cache = new ShopSlotCache
+                {
+                    icon       = obj.transform.Find("Icon")        ?.GetComponent<Image>(),
+                    enhText    = obj.transform.Find("EnhanceText") ?.GetComponent<TextMeshProUGUI>(),
+                    stackText  = obj.transform.Find("StackText")   ?.GetComponent<TextMeshProUGUI>(),
+                    button     = obj.GetComponent<Button>(),
+                    entryIndex = idx,
+                };
 
-            if (cache.icon != null)
-            {
-                cache.icon.sprite  = entry.item.icon;
-                cache.icon.enabled = entry.item.icon != null;
+                if (cache.enhText != null) cache.enhText.text = "";
+                if (cache.icon != null)
+                {
+                    cache.icon.sprite  = entry.item.icon;
+                    cache.icon.enabled = entry.item.icon != null;
+                    cache.icon.color   = Color.white;
+                }
+
+                _shopSlots.Add(cache);
+                ApplyShopSlotState(idx, cache);
+                cache.button?.onClick.AddListener(() => OnShopSlotClicked(idx));
             }
+        }
 
-            _shopSlots.Add(cache);
-            ApplyShopSlotState(idx, cache);
-            cache.button?.onClick.AddListener(() => OnShopSlotClicked(idx));
+        // 나머지 칸을 빈 슬롯으로 채워 항상 5×5 그리드 유지
+        int fillCount = Mathf.Max(SHOP_GRID_SIZE, _shopSlots.Count);
+        for (int i = _shopSlots.Count; i < fillCount; i++)
+        {
+            var obj = Instantiate(shopSlotPrefab, shopContent);
+
+            var icon      = obj.transform.Find("Icon")        ?.GetComponent<Image>();
+            var enhText   = obj.transform.Find("EnhanceText") ?.GetComponent<TextMeshProUGUI>();
+            var stackText = obj.transform.Find("StackText")   ?.GetComponent<TextMeshProUGUI>();
+            if (icon      != null) { icon.sprite = null; icon.enabled = false; }
+            if (enhText   != null) enhText.text   = "";
+            if (stackText != null) stackText.text = "";
+
+            // 슬롯 배경을 반투명으로 → 빈 칸 시각적 구분
+            var bg = obj.GetComponent<Image>();
+            if (bg != null) bg.color = new Color(bg.color.r, bg.color.g, bg.color.b, 0.25f);
+
+            var btn = obj.GetComponent<Button>();
+            if (btn != null) btn.interactable = false;
         }
     }
 
-    // 재고 상태 → 슬롯 알파·상호작용 갱신
+    // 재고 상태 → 슬롯 아이콘 색상·버튼 활성 갱신
     void ApplyShopSlotState(int idx, ShopSlotCache cache)
     {
         if (_currentNpc?.ShopData == null || idx >= _currentNpc.ShopData.entries.Count) return;
@@ -308,9 +314,9 @@ public class ShopUI : MonoBehaviour
         if (cache.stackText != null)
             cache.stackText.text = entry.hasStockLimit ? $"{remaining}" : "";
 
-        cache.cg.alpha          = outOfStock ? 0.4f : 1f;
-        cache.cg.interactable   = !outOfStock;
-        cache.cg.blocksRaycasts = !outOfStock;
+        // 품절 시 아이콘 반투명 + 버튼 비활성
+        if (cache.icon   != null) cache.icon.color       = outOfStock ? new Color(1f, 1f, 1f, 0.35f) : Color.white;
+        if (cache.button != null) cache.button.interactable = !outOfStock;
     }
 
     void RefreshAllShopSlots()
@@ -457,15 +463,29 @@ public class ShopUI : MonoBehaviour
 
     void SetGridsInteractable(bool interactable)
     {
-        if (_shopGridCG != null)
+        // 인벤토리 그리드: 모든 버튼 일괄 토글
+        if (inventoryContent != null)
+            foreach (Transform child in inventoryContent)
+            {
+                var btn = child.GetComponent<Button>();
+                if (btn != null) btn.interactable = interactable;
+            }
+
+        // 상점 그리드: 잠금은 일괄 비활성, 잠금 해제는 품절 상태 복원
+        if (shopContent != null)
         {
-            _shopGridCG.interactable   = interactable;
-            _shopGridCG.blocksRaycasts = interactable;
-        }
-        if (_invGridCG != null)
-        {
-            _invGridCG.interactable   = interactable;
-            _invGridCG.blocksRaycasts = interactable;
+            if (!interactable)
+            {
+                foreach (Transform child in shopContent)
+                {
+                    var btn = child.GetComponent<Button>();
+                    if (btn != null) btn.interactable = false;
+                }
+            }
+            else
+            {
+                RefreshAllShopSlots(); // 품절 여부 반영해서 복원
+            }
         }
     }
 
@@ -628,8 +648,9 @@ public class ShopUI : MonoBehaviour
     void ExecuteSell(int qty)
     {
         if (_selectedInvItem == null || DataManager.instance == null) return;
-        var inv        = DataManager.instance.sharedInventory;
-        int totalPrice = _selectedInvItem.data.sellPrice * qty;
+        var      inv        = DataManager.instance.sharedInventory;
+        int      totalPrice = _selectedInvItem.data.sellPrice * qty;
+        ItemData soldData   = _selectedInvItem.data;
 
         if (_selectedInvItem.IsEquipment)
             inv.Remove(_selectedInvItem);
@@ -637,6 +658,28 @@ public class ShopUI : MonoBehaviour
             inv.ConsumeItem(_selectedInvItem, qty);
 
         DataManager.instance.AddGold(totalPrice);
+
+        // 판매 아이템이 포션 퀵슬롯에 등록된 경우 갱신 또는 해제
+        if (!_selectedInvItem.IsEquipment)
+        {
+            var mgr = PotionQuickSlotManager.instance;
+            if (mgr != null)
+            {
+                if (_selectedInvItem.stackCount <= 0)
+                {
+                    // 전부 팔린 경우 — 해당 타입 슬롯 해제
+                    if (mgr.GetSlot(ConsumableType.HpPotion)?.data == soldData)
+                        mgr.DeregisterPotion(ConsumableType.HpPotion);
+                    else if (mgr.GetSlot(ConsumableType.MpPotion)?.data == soldData)
+                        mgr.DeregisterPotion(ConsumableType.MpPotion);
+                }
+                else
+                {
+                    // 일부만 판 경우 — 수량 UI만 갱신
+                    mgr.RefreshIfRegistered(soldData);
+                }
+            }
+        }
 
         RefreshInventory();
         CloseDetailPopup();

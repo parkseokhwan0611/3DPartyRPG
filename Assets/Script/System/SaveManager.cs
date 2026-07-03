@@ -48,6 +48,11 @@ public class SaveManager : MonoBehaviour
                     .GetSlot(ConsumableType.MpPotion)?.data?.itemId ?? "";
             }
 
+            // NPC 재고
+            data.npcStocks.Clear();
+            foreach (var npc in FindObjectsOfType<NpcInteractable>())
+                data.npcStocks.Add(npc.GetStockSave());
+
             // 씬 / 위치
             data.sceneName = SceneManager.GetActiveScene().name;
             data.partyPositions.Clear();
@@ -160,6 +165,24 @@ public class SaveManager : MonoBehaviour
         }
 
         RestoreQuickSlots(data);
+        RestoreNpcStocks(data);
+    }
+
+    private void RestoreNpcStocks(GameSaveData data)
+    {
+        if (data.npcStocks == null || data.npcStocks.Count == 0) return;
+        var allNpcs = FindObjectsOfType<NpcInteractable>();
+        foreach (var stockSave in data.npcStocks)
+        {
+            foreach (var npc in allNpcs)
+            {
+                if (npc.NpcId == stockSave.npcId)
+                {
+                    npc.RestoreStock(stockSave);
+                    break;
+                }
+            }
+        }
     }
 
     private void RestoreQuickSlots(GameSaveData data)

@@ -25,6 +25,9 @@ public class GameSaveData
 
     // 스킬 퀵슬롯 / 쿨타임
     public List<CharacterQuickSlotSave> quickSlots = new List<CharacterQuickSlotSave>();
+
+    // NPC 재고
+    public List<NpcStockSave> npcStocks = new List<NpcStockSave>();
 }
 
 // ─────────────────────────────────────────────────────────────────
@@ -56,6 +59,24 @@ public class SkillLevelEntry
 {
     public string skillId;
     public int    level;
+}
+
+// ─────────────────────────────────────────────────────────────────
+// NPC 재고 세이브 데이터
+// ─────────────────────────────────────────────────────────────────
+
+[System.Serializable]
+public class NpcStockSave
+{
+    public string           npcId;
+    public List<NpcStockEntry> stocks = new List<NpcStockEntry>();
+}
+
+[System.Serializable]
+public class NpcStockEntry
+{
+    public int entryIndex;
+    public int remaining;
 }
 
 // ─────────────────────────────────────────────────────────────────
