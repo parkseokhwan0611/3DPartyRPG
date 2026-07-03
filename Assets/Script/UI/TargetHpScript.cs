@@ -8,6 +8,7 @@ public class TargetHpScript : MonoBehaviour
     [Header("# UI References")]
     public GameObject rootVisual; // 평소엔 꺼두었다가 타겟팅 시 켜짐
     public TMPro.TextMeshProUGUI nameText;
+    public TMPro.TextMeshProUGUI hpText;
     public UnityEngine.UI.Image hpBarFill;
 
     private EnemyHp currentTarget;
@@ -32,8 +33,9 @@ public class TargetHpScript : MonoBehaviour
     void UpdateHPBar(float currentHp, float maxHp)
     {
         hpBarFill.fillAmount = currentHp / maxHp;
-        
-        // 적이 죽으면 UI 끄기
+        if (hpText != null)
+            hpText.text = $"{currentHp:F0} / {maxHp:F0}";
+
         if (currentHp <= 0) rootVisual.SetActive(false);
     }
 }
