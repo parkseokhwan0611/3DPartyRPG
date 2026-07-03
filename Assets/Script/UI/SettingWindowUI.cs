@@ -9,12 +9,19 @@ public class SettingWindowUI : MonoBehaviour
     [SerializeField] Button saveButton;
     [SerializeField] TextMeshProUGUI saveResultText;
 
+    [Header("# 메뉴 이동")]
+    [SerializeField] Button mainMenuButton;
+    [SerializeField] Button exitButton;
+    [Tooltip("메인 메뉴 씬 이름")]
+    [SerializeField] string titleSceneName = "Title";
+
     private Coroutine _feedbackCoroutine;
 
     void Start()
     {
-        if (saveButton != null)
-            saveButton.onClick.AddListener(OnSaveClicked);
+        saveButton    ?.onClick.AddListener(OnSaveClicked);
+        mainMenuButton?.onClick.AddListener(OnMainMenuClicked);
+        exitButton    ?.onClick.AddListener(OnExitClicked);
 
         if (saveResultText != null)
             saveResultText.gameObject.SetActive(false);
@@ -26,6 +33,21 @@ public class SettingWindowUI : MonoBehaviour
 
         bool success = SaveManager.instance.Save();
         ShowFeedback(success ? "저장 완료!" : "보스 룸에서는 저장할 수 없습니다.");
+    }
+
+    private void OnMainMenuClicked()
+    {
+        Time.timeScale = 1f; // 게임 오버 등으로 멈춘 경우 복구
+        SceneLoader.Load(titleSceneName);
+    }
+
+    private void OnExitClicked()
+    {
+#if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;
+#else
+        Application.Quit();
+#endif
     }
 
     private void ShowFeedback(string message)

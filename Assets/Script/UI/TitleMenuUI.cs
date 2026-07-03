@@ -1,6 +1,5 @@
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.SceneManagement;
 
 public class TitleMenuUI : MonoBehaviour
 {
@@ -39,7 +38,7 @@ public class TitleMenuUI : MonoBehaviour
         _isTransitioning = true;
         SetButtonsInteractable(false);
         DataManager.instance?.InitData();
-        SceneManager.LoadScene(gameSceneName);
+        SceneLoader.Load(gameSceneName);
     }
 
     private void OnLoadGameClicked()
@@ -49,7 +48,7 @@ public class TitleMenuUI : MonoBehaviour
         _isTransitioning = true;
         SetButtonsInteractable(false);
         SaveManager.instance.Load();
-        SceneManager.LoadScene(gameSceneName);
+        SceneLoader.Load(gameSceneName);
     }
 
     private void OnExitClicked()
