@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -62,6 +63,9 @@ public class ShopUI : MonoBehaviour
     [SerializeField] Button         cancelSellButton;
 
 
+    [Header("메시지 텍스트")]
+    [SerializeField] TextMeshProUGUI messageText;
+
     [Header("등급 스프라이트 (0:일반 ~ 4:신화)")]
     [SerializeField] Sprite[] gradeSprites;
 
@@ -72,8 +76,9 @@ public class ShopUI : MonoBehaviour
     private NpcInteractable _currentNpc;
     private int             _selectedShopIndex = -1;
     private ItemInstance    _selectedInvItem;
-    private bool            _syncLock;     // 구매 슬라이더↔인풋 동기화 무한루프 방지
-    private bool            _sellSyncLock; // 판매 슬라이더↔인풋 동기화 무한루프 방지
+    private bool            _syncLock;           // 구매 슬라이더↔인풋 동기화 무한루프 방지
+    private bool            _sellSyncLock;       // 판매 슬라이더↔인풋 동기화 무한루프 방지
+    private Coroutine       _messageClearRoutine;
 
     // ─────────────────────────────────────────────────────────────────
     // 슬롯 캐시
@@ -226,6 +231,7 @@ public class ShopUI : MonoBehaviour
         BuildShopSlots();
         RefreshInventory();
         RefreshGold();
+        ClearMessage();
         CloseDetailPopup();
     }
 
@@ -515,20 +521,28 @@ public class ShopUI : MonoBehaviour
     void OpenQuantityPanel(int unitPrice)
     {
         if (_currentNpc?.ShopData == null || _selectedShopIndex < 0) return;
+        if (DataManager.instance == null) return;
         var entry = _currentNpc.ShopData.entries[_selectedShopIndex];
 
-        // 재고 제한만 반영. 골드 제한은 구매 버튼 클릭 시 검증.
-        int stockMax = entry.hasStockLimit
+        // 재고 한도와 골드 한도 중 작은 값이 실제 구매 가능 수량
+        int stockMax      = entry.hasStockLimit
             ? _currentNpc.GetRemainingStock(_selectedShopIndex)
             : 99;
-        int maxQty = Mathf.Clamp(stockMax, 1, 99);
+        int maxAffordable = unitPrice > 0 ? DataManager.instance.gold / unitPrice : 99;
+        int maxQty        = Mathf.Clamp(Mathf.Min(stockMax, maxAffordable), 0, 99);
 
         _syncLock = true;
-        if (quantitySlider != null) { quantitySlider.maxValue = maxQty; quantitySlider.value = 1; }
-        if (quantityInput  != null) quantityInput.text = "1";
+        if (quantitySlider != null)
+        {
+            quantitySlider.maxValue = Mathf.Max(1, maxQty);
+            quantitySlider.value    = 1;
+        }
+        // 살 수 없으면 0 표시, 슬라이더는 맨 왼쪽(min)
+        if (quantityInput != null) quantityInput.text = maxQty > 0 ? "1" : "0";
         _syncLock = false;
 
-        // 구매 버튼·취소 버튼 숨기고 수량 패널 표시, 그리드 잠금
+        if (maxQty <= 0) ShowMessage("골드가 부족합니다.");
+
         buyButton   ?.gameObject.SetActive(false);
         cancelButton?.gameObject.SetActive(false);
         quantityPanel?.SetActive(true);
@@ -564,12 +578,12 @@ public class ShopUI : MonoBehaviour
         // 사전 검증 (골드 / 재고 / 인벤토리 공간)
         if (DataManager.instance.gold < totalCost)
         {
-            Debug.Log("[ShopUI] 골드 부족");
+            ShowMessage("골드가 부족합니다.");
             return;
         }
         if (entry.hasStockLimit && _currentNpc.GetRemainingStock(_selectedShopIndex) < qty)
         {
-            Debug.Log("[ShopUI] 재고 부족");
+            ShowMessage("재고가 부족합니다.");
             return;
         }
         bool hasSpace = isEquip
@@ -577,7 +591,7 @@ public class ShopUI : MonoBehaviour
             : inv.Items.Count < Inventory.MaxSlots || HasExistingStack(inv, entry.item);
         if (!hasSpace)
         {
-            Debug.Log("[ShopUI] 인벤토리 가득 참");
+            ShowMessage("인벤토리가 가득 찼습니다.");
             return;
         }
 
@@ -762,6 +776,31 @@ public class ShopUI : MonoBehaviour
         if (quantityInput  != null) quantityInput.text   = clamped.ToString();
         if (quantitySlider != null) quantitySlider.value = clamped;
         _syncLock = false;
+    }
+
+    // ─────────────────────────────────────────────────────────────────
+    // 메시지
+    // ─────────────────────────────────────────────────────────────────
+
+    void ShowMessage(string msg)
+    {
+        if (messageText == null) return;
+        messageText.text = msg;
+        if (_messageClearRoutine != null) StopCoroutine(_messageClearRoutine);
+        _messageClearRoutine = StartCoroutine(ClearMessageAfterDelay(2.5f));
+    }
+
+    void ClearMessage()
+    {
+        if (_messageClearRoutine != null) { StopCoroutine(_messageClearRoutine); _messageClearRoutine = null; }
+        if (messageText != null) messageText.text = "";
+    }
+
+    private IEnumerator ClearMessageAfterDelay(float delay)
+    {
+        yield return new WaitForSecondsRealtime(delay);
+        if (messageText != null) messageText.text = "";
+        _messageClearRoutine = null;
     }
 
     // ─────────────────────────────────────────────────────────────────
