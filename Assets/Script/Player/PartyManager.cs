@@ -23,6 +23,7 @@ public class PartyManager : MonoBehaviour
 
     private int enemyLayer;
     private Camera mainCamera;
+    private Vector3 _lastMoveDestination = Vector3.positiveInfinity;
 
     // ─────────────────────────────────────────────────────────────────
     // Unity 생명주기
@@ -108,6 +109,7 @@ public class PartyManager : MonoBehaviour
 
     void DispatchAttackCommand(RaycastHit hit)
     {
+        _lastMoveDestination = Vector3.positiveInfinity; // 공격 명령이 이동 목적지를 덮어씀
         foreach (var member in partyMembers)
         {
             if (member.CurrentState == PartyMemberScript.MemberState.Dead) continue;
@@ -120,6 +122,7 @@ public class PartyManager : MonoBehaviour
 
     void DispatchMoveCommand(Vector3 destination)
     {
+        _lastMoveDestination = destination;
         foreach (var member in partyMembers)
         {
             if (member.CurrentState == PartyMemberScript.MemberState.Dead) continue;
@@ -179,6 +182,17 @@ public class PartyManager : MonoBehaviour
         // 생존 멤버에게만 새 순서 통보
         foreach (var member in newOrder)
             member.UpdateChainOrder(newOrder);
+
+        // 이동 목적지가 있고 새 리더가 아직 도착 전이면 목적지 이어받기
+        if (_lastMoveDestination != Vector3.positiveInfinity)
+        {
+            float distSqr      = (newLeader.transform.position - _lastMoveDestination).sqrMagnitude;
+            float stopThresh   = newLeader.agent.stoppingDistance + 0.5f;
+            if (distSqr > stopThresh * stopThresh)
+                newLeader.agent.SetDestination(_lastMoveDestination);
+            else
+                _lastMoveDestination = Vector3.positiveInfinity; // 이미 도착 → 기록 초기화
+        }
     }
 
     // ─────────────────────────────────────────────────────────────────
