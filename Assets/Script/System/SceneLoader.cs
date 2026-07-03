@@ -87,6 +87,11 @@ public class SceneLoader : MonoBehaviour
     private void ShowRandomTip()
     {
         if (tipText == null || tips == null || tips.Length == 0) return;
-        tipText.text = tips[Random.Range(0, tips.Length)];
+        string raw = tips[Random.Range(0, tips.Length)];
+        // 공백 단위로만 줄바꿈되도록 각 단어를 <nobr>로 감쌈
+        string[] words = raw.Split(' ');
+        for (int i = 0; i < words.Length; i++)
+            words[i] = $"<nobr>{words[i]}</nobr>";
+        tipText.text = string.Join(" ", words);
     }
 }
