@@ -5,7 +5,8 @@ public enum EnhanceResult
     Success,
     Fail,
     AlreadyMax,
-    InvalidItem,   // 장비가 아니거나 주문서가 아님
+    InvalidItem,      // 장비가 아니거나 주문서가 아님
+    WrongScrollType,  // 무기 주문서→방어구, 또는 방어구 주문서→무기 시도
 }
 
 /// <summary>
@@ -20,7 +21,7 @@ public static class EnhancementSystem
     {
         if (equipment == null || scroll == null) return EnhanceResult.InvalidItem;
         if (equipment.data is not EquipItemData equip) return EnhanceResult.InvalidItem;
-        if (scroll.consumableType != ConsumableType.EnhancementScroll) return EnhanceResult.InvalidItem;
+        if (!IsScrollCompatible(scroll, equip)) return EnhanceResult.WrongScrollType;
         if (equipment.enhancementLevel >= equip.MaxEnhancement) return EnhanceResult.AlreadyMax;
 
         bool success = equipment.TryEnhance(scroll);
@@ -29,6 +30,18 @@ public static class EnhancementSystem
             TryRecalculateIfEquipped(equipment, ownerPartyIndex);
 
         return success ? EnhanceResult.Success : EnhanceResult.Fail;
+    }
+
+    /// <summary>주문서 타입과 장비 종류가 호환되는지 검사.</summary>
+    public static bool IsScrollCompatible(ConsumableData scroll, EquipItemData equip)
+    {
+        return scroll.consumableType switch
+        {
+            ConsumableType.WeaponScroll => equip.equipType is EquipType.Sword or EquipType.Staff,
+            ConsumableType.ArmorScroll  => equip.equipType is EquipType.Hat or EquipType.Chest
+                                                           or EquipType.Gloves or EquipType.Boots,
+            _ => false,
+        };
     }
 
     // 아이템이 현재 장착 중이라면 CharacterStatus 스탯 재계산

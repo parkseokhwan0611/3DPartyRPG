@@ -23,7 +23,7 @@ public class NpcInteractable : MonoBehaviour
 
     [Header("상호작용 설정")]
     [Tooltip("리더와의 상호작용 가능 거리 (m)")]
-    [SerializeField] float      interactRange = 3f;
+    [SerializeField] float      interactRange = 2f;
     [Tooltip("NPC 머리 위에 배치한 WorldSpace [F] 프롬프트 오브젝트")]
     [SerializeField] GameObject promptObject;
 
@@ -100,7 +100,7 @@ public class NpcInteractable : MonoBehaviour
         UpdateProximity();
 
         // 인벤토리·상점·대화 UI가 열려있으면 F키 차단
-        bool anyUiOpen = MenuTabUI.IsOpen || ShopUI.IsOpen || DialogueUI.IsOpen;
+        bool anyUiOpen = MenuTabUI.IsOpen || ShopUI.IsOpen || DialogueUI.IsOpen || EnhancementUI.IsOpen;
         if (_playerInRange && !_isDialogueActive && !anyUiOpen && Input.GetKeyDown(KeyCode.F))
             StartDialogue();
     }
@@ -159,8 +159,7 @@ public class NpcInteractable : MonoBehaviour
                 break;
 
             case NpcType.Enhancement:
-                // EnhancementUI 구현 후 연결: EnhancementUI.instance?.Open();
-                Debug.Log($"[NPC] {npcName} 강화 UI 오픈 (EnhancementUI 미구현)");
+                EnhancementUI.instance?.Open();
                 break;
 
             case NpcType.Story:

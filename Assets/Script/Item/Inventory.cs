@@ -104,7 +104,8 @@ public class Inventory
             {
                 ConsumableType.HpPotion          => 0,
                 ConsumableType.MpPotion          => 1,
-                ConsumableType.EnhancementScroll => 2,
+                ConsumableType.WeaponScroll => 2,
+                ConsumableType.ArmorScroll  => 2,
                 _                                => 3,
             };
         }

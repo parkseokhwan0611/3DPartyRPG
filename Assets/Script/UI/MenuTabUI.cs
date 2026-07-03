@@ -54,11 +54,17 @@ public class MenuTabUI : MonoBehaviour
             ToggleMenu();
         }
 
-        // ESC: 인벤토리 내 팝업 먼저 닫기, 없으면 메뉴 전체 닫기
-        if (Input.GetKeyDown(KeyCode.Escape) && menuWindow.activeSelf)
+        if (Input.GetKeyDown(KeyCode.Escape))
         {
-            if (InventoryUI.instance != null && InventoryUI.instance.TryCloseSubPanel()) return;
-            CloseMenu();
+            // 강화 UI가 열려있으면 먼저 닫기
+            if (EnhancementUI.IsOpen) { EnhancementUI.instance?.Close(); return; }
+
+            // 인벤토리 내 팝업 먼저 닫기, 없으면 메뉴 전체 닫기
+            if (menuWindow.activeSelf)
+            {
+                if (InventoryUI.instance != null && InventoryUI.instance.TryCloseSubPanel()) return;
+                CloseMenu();
+            }
         }
     }
 
@@ -66,8 +72,8 @@ public class MenuTabUI : MonoBehaviour
     private static bool TryCloseBlockingUI()
     {
         if (DialogueUI.IsOpen) return true;  // 대화 중엔 Tab 무시
-        if (ShopUI.IsOpen) { ShopUI.instance?.Close(); return true; }
-        // if (EnhancementUI.IsOpen) { EnhancementUI.instance?.Close(); return true; }
+        if (ShopUI.IsOpen)        { ShopUI.instance?.Close();        return true; }
+        if (EnhancementUI.IsOpen) { EnhancementUI.instance?.Close(); return true; }
         return false;
     }
 

@@ -168,9 +168,10 @@ public class DataManager : MonoBehaviour
             if (item?.data == null || string.IsNullOrEmpty(item.data.itemId)) continue;
             save.inventory.Add(new ItemSaveEntry
             {
-                itemId           = item.data.itemId,
-                stackCount       = item.stackCount,
-                enhancementLevel = item.enhancementLevel,
+                itemId             = item.data.itemId,
+                stackCount         = item.stackCount,
+                enhancementLevel   = item.enhancementLevel,
+                enhancementBonuses = item.enhancementBonuses ?? new System.Collections.Generic.List<OptionBonus>(),
             });
         }
 
@@ -182,10 +183,11 @@ public class DataManager : MonoBehaviour
                 if (kvp.Value?.data == null || string.IsNullOrEmpty(kvp.Value.data.itemId)) continue;
                 save.equipped.Add(new EquipSaveEntry
                 {
-                    characterIndex   = i,
-                    slot             = kvp.Key,
-                    itemId           = kvp.Value.data.itemId,
-                    enhancementLevel = kvp.Value.enhancementLevel,
+                    characterIndex     = i,
+                    slot               = kvp.Key,
+                    itemId             = kvp.Value.data.itemId,
+                    enhancementLevel   = kvp.Value.enhancementLevel,
+                    enhancementBonuses = kvp.Value.enhancementBonuses ?? new System.Collections.Generic.List<OptionBonus>(),
                 });
             }
         }
@@ -241,7 +243,8 @@ public class DataManager : MonoBehaviour
             ItemData data = FindItemById(entry.itemId);
             if (data == null) continue;
             var inst = new ItemInstance(data, entry.stackCount);
-            inst.enhancementLevel = entry.enhancementLevel;
+            inst.enhancementLevel   = entry.enhancementLevel;
+            inst.enhancementBonuses = entry.enhancementBonuses ?? new System.Collections.Generic.List<OptionBonus>();
             sharedInventory.TryAddItem(inst);
         }
 
@@ -251,7 +254,8 @@ public class DataManager : MonoBehaviour
             if (entry.characterIndex < 0 || entry.characterIndex >= partyEquipments.Count) continue;
             if (FindItemById(entry.itemId) is not EquipItemData equipData) continue;
             var inst = new ItemInstance(equipData);
-            inst.enhancementLevel = entry.enhancementLevel;
+            inst.enhancementLevel   = entry.enhancementLevel;
+            inst.enhancementBonuses = entry.enhancementBonuses ?? new System.Collections.Generic.List<OptionBonus>();
             partyEquipments[entry.characterIndex].EquipToSlot(inst, entry.slot);
             partyEquipments[entry.characterIndex].RecalculateStats(partyStatuses[entry.characterIndex]);
         }

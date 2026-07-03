@@ -38,6 +38,7 @@ public class DialogueUI : MonoBehaviour
     private string         _npcName;
     private bool           _isTyping;
     private Coroutine      _typeRoutine;
+    private bool           _justOpened;  // Open()된 프레임에서 F키 중복 처리 방지
 
     void Awake()
     {
@@ -54,6 +55,7 @@ public class DialogueUI : MonoBehaviour
     void Update()
     {
         if (!IsOpen) return;
+        if (_justOpened) { _justOpened = false; return; }
         if (Input.GetKeyDown(KeyCode.F) || Input.GetKeyDown(KeyCode.Return))
             Advance();
     }
@@ -74,7 +76,8 @@ public class DialogueUI : MonoBehaviour
         _lineIndex  = 0;
         _onComplete = onComplete;
 
-        IsOpen = true;
+        IsOpen      = true;
+        _justOpened = true;
         panel.SetActive(true);
         SetCombatUI(false);
 
