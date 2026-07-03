@@ -53,6 +53,12 @@ public abstract class AttackBase : MonoBehaviour
         if (firstAttackDelay > 0)
         {
             firstAttackDelay -= Time.deltaTime;
+            // 딜레이 중에도 타겟이 사라지거나 이미 죽었으면 즉시 해제
+            if (currentTarget == null || (targetHealth != null && targetHealth.isDead))
+            {
+                firstAttackDelay = 0f;
+                ClearTarget();
+            }
             return;
         }
 
