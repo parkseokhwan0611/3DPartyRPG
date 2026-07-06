@@ -24,6 +24,10 @@ public abstract class AttackBase : MonoBehaviour
     public bool IsAttackAnimPlaying { get; protected set; } = false;
     private float firstAttackDelay  = 0f;
 
+    // 타겟이 일정 거리 이상 움직였을 때만 재경로 — 매 프레임 SetDestination 재호출로 인한 회피 벡터 재계산/떨림 방지
+    private Vector3 _lastChaseDestination = Vector3.positiveInfinity;
+    private const float ChaseDestThreshold = 0.3f;
+
     // ─────────────────────────────────────────
     // 참조 컴포넌트
     // ─────────────────────────────────────────
@@ -92,7 +96,12 @@ public abstract class AttackBase : MonoBehaviour
         }
         else
         {
-            agent.SetDestination(currentTarget.position);
+            Vector3 dest = currentTarget.position;
+            if ((_lastChaseDestination - dest).sqrMagnitude > ChaseDestThreshold * ChaseDestThreshold)
+            {
+                agent.SetDestination(dest);
+                _lastChaseDestination = dest;
+            }
         }
     }
 
@@ -131,6 +140,7 @@ public abstract class AttackBase : MonoBehaviour
 
         currentTarget = target;
         CacheAimPoint(currentTarget);
+        _lastChaseDestination = Vector3.positiveInfinity; // 새 타겟은 즉시 재경로
 
         if (currentTarget != null)
         {
@@ -159,6 +169,7 @@ public abstract class AttackBase : MonoBehaviour
 
         currentTarget = target;
         CacheAimPoint(currentTarget);
+        _lastChaseDestination = Vector3.positiveInfinity; // 새 타겟은 즉시 재경로
 
         if (currentTarget != null)
         {

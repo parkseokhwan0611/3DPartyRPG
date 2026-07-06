@@ -78,7 +78,9 @@ public class PartyMemberScript : MonoBehaviour
         agent.acceleration    = 12f;
         agent.angularSpeed    = 1000f;
         agent.stoppingDistance = stopDistance;
-        agent.updateRotation  = isLeader;
+        // 회전은 항상 스크립트가 전담(FaceMovementDirection / SmoothLookAt / AttackBase.LookAtTarget) —
+        // NavMeshAgent 자체 회전과 동시에 켜두면 서로 다른 방향으로 매 프레임 덮어써서 빙빙 도는 것처럼 보임
+        agent.updateRotation  = false;
 
         if (leaderVFX != null) leaderVFX.SetActive(isLeader);
     }
@@ -174,7 +176,6 @@ public class PartyMemberScript : MonoBehaviour
             isLeader               = true;
             _chainIndex            = 0;
             targetToFollow         = null;
-            agent.updateRotation   = true;
             agent.stoppingDistance = 0.1f;
             agent.avoidancePriority = LEADER_AVOIDANCE_PRIORITY;
             // 팔로워 시절 잔여 경로/속도 초기화 — 남아있으면 리더 첫 이동 명령의 회피 계산이 꼬임
@@ -190,7 +191,6 @@ public class PartyMemberScript : MonoBehaviour
             _chainIndex            = myIndex;
             targetToFollow         = newOrder[myIndex - 1].transform;
             _lastFollowDestination = Vector3.positiveInfinity; // 타겟 바뀌면 즉시 재경로
-            agent.updateRotation   = false;
             agent.stoppingDistance = stopDistance;
             agent.avoidancePriority = FOLLOWER_AVOIDANCE_PRIORITY;
             // 이전 리더 경로 즉시 초기화 — 남은 경로가 팔로우 로직을 방해하지 않도록
@@ -218,6 +218,19 @@ public class PartyMemberScript : MonoBehaviour
                 agent.velocity = Vector3.zero;
             }
         }
+
+        FaceMovementDirection();
+    }
+
+    // agent.updateRotation을 안 쓰므로, 이동 중일 때 진행 방향을 보도록 직접 회전
+    void FaceMovementDirection()
+    {
+        Vector3 moveDir = agent.desiredVelocity;
+        moveDir.y = 0f;
+        if (moveDir.sqrMagnitude < 0.01f) return;
+
+        Quaternion targetRot = Quaternion.LookRotation(moveDir.normalized);
+        transform.rotation   = Quaternion.Slerp(transform.rotation, targetRot, Time.deltaTime * rotationSpeed);
     }
 
     void HandleFollowLogic()

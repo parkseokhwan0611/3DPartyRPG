@@ -140,7 +140,27 @@ public class PartyManager : MonoBehaviour
         float distToLeader = Vector3.Distance(currentLeader.transform.position, destination);
         float minMoveDist  = currentLeader.agent.radius + 0.1f;
 
-        if (distToLeader <= minMoveDist)
+        bool blocked = distToLeader <= minMoveDist;
+
+        // 목적지가 다른 파티원(팔로워)의 반경 안쪽인 경우도 동일하게 처리 —
+        // 그 자리에 실제로 들어갈 수 없어 서로 회피 벡터만 계속 재계산하며 도는 것을 방지
+        if (!blocked)
+        {
+            foreach (var member in partyMembers)
+            {
+                if (member == currentLeader) continue;
+                if (member.CurrentState == PartyMemberScript.MemberState.Dead) continue;
+
+                float blockDist = currentLeader.agent.radius + member.agent.radius + 0.1f;
+                if ((member.transform.position - destination).sqrMagnitude <= blockDist * blockDist)
+                {
+                    blocked = true;
+                    break;
+                }
+            }
+        }
+
+        if (blocked)
         {
             currentLeader.agent.ResetPath();
             currentLeader.agent.velocity = Vector3.zero;
