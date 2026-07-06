@@ -5,7 +5,7 @@ using UnityEngine.EventSystems;
 /// 장착 슬롯 버튼에 붙는 드롭 핸들러.
 /// InventoryUI.Awake에서 AddComponent로 생성되므로 Inspector 노출 없음.
 /// </summary>
-public class EquipSlotDropTarget : MonoBehaviour, IDropHandler
+public class EquipSlotDropTarget : MonoBehaviour, IDropHandler, IPointerClickHandler
 {
     [HideInInspector] public EquipSlot   slot;
     [HideInInspector] public InventoryUI inventoryUI;
@@ -17,6 +17,13 @@ public class EquipSlotDropTarget : MonoBehaviour, IDropHandler
         if (!SlotMatches(equip, slot)) return;
 
         inventoryUI.EquipFromDrag(drag.item, slot);
+    }
+
+    // 더블클릭으로 해제(해제 버튼과 동일한 결과)
+    public void OnPointerClick(PointerEventData eventData)
+    {
+        if (eventData.clickCount < 2) return;
+        inventoryUI?.UnequipSlot(slot);
     }
 
     // Ring 아이템은 Ring1·Ring2 어느 슬롯에든 드롭 허용

@@ -6,12 +6,20 @@ using UnityEngine.UI;
 /// EnhancementUI 인벤토리 슬롯에 붙는 드래그 핸들러.
 /// 장비와 강화 주문서 모두 드래그 가능.
 /// </summary>
-public class EnhancementDragItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
+public class EnhancementDragItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerClickHandler
 {
     [HideInInspector] public ItemInstance item;
 
     private GameObject _ghost;
     private Canvas     _canvas;
+
+    // 더블클릭으로도 등록(드래그·등록 버튼과 동일한 결과)
+    public void OnPointerClick(PointerEventData eventData)
+    {
+        if (eventData.clickCount < 2) return;
+        if (item == null) return;
+        EnhancementUI.instance?.RegisterItem(item);
+    }
 
     public void OnBeginDrag(PointerEventData data)
     {

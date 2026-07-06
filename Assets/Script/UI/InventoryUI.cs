@@ -453,16 +453,19 @@ public class InventoryUI : MonoBehaviour
     // 장착 / 해제 / 정렬
     // ─────────────────────────────────────────────────────────────────
 
-    void OnEquipClicked()
+    void OnEquipClicked() => EquipItem(selectedItem);
+
+    /// <summary>장비 장착 — 장착 버튼·더블클릭 공용. 슬롯은 자동 결정(반지는 1→2 순서).</summary>
+    public void EquipItem(ItemInstance item)
     {
-        if (selectedItem == null || DataManager.instance == null) return;
+        if (item == null || !item.IsEquipment || DataManager.instance == null) return;
 
         var inv   = DataManager.instance.sharedInventory;
         var equip = DataManager.instance.partyEquipments[selectedCharIndex];
         var stat  = DataManager.instance.partyStatuses[selectedCharIndex];
 
-        ItemInstance prev = equip.Equip(selectedItem);
-        inv.Remove(selectedItem);
+        ItemInstance prev = equip.Equip(item);
+        inv.Remove(item);
         if (prev != null) inv.TryAddItem(prev);
         equip.RecalculateStats(stat);
 
@@ -490,7 +493,10 @@ public class InventoryUI : MonoBehaviour
         RefreshInventory();
     }
 
-    void OnUnequipClicked()
+    void OnUnequipClicked() => UnequipSlot(selectedEquipSlot);
+
+    /// <summary>장비 해제 — 해제 버튼·더블클릭 공용.</summary>
+    public void UnequipSlot(EquipSlot slot)
     {
         if (DataManager.instance == null) return;
 
@@ -498,7 +504,7 @@ public class InventoryUI : MonoBehaviour
         var equip = DataManager.instance.partyEquipments[selectedCharIndex];
         var stat  = DataManager.instance.partyStatuses[selectedCharIndex];
 
-        ItemInstance item = equip.Unequip(selectedEquipSlot);
+        ItemInstance item = equip.Unequip(slot);
         if (item != null) inv.TryAddItem(item);
         equip.RecalculateStats(stat);
 

@@ -192,6 +192,20 @@ public class EnhancementUI : MonoBehaviour
         RefreshInventory();
     }
 
+    // 등록 대상 자동 분기 (장비/주문서) — 더블클릭·등록 버튼 공용
+    public void RegisterItem(ItemInstance item)
+    {
+        if (item == null) return;
+        if (item == _equip || item == _scroll) return; // 이미 등록됨
+
+        if (item.IsEquipment)
+            RegisterEquip(item);
+        else if (item.data is ConsumableData cd
+              && (cd.consumableType == ConsumableType.WeaponScroll
+               || cd.consumableType == ConsumableType.ArmorScroll))
+            RegisterScroll(item);
+    }
+
     public void UnregisterEquip()
     {
         _equip = null;
@@ -550,16 +564,7 @@ public class EnhancementUI : MonoBehaviour
         _popupItem = null;
     }
 
-    private void OnEnrollClicked()
-    {
-        if (_popupItem == null) return;
-        if (_popupItem.IsEquipment)
-            RegisterEquip(_popupItem);
-        else if (_popupItem.data is ConsumableData cd
-              && (cd.consumableType == ConsumableType.WeaponScroll
-               || cd.consumableType == ConsumableType.ArmorScroll))
-            RegisterScroll(_popupItem);
-    }
+    private void OnEnrollClicked() => RegisterItem(_popupItem);
 
     private void OnUnEnrollClicked()
     {
