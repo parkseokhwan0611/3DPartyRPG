@@ -370,6 +370,15 @@ public class ShopUI : MonoBehaviour
     {
         if (goldText == null || DataManager.instance == null) return;
         goldText.text = $"{DataManager.instance.gold:N0} G";
+
+        // 팝업이 구매 상태로 열려있는 도중 골드가 바뀌면 버튼 활성 상태도 갱신
+        if (buyButton != null && buyButton.gameObject.activeSelf
+            && _selectedShopIndex >= 0 && _currentNpc?.ShopData != null
+            && _selectedShopIndex < _currentNpc.ShopData.entries.Count)
+        {
+            int price = _currentNpc.ShopData.entries[_selectedShopIndex].item.buyPrice;
+            buyButton.interactable = DataManager.instance.gold >= price;
+        }
     }
 
     // ─────────────────────────────────────────────────────────────────
@@ -451,6 +460,10 @@ public class ShopUI : MonoBehaviour
         buyButton ?.gameObject.SetActive(isBuying);
         sellButton?.gameObject.SetActive(!isBuying);
         cancelButton?.gameObject.SetActive(true);
+
+        // 하나도 살 수 없는 골드량이면 구매 버튼 자체를 비활성화
+        if (isBuying && buyButton != null)
+            buyButton.interactable = DataManager.instance != null && DataManager.instance.gold >= price;
 
         // 수량 패널은 구매 버튼 클릭 시 열리므로, 팝업 열 때는 항상 닫아둠
         quantityPanel?.SetActive(false);
