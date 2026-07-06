@@ -1,6 +1,9 @@
 using UnityEngine;
 using UnityEngine.UI;
 
+// ShopUI 등 자체적으로 ESC를 처리하는 UI보다 먼저 Update가 돌아야
+// IsOpen 플래그를 같은 프레임에 오독해서 설정창이 겹쳐 열리는 경합을 방지할 수 있음
+[DefaultExecutionOrder(-100)]
 public class MenuTabUI : MonoBehaviour
 {
     [Header("# 메뉴 창 루트")]
@@ -59,11 +62,16 @@ public class MenuTabUI : MonoBehaviour
             // 강화 UI가 열려있으면 먼저 닫기
             if (EnhancementUI.IsOpen) { EnhancementUI.instance?.Close(); return; }
 
-            // 인벤토리 내 팝업 먼저 닫기, 없으면 메뉴 전체 닫기
             if (menuWindow.activeSelf)
             {
+                // 인벤토리 내 팝업 먼저 닫기, 없으면 메뉴 전체 닫기
                 if (InventoryUI.instance != null && InventoryUI.instance.TryCloseSubPanel()) return;
                 CloseMenu();
+            }
+            else if (!DialogueUI.IsOpen && !ShopUI.IsOpen)
+            {
+                // 게임 화면(메뉴 닫힌 상태)에서는 설정 창을 바로 띄움
+                OpenMenuToSettings();
             }
         }
     }
@@ -103,6 +111,13 @@ public class MenuTabUI : MonoBehaviour
         IsOpen = true;
         menuWindow.SetActive(true);
         ShowPanel(statWindow);
+    }
+
+    private void OpenMenuToSettings()
+    {
+        IsOpen = true;
+        menuWindow.SetActive(true);
+        ShowPanel(settingWindow);
     }
 
     private void CloseMenu()

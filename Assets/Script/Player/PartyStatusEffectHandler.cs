@@ -167,6 +167,22 @@ public class PartyStatusEffectHandler : MonoBehaviour
                 else
                     status.moveSpeedMultiplier /= (1f - effect.value);
                 break;
+
+            case StatusEffectType.ApUp:
+                status.addedInt += effect.value * multiplier;
+                break;
+            case StatusEffectType.CritRateUp:
+                status.addedCritRate += effect.value * multiplier;
+                break;
+            case StatusEffectType.CritDamageUp:
+                status.addedCritDamage += effect.value * multiplier;
+                break;
+            case StatusEffectType.MaxHpUp:
+                status.addedVit += effect.value * multiplier;
+                break;
+            case StatusEffectType.HpOnHitUp:
+                status.hpOnHit += effect.value * multiplier;
+                break;
         }
     }
 

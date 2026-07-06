@@ -21,6 +21,11 @@ public enum StatusEffectType
     ManaRegen,
     Shield,
     DebuffImmune,
+    ApUp,
+    CritRateUp,
+    CritDamageUp,
+    MaxHpUp,
+    HpOnHitUp,
 }
 
 [System.Serializable]

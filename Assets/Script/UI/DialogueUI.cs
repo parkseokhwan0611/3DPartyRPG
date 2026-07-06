@@ -56,7 +56,7 @@ public class DialogueUI : MonoBehaviour
     {
         if (!IsOpen) return;
         if (_justOpened) { _justOpened = false; return; }
-        if (Input.GetKeyDown(KeyCode.F) || Input.GetKeyDown(KeyCode.Return))
+        if (Input.GetKeyDown(KeyCode.F) || Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.Space))
             Advance();
     }
 

@@ -65,7 +65,7 @@ public class BuffSkill : SkillBase
     {
         // PartyManager에서 코루틴 실행: 시전자가 죽어 SetActive(false)되어도 코루틴 유지
         if (PartyManager.instance != null)
-            PartyManager.instance.StartCoroutine(BuffRoutine(myStat, data));
+            PartyManager.instance.StartCoroutine(BuffPresentationRoutine(myStat, data));
     }
 
     private void ApplyPartyBuff(BuffSkillData data)
@@ -79,20 +79,17 @@ public class BuffSkill : SkillBase
 
             CharacterStat stat = member.GetComponent<CharacterStat>();
             if (stat != null)
-                PartyManager.instance.StartCoroutine(BuffRoutine(stat, data));
+                PartyManager.instance.StartCoroutine(BuffPresentationRoutine(stat, data));
         }
     }
 
-    private IEnumerator BuffRoutine(CharacterStat stat, BuffSkillData data)
+    // 수치 적용/지속시간/원복은 PartyStatusEffectHandler가 전담. 여기서는 연출(아우라/VFX)과 UI 타이머만 관리.
+    private IEnumerator BuffPresentationRoutine(CharacterStat stat, BuffSkillData data)
     {
         if (stat == null) yield break;
 
-        if (DataManager.instance == null) yield break;
-        if (stat.partyIndex < 0 || stat.partyIndex >= DataManager.instance.partyStatuses.Count) yield break;
-        var status  = DataManager.instance.partyStatuses[stat.partyIndex];
         var handler = stat.GetComponent<PartyStatusEffectHandler>();
-
-        ApplyBuffEffects(status, data, skillLevel, 1f, myStat, handler);
+        ApplyBuffEffects(data, skillLevel, myStat, handler);
         ShowBuffEffect(data, stat);
 
         float duration = data.GetDuration(skillLevel);
@@ -108,8 +105,6 @@ public class BuffSkill : SkillBase
 
         if (stat == null) yield break;
         var buffMember = stat.GetComponent<PartyMemberScript>();
-        // 사망 여부와 관계없이 스탯 버프를 항상 되돌려 CharacterStatus 영구 오염 방지
-        ApplyBuffEffects(status, data, skillLevel, -1f, myStat, handler);
         if (buffMember == null || buffMember.CurrentState != PartyMemberScript.MemberState.Dead)
             HideBuffEffect(data, stat);
     }
@@ -135,33 +130,44 @@ public class BuffSkill : SkillBase
             stat.DeactivateBuffAura(data.auraIndex);
     }
 
-    private void ApplyBuffEffects(CharacterStatus status, BuffSkillData data, int level, float multiplier, CharacterStat caster, PartyStatusEffectHandler targetHandler = null)
+    // 스탯 반영은 PartyStatusEffectHandler.ApplyBuff(StatusEffect)에 위임 — 적용/지속시간/원복을 한 곳에서 관리
+    private void ApplyBuffEffects(BuffSkillData data, int level, CharacterStat caster, PartyStatusEffectHandler targetHandler)
     {
+        if (targetHandler == null) return;
+
         foreach (var effect in data.buffEffects)
         {
-            // DispelDebuff는 즉시 발동 전용 — 적용 시(multiplier>0)에만 실행, 만료 시 되돌리지 않음
+            // DispelDebuff는 즉시 발동 전용(지속시간 없음)
             if (effect.effectType == BuffSkillData.BuffEffectType.DispelDebuff)
             {
-                if (multiplier > 0f)
-                    targetHandler?.DispelAllDebuffs();
+                targetHandler.DispelAllDebuffs();
                 continue;
             }
 
+            StatusEffectType? mapped = MapToStatusEffectType(effect.effectType);
+            if (mapped == null) continue; // SpeedBonus/Shield/ManaRegen/HpRegen/DebuffImmune: 미구현 (기존과 동일)
+
             float flat    = effect.GetValue(level);
             float scaling = GetScalingValue(effect, level, caster);
-            float value   = (flat + scaling) * multiplier;
+            float value   = flat + scaling;
 
-            switch (effect.effectType)
-            {
-                case BuffSkillData.BuffEffectType.AtkBonus:      status.addedStr        += value; break;
-                case BuffSkillData.BuffEffectType.ApBonus:       status.addedInt        += value; break;
-                case BuffSkillData.BuffEffectType.DefBonus:      status.addedDef        += value; break;
-                case BuffSkillData.BuffEffectType.MagicResBonus: status.addedMagicRes   += value; break;
-                case BuffSkillData.BuffEffectType.CritRate:      status.addedCritRate   += value; break;
-                case BuffSkillData.BuffEffectType.CritDamage:    status.addedCritDamage += value; break;
-                case BuffSkillData.BuffEffectType.MaxHpBonus:    status.addedVit        += value; break;
-                case BuffSkillData.BuffEffectType.HpOnHit:       status.hpOnHit         += value; break;
-            }
+            targetHandler.ApplyBuff(new StatusEffect(mapped.Value, value, data.GetDuration(level), gameObject));
+        }
+    }
+
+    private StatusEffectType? MapToStatusEffectType(BuffSkillData.BuffEffectType type)
+    {
+        switch (type)
+        {
+            case BuffSkillData.BuffEffectType.AtkBonus:      return StatusEffectType.AtkUp;
+            case BuffSkillData.BuffEffectType.ApBonus:       return StatusEffectType.ApUp;
+            case BuffSkillData.BuffEffectType.DefBonus:      return StatusEffectType.DefUp;
+            case BuffSkillData.BuffEffectType.MagicResBonus: return StatusEffectType.MagicResUp;
+            case BuffSkillData.BuffEffectType.CritRate:      return StatusEffectType.CritRateUp;
+            case BuffSkillData.BuffEffectType.CritDamage:    return StatusEffectType.CritDamageUp;
+            case BuffSkillData.BuffEffectType.MaxHpBonus:    return StatusEffectType.MaxHpUp;
+            case BuffSkillData.BuffEffectType.HpOnHit:       return StatusEffectType.HpOnHitUp;
+            default:                                         return null;
         }
     }
 
