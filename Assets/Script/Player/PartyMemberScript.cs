@@ -48,6 +48,10 @@ public class PartyMemberScript : MonoBehaviour
     private float _walkAnimTimer       = 0f;
     private const float WALK_ANIM_DELAY = 0.12f;
 
+    // 리더가 팔로워 사이를 지날 때 팔로워가 양보하도록 우선순위 차등 (값이 낮을수록 우선순위 높음)
+    private const int LEADER_AVOIDANCE_PRIORITY   = 0;
+    private const int FOLLOWER_AVOIDANCE_PRIORITY = 50;
+
     private Vector3 _lastFollowDestination = Vector3.positiveInfinity;
     private const float FOLLOW_DEST_THRESHOLD = 0.3f;
 
@@ -172,6 +176,10 @@ public class PartyMemberScript : MonoBehaviour
             targetToFollow         = null;
             agent.updateRotation   = true;
             agent.stoppingDistance = 0.1f;
+            agent.avoidancePriority = LEADER_AVOIDANCE_PRIORITY;
+            // 팔로워 시절 잔여 경로/속도 초기화 — 남아있으면 리더 첫 이동 명령의 회피 계산이 꼬임
+            agent.ResetPath();
+            agent.velocity = Vector3.zero;
             ChangeState(MemberState.Idle);
 
             if (leaderVFX != null) leaderVFX.SetActive(true);
@@ -184,6 +192,7 @@ public class PartyMemberScript : MonoBehaviour
             _lastFollowDestination = Vector3.positiveInfinity; // 타겟 바뀌면 즉시 재경로
             agent.updateRotation   = false;
             agent.stoppingDistance = stopDistance;
+            agent.avoidancePriority = FOLLOWER_AVOIDANCE_PRIORITY;
             // 이전 리더 경로 즉시 초기화 — 남은 경로가 팔로우 로직을 방해하지 않도록
             agent.ResetPath();
             agent.velocity = Vector3.zero;

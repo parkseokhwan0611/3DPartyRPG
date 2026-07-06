@@ -135,7 +135,20 @@ public class PartyManager : MonoBehaviour
         }
 
         // 리더에게만 목적지 설정 (팔로워는 PartyMemberScript가 자체적으로 따라옴)
-        currentLeader.agent.SetDestination(destination);
+        // 목적지가 자기 반경 안쪽처럼 너무 가까우면 SetDestination 대신 즉시 정지 —
+        // NavMeshAgent가 회피 벡터를 반복 재계산하며 제자리에서 빙빙 도는 현상 방지
+        float distToLeader = Vector3.Distance(currentLeader.transform.position, destination);
+        float minMoveDist  = currentLeader.agent.radius + 0.1f;
+
+        if (distToLeader <= minMoveDist)
+        {
+            currentLeader.agent.ResetPath();
+            currentLeader.agent.velocity = Vector3.zero;
+        }
+        else
+        {
+            currentLeader.agent.SetDestination(destination);
+        }
 
         SpawnMarker("MoveMarker", destination);
     }
