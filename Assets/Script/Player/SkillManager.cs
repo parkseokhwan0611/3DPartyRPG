@@ -25,6 +25,10 @@ public class SkillManager : MonoBehaviour
     // 현재 실행 중인 스킬 (후딜 포함 전체)
     private SkillBase currentSkill;
 
+    // 사거리 밖이라 즉시 발동 못 한 데미지 스킬 — 접근 중 대기, 도착 시 자동 발동
+    private SkillBase _pendingSkill;
+    private Transform _pendingTarget;
+
     // ─────────────────────────────────────────────────────────────────
     // Unity 생명주기
     // ─────────────────────────────────────────────────────────────────
@@ -46,8 +50,12 @@ public class SkillManager : MonoBehaviour
 
     void Update()
     {
-        if (memberScript == null || memberScript.isLeader) return;
-        TryAutoUseHealSkill();
+        if (memberScript == null) return;
+
+        TryExecutePendingSkill();
+
+        if (!memberScript.isLeader)
+            TryAutoUseHealSkill();
     }
 
     void OnDestroy()
@@ -89,6 +97,8 @@ public class SkillManager : MonoBehaviour
             currentSkill = null;
         }
         IsActivatingSkill = false;
+        _pendingSkill  = null;
+        _pendingTarget = null;
     }
 
     // ─────────────────────────────────────────────────────────────────
@@ -148,13 +158,48 @@ public class SkillManager : MonoBehaviour
         if (!memberScript.isLeader) return;
 
         SkillBase skill = GetSlot(index);
-        if (skill == null) return;
+        if (skill == null || skill.skillData == null) return;
 
         // 후딜 캔슬 — 현재 스킬 후딜 강제 종료 후 다음 스킬 실행
         if (currentSkill != null && !IsActivatingSkill)
             ForceStopCurrentSkill();
 
         Transform target = ResolveSkillTarget(skill);
+
+        // 데미지 스킬이 사거리 밖이면 즉시 실패시키지 않고, 접근해서 도착하면 자동 발동되도록 대기
+        if (skill.skillData.skillType == SkillData.SkillType.Damage
+            && target != null && skill.IsReady && !IsActivatingSkill
+            && skill.skillData is DamageSkillData dmgData
+            && Vector3.Distance(transform.position, target.position) > dmgData.castRange)
+        {
+            _pendingSkill  = skill;
+            _pendingTarget = target;
+            return;
+        }
+
+        skill.TryUseSkill(target);
+    }
+
+    // 대기 중인 스킬이 사거리 안에 들어오면 자동 발동, 타겟을 잃으면 대기 취소
+    private void TryExecutePendingSkill()
+    {
+        if (_pendingSkill == null) return;
+
+        if (_pendingTarget == null || attackBase.currentTarget != _pendingTarget || IsActivatingSkill)
+        {
+            _pendingSkill  = null;
+            _pendingTarget = null;
+            return;
+        }
+
+        var dmgData = _pendingSkill.skillData as DamageSkillData;
+        if (dmgData == null || Vector3.Distance(transform.position, _pendingTarget.position) > dmgData.castRange)
+            return; // 아직 사거리 밖 — 계속 대기
+
+        SkillBase skill  = _pendingSkill;
+        Transform target = _pendingTarget;
+        _pendingSkill  = null;
+        _pendingTarget = null;
         skill.TryUseSkill(target);
     }
 

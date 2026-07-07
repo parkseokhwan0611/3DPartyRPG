@@ -97,7 +97,10 @@ public abstract class AttackBase : MonoBehaviour
         else
         {
             Vector3 dest = currentTarget.position;
-            if ((_lastChaseDestination - dest).sqrMagnitude > ChaseDestThreshold * ChaseDestThreshold)
+            bool destMoved = (_lastChaseDestination - dest).sqrMagnitude > ChaseDestThreshold * ChaseDestThreshold;
+
+            // 목적지가 그대로여도 경로가 없으면(스킬 시전 등으로 ResetPath된 경우) 반드시 재경로
+            if (destMoved || !agent.hasPath)
             {
                 agent.SetDestination(dest);
                 _lastChaseDestination = dest;

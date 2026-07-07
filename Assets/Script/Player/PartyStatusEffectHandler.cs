@@ -36,11 +36,9 @@ public class PartyStatusEffectHandler : MonoBehaviour
         // 디버프 면역 중이면 디버프 무시
         if (IsDebuffImmune && IsDebuff(effect.effectType)) return;
 
-        // 같은 타입 갱신
-        RemoveBuff(effect.effectType);
-
+        // 같은 타입이라도 교체하지 않고 독립적으로 누적 — 각자 자기 지속시간에 따라 개별 종료
         activeBuffs.Add(effect);
-        StartCoroutine(BuffRoutine(effect));
+        effect.routine = StartCoroutine(BuffRoutine(effect));
         ApplyBuffValue(effect, true);
 
         OnBuffChanged?.Invoke(effect.effectType, true);
@@ -81,25 +79,30 @@ public class PartyStatusEffectHandler : MonoBehaviour
     // 버프 제거
     // ─────────────────────────────────────────────────────────────────
 
+    // 해당 타입의 활성 버프를 전부 제거 (스택 전체 해제)
     public void RemoveBuff(StatusEffectType type)
     {
-        StatusEffect existing = activeBuffs.Find(e => e.effectType == type);
-        if (existing == null) return;
+        var matches = activeBuffs.FindAll(e => e.effectType == type);
+        foreach (var effect in matches)
+            RemoveBuffInstance(effect);
+    }
 
-        activeBuffs.Remove(existing);
-        ApplyBuffValue(existing, false);
-        OnBuffChanged?.Invoke(type, false);
+    private void RemoveBuffInstance(StatusEffect effect)
+    {
+        if (!activeBuffs.Remove(effect)) return;
+
+        if (effect.routine != null)
+            StopCoroutine(effect.routine);
+
+        ApplyBuffValue(effect, false);
+        OnBuffChanged?.Invoke(effect.effectType, false);
     }
 
     public void DispelAllDebuffs()
     {
         var debuffs = activeBuffs.FindAll(e => IsDebuff(e.effectType));
         foreach (var debuff in debuffs)
-        {
-            activeBuffs.Remove(debuff);
-            ApplyBuffValue(debuff, false);
-            OnBuffChanged?.Invoke(debuff.effectType, false);
-        }
+            RemoveBuffInstance(debuff);
     }
 
     public bool HasActiveDebuff()
@@ -114,7 +117,8 @@ public class PartyStatusEffectHandler : MonoBehaviour
     private IEnumerator BuffRoutine(StatusEffect effect)
     {
         yield return new WaitForSeconds(effect.duration);
-        RemoveBuff(effect.effectType);
+        effect.routine = null; // 정상 만료 시 StopCoroutine 대상 아님을 표시
+        RemoveBuffInstance(effect);
     }
 
     private IEnumerator ShieldRoutine(float amount, float duration)

@@ -68,7 +68,6 @@ public class MeleeAttack : AttackBase
 
         float damage = myStat.TotalAtk * (1f + myStat.PhysDmgBonus);
         Color damageColor = myStat.GetDamageColor(true); // 근접 = 물리 피해
-        bool isTargetSet = false; // UI 타겟 설정을 한 번만 하기 위한 변수
 
         if (Random.value < myStat.TotalCritRate)
         {
@@ -82,19 +81,9 @@ public class MeleeAttack : AttackBase
         {
             // 최적화: 한 번만 가져와서 사용
             var enemyStat = enemy.GetComponent<EnemyHp>();
-            
-            if (enemyStat != null)
-            {
-                // 인터페이스 방식 데미지 전달
-                enemyStat.TakeDamage(damage, gameObject, damageColor); // 색상 전달
 
-                // 중앙 상단 UI 설정 (첫 번째 맞은 적만 표시)
-                if (!isTargetSet && TargetHpScript.instance != null)
-                {
-                    TargetHpScript.instance.SetTarget(enemyStat);
-                    isTargetSet = true;
-                }
-            }
+            if (enemyStat != null)
+                enemyStat.TakeDamage(damage, gameObject, damageColor); // 색상 전달
     }
 }
     private void SpawnHitEffect(Vector3 pos)

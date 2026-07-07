@@ -104,9 +104,8 @@ public class BuffSkill : SkillBase
         yield return new WaitForSeconds(duration);
 
         if (stat == null) yield break;
-        var buffMember = stat.GetComponent<PartyMemberScript>();
-        if (buffMember == null || buffMember.CurrentState != PartyMemberScript.MemberState.Dead)
-            HideBuffEffect(data, stat);
+        // 사망 여부와 관계없이 항상 해제 — 참조 카운트가 남으면 부활 후 같은 아우라가 영영 안 꺼짐
+        HideBuffEffect(data, stat);
     }
 
     private void ShowBuffEffect(BuffSkillData data, CharacterStat stat)
@@ -119,7 +118,8 @@ public class BuffSkill : SkillBase
                     SpawnTargetEffect(data, stat.transform);
                 break;
             case BuffSkillData.EffectStyle.Aura:
-                stat.ActivateBuffAura(data.auraIndex);
+                // 참조 카운트 방식 — 같은 아우라를 쓰는 다른 버프가 남아있으면 꺼지지 않음
+                stat.AcquireBuffAura(data.auraIndex);
                 break;
         }
     }
@@ -127,7 +127,7 @@ public class BuffSkill : SkillBase
     private void HideBuffEffect(BuffSkillData data, CharacterStat stat)
     {
         if (data.effectStyle == BuffSkillData.EffectStyle.Aura)
-            stat.DeactivateBuffAura(data.auraIndex);
+            stat.ReleaseBuffAura(data.auraIndex);
     }
 
     // 스탯 반영은 PartyStatusEffectHandler.ApplyBuff(StatusEffect)에 위임 — 적용/지속시간/원복을 한 곳에서 관리

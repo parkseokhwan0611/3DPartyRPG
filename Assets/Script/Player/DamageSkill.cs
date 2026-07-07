@@ -124,9 +124,6 @@ public class DamageSkill : SkillBase
 
         enemyHp.TakeDamage(CalculateDamage(data), gameObject, myStat.GetDamageColor(!data.useAp));
         ApplyOnHitDebuffs(data, target);
-
-        if (TargetHpScript.instance != null)
-            TargetHpScript.instance.SetTarget(enemyHp);
     }
 
     // ─────────────────────────────────────────────────────────────────
@@ -139,7 +136,6 @@ public class DamageSkill : SkillBase
         Vector3 hitPos = transform.position + transform.forward * (range * 0.5f);
 
         Collider[] hitCols = Physics.OverlapSphere(hitPos, range, enemyLayer);
-        bool isTargetSet   = false;
 
         foreach (Collider col in hitCols)
         {
@@ -148,12 +144,6 @@ public class DamageSkill : SkillBase
 
             enemyHp.TakeDamage(CalculateDamage(data), gameObject, myStat.GetDamageColor(!data.useAp));
             ApplyOnHitDebuffs(data, col.transform);
-
-            if (!isTargetSet && TargetHpScript.instance != null)
-            {
-                TargetHpScript.instance.SetTarget(enemyHp);
-                isTargetSet = true;
-            }
         }
     }
 

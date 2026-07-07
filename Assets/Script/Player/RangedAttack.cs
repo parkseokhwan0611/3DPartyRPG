@@ -120,9 +120,6 @@ public class RangedAttack : AttackBase
     {
         if (enemyStat == null) return;
 
-        if (TargetHpScript.instance != null)
-            TargetHpScript.instance.SetTarget(enemyStat);
-
         if (myStat != null && myStat.HpOnHit > 0f)
             myStat.HealHp(myStat.HpOnHit);
 

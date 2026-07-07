@@ -21,12 +21,19 @@ public class CharacterStat : MonoBehaviour, IDamageable
     [Header("# 힐 텍스트")]
     public string healTextPoolKey = "HealText";
     public Color  healTextColor   = new Color(0.2f, 1f, 0.2f);
+    [Header("# 마나 회복 아우라")]
+    public int   manaAuraIndex    = -1;   // buffAuras 배열에서 마나 회복 아우라의 인덱스 (-1 = 비활성)
+    public float manaAuraDuration = 1.5f; // 아우라 유지 시간 (초)
+    [Header("# 마나 회복 텍스트")]
+    public string manaTextPoolKey = "HealText"; // HealText 풀 재사용 (범용 +수치 텍스트)
+    public Color  manaTextColor   = new Color(0.3f, 0.5f, 1f);
     public event Action OnHpChanged;
     public event Action OnMpChanged;
     private CharacterStatus myStatus;
     private PartyMemberScript myMember;
     private PartyStatusEffectHandler shieldHandler;
     private Coroutine healAuraCoroutine;
+    private Coroutine manaAuraCoroutine;
     public int partyIndex;
     public float Hp     => myStatus != null ? myStatus.currentHp   : 0f;
     public float MaxHp  => myStatus != null ? myStatus.MaxHp       : 0f;
@@ -236,6 +243,44 @@ public class CharacterStat : MonoBehaviour, IDamageable
         go.GetComponent<HealText>()?.Setup(amount, healTextColor);
     }
 
+    public void ShowManaAura()
+    {
+        if (manaAuraIndex < 0) return;
+        if (buffAuras == null || manaAuraIndex >= buffAuras.Length) return;
+        if (buffAuras[manaAuraIndex] == null) return;
+
+        if (manaAuraCoroutine != null)
+            StopCoroutine(manaAuraCoroutine);
+
+        manaAuraCoroutine = StartCoroutine(ManaAuraRoutine());
+    }
+
+    private IEnumerator ManaAuraRoutine()
+    {
+        // 껐다가 켜기 (이미 켜진 경우에도 깜박임 효과)
+        DeactivateBuffAura(manaAuraIndex);
+        yield return new WaitForSeconds(0.05f);
+        ActivateBuffAura(manaAuraIndex);
+        yield return new WaitForSeconds(manaAuraDuration);
+        DeactivateBuffAura(manaAuraIndex);
+        manaAuraCoroutine = null;
+    }
+
+    private void SpawnManaText(float amount)
+    {
+        if (string.IsNullOrEmpty(manaTextPoolKey)) return;
+        if (ObjectPoolManager.instance == null || !ObjectPoolManager.instance.IsReady) return;
+
+        var go = ObjectPoolManager.instance.GetGo(manaTextPoolKey);
+        if (go == null) return;
+
+        Vector3 spawnPos = hudPos != null ? hudPos.position : transform.position + Vector3.up * 2f;
+        go.transform.position = spawnPos;
+        go.transform.rotation = Quaternion.Euler(60f, 0f, 0f);
+
+        go.GetComponent<HealText>()?.Setup(amount, manaTextColor);
+    }
+
     private void SpawnDamageText(float damage, Color color)
     {
         Vector3    spawnPos = hudPos != null ? hudPos.position : transform.position + Vector3.up * 2f;
@@ -280,9 +325,11 @@ public class CharacterStat : MonoBehaviour, IDamageable
 
     public void RecoverMp(float amount)
     {
-        if (myStatus == null) return;
+        if (myStatus == null || amount <= 0f) return;
         myStatus.RecoverMp(amount);
         OnMpChanged?.Invoke();
+        SpawnManaText(amount);
+        ShowManaAura();
     }
 
     public void RaiseHpChanged() => OnHpChanged?.Invoke();
@@ -321,6 +368,39 @@ public class CharacterStat : MonoBehaviour, IDamageable
     {
         if (buffAuras == null || index < 0 || index >= buffAuras.Length) return;
         if (buffAuras[index] != null) buffAuras[index].SetActive(false);
+    }
+
+    // ─────────────────────────────────────────────────────────────────
+    // 버프 아우라 참조 카운트 — 같은 아우라 인덱스를 여러 버프가 동시에 쓸 때,
+    // 그중 마지막 버프가 꺼질 때만 실제로 아우라를 끔
+    // ─────────────────────────────────────────────────────────────────
+    private int[] _buffAuraRefCounts;
+
+    private void EnsureBuffAuraRefCounts()
+    {
+        int len = buffAuras != null ? buffAuras.Length : 0;
+        if (_buffAuraRefCounts == null || _buffAuraRefCounts.Length != len)
+            _buffAuraRefCounts = new int[len];
+    }
+
+    public void AcquireBuffAura(int index)
+    {
+        if (buffAuras == null || index < 0 || index >= buffAuras.Length) return;
+        EnsureBuffAuraRefCounts();
+
+        _buffAuraRefCounts[index]++;
+        if (_buffAuraRefCounts[index] == 1)
+            ActivateBuffAura(index);
+    }
+
+    public void ReleaseBuffAura(int index)
+    {
+        if (buffAuras == null || index < 0 || index >= buffAuras.Length) return;
+        EnsureBuffAuraRefCounts();
+
+        _buffAuraRefCounts[index] = Mathf.Max(0, _buffAuraRefCounts[index] - 1);
+        if (_buffAuraRefCounts[index] == 0)
+            DeactivateBuffAura(index);
     }
 
     void Die()
