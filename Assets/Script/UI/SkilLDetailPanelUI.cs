@@ -30,6 +30,7 @@ public class SkillDetailPanelUI : MonoBehaviour
 
     private SkillData currentSkill;
     private int currentCharIndex;
+    private int currentRequiredLevel;
     private SkillWindowUI skillWindow;
     private CharacterStat currentCaster;
 
@@ -47,11 +48,12 @@ public class SkillDetailPanelUI : MonoBehaviour
             skillPointText.text = $"Skill Point: {point}";
     }
 
-    public void ShowSkillDetail(SkillData skill, CharacterStatus status, int partyLevel, int charIndex)
+    public void ShowSkillDetail(SkillData skill, CharacterStatus status, int partyLevel, int charIndex, int requiredLevel)
     {
-        currentSkill     = skill;
-        currentCharIndex = charIndex;
-        currentCaster    = FindCasterStat(charIndex);
+        currentSkill         = skill;
+        currentCharIndex     = charIndex;
+        currentRequiredLevel = requiredLevel;
+        currentCaster        = FindCasterStat(charIndex);
 
         int currentLevel = status.GetSkillLevel(skill);
         int nextLevel    = currentLevel + 1;
@@ -110,9 +112,9 @@ public class SkillDetailPanelUI : MonoBehaviour
             {
                 int cost = skill.skillPointCost[nextIdx];
                 SetTextSafe(requiredSkillPointText, $"필요 스킬 포인트: {cost}");
-                SetTextSafe(levelConditionText, $"스킬 포인트 {status.skillPoint} 보유");
+                SetTextSafe(levelConditionText, $"필요 레벨: {requiredLevel}");
                 if (learnButton != null)
-                    learnButton.interactable = status.skillPoint >= cost;
+                    learnButton.interactable = status.skillPoint >= cost && partyLevel >= requiredLevel;
             }
         }
         else
@@ -544,6 +546,7 @@ public class SkillDetailPanelUI : MonoBehaviour
     private void OnLearnButtonClicked()
     {
         if (currentSkill == null || DataManager.instance == null) return;
+        if (DataManager.instance.partyLevel < currentRequiredLevel) return;
 
         CharacterStatus status = DataManager.instance.partyStatuses[currentCharIndex];
         bool success           = status.TryLevelUpSkill(currentSkill);
@@ -551,7 +554,7 @@ public class SkillDetailPanelUI : MonoBehaviour
         if (!success) return;
 
         skillWindow.OnSkillLevelUp();
-        ShowSkillDetail(currentSkill, status, DataManager.instance.partyLevel, currentCharIndex);
+        ShowSkillDetail(currentSkill, status, DataManager.instance.partyLevel, currentCharIndex, currentRequiredLevel);
     }
 
     private void SetTextSafe(TextMeshProUGUI tmp, string text)
@@ -561,7 +564,8 @@ public class SkillDetailPanelUI : MonoBehaviour
 
     public void Clear()
     {
-        currentSkill = null;
+        currentSkill         = null;
+        currentRequiredLevel = 0;
 
         SetTextSafe(skillNameText,          "");
         SetTextSafe(skillLvText,            "");

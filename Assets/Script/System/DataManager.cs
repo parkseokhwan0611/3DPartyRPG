@@ -77,10 +77,11 @@ public class DataManager : MonoBehaviour
         }
 
         // 전체 상태 초기화
+        // partyLevel은 여기서 강제로 1로 되돌리지 않음 — 인스펙터에 설정된 값을 시작 레벨로 사용
+        // (테스트용으로 미리 높은 레벨을 넣어두거나, 씬 재진입 시에도 유지되도록)
         partyStatuses.Clear();
         partyEquipments.Clear();
         sharedInventory    = new Inventory();
-        partyLevel         = 1;
         partyExp           = 0;
         gold               = 0;
         selectedPartyIndex = 0;

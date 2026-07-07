@@ -97,7 +97,7 @@ public class SkillWindowUI : MonoBehaviour
             }
 
             bool isUnlocked = partyLevel >= requiredLevels[i];
-            slots[i].Setup(skills[i], status.GetSkillLevel(skills[i]), isUnlocked, this);
+            slots[i].Setup(skills[i], status.GetSkillLevel(skills[i]), isUnlocked, this, requiredLevels[i]);
         }
     }
 
@@ -105,12 +105,12 @@ public class SkillWindowUI : MonoBehaviour
     // 스킬 아이콘 클릭 (SkillIconUI에서 호출)
     // ─────────────────────────────────────────────────────────────────
 
-    public void OnSkillIconClicked(SkillData skill)
+    public void OnSkillIconClicked(SkillData skill, int requiredLevel)
     {
         if (DataManager.instance == null) return;
 
         CharacterStatus status = DataManager.instance.partyStatuses[currentCharIndex];
-        detailPanel.ShowSkillDetail(skill, status, DataManager.instance.partyLevel, currentCharIndex);
+        detailPanel.ShowSkillDetail(skill, status, DataManager.instance.partyLevel, currentCharIndex, requiredLevel);
     }
 
     // ─────────────────────────────────────────────────────────────────

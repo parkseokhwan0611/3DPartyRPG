@@ -14,9 +14,10 @@ public class SkillIconUI : MonoBehaviour,
     public Image lockOverlay;
     public TextMeshProUGUI levelText;
 
-    public SkillData SkillData  { get; private set; }
-    public int SkillLevel       { get; private set; }
-    public bool IsUnlocked      { get; private set; }
+    public SkillData SkillData    { get; private set; }
+    public int SkillLevel         { get; private set; }
+    public bool IsUnlocked        { get; private set; }
+    public int RequiredLevel      { get; private set; }
 
     private SkillWindowUI skillWindow;
     private Canvas rootCanvas;
@@ -32,12 +33,13 @@ public class SkillIconUI : MonoBehaviour,
             rootCanvas = rootCanvas.rootCanvas;
     }
 
-    public void Setup(SkillData skill, int level, bool unlocked, SkillWindowUI window)
+    public void Setup(SkillData skill, int level, bool unlocked, SkillWindowUI window, int requiredLevel)
     {
-        SkillData   = skill;
-        SkillLevel  = level;
-        IsUnlocked  = unlocked;
-        skillWindow = window;
+        SkillData     = skill;
+        SkillLevel    = level;
+        IsUnlocked    = unlocked;
+        RequiredLevel = requiredLevel;
+        skillWindow   = window;
 
         if (iconImage != null)  iconImage.sprite = skill.icon;
         if (levelText != null)  levelText.text   = level > 0 ? level.ToString() : "";
@@ -46,9 +48,10 @@ public class SkillIconUI : MonoBehaviour,
 
     public void SetEmpty()
     {
-        SkillData  = null;
-        SkillLevel = 0;
-        IsUnlocked = false;
+        SkillData     = null;
+        SkillLevel    = 0;
+        IsUnlocked    = false;
+        RequiredLevel = 0;
 
         if (iconImage != null)   iconImage.sprite = null;
         if (levelText != null)   levelText.text   = "";
@@ -64,7 +67,7 @@ public class SkillIconUI : MonoBehaviour,
         // 드래그 후 클릭 이벤트 방지
         if (eventData.dragging) return;
         if (SkillData == null) return;
-        skillWindow.OnSkillIconClicked(SkillData);
+        skillWindow.OnSkillIconClicked(SkillData, RequiredLevel);
     }
 
     // ─────────────────────────────────────────────────────────────────
