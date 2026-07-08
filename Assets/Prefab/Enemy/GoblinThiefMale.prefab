@@ -2838,6 +2838,9 @@ MonoBehaviour:
   navSpeed: 1
   aggroDecayRate: 5
   aggroThreshold: 10
+  wanderRadius: 5
+  wanderSpeed: 1.5
+  wanderInterval: 3
 --- !u!114 &1045097644406216187
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2877,6 +2880,7 @@ MonoBehaviour:
   maxHp: 200
   isDead: 0
   enemyName: "\uACE0\uBE14\uB9B0 \uC804\uC0AC (Lv.1)"
+  monsterId: GoblinThief
   damageTextPoolKey: NormalDamageText
   hudPos: {fileID: 5511221066833110898}
   expReward: 10

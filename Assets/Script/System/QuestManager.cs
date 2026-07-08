@@ -4,6 +4,9 @@ using UnityEngine;
 
 // 메인 퀘스트 진행 관리 — 서브 퀘스트 없이 MainQuestChain을 하나씩 순차 진행.
 // NPC 대화/아이템 수집/몬스터 처치 세 가지 목표 유형을 전역 이벤트로 감지해 자동 진행.
+// QuestHudUI/QuestLogUI가 같은 씬에서 동시에 초기화될 때 instance가 아직 null인 상태로
+// 구독을 시도하지 않도록, MenuTabUI(-100)보다도 먼저 실행되게 함
+[DefaultExecutionOrder(-200)]
 public class QuestManager : MonoBehaviour
 {
     public static QuestManager instance;
@@ -30,6 +33,8 @@ public class QuestManager : MonoBehaviour
     public event Action OnQuestChanged;
     // 같은 퀘스트 내에서 진행도(수집/처치 카운트)만 바뀔 때
     public event Action OnQuestProgressChanged;
+    // 퀘스트가 방금 완료됐을 때(어떤 퀘스트였는지 전달) — HUD의 "퀘스트 완료" 연출용
+    public event Action<QuestData> OnQuestCompleted;
 
     // ─────────────────────────────────────────────────────────────────
     // 생명주기
@@ -119,7 +124,13 @@ public class QuestManager : MonoBehaviour
         var quest = CurrentQuest;
         if (quest == null || quest.objectiveType != QuestObjectiveType.KillMonster) return;
         if (enemy == null || string.IsNullOrEmpty(quest.targetMonsterId)) return;
-        if (enemy.monsterId != quest.targetMonsterId) return;
+
+        if (enemy.monsterId != quest.targetMonsterId)
+        {
+            Debug.Log($"[QuestManager] 처치한 몬스터의 Monster Id '{enemy.monsterId}'가 현재 퀘스트의 Target Monster Id " +
+                      $"'{quest.targetMonsterId}'와 일치하지 않아 진행되지 않았습니다. (EnemyHp의 Monster Id 필드를 확인하세요)");
+            return;
+        }
 
         currentProgress = Mathf.Min(currentProgress + 1, quest.TargetCount);
         OnQuestProgressChanged?.Invoke();
@@ -133,7 +144,13 @@ public class QuestManager : MonoBehaviour
         var quest = CurrentQuest;
         if (quest == null || quest.objectiveType != QuestObjectiveType.NpcDialogue) return;
         if (npc == null || string.IsNullOrEmpty(quest.targetNpcId)) return;
-        if (npc.NpcId != quest.targetNpcId) return;
+
+        if (npc.NpcId != quest.targetNpcId)
+        {
+            Debug.Log($"[QuestManager] 대화한 NPC Id '{npc.NpcId}'가 현재 퀘스트의 Target Npc Id " +
+                      $"'{quest.targetNpcId}'와 일치하지 않아 진행되지 않았습니다. (NpcInteractable의 Npc Id 필드를 확인하세요)");
+            return;
+        }
 
         currentProgress = 1;
         CompleteCurrentQuest();
@@ -212,6 +229,7 @@ public class QuestManager : MonoBehaviour
         }
 
         _completing = false;
+        OnQuestCompleted?.Invoke(quest);
         OnQuestChanged?.Invoke();
     }
 }

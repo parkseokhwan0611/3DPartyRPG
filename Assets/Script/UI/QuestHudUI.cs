@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using TMPro;
 
@@ -16,14 +17,21 @@ public class QuestHudUI : MonoBehaviour
     public string markerPoolKey = "QuestMarker";
     public float  markerHeightOffset = 2.2f;
 
+    [Header("# 퀘스트 완료 연출")]
+    [Tooltip("퀘스트 완료 문구를 보여줄 시간(초). 이 시간이 지나면 다음 퀘스트를 표시")]
+    public float completionDisplayDuration = 3f;
+
     private GameObject _activeMarker;
+    private Coroutine  _completionCoroutine;
+    private bool        _showingCompletion;
 
     void OnEnable()
     {
         if (QuestManager.instance != null)
         {
-            QuestManager.instance.OnQuestChanged        += Refresh;
+            QuestManager.instance.OnQuestChanged        += HandleQuestChanged;
             QuestManager.instance.OnQuestProgressChanged += Refresh;
+            QuestManager.instance.OnQuestCompleted       += HandleQuestCompleted;
         }
         Refresh();
     }
@@ -32,10 +40,50 @@ public class QuestHudUI : MonoBehaviour
     {
         if (QuestManager.instance != null)
         {
-            QuestManager.instance.OnQuestChanged        -= Refresh;
+            QuestManager.instance.OnQuestChanged        -= HandleQuestChanged;
             QuestManager.instance.OnQuestProgressChanged -= Refresh;
+            QuestManager.instance.OnQuestCompleted       -= HandleQuestCompleted;
         }
+
+        if (_completionCoroutine != null)
+        {
+            StopCoroutine(_completionCoroutine);
+            _completionCoroutine = null;
+        }
+        _showingCompletion = false;
+
         ReleaseMarker();
+    }
+
+    // OnQuestChanged는 완료 시에도 함께 발생하는데, 그때는 완료 연출 코루틴이 갱신을 대신 처리하므로
+    // 연출 중에는 즉시 갱신을 건너뛴다 (안 그러면 "완료" 문구가 뜨자마자 다음 퀘스트로 덮어써짐)
+    private void HandleQuestChanged()
+    {
+        if (_showingCompletion) return;
+        Refresh();
+    }
+
+    private void HandleQuestCompleted(QuestData completedQuest)
+    {
+        if (_completionCoroutine != null) StopCoroutine(_completionCoroutine);
+        _completionCoroutine = StartCoroutine(ShowCompletionThenRefresh(completedQuest));
+    }
+
+    private IEnumerator ShowCompletionThenRefresh(QuestData completedQuest)
+    {
+        _showingCompletion = true;
+
+        ReleaseMarker(); // 완료된 퀘스트의 목표지점 마커는 즉시 정리
+
+        if (root != null) root.SetActive(true);
+        if (questNameText != null) questNameText.text = completedQuest != null ? completedQuest.questName : "";
+        if (objectiveText != null) objectiveText.text = "퀘스트 완료!";
+
+        yield return new WaitForSeconds(completionDisplayDuration);
+
+        _showingCompletion   = false;
+        _completionCoroutine = null;
+        Refresh();
     }
 
     private void Refresh()
