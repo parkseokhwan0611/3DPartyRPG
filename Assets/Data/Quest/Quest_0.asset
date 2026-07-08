@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4a4c602ee5d4f304899658fedf2a3ef4, type: 3}
+  m_Name: Quest_0
+  m_EditorClassIdentifier: 
+  questId: quest_0
+  questName: "\uBAA8\uD5D8\uC758 \uC2DC\uC791"
+  description: "\uBAA8\uD5D8\uC744 \uC2DC\uC791\uD558\uAE30 \uC704\uD574 \uCD0C\uC7A5\uB2D8\uC744
+    \uCC3E\uC544\uAC00\uC138\uC694."
+  objectiveType: 0
+  targetNpcId: 
+  targetNpcDisplayName: 
+  targetItem: {fileID: 0}
+  targetItemCount: 1
+  targetMonsterId: 
+  targetMonsterDisplayName: 
+  targetMonsterCount: 1
+  rewardExp: 50
+  rewardGold: 50
+  rewardItems:
+  - item: {fileID: 11400000, guid: 780180cf1b0df8945a2df703d6f54460, type: 2}
+    count: 5
+  - item: {fileID: 11400000, guid: 090f952f171e2c04f8363455e384f321, type: 2}
+    count: 5

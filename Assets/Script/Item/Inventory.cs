@@ -16,6 +16,9 @@ public class Inventory
     public int  Count    => items.Count;
     public bool IsFull   => items.Count >= MaxSlots;
 
+    // 아이템 수집 퀘스트 등 인벤토리 변화를 감지해야 하는 곳에서 구독
+    public event Action OnChanged;
+
     // ─────────────────────────────────────────────────────────────────
     // 추가
     // ─────────────────────────────────────────────────────────────────
@@ -36,12 +39,14 @@ public class Inventory
             if (existing != null)
             {
                 existing.AddStack(newItem.stackCount);
+                OnChanged?.Invoke();
                 return true;
             }
         }
 
         if (IsFull) return false;
         items.Add(newItem);
+        OnChanged?.Invoke();
         return true;
     }
 
@@ -55,13 +60,16 @@ public class Inventory
         if (index < 0 || index >= items.Count) return null;
         var item = items[index];
         items.RemoveAt(index);
+        OnChanged?.Invoke();
         return item;
     }
 
     /// <summary>특정 인스턴스 제거. 성공 여부 반환.</summary>
     public bool Remove(ItemInstance item)
     {
-        return items.Remove(item);
+        bool removed = items.Remove(item);
+        if (removed) OnChanged?.Invoke();
+        return removed;
     }
 
     /// <summary>
@@ -73,6 +81,7 @@ public class Inventory
         if (!items.Contains(item)) return false;
         if (!item.ConsumeStack(amount)) return false;
         if (item.stackCount <= 0) items.Remove(item);
+        OnChanged?.Invoke();
         return true;
     }
 

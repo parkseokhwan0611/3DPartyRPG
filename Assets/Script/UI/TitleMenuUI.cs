@@ -38,6 +38,7 @@ public class TitleMenuUI : MonoBehaviour
         _isTransitioning = true;
         SetButtonsInteractable(false);
         DataManager.instance?.InitData();
+        QuestManager.instance?.StartNewGame();
         SceneLoader.Load(gameSceneName);
     }
 

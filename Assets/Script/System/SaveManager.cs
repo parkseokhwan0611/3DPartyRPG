@@ -53,6 +53,9 @@ public class SaveManager : MonoBehaviour
             foreach (var npc in NpcInteractable.AllInstances)
                 data.npcStocks.Add(npc.GetStockSave());
 
+            // 퀘스트 진행 상황
+            QuestManager.instance?.FillSaveData(data);
+
             // 씬 / 위치
             data.sceneName = SceneManager.GetActiveScene().name;
             data.partyPositions.Clear();
@@ -114,6 +117,7 @@ public class SaveManager : MonoBehaviour
             DataManager.instance?.LoadSaveData(data);
 
             RestorePotionSlots(data);
+            QuestManager.instance?.RestoreProgress(data);
             StartCoroutine(RestorePosition(data));
 
             Debug.Log("[SaveManager] 로드 완료");

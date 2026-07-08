@@ -28,6 +28,11 @@ public class GameSaveData
 
     // NPC 재고
     public List<NpcStockSave> npcStocks = new List<NpcStockSave>();
+
+    // 퀘스트 진행 상황
+    public int currentQuestIndex = 0;
+    public int currentQuestProgress = 0;
+    public List<string> completedQuestIds = new List<string>();
 }
 
 // ─────────────────────────────────────────────────────────────────

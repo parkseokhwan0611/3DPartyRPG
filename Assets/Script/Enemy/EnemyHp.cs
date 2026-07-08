@@ -11,6 +11,8 @@ public class EnemyHp : MonoBehaviour, IDamageable
 
     [Header("# References")]
     public string enemyName;
+    [Tooltip("퀘스트(몬스터 처치)에서 몬스터 종류를 구분하는 고유 ID. 같은 종류 몬스터는 같은 값 사용")]
+    public string monsterId;
     public string damageTextPoolKey = "NormalDamageText"; // 오브젝트 풀 키
     public Transform hudPos;
 
@@ -26,6 +28,9 @@ public class EnemyHp : MonoBehaviour, IDamageable
     // 이벤트
     public System.Action<float, float> OnHpChanged;
     public System.Action OnDied; // 사망 이벤트 추가 (외부 구독용)
+
+    // 몬스터 처치 퀘스트 등, 개별 인스턴스를 구독하기 어려운 전역 리스너용
+    public static event System.Action<EnemyHp> OnAnyEnemyDied;
 
     // 컴포넌트 캐싱
     private Animator animator;
@@ -106,6 +111,7 @@ public class EnemyHp : MonoBehaviour, IDamageable
 
         // 사망 이벤트 발생 (GoblinThiefMaleScript 등이 구독)
         OnDied?.Invoke();
+        OnAnyEnemyDied?.Invoke(this);
 
         // 애니메이션
         if (animator != null) animator.SetTrigger("isDead");

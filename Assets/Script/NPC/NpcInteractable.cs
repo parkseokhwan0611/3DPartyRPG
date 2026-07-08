@@ -43,6 +43,9 @@ public class NpcInteractable : MonoBehaviour
     void OnEnable()  => AllInstances.Add(this);
     void OnDisable() => AllInstances.Remove(this);
 
+    // NPC 대화 퀘스트 등, 개별 NPC를 구독하기 어려운 전역 리스너용
+    public static event System.Action<NpcInteractable> OnAnyDialogueComplete;
+
     // ─────────────────────────────────────────────────────────────────
     // 공개 접근자 (ShopUI / SaveManager에서 사용)
     // ─────────────────────────────────────────────────────────────────
@@ -176,5 +179,7 @@ public class NpcInteractable : MonoBehaviour
         // 프롬프트가 계속 숨겨진 채로 남으므로, 아직 범위 안이면 여기서 다시 표시
         if (_playerInRange)
             ShowPrompt(true);
+
+        OnAnyDialogueComplete?.Invoke(this);
     }
 }
