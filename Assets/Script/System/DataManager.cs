@@ -321,22 +321,41 @@ public class DataManager : MonoBehaviour
     // ID 조회 헬퍼
     // ─────────────────────────────────────────────────────────────────
 
+    private Dictionary<string, SkillData> _skillByIdCache;
+    private Dictionary<string, ItemData>  _itemByIdCache;
+
     public SkillData FindSkillById(string id)
     {
         if (string.IsNullOrEmpty(id)) return null;
-        foreach (var tree in skillTrees)
+
+        if (_skillByIdCache == null)
         {
-            if (tree == null) continue;
-            foreach (var list in new[] { tree.mainSkills, tree.subSkills, tree.passiveSkills })
-                foreach (var skill in list)
-                    if (skill != null && skill.skillId == id) return skill;
+            _skillByIdCache = new Dictionary<string, SkillData>();
+            foreach (var tree in skillTrees)
+            {
+                if (tree == null) continue;
+                foreach (var list in new[] { tree.mainSkills, tree.subSkills, tree.passiveSkills })
+                    foreach (var skill in list)
+                        if (skill != null && !_skillByIdCache.ContainsKey(skill.skillId))
+                            _skillByIdCache[skill.skillId] = skill;
+            }
         }
-        return null;
+
+        return _skillByIdCache.TryGetValue(id, out var found) ? found : null;
     }
 
     public ItemData FindItemById(string id)
     {
         if (string.IsNullOrEmpty(id) || itemRegistry == null) return null;
-        return itemRegistry.Find(item => item != null && item.itemId == id);
+
+        if (_itemByIdCache == null)
+        {
+            _itemByIdCache = new Dictionary<string, ItemData>();
+            foreach (var item in itemRegistry)
+                if (item != null && !_itemByIdCache.ContainsKey(item.itemId))
+                    _itemByIdCache[item.itemId] = item;
+        }
+
+        return _itemByIdCache.TryGetValue(id, out var found) ? found : null;
     }
 }

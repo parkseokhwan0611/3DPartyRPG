@@ -113,14 +113,16 @@ public class MonsterMeleeAttack : AttackBase
     // 타격 판정
     // ─────────────────────────────────────────────────────────────────
 
+    private static readonly Collider[] _hitBuffer = new Collider[16];
+
     public override void OnHit()
     {
         Vector3 hitPos = transform.position + (transform.forward * hitOffset);
-        Collider[] hitTargets = Physics.OverlapSphere(hitPos, hitRadius, enemyLayer);
+        int hitCount = Physics.OverlapSphereNonAlloc(hitPos, hitRadius, _hitBuffer, enemyLayer);
 
-        foreach (Collider target in hitTargets)
+        for (int i = 0; i < hitCount; i++)
         {
-            IDamageable damageable = target.GetComponent<IDamageable>();
+            IDamageable damageable = _hitBuffer[i].GetComponent<IDamageable>();
             if (damageable != null)
                 damageable.TakeDamage(attackDamage, gameObject);
         }

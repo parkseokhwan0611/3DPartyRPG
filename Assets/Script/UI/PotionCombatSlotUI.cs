@@ -8,12 +8,8 @@ public class PotionCombatSlotUI : MonoBehaviour
 
     void Start()
     {
-        // Start는 모든 Awake 이후에 실행되므로 instance 보장됨
-        if (PotionQuickSlotManager.instance != null)
-        {
-            PotionQuickSlotManager.instance.OnHpSlotChanged += RefreshHpSlot;
-            PotionQuickSlotManager.instance.OnMpSlotChanged += RefreshMpSlot;
-        }
+        // 이벤트 구독은 OnEnable에서 처리됨 (Awake→OnEnable→Start 순서상 OnEnable이 항상 먼저 실행되므로
+        // 여기서 다시 구독하면 이중 구독이 됨). 여기서는 초기 아이콘 표시만 갱신.
         RefreshHpSlot();
         RefreshMpSlot();
     }

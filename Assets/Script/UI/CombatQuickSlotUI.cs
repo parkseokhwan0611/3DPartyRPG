@@ -4,6 +4,8 @@ using TMPro;
 
 public class CombatQuickSlotUI : MonoBehaviour
 {
+    public static CombatQuickSlotUI instance;
+
     [Header("# 전투 퀵슬롯 (Q/W/E/R)")]
     public CombatQuickSlot slotQ;
     public CombatQuickSlot slotW;
@@ -15,6 +17,9 @@ public class CombatQuickSlotUI : MonoBehaviour
 
     void Awake()
     {
+        if (instance != null && instance != this) { Destroy(gameObject); return; }
+        instance = this;
+
         slots = new CombatQuickSlot[] { slotQ, slotW, slotE, slotR };
     }
 
@@ -23,21 +28,26 @@ public class CombatQuickSlotUI : MonoBehaviour
         RefreshSlots();
     }
 
+    void OnEnable()
+    {
+        if (PartyManager.instance != null)
+            PartyManager.instance.OnLeaderChanged += HandleLeaderChanged;
+    }
+
+    void OnDisable()
+    {
+        if (PartyManager.instance != null)
+            PartyManager.instance.OnLeaderChanged -= HandleLeaderChanged;
+    }
+
+    private void HandleLeaderChanged(PartyMemberScript newLeader)
+    {
+        RefreshSlots();
+    }
+
     void Update()
     {
-        // 리더가 바뀌면 슬롯 갱신
-        if (PartyManager.instance?.currentLeader == null) return;
-
-        SkillManager sm = PartyManager.instance.currentLeader.GetComponent<SkillManager>();
-
-        // 리더가 바뀐 경우 갱신
-        if (sm != currentSkillManager)
-        {
-            currentSkillManager = sm;
-            RefreshSlots();
-        }
-
-        // 쿨다운 갱신
+        // 쿨다운 갱신 (리더 변경 감지는 OnLeaderChanged 이벤트로 처리)
         UpdateCooldowns();
     }
 

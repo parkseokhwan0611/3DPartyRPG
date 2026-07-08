@@ -3,6 +3,8 @@ using System.Collections;
 
 public class DebuffSkill : SkillBase
 {
+    private static readonly Collider[] _hitBuffer = new Collider[16];
+
     private int enemyLayer;
 
     private DebuffSkillData debuffData;
@@ -75,10 +77,10 @@ public class DebuffSkill : SkillBase
         float range    = data.aoeRange;
         Vector3 center = transform.position + transform.forward * 2f;
 
-        Collider[] hitCols = Physics.OverlapSphere(center, range, enemyLayer);
-        foreach (Collider col in hitCols)
+        int hitCount = Physics.OverlapSphereNonAlloc(center, range, _hitBuffer, enemyLayer);
+        for (int i = 0; i < hitCount; i++)
         {
-            StatusEffectHandler handler = col.GetComponent<StatusEffectHandler>();
+            StatusEffectHandler handler = _hitBuffer[i].GetComponent<StatusEffectHandler>();
             if (handler != null)
                 ApplyDebuffEffects(handler, data);
         }

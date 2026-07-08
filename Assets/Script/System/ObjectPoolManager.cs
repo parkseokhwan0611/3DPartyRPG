@@ -56,7 +56,7 @@ public class ObjectPoolManager : MonoBehaviour
             if (goDic.ContainsKey(objectInfos[idx].objectName))
             {
                 Debug.LogFormat("{0} 이미 등록된 오브젝트입니다.", objectInfos[idx].objectName);
-                return;
+                continue;
             }
 
             goDic.Add(objectInfos[idx].objectName, objectInfos[idx].perfab);

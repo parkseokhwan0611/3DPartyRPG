@@ -60,6 +60,8 @@ public class DamageSkillData : SkillData
     public float zoneActivationDelay = 0f;
     [Tooltip("장판 데미지 틱 간격 (초). zoneHitOnce = false일 때만 사용")]
     public float zoneDamageInterval = 0.5f;
+    [Tooltip("장판 최대 지속시간 (초). zoneHitOnce = false일 때, 이 시간이 지나면 SkillZone이 스스로 데미지 판정을 멈춤 (PoolableObject 설정 누락 시 무한 루프 방지용 안전장치)")]
+    public float zoneDuration = 5f;
 
     [Header("애니메이션 / 이펙트")]
     public string animTriggerName;    // 애니메이터 트리거 이름

@@ -37,6 +37,12 @@ public class NpcInteractable : MonoBehaviour
     private bool _playerInRange    = false;
     private bool _isDialogueActive = false;
 
+    // 씬 내 모든 NPC 인스턴스 — SaveManager가 매번 FindObjectsOfType으로 스캔하지 않도록 자체 등록
+    public static readonly List<NpcInteractable> AllInstances = new List<NpcInteractable>();
+
+    void OnEnable()  => AllInstances.Add(this);
+    void OnDisable() => AllInstances.Remove(this);
+
     // ─────────────────────────────────────────────────────────────────
     // 공개 접근자 (ShopUI / SaveManager에서 사용)
     // ─────────────────────────────────────────────────────────────────
@@ -165,5 +171,10 @@ public class NpcInteractable : MonoBehaviour
             case NpcType.Story:
                 break;
         }
+
+        // 플레이어가 범위를 벗어나지 않은 이상 UpdateProximity의 진입/이탈 전환이 발생하지 않아
+        // 프롬프트가 계속 숨겨진 채로 남으므로, 아직 범위 안이면 여기서 다시 표시
+        if (_playerInRange)
+            ShowPrompt(true);
     }
 }

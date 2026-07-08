@@ -23,7 +23,11 @@ public class PartyManager : MonoBehaviour
 
     private int enemyLayer;
     private Camera mainCamera;
-    private Vector3 _lastMoveDestination = Vector3.positiveInfinity;
+    private Vector3 _lastMoveDestination;
+    private bool _hasPendingDestination = false;
+
+    // 리더가 바뀔 때 발생 — 매 프레임 폴링 대신 이 이벤트를 구독해서 갱신할 것
+    public event System.Action<PartyMemberScript> OnLeaderChanged;
 
     // ─────────────────────────────────────────────────────────────────
     // Unity 생명주기
@@ -109,7 +113,7 @@ public class PartyManager : MonoBehaviour
 
     void DispatchAttackCommand(RaycastHit hit)
     {
-        _lastMoveDestination = Vector3.positiveInfinity; // 공격 명령이 이동 목적지를 덮어씀
+        _hasPendingDestination = false; // 공격 명령이 이동 목적지를 덮어씀
         foreach (var member in partyMembers)
         {
             if (member.CurrentState == PartyMemberScript.MemberState.Dead) continue;
@@ -123,6 +127,7 @@ public class PartyManager : MonoBehaviour
     void DispatchMoveCommand(Vector3 destination)
     {
         _lastMoveDestination = destination;
+        _hasPendingDestination = true;
         foreach (var member in partyMembers)
         {
             if (member.CurrentState == PartyMemberScript.MemberState.Dead) continue;
@@ -187,6 +192,7 @@ public class PartyManager : MonoBehaviour
         if (newLeader.CurrentState == PartyMemberScript.MemberState.Dead) return;
 
         currentLeader = newLeader;
+        OnLeaderChanged?.Invoke(newLeader);
 
         // 카메라 타겟 변경
         if (cameraFollowTarget != null)
@@ -217,14 +223,14 @@ public class PartyManager : MonoBehaviour
             member.UpdateChainOrder(newOrder);
 
         // 이동 목적지가 있고 새 리더가 아직 도착 전이면 목적지 이어받기
-        if (_lastMoveDestination != Vector3.positiveInfinity)
+        if (_hasPendingDestination)
         {
             float distSqr      = (newLeader.transform.position - _lastMoveDestination).sqrMagnitude;
             float stopThresh   = newLeader.agent.stoppingDistance + 0.5f;
             if (distSqr > stopThresh * stopThresh)
                 newLeader.agent.SetDestination(_lastMoveDestination);
             else
-                _lastMoveDestination = Vector3.positiveInfinity; // 이미 도착 → 기록 초기화
+                _hasPendingDestination = false; // 이미 도착 → 기록 초기화
         }
     }
 

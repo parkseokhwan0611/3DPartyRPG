@@ -13,12 +13,14 @@ public class LevelExpUI : MonoBehaviour
     void OnEnable()
     {
         // DataManager 이벤트 구독
+        if (DataManager.instance == null) return;
         DataManager.instance.OnLevelUp  += UpdateUI;
         DataManager.instance.OnExpGained += UpdateUI;
     }
 
     void OnDisable()
     {
+        if (DataManager.instance == null) return;
         DataManager.instance.OnLevelUp  -= UpdateUI;
         DataManager.instance.OnExpGained -= UpdateUI;
     }

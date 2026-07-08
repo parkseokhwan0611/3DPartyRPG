@@ -80,6 +80,13 @@ public class RangedAttack : AttackBase
         Vector3 preciseDir    = (TargetPosition - spawnPos).normalized;
         Quaternion preciseRot = Quaternion.LookRotation(preciseDir);
 
+        if (ObjectPoolManager.instance == null)
+        {
+            _isAttacking = false;
+            attackCoroutine = null;
+            yield break;
+        }
+
         var effect = ObjectPoolManager.instance.GetGo(projectileName);
         if (effect == null)
         {
@@ -96,7 +103,8 @@ public class RangedAttack : AttackBase
         if (Random.value < myStat.TotalCritRate)
         {
             damage *= myStat.TotalCritDamage;
-            CinemachineShake.Instance.ShakeCamera(10f, .2f);
+            if (CinemachineShake.Instance != null)
+                CinemachineShake.Instance.ShakeCamera(10f, .2f);
         }
 
         ProjectileScript proj = effect.GetComponent<ProjectileScript>();

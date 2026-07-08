@@ -3,6 +3,8 @@ using System.Collections;
 
 public class MeleeAttack : AttackBase
 {
+    private static readonly Collider[] _hitBuffer = new Collider[16];
+
     private CharacterStat myStat;
     [Header("근접 공격 판정 설정")]
     public float hitRadius = 1.5f;
@@ -17,11 +19,6 @@ public class MeleeAttack : AttackBase
     void Awake()
     {
         myStat = GetComponent<CharacterStat>();
-    }
-
-    protected override void Update()
-    {
-        base.Update();
     }
 
     private IEnumerator AttackRoutine()
@@ -51,10 +48,10 @@ public class MeleeAttack : AttackBase
 
         // 1. 판정 위치 계산
         Vector3 hitPos = transform.position + (transform.forward * hitOffset);
-        Collider[] hitEnemies = Physics.OverlapSphere(hitPos, hitRadius, enemyLayer);
+        int hitCount = Physics.OverlapSphereNonAlloc(hitPos, hitRadius, _hitBuffer, enemyLayer);
 
         // 2. 이펙트 생성 + 적중 시 체력 회복 (적을 한 명이라도 맞췄을 때)
-        if (hitEnemies.Length > 0)
+        if (hitCount > 0)
         {
             Vector3 effectPos = transform.position + (transform.forward * 0.3f) + Vector3.up;
             SpawnHitEffect(effectPos);
@@ -72,20 +69,21 @@ public class MeleeAttack : AttackBase
         if (Random.value < myStat.TotalCritRate)
         {
             damage *= myStat.TotalCritDamage;
-            CinemachineShake.Instance.ShakeCamera(10f, .2f);
+            if (CinemachineShake.Instance != null)
+                CinemachineShake.Instance.ShakeCamera(10f, .2f);
             // 나중에 치명타 전용 색상이나 연출 추가 가능
         }
 
         // 3. 데미지 판정
-        foreach (Collider enemy in hitEnemies)
+        for (int i = 0; i < hitCount; i++)
         {
             // 최적화: 한 번만 가져와서 사용
-            var enemyStat = enemy.GetComponent<EnemyHp>();
+            var enemyStat = _hitBuffer[i].GetComponent<EnemyHp>();
 
             if (enemyStat != null)
                 enemyStat.TakeDamage(damage, gameObject, damageColor); // 색상 전달
+        }
     }
-}
     private void SpawnHitEffect(Vector3 pos)
     {
         if (ObjectPoolManager.instance != null)

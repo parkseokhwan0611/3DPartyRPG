@@ -6,18 +6,25 @@ using UnityEngine.Pool;
 public class PoolableObject : PoolAble
 {
     public float destroyTime;
-    // Start is called before the first frame update
+
+    private Coroutine destroyCoroutine;
+
     void OnEnable()
     {
-        StartCoroutine(DestroyTime(destroyTime));
+        // 재활성화가 예상보다 빨리 일어나도 코루틴이 중첩 실행되어 이중 Pool.Release가 발생하지 않도록 가드
+        if (destroyCoroutine != null)
+            StopCoroutine(destroyCoroutine);
+        destroyCoroutine = StartCoroutine(DestroyTime(destroyTime));
     }
+
+    void OnDisable()
+    {
+        destroyCoroutine = null;
+    }
+
     IEnumerator DestroyTime(float time) {
         yield return new WaitForSeconds(time);
+        destroyCoroutine = null;
         Pool.Release(this.gameObject);
-        //Destroy(gameObject);
-    }
-    void OnTriggerEnter(Collider other) {
-    Debug.Log("부딪힌 대상: " + other.gameObject.name);
-    // 만약 여기서 "Player"가 찍힌다면 본인 몸에 맞아서 사라지는 겁니다.
     }
 }

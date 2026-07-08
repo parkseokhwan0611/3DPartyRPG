@@ -19,6 +19,7 @@ public class PartyMemberScript : MonoBehaviour
     private AttackBase attackComp;
     private SkillManager skillManager;
     private CharacterStat statComp;
+    private PartyStatusEffectHandler statusHandler;
     private int _chainIndex = 0;
 
     // ─────────────────────────────────────────
@@ -65,6 +66,7 @@ public class PartyMemberScript : MonoBehaviour
         attackComp   = GetComponent<AttackBase>();
         skillManager = GetComponent<SkillManager>();
         statComp     = GetComponent<CharacterStat>();
+        statusHandler = GetComponent<PartyStatusEffectHandler>();
 
         if (attackComp != null)
         {
@@ -338,6 +340,9 @@ public class PartyMemberScript : MonoBehaviour
         // 진행 중인 공격·스킬 코루틴 즉시 취소
         attackComp?.ForceCancelAttack();
         skillManager?.ForceStopCurrentSkill();
+
+        // GameObject가 비활성화되기 전에 활성 버프/디버프 스탯을 즉시 원상복구
+        statusHandler?.ClearAllOnDeath();
 
         if (agent != null && agent.enabled)
         {

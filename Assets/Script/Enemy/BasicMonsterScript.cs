@@ -94,6 +94,7 @@ public class BasicMonsterScript : MonoBehaviour
     {
         if (GameManager.instance == null || !GameManager.instance.isLive) return;
         if (enemyHp == null || enemyHp.isDead) return;
+        if (attackModule == null) return;
         if (statusHandler != null && statusHandler.HasDebuff(StatusEffectType.Stun)) return;
 
         if (animator != null)
@@ -259,8 +260,13 @@ public class BasicMonsterScript : MonoBehaviour
         }
         else
         {
-            aggroTable.Clear();
-            aggroTarget = null;
+            // 1순위 어그로 대상만 추격 범위를 벗어난 것이므로 그 대상만 어그로 테이블에서 제거하고
+            // 다른 어그로 대상(또는 가장 가까운 파티원)으로 전환 — 전체 어그로를 리셋하지 않음
+            if (aggroTarget == target)
+            {
+                aggroTable.Remove(target);
+                RefreshAggroTarget();
+            }
             attackModule.SetTargetImmediate(null);
         }
     }
@@ -294,6 +300,7 @@ public class BasicMonsterScript : MonoBehaviour
     private void HandleStunEnded()
     {
         if (enemyHp == null || enemyHp.isDead) return;
+        if (attackModule == null) return;
 
         if (navAgent.enabled)
         {
@@ -316,7 +323,7 @@ public class BasicMonsterScript : MonoBehaviour
 
     private void HandleDeath()
     {
-        attackModule.SetTargetImmediate(null);
+        attackModule?.SetTargetImmediate(null);
         isAttacking = false;
         aggroTable.Clear();
         aggroTarget = null;
@@ -334,7 +341,7 @@ public class BasicMonsterScript : MonoBehaviour
 
     void OnCollisionStay(Collision collision)
     {
-        if (collision.gameObject.CompareTag("Player"))
+        if (rigid != null && collision.gameObject.CompareTag("Player"))
             rigid.velocity = Vector3.zero;
     }
 }

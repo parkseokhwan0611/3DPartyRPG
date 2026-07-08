@@ -11,8 +11,9 @@ public class StatusEffectHandler : MonoBehaviour
     private MonsterMeleeAttack monsterAttack;
 
     // 원본 수치 저장 (디버프 해제 시 정확히 복구)
-    private float originalSpeed     = 0f;
-    private float originalAtkDamage = 0f;
+    private float baseSpeed           = 0f; // Awake 시점 고정 기준 속도 — 이후 절대 덮어쓰지 않음
+    private float moveSpeedMultiplier = 1f; // Slow/MoveSpeedDown 중첩 적용 배율
+    private float originalAtkDamage   = 0f;
 
     private List<StatusEffect> activeEffects = new List<StatusEffect>();
 
@@ -36,7 +37,7 @@ public class StatusEffectHandler : MonoBehaviour
         anim          = GetComponent<Animator>();
         attackBase    = GetComponent<AttackBase>();
         monsterAttack = GetComponent<MonsterMeleeAttack>();
-        originalSpeed = agent != null ? agent.speed : 3f;
+        baseSpeed     = agent != null ? agent.speed : 3f;
     }
 
     void Update()
@@ -233,19 +234,17 @@ public class StatusEffectHandler : MonoBehaviour
         switch (effect.effectType)
         {
             // ── 이동속도 감소 ──
+            // Slow/MoveSpeedDown이 중첩돼도 baseSpeed(고정 기준값)는 절대 덮어쓰지 않고,
+            // moveSpeedMultiplier에 독립적으로 곱/나누기만 하여 기준값 오염을 방지
             case StatusEffectType.Slow:
             case StatusEffectType.MoveSpeedDown:
                 if (agent == null) break;
+                float safeValue = Mathf.Clamp(effect.value, 0f, 0.99f); // 100% 감속 시 나누기 0 방지
                 if (apply)
-                {
-                    originalSpeed  = agent.speed; // 현재 속도 저장
-                    agent.speed    = originalSpeed * (1f - effect.value);
-                }
+                    moveSpeedMultiplier *= (1f - safeValue);
                 else
-                {
-                    agent.speed    = originalSpeed; // 원본 속도로 복구
-                    originalSpeed  = agent != null ? agent.speed : 3f;
-                }
+                    moveSpeedMultiplier /= (1f - safeValue);
+                agent.speed = baseSpeed * moveSpeedMultiplier;
                 break;
 
             // ── 공격력 감소 ──

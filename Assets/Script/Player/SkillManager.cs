@@ -51,6 +51,7 @@ public class SkillManager : MonoBehaviour
     void Update()
     {
         if (memberScript == null) return;
+        if (memberScript.CurrentState == PartyMemberScript.MemberState.Dead) return;
 
         TryExecutePendingSkill();
 
@@ -133,6 +134,7 @@ public class SkillManager : MonoBehaviour
         if (skill != null)
         {
             skill.skillData     = data;
+            skill.skillLevel    = Mathf.Max(1, myStat != null ? myStat.GetSkillLevel(data) : 0);
             skill.OnSkillFinished += OnAnySkillFinished;
         }
 
@@ -159,6 +161,9 @@ public class SkillManager : MonoBehaviour
 
         SkillBase skill = GetSlot(index);
         if (skill == null || skill.skillData == null) return;
+
+        // 슬롯에 등록된 이후 레벨업했을 수 있으므로 실제 사용 직전에 최신 레벨로 재동기화
+        SyncSkillLevel(skill);
 
         // 후딜 캔슬 — 현재 스킬 후딜 강제 종료 후 다음 스킬 실행
         if (currentSkill != null && !IsActivatingSkill)
@@ -200,7 +205,15 @@ public class SkillManager : MonoBehaviour
         Transform target = _pendingTarget;
         _pendingSkill  = null;
         _pendingTarget = null;
+        SyncSkillLevel(skill);
         skill.TryUseSkill(target);
+    }
+
+    // 슬롯에 등록된 이후 레벨업이 발생했을 수 있으므로 사용 직전 최신 스킬 레벨로 동기화
+    private void SyncSkillLevel(SkillBase skill)
+    {
+        if (skill == null || myStat == null) return;
+        skill.skillLevel = Mathf.Max(1, myStat.GetSkillLevel(skill.skillData));
     }
 
     private Transform ResolveSkillTarget(SkillBase skill)

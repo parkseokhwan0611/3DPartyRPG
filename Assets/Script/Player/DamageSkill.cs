@@ -3,6 +3,8 @@ using System.Collections;
 
 public class DamageSkill : SkillBase
 {
+    private static readonly Collider[] _hitBuffer = new Collider[16];
+
     private int enemyLayer;
 
     private DamageSkillData damageData;
@@ -81,7 +83,7 @@ public class DamageSkill : SkillBase
     // 데미지 계산
     // ─────────────────────────────────────────────────────────────────
 
-    private float CalculateDamage(DamageSkillData data)
+    private float CalculateDamage(DamageSkillData data, float comboBonus)
     {
         if (myStat == null) return 0f;
 
@@ -91,26 +93,12 @@ public class DamageSkill : SkillBase
         float statBonus = data.GetTotalStatBonus(skillLevel, GetScalingStatValue);
         float damage    = (baseStat + statBonus) * data.GetDamageMultiplier(skillLevel);
 
-        float bonus = myStat.ConsumeNextSkillBonus();
-        damage *= (1f + bonus);
+        damage *= (1f + comboBonus);
 
         if (Random.value < myStat.TotalCritRate)
             damage *= myStat.TotalCritDamage;
 
         return damage;
-    }
-
-    private float GetScalingStatValue(DamageSkillData.ScalingStat stat)
-    {
-        if (myStat == null) return 0f;
-        return stat switch
-        {
-            DamageSkillData.ScalingStat.Str => myStat.TotalStr,
-            DamageSkillData.ScalingStat.Vit => myStat.TotalVit,
-            DamageSkillData.ScalingStat.Int => myStat.TotalInt,
-            DamageSkillData.ScalingStat.Fth => myStat.TotalFth,
-            _                               => 0f,
-        };
     }
 
     // ─────────────────────────────────────────────────────────────────
@@ -122,7 +110,8 @@ public class DamageSkill : SkillBase
         EnemyHp enemyHp = target.GetComponent<EnemyHp>();
         if (enemyHp == null) return;
 
-        enemyHp.TakeDamage(CalculateDamage(data), gameObject, myStat.GetDamageColor(!data.useAp));
+        float comboBonus = myStat.ConsumeNextSkillBonus();
+        enemyHp.TakeDamage(CalculateDamage(data, comboBonus), gameObject, myStat.GetDamageColor(!data.useAp));
         ApplyOnHitDebuffs(data, target);
     }
 
@@ -135,15 +124,16 @@ public class DamageSkill : SkillBase
         float range    = data.GetRange(skillLevel);
         Vector3 hitPos = transform.position + transform.forward * (range * 0.5f);
 
-        Collider[] hitCols = Physics.OverlapSphere(hitPos, range, enemyLayer);
+        int hitCount = Physics.OverlapSphereNonAlloc(hitPos, range, _hitBuffer, enemyLayer);
+        float comboBonus = myStat.ConsumeNextSkillBonus();
 
-        foreach (Collider col in hitCols)
+        for (int i = 0; i < hitCount; i++)
         {
-            EnemyHp enemyHp = col.GetComponent<EnemyHp>();
+            EnemyHp enemyHp = _hitBuffer[i].GetComponent<EnemyHp>();
             if (enemyHp == null) continue;
 
-            enemyHp.TakeDamage(CalculateDamage(data), gameObject, myStat.GetDamageColor(!data.useAp));
-            ApplyOnHitDebuffs(data, col.transform);
+            enemyHp.TakeDamage(CalculateDamage(data, comboBonus), gameObject, myStat.GetDamageColor(!data.useAp));
+            ApplyOnHitDebuffs(data, _hitBuffer[i].transform);
         }
     }
 
@@ -178,13 +168,13 @@ public class DamageSkill : SkillBase
         if (!data.hasAggroEffect) return;
 
         // 범위 내 모든 몬스터에게 어그로 추가
-        Collider[] cols = Physics.OverlapSphere(
-            transform.position, data.aggroRange, enemyLayer);
+        int hitCount = Physics.OverlapSphereNonAlloc(
+            transform.position, data.aggroRange, _hitBuffer, enemyLayer);
 
-        foreach (Collider col in cols)
+        for (int i = 0; i < hitCount; i++)
         {
             // IAggroable 인터페이스 방식 (나중에 몬스터 종류 늘어날 때 확장 용이)
-            BasicMonsterScript monster = col.GetComponent<BasicMonsterScript>();
+            BasicMonsterScript monster = _hitBuffer[i].GetComponent<BasicMonsterScript>();
             if (monster != null)
                 monster.AddAggro(transform, data.aggroAmount);
         }
@@ -225,10 +215,11 @@ public class DamageSkill : SkillBase
         var zone = effect.GetComponent<SkillZone>();
         if (zone != null)
         {
-            float damage = CalculateDamage(data);
+            float comboBonus = myStat.ConsumeNextSkillBonus();
+            float damage = CalculateDamage(data, comboBonus);
             float range  = data.GetRange(skillLevel);
             zone.Setup(damage, range, data.zoneDamageInterval, data.zoneActivationDelay,
-                       data.zoneHitOnce, gameObject, myStat.GetDamageColor(!data.useAp));
+                       data.zoneHitOnce, gameObject, myStat.GetDamageColor(!data.useAp), data.zoneDuration);
         }
         else
         {

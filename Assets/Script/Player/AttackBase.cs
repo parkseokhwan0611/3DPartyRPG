@@ -243,6 +243,10 @@ public abstract class AttackBase : MonoBehaviour
 
         attackCooldown   = 0f;
         firstAttackDelay = 0f;
+
+        // 타겟도 같이 정리 — 안 하면 사망 후에도 LookAtTarget이 시체를 계속 회전시킴
+        currentTarget = null;
+        targetHealth  = null;
     }
 
     protected virtual void StopAttackCoroutine()

@@ -57,6 +57,9 @@ public class CharacterStat : MonoBehaviour, IDamageable
     public float TotalCDReduce => myStatus != null ? myStatus.TotalCDReduce : 0f;
     public float TotalMpReduce => myStatus != null ? myStatus.TotalMpReduce : 0f;
 
+    // 스킬 레벨 조회 (SkillManager가 SkillBase.skillLevel 동기화에 사용)
+    public int GetSkillLevel(SkillData skill) => myStatus != null ? myStatus.GetSkillLevel(skill) : 0;
+
     // 아이템/장비 평탄 보너스 (읽기 + 쓰기 모두 필요해서 프로퍼티로 래핑)
     public float BonusAtk { get => myStatus?.bonusAtk ?? 0f; set { if (myStatus != null) myStatus.bonusAtk = value; } }
     public float BonusAp  { get => myStatus?.bonusAp  ?? 0f; set { if (myStatus != null) myStatus.bonusAp  = value; } }

@@ -50,7 +50,7 @@ public class SaveManager : MonoBehaviour
 
             // NPC 재고
             data.npcStocks.Clear();
-            foreach (var npc in FindObjectsOfType<NpcInteractable>())
+            foreach (var npc in NpcInteractable.AllInstances)
                 data.npcStocks.Add(npc.GetStockSave());
 
             // 씬 / 위치
@@ -155,7 +155,6 @@ public class SaveManager : MonoBehaviour
         {
             if (party[i] == null) continue;
             Vector3 pos = data.partyPositions[i];
-            if (pos == Vector3.zero) continue;
 
             NavMeshAgent agent = party[i].GetComponent<NavMeshAgent>();
             if (agent != null && agent.enabled && agent.isOnNavMesh)
@@ -171,7 +170,7 @@ public class SaveManager : MonoBehaviour
     private void RestoreNpcStocks(GameSaveData data)
     {
         if (data.npcStocks == null || data.npcStocks.Count == 0) return;
-        var allNpcs = FindObjectsOfType<NpcInteractable>();
+        var allNpcs = NpcInteractable.AllInstances;
         foreach (var stockSave in data.npcStocks)
         {
             foreach (var npc in allNpcs)
@@ -212,7 +211,7 @@ public class SaveManager : MonoBehaviour
         }
 
         // 전투 퀵슬롯 UI 갱신
-        FindObjectOfType<CombatQuickSlotUI>()?.RefreshSlots();
+        CombatQuickSlotUI.instance?.RefreshSlots();
     }
 
     // ─────────────────────────────────────────────────────────────────

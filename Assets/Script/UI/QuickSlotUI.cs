@@ -10,10 +10,30 @@ public class QuickSlotUI : MonoBehaviour
 
     private QuickSlot[] slots;
     private int currentCharIndex = -1; // -1 = 리더 기준
+    private SkillManager _cachedSkillManager;
 
     void Awake()
     {
         slots = new QuickSlot[] { slotQ, slotW, slotE, slotR };
+    }
+
+    void OnEnable()
+    {
+        if (PartyManager.instance != null)
+            PartyManager.instance.OnLeaderChanged += HandleLeaderChanged;
+    }
+
+    void OnDisable()
+    {
+        if (PartyManager.instance != null)
+            PartyManager.instance.OnLeaderChanged -= HandleLeaderChanged;
+    }
+
+    // -1(리더 기준) 상태일 때만 리더 변경에 반응 — 특정 캐릭터를 보고 있을 땐 영향 없음
+    private void HandleLeaderChanged(PartyMemberScript newLeader)
+    {
+        if (currentCharIndex != -1) return;
+        _cachedSkillManager = newLeader != null ? newLeader.GetComponent<SkillManager>() : null;
     }
     // ─────────────────────────────────────────────────────────────────
     // 슬롯에 스킬 등록 (QuickSlot.OnDrop에서 호출)
@@ -28,6 +48,9 @@ public class QuickSlotUI : MonoBehaviour
         int charIndex = skillWindow != null
             ? skillWindow.GetCurrentCharIndex()
             : 0;
+
+        if (PartyManager.instance == null) return;
+        if (charIndex < 0 || charIndex >= PartyManager.instance.partyMembers.Count) return;
 
         PartyMemberScript member = PartyManager.instance.partyMembers[charIndex];
         SkillManager skillManager = member?.GetComponent<SkillManager>();
@@ -53,11 +76,10 @@ public class QuickSlotUI : MonoBehaviour
         slots[slotIndex]?.SetSkill(skill);
 
         // 전투 UI도 갱신 (리더일 때만)
-        if (charIndex == PartyManager.instance.currentLeader
-            .GetComponent<CharacterStat>().partyIndex)
+        if (PartyManager.instance.currentLeader != null
+            && charIndex == PartyManager.instance.currentLeader.GetComponent<CharacterStat>().partyIndex)
         {
-            CombatQuickSlotUI combatUI = FindObjectOfType<CombatQuickSlotUI>();
-            if (combatUI != null) combatUI.RefreshSlots();
+            CombatQuickSlotUI.instance?.RefreshSlots();
         }
     }
 
@@ -67,36 +89,22 @@ public class QuickSlotUI : MonoBehaviour
 
     void Update()
     {
-        if (PartyManager.instance == null) return;
-
-        SkillManager skillManager = GetCurrentSkillManager();
-        if (skillManager == null) return;
+        if (_cachedSkillManager == null) return;
 
         for (int i = 0; i < slots.Length; i++)
         {
             if (slots[i] != null)
-                slots[i].UpdateCooldown(skillManager.GetCooldownRatio(i));
+                slots[i].UpdateCooldown(_cachedSkillManager.GetCooldownRatio(i));
         }
     }
 
-    private SkillManager GetCurrentSkillManager()
-    {
-        if (currentCharIndex >= 0
-            && currentCharIndex < PartyManager.instance.partyMembers.Count)
-        {
-            var member = PartyManager.instance.partyMembers[currentCharIndex];
-            return member?.GetComponent<SkillManager>();
-        }
-
-        return PartyManager.instance.currentLeader?.GetComponent<SkillManager>();
-    }
     public void RefreshByCharIndex(int charIndex)
     {
         currentCharIndex = charIndex;
 
         if (slots == null)
             slots = new QuickSlot[] { slotQ, slotW, slotE, slotR };
-            
+
         if (PartyManager.instance == null) return;
 
         // 해당 인덱스의 파티원 SkillManager 가져오기
@@ -105,6 +113,8 @@ public class QuickSlotUI : MonoBehaviour
         PartyMemberScript member = PartyManager.instance.partyMembers[charIndex];
         SkillManager skillManager = member.GetComponent<SkillManager>();
         if (skillManager == null) return;
+
+        _cachedSkillManager = skillManager; // 쿨다운 표시용 캐시 갱신
 
         for (int i = 0; i < slots.Length; i++)
         {

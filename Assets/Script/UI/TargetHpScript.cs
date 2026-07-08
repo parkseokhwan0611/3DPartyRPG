@@ -47,8 +47,8 @@ public class TargetHpScript : MonoBehaviour
 
         // 2. 새 타겟 설정
         currentTarget = newTarget;
-        rootVisual.SetActive(true);
-        nameText.text = currentTarget.enemyName;
+        if (rootVisual != null) rootVisual.SetActive(true);
+        if (nameText != null) nameText.text = currentTarget.enemyName;
 
         // 3. 새 타겟 이벤트 구독 및 초기화
         currentTarget.OnHpChanged += UpdateHPBar;
@@ -64,10 +64,11 @@ public class TargetHpScript : MonoBehaviour
 
     void UpdateHPBar(float currentHp, float maxHp)
     {
-        hpBarFill.fillAmount = currentHp / maxHp;
+        if (hpBarFill != null)
+            hpBarFill.fillAmount = maxHp > 0f ? currentHp / maxHp : 0f;
         if (hpText != null)
             hpText.text = $"{currentHp:F0} / {maxHp:F0}";
 
-        if (currentHp <= 0) rootVisual.SetActive(false);
+        if (currentHp <= 0 && rootVisual != null) rootVisual.SetActive(false);
     }
 }

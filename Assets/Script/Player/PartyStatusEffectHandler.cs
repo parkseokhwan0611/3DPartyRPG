@@ -110,6 +110,17 @@ public class PartyStatusEffectHandler : MonoBehaviour
         return activeBuffs.Exists(e => IsDebuff(e.effectType));
     }
 
+    // 사망 시 호출 — GameObject가 비활성화되면 만료 코루틴이 강제로 죽어 스탯이 복구되지 않으므로,
+    // 비활성화되기 전에 활성 버프/디버프를 전부 즉시 원상복구한다.
+    public void ClearAllOnDeath()
+    {
+        var buffs = new List<StatusEffect>(activeBuffs);
+        foreach (var effect in buffs)
+            RemoveBuffInstance(effect);
+
+        CurrentShield = 0f;
+    }
+
     // ─────────────────────────────────────────────────────────────────
     // 코루틴
     // ─────────────────────────────────────────────────────────────────
@@ -164,12 +175,14 @@ public class PartyStatusEffectHandler : MonoBehaviour
                 break;
 
             // 이동속도 감소 (value = 0.3 → 30% 감속)
+            // value가 1(100% 감속)이면 해제 시 0으로 나누게 되어 버그가 나므로 0.99로 클램프
             case StatusEffectType.Slow:
             case StatusEffectType.MoveSpeedDown:
+                float safeValue = Mathf.Clamp(effect.value, 0f, 0.99f);
                 if (apply)
-                    status.moveSpeedMultiplier *= (1f - effect.value);
+                    status.moveSpeedMultiplier *= (1f - safeValue);
                 else
-                    status.moveSpeedMultiplier /= (1f - effect.value);
+                    status.moveSpeedMultiplier /= (1f - safeValue);
                 break;
 
             case StatusEffectType.ApUp:

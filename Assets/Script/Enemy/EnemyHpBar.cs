@@ -15,15 +15,13 @@ public class EnemyHpBar : MonoBehaviour
 
     public float changeSpeed = 1.5f; // HP 바 변경 속도
 
-    void Awake()
-    {
-        hpAmount = enemyHp.hp;
-    }
-
     void Start()
     {
         fixedRotation = transform.rotation;
-        currentHpFill = enemyHp.hp / enemyHp.maxHp;
+        // enemyHp.hp는 EnemyHp.Start()에서 초기화되는데 컴포넌트 간 Start() 실행 순서가
+        // 보장되지 않아 여기서 읽으면 레이스 컨디션이 생김 — 스폰 시 항상 풀피이므로 1로 고정 시작,
+        // 이후 HpChange()가 Update()에서 실제 값으로 자연스럽게 보간됨
+        currentHpFill = 1f;
         if (Camera.main != null) camTransform = Camera.main.transform;
     }
 
@@ -40,11 +38,13 @@ public class EnemyHpBar : MonoBehaviour
 
     void HpChange()
     {
+        if (enemyHp == null || enemyHp.maxHp <= 0f) return;
+
         hpAmount = enemyHp.hp;
         float targetFill = hpAmount / enemyHp.maxHp;
         // 부드럽게 보간하여 채우기 정도를 변경
         currentHpFill = Mathf.MoveTowards(currentHpFill, targetFill, changeSpeed * Time.deltaTime);
-        hpBar.fillAmount = currentHpFill;
-        mask.fillAmount = Mathf.MoveTowards(mask.fillAmount, hpBar.fillAmount, 0.8f * Time.deltaTime);
+        if (hpBar != null) hpBar.fillAmount = currentHpFill;
+        if (mask != null) mask.fillAmount = Mathf.MoveTowards(mask.fillAmount, currentHpFill, 0.8f * Time.deltaTime);
     }
 }

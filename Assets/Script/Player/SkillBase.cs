@@ -23,8 +23,16 @@ public abstract class SkillBase : MonoBehaviour
     public bool IsReady           => cooldownTimer <= 0f;
     public float CooldownRemaining => Mathf.Max(cooldownTimer, 0f);
     public float CooldownRatio    => skillData != null && skillData.cooldown.Length > 0
-        ? Mathf.Clamp01(cooldownTimer / skillData.cooldown[skillLevel - 1])
+        ? Mathf.Clamp01(cooldownTimer / GetArrayValue(skillData.cooldown))
         : 0f;
+
+    // maxLevel과 배열(cooldown/mpCost) 길이가 어긋나 있어도 크래시 없이 마지막 유효값으로 대체
+    private float GetArrayValue(float[] arr)
+    {
+        if (arr == null || arr.Length == 0) return 0f;
+        int idx = Mathf.Clamp(skillLevel - 1, 0, arr.Length - 1);
+        return arr[idx];
+    }
 
     public void SetCooldown(float remaining) => cooldownTimer = remaining;
 
@@ -72,12 +80,12 @@ public abstract class SkillBase : MonoBehaviour
         // 패시브는 MP 소모 없음
         if (skillData.skillType != SkillData.SkillType.Passive)
         {
-            float cost = skillData.mpCost[skillLevel - 1];
+            float cost = GetArrayValue(skillData.mpCost);
             if (!myStat.TryUseMp(cost)) return false;
         }
 
         skillCoroutine = StartCoroutine(SkillRoutine(target));
-        cooldownTimer  = skillData.cooldown[skillLevel - 1];
+        cooldownTimer  = GetArrayValue(skillData.cooldown);
         return true;
     }
 
@@ -144,4 +152,18 @@ public abstract class SkillBase : MonoBehaviour
     }
 
     protected abstract IEnumerator ExecuteSkill(Transform target);
+
+    // DamageSkill/HealSkill이 공통으로 사용하는 스탯 스케일링 조회
+    protected float GetScalingStatValue(DamageSkillData.ScalingStat stat)
+    {
+        if (myStat == null) return 0f;
+        return stat switch
+        {
+            DamageSkillData.ScalingStat.Str => myStat.TotalStr,
+            DamageSkillData.ScalingStat.Vit => myStat.TotalVit,
+            DamageSkillData.ScalingStat.Int => myStat.TotalInt,
+            DamageSkillData.ScalingStat.Fth => myStat.TotalFth,
+            _                               => 0f,
+        };
+    }
 }

@@ -50,9 +50,13 @@ public string charName;
 
     public float addedMp = 0f;
 
-    public float MaxHp => classData.hp
+    // 최대 체력/방어력 % 패시브 보너스 (0.1 = +10%) — VIT을 직접 건드리지 않고 최종 계산식에만 곱연산으로 반영
+    public float maxHpPercentBonus = 0f;
+    public float defPercentBonus   = 0f;
+
+    public float MaxHp => (classData.hp
                         + ((classData.baseVit + addedVit + equipVit) * classData.hpPerVit)
-                        + equipMaxHp;
+                        + equipMaxHp) * (1f + maxHpPercentBonus);
     public float MaxMp => classData.mp + addedMp;
 
     public float TotalHpRegen => classData.baseHpRegen
@@ -76,8 +80,8 @@ public string charName;
 
     // 방어력 (VIT 비례 + 패시브 + 장비)
     public float addedDef = 0f;
-    public float TotalDef => ((classData.baseVit + addedVit + equipVit) * classData.defPerVit)
-                           + addedDef + bonusDef + equipDef;
+    public float TotalDef => (((classData.baseVit + addedVit + equipVit) * classData.defPerVit)
+                           + addedDef + bonusDef + equipDef) * (1f + defPercentBonus);
 
     // 마법 저항력
     public float addedMagicRes = 0f;
@@ -141,8 +145,11 @@ public string charName;
         int currentLevel = GetSkillLevel(skill);
 
         if (currentLevel >= skill.maxLevel) return false;
+        if (skill.skillPointCost == null || skill.skillPointCost.Length == 0) return false;
 
-        int cost = skill.skillPointCost[currentLevel];
+        // maxLevel과 skillPointCost 배열 길이가 어긋나 있어도 크래시 없이 마지막 유효값으로 대체
+        int costIdx = Mathf.Clamp(currentLevel, 0, skill.skillPointCost.Length - 1);
+        int cost    = skill.skillPointCost[costIdx];
         if (skillPoint < cost) return false;
 
         skillPoint -= cost;
@@ -196,10 +203,10 @@ public string charName;
                 addedMagicRes += classData.baseMagicRes * delta;
                 break;
             case PassiveSkillData.PassiveEffectType.DefPercent:
-                addedDef += ((classData.baseVit + addedVit) * classData.defPerVit) * delta;
+                defPercentBonus += delta;
                 break;
             case PassiveSkillData.PassiveEffectType.MaxHpPercent:
-                addedVit += classData.baseVit * delta;
+                maxHpPercentBonus += delta;
                 break;
 
             case PassiveSkillData.PassiveEffectType.MaxMpBonus:

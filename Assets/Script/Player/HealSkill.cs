@@ -118,19 +118,6 @@ public class HealSkill : SkillBase
         return (baseStat + statBonus) * data.GetHealMultiplier(skillLevel) * (1f + myStat.HealBonus);
     }
 
-    private float GetScalingStatValue(DamageSkillData.ScalingStat stat)
-    {
-        if (myStat == null) return 0f;
-        return stat switch
-        {
-            DamageSkillData.ScalingStat.Str => myStat.TotalStr,
-            DamageSkillData.ScalingStat.Vit => myStat.TotalVit,
-            DamageSkillData.ScalingStat.Int => myStat.TotalInt,
-            DamageSkillData.ScalingStat.Fth => myStat.TotalFth,
-            _                               => 0f,
-        };
-    }
-
     private void SpawnCasterEffect(HealSkillData data)
     {
         if (string.IsNullOrEmpty(data.effectPoolKey)) return;

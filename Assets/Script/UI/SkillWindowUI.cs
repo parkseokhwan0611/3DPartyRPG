@@ -33,7 +33,7 @@ public class SkillWindowUI : MonoBehaviour
             currentCharIndex = DataManager.instance.selectedPartyIndex;
 
         RefreshSkillTree();
-        quickSlotPanel.RefreshByCharIndex(currentCharIndex);
+        quickSlotPanel?.RefreshByCharIndex(currentCharIndex);
     }
     // ─────────────────────────────────────────────────────────────────
     // 캐릭터 탭 전환 (CharacterTabGroup 버튼에서 호출)
@@ -46,8 +46,8 @@ public class SkillWindowUI : MonoBehaviour
             DataManager.instance.selectedPartyIndex = charIndex;
 
         RefreshSkillTree();
-        detailPanel.Clear();
-        quickSlotPanel.RefreshByCharIndex(charIndex);
+        detailPanel?.Clear();
+        quickSlotPanel?.RefreshByCharIndex(charIndex);
     }
 
     // ─────────────────────────────────────────────────────────────────
@@ -72,7 +72,7 @@ public class SkillWindowUI : MonoBehaviour
         RefreshColumn(subSlots,     skillTree.subSkills,     subRequiredLevels,     status, partyLevel);
         RefreshColumn(passiveSlots, skillTree.passiveSkills, passiveRequiredLevels, status, partyLevel);
 
-        detailPanel.RefreshSkillPoint(status.skillPoint);
+        detailPanel?.RefreshSkillPoint(status.skillPoint);
     }
 
     private void RefreshColumn(
@@ -110,7 +110,7 @@ public class SkillWindowUI : MonoBehaviour
         if (DataManager.instance == null) return;
 
         CharacterStatus status = DataManager.instance.partyStatuses[currentCharIndex];
-        detailPanel.ShowSkillDetail(skill, status, DataManager.instance.partyLevel, currentCharIndex, requiredLevel);
+        detailPanel?.ShowSkillDetail(skill, status, DataManager.instance.partyLevel, currentCharIndex, requiredLevel);
     }
 
     // ─────────────────────────────────────────────────────────────────

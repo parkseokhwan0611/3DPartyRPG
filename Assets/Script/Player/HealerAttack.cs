@@ -80,6 +80,13 @@ public class HealerAttack : AttackBase
         Vector3 preciseDir    = (TargetPosition - spawnPos).normalized;
         Quaternion preciseRot = Quaternion.LookRotation(preciseDir);
 
+        if (ObjectPoolManager.instance == null)
+        {
+            _isAttacking = false;
+            attackCoroutine = null;
+            yield break;
+        }
+
         var effect = ObjectPoolManager.instance.GetGo(projectileName);
         if (effect == null)
         {
@@ -93,10 +100,11 @@ public class HealerAttack : AttackBase
 
         float damage = myStat.TotalAp * (1f + myStat.MagicDmgBonus);
 
-        if (Random.value <= myStat.TotalCritRate)
+        if (Random.value < myStat.TotalCritRate)
         {
             damage *= myStat.TotalCritDamage;
-            CinemachineShake.Instance.ShakeCamera(10f, .2f);
+            if (CinemachineShake.Instance != null)
+                CinemachineShake.Instance.ShakeCamera(10f, .2f);
         }
 
         ProjectileScript proj = effect.GetComponent<ProjectileScript>();

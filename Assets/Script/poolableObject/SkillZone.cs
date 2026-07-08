@@ -9,6 +9,8 @@ using System.Collections;
 /// </summary>
 public class SkillZone : MonoBehaviour
 {
+    private static readonly Collider[] _hitBuffer = new Collider[16];
+
     // ─────────────────────────────────────────────────────────────────
     // 런타임 파라미터 (DamageSkill이 Setup()으로 주입)
     // ─────────────────────────────────────────────────────────────────
@@ -20,6 +22,7 @@ public class SkillZone : MonoBehaviour
     private bool   hitOnce;
     private GameObject attacker;
     private Color  damageColor;
+    private float  duration;
 
     private int    enemyLayer;
     private Coroutine tickCoroutine;
@@ -29,7 +32,7 @@ public class SkillZone : MonoBehaviour
     // ─────────────────────────────────────────────────────────────────
 
     public void Setup(float damage, float range, float interval, float activationDelay,
-                      bool hitOnce, GameObject attacker, Color damageColor)
+                      bool hitOnce, GameObject attacker, Color damageColor, float duration)
     {
         this.damage          = damage;
         this.range           = range;
@@ -38,6 +41,7 @@ public class SkillZone : MonoBehaviour
         this.hitOnce         = hitOnce;
         this.attacker        = attacker;
         this.damageColor     = damageColor;
+        this.duration        = duration;
         this.enemyLayer      = LayerMask.GetMask("Enemy");
 
         // OnEnable이 Setup보다 먼저 호출될 수 있으므로 여기서도 시작
@@ -76,21 +80,26 @@ public class SkillZone : MonoBehaviour
             yield break;
         }
 
-        // 반복: interval마다 판정
+        // 반복: interval마다 판정, duration이 지나면 스스로 중단
+        // (PoolableObject 설정이 누락/오류인 경우에도 무한 루프로 데미지가 계속 나가는 것을 방지)
         var wait = new WaitForSeconds(interval);
-        while (true)
+        float elapsed = 0f;
+        while (elapsed < duration)
         {
             ApplyDamage();
             yield return wait;
+            elapsed += interval;
         }
+
+        tickCoroutine = null;
     }
 
     private void ApplyDamage()
     {
-        Collider[] hits = Physics.OverlapSphere(transform.position, range, enemyLayer);
-        foreach (var col in hits)
+        int hitCount = Physics.OverlapSphereNonAlloc(transform.position, range, _hitBuffer, enemyLayer);
+        for (int i = 0; i < hitCount; i++)
         {
-            EnemyHp enemyHp = col.GetComponent<EnemyHp>();
+            EnemyHp enemyHp = _hitBuffer[i].GetComponent<EnemyHp>();
             if (enemyHp == null) continue;
             enemyHp.TakeDamage(damage, attacker, damageColor);
         }
