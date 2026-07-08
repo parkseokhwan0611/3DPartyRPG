@@ -9,10 +9,22 @@ public class WorldItem : MonoBehaviour
     private ItemInstance _item;
     private bool _playerInRange;
     private Camera _camera;
+    private PoolAble _poolAble;
+
+    void Awake()
+    {
+        _poolAble = GetComponent<PoolAble>();
+    }
 
     void Start()
     {
         _camera = Camera.main;
+    }
+
+    // 풀에서 재사용될 때마다 이전 상태(범위 체크 등)가 남아있지 않도록 초기화
+    void OnEnable()
+    {
+        _playerInRange = false;
     }
 
     public void Setup(ItemInstance item)
@@ -56,8 +68,13 @@ public class WorldItem : MonoBehaviour
         if (DataManager.instance == null || _item == null) return;
 
         if (DataManager.instance.sharedInventory.TryAddItem(_item))
-            Destroy(gameObject);
+        {
+            if (_poolAble != null) _poolAble.ReleaseObject();
+            else                   Destroy(gameObject);
+        }
         else
+        {
             Debug.Log("[WorldItem] 인벤토리가 가득 찼습니다.");
+        }
     }
 }

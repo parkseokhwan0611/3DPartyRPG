@@ -58287,6 +58287,7 @@ GameObject:
   - component: {fileID: 3148382433159934561}
   - component: {fileID: 1823959362153476068}
   - component: {fileID: -2688314209699212081}
+  - component: {fileID: 3661781366999817020}
   m_Layer: 0
   m_Name: WorldItem_Mythic
   m_TagString: Untagged
@@ -63169,6 +63170,18 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &3661781366999817020
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7675397667225046791}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 580eff04423a68e46b15dcbc5df88edb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &8240865732582821246
 GameObject:
   m_ObjectHideFlags: 0

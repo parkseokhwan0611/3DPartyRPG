@@ -21,6 +21,9 @@ public class MonsterDropTable : ScriptableObject
     [Header("드랍 연출")]
     [Tooltip("Normal / Advanced / Elite / Legendary / Mythic 순서로 5개")]
     public GameObject[] gradePrefabs = new GameObject[5];
+    [Tooltip("ObjectPoolManager에 등록한 풀 키 (gradePrefabs와 같은 순서, 5개). " +
+             "비워두면 해당 등급은 풀링 없이 기존처럼 Instantiate/Destroy로 동작")]
+    public string[] gradePoolKeys = new string[5];
 
     [Header("드랍 목록")]
     public List<DropEntry> entries = new List<DropEntry>();
@@ -55,7 +58,16 @@ public class MonsterDropTable : ScriptableObject
             Vector2 scatter = Random.insideUnitCircle * 1.5f;
             Vector3 spawnPos = position + new Vector3(scatter.x, 0.5f, scatter.y);
 
-            GameObject go = Instantiate(gradePrefabs[gradeIndex], spawnPos, Quaternion.identity);
+            // 풀 키가 설정돼 있으면 풀에서 꺼내고, 아니면 기존처럼 Instantiate (설정 전에도 정상 동작)
+            string poolKey = gradeIndex < gradePoolKeys.Length ? gradePoolKeys[gradeIndex] : null;
+            GameObject go = null;
+            if (!string.IsNullOrEmpty(poolKey) && ObjectPoolManager.instance != null)
+                go = ObjectPoolManager.instance.GetGo(poolKey);
+
+            if (go == null)
+                go = Instantiate(gradePrefabs[gradeIndex]);
+
+            go.transform.SetPositionAndRotation(spawnPos, Quaternion.identity);
             go.GetComponent<WorldItem>()?.Setup(inst);
         }
     }
