@@ -5,7 +5,7 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "Class", menuName = "Scriptable Object/ClassData")]
 public class ClassData : ScriptableObject
 {
-    public enum ClassType { Tanker, Dealer, Healer }
+    public enum ClassType { Tanker, Dealer, Healer, Gunslinger }
     public ClassType classType;
     public int level;
     public float hp;
