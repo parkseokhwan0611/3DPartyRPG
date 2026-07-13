@@ -53,6 +53,7 @@ public class NpcInteractable : MonoBehaviour
     public ShopData ShopData => shopData;
     public string   NpcName  => npcName;
     public string   NpcId    => !string.IsNullOrEmpty(npcId) ? npcId : gameObject.name;
+    public NpcType  Type     => npcType;
 
     /// <summary>해당 ShopEntry 인덱스의 남은 재고. 제한 없으면 int.MaxValue.</summary>
     public int GetRemainingStock(int entryIndex)

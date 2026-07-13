@@ -145,6 +145,9 @@ public class QuestManager : MonoBehaviour
         if (quest == null || quest.objectiveType != QuestObjectiveType.NpcDialogue) return;
         if (npc == null || string.IsNullOrEmpty(quest.targetNpcId)) return;
 
+        // 상점/강화 NPC는 퀘스트와 무관 — 애초에 퀘스트 매칭 대상에서 제외
+        if (npc.Type == NpcInteractable.NpcType.Shop || npc.Type == NpcInteractable.NpcType.Enhancement) return;
+
         if (npc.NpcId != quest.targetNpcId)
         {
             Debug.Log($"[QuestManager] 대화한 NPC Id '{npc.NpcId}'가 현재 퀘스트의 Target Npc Id " +
