@@ -19,6 +19,8 @@ public class TitleMenuUI : MonoBehaviour
         loadGameButton?.onClick.AddListener(OnLoadGameClicked);
         exitButton    ?.onClick.AddListener(OnExitClicked);
 
+        AudioManager.instance?.PlayBGM("LoginBGM");
+
         // 세이브 파일 없으면 이어하기 비활성화
         if (loadGameButton != null)
             loadGameButton.interactable = SaveManager.instance != null
