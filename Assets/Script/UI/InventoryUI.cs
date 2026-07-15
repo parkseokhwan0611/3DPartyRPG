@@ -49,6 +49,7 @@ public class InventoryUI : MonoBehaviour
     [SerializeField] GameObject     sellQuantityPanel;
     [SerializeField] TMP_InputField sellQuantityInput;
     [SerializeField] Slider         sellQuantitySlider;
+    [SerializeField] TextMeshProUGUI sellQuantityPriceText;
     [SerializeField] Button         confirmSellButton;
     [SerializeField] Button         cancelSellButton;
 
@@ -550,9 +551,17 @@ public class InventoryUI : MonoBehaviour
         if (sellQuantitySlider != null) { sellQuantitySlider.maxValue = maxQty; sellQuantitySlider.value = 1; }
         if (sellQuantityInput  != null) sellQuantityInput.text = "1";
         _sellSyncLock = false;
+        UpdateSellQuantityPriceText(1);
 
         sellButton       ?.gameObject.SetActive(false);
         sellQuantityPanel?.SetActive(true);
+    }
+
+    // 선택한 수량 기준 총 판매가 표시
+    void UpdateSellQuantityPriceText(int qty)
+    {
+        if (sellQuantityPriceText == null || selectedItem?.data == null) return;
+        sellQuantityPriceText.text = $"가격: {selectedItem.data.sellPrice * qty:N0}원";
     }
 
     void CloseSellQuantityPanel()
@@ -590,6 +599,7 @@ public class InventoryUI : MonoBehaviour
     // 판매 수량 슬라이더 ↔ 인풋 동기화
     void OnSellSliderChanged(float value)
     {
+        UpdateSellQuantityPriceText((int)value);
         if (_sellSyncLock || sellQuantityInput == null) return;
         _sellSyncLock = true;
         sellQuantityInput.text = ((int)value).ToString();
@@ -598,6 +608,9 @@ public class InventoryUI : MonoBehaviour
 
     void OnSellInputValueChanged(string s)
     {
+        if (int.TryParse(s, out int typed) && typed >= 1)
+            UpdateSellQuantityPriceText(typed);
+
         if (_sellSyncLock || sellQuantitySlider == null || string.IsNullOrEmpty(s)) return;
         if (!int.TryParse(s, out int v) || v < 1) return;
         float clamped = Mathf.Clamp(v, sellQuantitySlider.minValue, sellQuantitySlider.maxValue);
@@ -616,6 +629,7 @@ public class InventoryUI : MonoBehaviour
         if (sellQuantityInput  != null) sellQuantityInput.text   = clamped.ToString();
         if (sellQuantitySlider != null) sellQuantitySlider.value = clamped;
         _sellSyncLock = false;
+        UpdateSellQuantityPriceText(clamped);
     }
 
     void OnRegisterPotionClicked()

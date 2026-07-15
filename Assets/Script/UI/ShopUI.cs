@@ -50,6 +50,7 @@ public class ShopUI : MonoBehaviour
     [SerializeField] GameObject     quantityPanel;
     [SerializeField] TMP_InputField quantityInput;
     [SerializeField] Slider         quantitySlider;
+    [SerializeField] TextMeshProUGUI quantityPriceText;
     [Tooltip("수량 패널 구매 버튼")]
     [SerializeField] Button         buyButtonQuantity;
     [Tooltip("수량 패널 취소 버튼")]
@@ -59,6 +60,7 @@ public class ShopUI : MonoBehaviour
     [SerializeField] GameObject     sellQuantityPanel;
     [SerializeField] TMP_InputField sellQuantityInput;
     [SerializeField] Slider         sellQuantitySlider;
+    [SerializeField] TextMeshProUGUI sellQuantityPriceText;
     [SerializeField] Button         confirmSellButton;
     [SerializeField] Button         cancelSellButton;
 
@@ -559,6 +561,7 @@ public class ShopUI : MonoBehaviour
         // 살 수 없으면 0 표시, 슬라이더는 맨 왼쪽(min)
         if (quantityInput != null) quantityInput.text = maxQty > 0 ? "1" : "0";
         _syncLock = false;
+        UpdateBuyQuantityPriceText(maxQty > 0 ? 1 : 0);
 
         if (maxQty <= 0) ShowMessage("골드가 부족합니다.");
 
@@ -574,6 +577,21 @@ public class ShopUI : MonoBehaviour
         buyButton   ?.gameObject.SetActive(true);
         cancelButton?.gameObject.SetActive(true);
         SetGridsInteractable(true);
+    }
+
+    // 선택한 수량 기준 총 구매가 표시
+    void UpdateBuyQuantityPriceText(int qty)
+    {
+        if (quantityPriceText == null) return;
+        if (_currentNpc?.ShopData == null || _selectedShopIndex < 0
+            || _selectedShopIndex >= _currentNpc.ShopData.entries.Count)
+        {
+            quantityPriceText.text = "";
+            return;
+        }
+
+        int unitPrice = _currentNpc.ShopData.entries[_selectedShopIndex].item.buyPrice;
+        quantityPriceText.text = $"구매가: {unitPrice * qty:N0} G";
     }
 
     void OnBuyQuantityConfirmed()
@@ -660,11 +678,19 @@ public class ShopUI : MonoBehaviour
         if (sellQuantitySlider != null) { sellQuantitySlider.maxValue = maxQty; sellQuantitySlider.value = 1; }
         if (sellQuantityInput  != null) sellQuantityInput.text = "1";
         _sellSyncLock = false;
+        UpdateSellQuantityPriceText(1);
 
         sellButton       ?.gameObject.SetActive(false);
         cancelButton     ?.gameObject.SetActive(false);
         sellQuantityPanel?.SetActive(true);
         SetGridsInteractable(false);
+    }
+
+    // 선택한 수량 기준 총 판매가 표시
+    void UpdateSellQuantityPriceText(int qty)
+    {
+        if (sellQuantityPriceText == null || _selectedInvItem?.data == null) return;
+        sellQuantityPriceText.text = $"판매가: {_selectedInvItem.data.sellPrice * qty:N0} G";
     }
 
     void CloseSellQuantityPanel()
@@ -726,6 +752,7 @@ public class ShopUI : MonoBehaviour
     // 판매 수량 슬라이더 ↔ 인풋 동기화
     void OnSellSliderChanged(float value)
     {
+        UpdateSellQuantityPriceText((int)value);
         if (_sellSyncLock || sellQuantityInput == null) return;
         _sellSyncLock = true;
         sellQuantityInput.text = ((int)value).ToString();
@@ -734,6 +761,9 @@ public class ShopUI : MonoBehaviour
 
     void OnSellInputValueChanged(string s)
     {
+        if (int.TryParse(s, out int typed) && typed >= 1)
+            UpdateSellQuantityPriceText(typed);
+
         if (_sellSyncLock || sellQuantitySlider == null || string.IsNullOrEmpty(s)) return;
         if (!int.TryParse(s, out int v) || v < 1) return;
         float clamped = Mathf.Clamp(v, sellQuantitySlider.minValue, sellQuantitySlider.maxValue);
@@ -751,6 +781,7 @@ public class ShopUI : MonoBehaviour
         _sellSyncLock = true;
         if (sellQuantityInput  != null) sellQuantityInput.text   = clamped.ToString();
         if (sellQuantitySlider != null) sellQuantitySlider.value = clamped;
+        UpdateSellQuantityPriceText(clamped);
         _sellSyncLock = false;
     }
 
@@ -769,6 +800,7 @@ public class ShopUI : MonoBehaviour
     // 슬라이더 → 텍스트 실시간 동기화
     void OnSliderChanged(float value)
     {
+        UpdateBuyQuantityPriceText((int)value);
         if (_syncLock || quantityInput == null) return;
         _syncLock = true;
         quantityInput.text = ((int)value).ToString();
@@ -778,6 +810,9 @@ public class ShopUI : MonoBehaviour
     // 텍스트 → 슬라이더 실시간 동기화 (타이핑 중)
     void OnInputValueChanged(string s)
     {
+        if (int.TryParse(s, out int typed) && typed >= 1)
+            UpdateBuyQuantityPriceText(typed);
+
         if (_syncLock || quantitySlider == null || string.IsNullOrEmpty(s)) return;
         if (!int.TryParse(s, out int v) || v < 1) return;
         int max     = (int)quantitySlider.maxValue;
@@ -796,6 +831,7 @@ public class ShopUI : MonoBehaviour
         if (_syncLock) return;
         int max     = quantitySlider != null ? (int)quantitySlider.maxValue : 99;
         int clamped = int.TryParse(s, out int v) ? Mathf.Clamp(v, 1, max) : 1;
+        UpdateBuyQuantityPriceText(clamped);
         _syncLock = true;
         if (quantityInput  != null) quantityInput.text   = clamped.ToString();
         if (quantitySlider != null) quantitySlider.value = clamped;
