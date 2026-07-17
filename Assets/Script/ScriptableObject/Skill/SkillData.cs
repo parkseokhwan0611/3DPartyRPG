@@ -16,6 +16,10 @@ public class SkillData : ScriptableObject
     public SkillType skillType;
     public SkillCategory skillCategory;
 
+    [Header("사운드")]
+    [Tooltip("AudioManager에 등록한 SFX 키 (예: Tanker_Main1)")]
+    public string sfxKey;
+
     [Header("팔로워 자동 사용 우선순위")]
     [Tooltip("숫자가 낮을수록 먼저 사용 (패시브 무시). 같은 우선순위면 랜덤 선택.")]
     public int skillPriority = 0;

@@ -64,6 +64,7 @@ public class RangedAttack : AttackBase
             yield return null;
             yield return null;
         }
+        AudioManager.instance?.PlaySFX("Dealer_NormalAtk");
 
         yield return new WaitForSeconds(damageDelay);
 

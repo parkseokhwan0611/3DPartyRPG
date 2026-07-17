@@ -64,6 +64,7 @@ public class HealerAttack : AttackBase
             yield return null;
             yield return null;
         }
+        AudioManager.instance?.PlaySFX("Healer_NormalAtk");
 
         yield return new WaitForSeconds(damageDelay);
 

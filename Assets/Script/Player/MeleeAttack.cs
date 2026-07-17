@@ -33,6 +33,7 @@ public class MeleeAttack : AttackBase
         yield return null;
 
         anim.SetTrigger("doNormalAttack");
+        AudioManager.instance?.PlaySFX("Tanker_NormalAtk");
 
         yield return new WaitForSeconds(damageDelay);
         OnHit();

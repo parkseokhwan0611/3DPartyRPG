@@ -28,6 +28,9 @@ public class HealSkill : SkillBase
             anim.SetTrigger(data.animTriggerName);
         }
 
+        if (!string.IsNullOrEmpty(data.sfxKey))
+            AudioManager.instance?.PlaySFX(data.sfxKey);
+
         // 2. 이펙트 타이밍 대기
         if (data.effectSpawnDelay > 0f)
             yield return new WaitForSeconds(data.effectSpawnDelay);
