@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 // 이름(문자열 키) + AudioClip 한 쌍. 인스펙터 리스트에 등록해서 사용.
 [Serializable]
@@ -9,6 +10,16 @@ public class SoundEntry
 {
     public string name;
     public AudioClip clip;
+}
+
+// 씬 이름 → 그 씬이 속한 구역의 BGM 키. 같은 구역의 여러 스테이지(1-1, 1-2 등)에
+// 같은 bgmKey를 넣어두면, 스테이지 이동 시 PlayBGM의 "이미 재생 중이면 무시" 로직 덕분에
+// BGM이 끊기지 않고 이어짐.
+[Serializable]
+public class SceneBgmEntry
+{
+    public string sceneName;
+    public string bgmKey;
 }
 
 // 배경음악(BGM) + 효과음(SFX) 재생을 전담하는 싱글톤 매니저.
@@ -28,6 +39,9 @@ public class AudioManager : MonoBehaviour
     [SerializeField] [Range(0f, 1f)] private float sfxVolume = 1f;
     [Tooltip("동시에 겹쳐 재생 가능한 2D SFX 채널 수")]
     [SerializeField] private int sfxSourceCount = 8;
+
+    [Header("구역별 BGM (씬 이름 기준)")]
+    [SerializeField] private List<SceneBgmEntry> sceneBgmMap = new List<SceneBgmEntry>();
 
     private AudioSource bgmSource;
     private AudioSource[] sfxSources;
@@ -65,6 +79,23 @@ public class AudioManager : MonoBehaviour
             src.playOnAwake  = false;
             src.spatialBlend = 0f; // 방향성 없는 2D 사운드 전용 채널
             sfxSources[i] = src;
+        }
+
+        SceneManager.sceneLoaded += HandleSceneLoaded;
+    }
+
+    void OnDestroy()
+    {
+        SceneManager.sceneLoaded -= HandleSceneLoaded;
+    }
+
+    private void HandleSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        foreach (var entry in sceneBgmMap)
+        {
+            if (entry == null || entry.sceneName != scene.name) continue;
+            PlayBGM(entry.bgmKey);
+            return;
         }
     }
 

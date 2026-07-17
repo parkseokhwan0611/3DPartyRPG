@@ -1163,7 +1163,7 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 904861762}
   m_CullTransparentMesh: 1
---- !u!1 &921880485
+--- !u!1 &918191280
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1171,12 +1171,12 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 921880491}
-  - component: {fileID: 921880490}
-  - component: {fileID: 921880489}
-  - component: {fileID: 921880488}
-  - component: {fileID: 921880487}
-  - component: {fileID: 921880486}
+  - component: {fileID: 918191286}
+  - component: {fileID: 918191285}
+  - component: {fileID: 918191284}
+  - component: {fileID: 918191283}
+  - component: {fileID: 918191282}
+  - component: {fileID: 918191281}
   m_Layer: 0
   m_Name: DataManager
   m_TagString: Untagged
@@ -1184,13 +1184,13 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &921880486
+--- !u!114 &918191281
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 921880485}
+  m_GameObject: {fileID: 918191280}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5b73b5cba48c23c44870d9e9e17fe561, type: 3}
@@ -1199,56 +1199,63 @@ MonoBehaviour:
   bgmClips:
   - name: LoginBGM
     clip: {fileID: 8300000, guid: a2702e463da324b47946ea6761b80b93, type: 3}
+  - name: ForestBGM
+    clip: {fileID: 8300000, guid: 5271d111bb8fae946ba110b45684b9a1, type: 3}
   bgmVolume: 0.5
   bgmFadeDuration: 1
   sfxClips: []
   sfxVolume: 1
   sfxSourceCount: 8
---- !u!114 &921880487
+  sceneBgmMap:
+  - sceneName: TitleScene
+    bgmKey: LoginBGM
+  - sceneName: Forest1
+    bgmKey: ForestBGM
+--- !u!114 &918191282
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 921880485}
+  m_GameObject: {fileID: 918191280}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f54dbca1ba4ec7344993ef32162032ec, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   mainQuestChain: {fileID: 11400000, guid: 18898cd7788ad6945b41fa0e3998aa4c, type: 2}
---- !u!114 &921880488
+--- !u!114 &918191283
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 921880485}
+  m_GameObject: {fileID: 918191280}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 21fe7427b01b91748b1bb1b13ed7b088, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   isInBossRoom: 0
---- !u!114 &921880489
+--- !u!114 &918191284
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 921880485}
+  m_GameObject: {fileID: 918191280}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7a4e7a31821415e4d87d309d6bf800f8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &921880490
+--- !u!114 &918191285
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 921880485}
+  m_GameObject: {fileID: 918191280}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 898267374e83d23409ef68162b154125, type: 3}
@@ -1287,13 +1294,13 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 9022e3a27e6b96144983138f931fa959, type: 2}
   - {fileID: 11400000, guid: fd23787e5d867214a8000ae17c9bea2d, type: 2}
   - {fileID: 11400000, guid: 360ee5c4417b22a47b5f196268d678de, type: 2}
---- !u!4 &921880491
+--- !u!4 &918191286
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 921880485}
+  m_GameObject: {fileID: 918191280}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 301.08188, y: 330.7694, z: 63.146057}
@@ -3345,4 +3352,4 @@ SceneRoots:
   - {fileID: 275412967}
   - {fileID: 543540313}
   - {fileID: 503716473}
-  - {fileID: 921880491}
+  - {fileID: 918191286}

@@ -709288,11 +709288,18 @@ MonoBehaviour:
   bgmClips:
   - name: LoginBGM
     clip: {fileID: 8300000, guid: a2702e463da324b47946ea6761b80b93, type: 3}
+  - name: ForestBGM
+    clip: {fileID: 8300000, guid: 5271d111bb8fae946ba110b45684b9a1, type: 3}
   bgmVolume: 0.5
   bgmFadeDuration: 1
   sfxClips: []
   sfxVolume: 1
   sfxSourceCount: 8
+  sceneBgmMap:
+  - sceneName: TitleScene
+    bgmKey: LoginBGM
+  - sceneName: Forest1
+    bgmKey: ForestBGM
 --- !u!1 &1903895678
 GameObject:
   m_ObjectHideFlags: 0
