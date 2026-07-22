@@ -598130,12 +598130,12 @@ MonoBehaviour:
     perfab: {fileID: 5086033594084904282, guid: b970957b50cad9545ac7bab7acdf36b6,
       type: 3}
     count: 5
-  - objectName: FirePillar
-    perfab: {fileID: 2141267316498306331, guid: c56299558572b684f913523c83a82c02,
-      type: 3}
-    count: 2
   - objectName: SpacialCollision
     perfab: {fileID: 2601378963704586577, guid: 5c9591dfa4997524f910376414f26c3e,
+      type: 3}
+    count: 2
+  - objectName: FirePillar
+    perfab: {fileID: 2141267316498306331, guid: c56299558572b684f913523c83a82c02,
       type: 3}
     count: 2
   - objectName: SkeletonArrow
@@ -710865,7 +710865,10 @@ MonoBehaviour:
     volumeMultiplier: 1
   - name: SkillLevelUp
     clip: {fileID: 8300000, guid: a76f0ff6137c8c24b8740e168a6654b6, type: 3}
-    volumeMultiplier: 0.7
+    volumeMultiplier: 0.5
+  - name: AutoSkillToggle
+    clip: {fileID: 8300000, guid: 84750f4b5dce13841b157c93d50b5ae0, type: 3}
+    volumeMultiplier: 0.8
   - name: Tanker_NormalAtk
     clip: {fileID: 8300000, guid: 57c9feaa536d55847bf63eae68f8d2af, type: 3}
     volumeMultiplier: 0.4
@@ -710884,6 +710887,42 @@ MonoBehaviour:
   - name: Tanker_Main3
     clip: {fileID: 8300000, guid: 61ce2e988609d0c41afb9493d9110d30, type: 3}
     volumeMultiplier: 1
+  - name: Tanker_Sub1
+    clip: {fileID: 8300000, guid: fee467320b5449b4a968b9b2bf61e2fb, type: 3}
+    volumeMultiplier: 0.8
+  - name: Tanker_Sub2
+    clip: {fileID: 8300000, guid: fee467320b5449b4a968b9b2bf61e2fb, type: 3}
+    volumeMultiplier: 0.8
+  - name: Dealer_Main1
+    clip: {fileID: 8300000, guid: 701b023a9cd73fe429a04214a35a7a00, type: 3}
+    volumeMultiplier: 1
+  - name: Dealer_Main2
+    clip: {fileID: 8300000, guid: 55075c8e4984c00419661416afdbb266, type: 3}
+    volumeMultiplier: 1
+  - name: Dealer_Main3
+    clip: {fileID: 8300000, guid: 4654ab58d02925a45a67c66614392317, type: 3}
+    volumeMultiplier: 1
+  - name: Dealer_Sub1
+    clip: {fileID: 8300000, guid: fee467320b5449b4a968b9b2bf61e2fb, type: 3}
+    volumeMultiplier: 0.8
+  - name: Dealer_Sub2
+    clip: {fileID: 8300000, guid: fee467320b5449b4a968b9b2bf61e2fb, type: 3}
+    volumeMultiplier: 0.8
+  - name: Healer_Main1
+    clip: {fileID: 8300000, guid: bccc1f64ca0d19c46b00a541f659b0e3, type: 3}
+    volumeMultiplier: 2
+  - name: Healer_Main2
+    clip: {fileID: 8300000, guid: 46a57bd6a7feb6142bd9357672693775, type: 3}
+    volumeMultiplier: 0.3
+  - name: Healer_Main3
+    clip: {fileID: 8300000, guid: bccc1f64ca0d19c46b00a541f659b0e3, type: 3}
+    volumeMultiplier: 2
+  - name: Healer_Sub1
+    clip: {fileID: 8300000, guid: 1ba0d2fd34a01304cb2c58aa0ba96609, type: 3}
+    volumeMultiplier: 0.3
+  - name: Healer_Sub2
+    clip: {fileID: 8300000, guid: fee467320b5449b4a968b9b2bf61e2fb, type: 3}
+    volumeMultiplier: 0.8
   sfxVolume: 0.5
   sfxSourceCount: 8
   sceneBgmMap:

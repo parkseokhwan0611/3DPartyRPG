@@ -194,6 +194,7 @@ public class PartyManager : MonoBehaviour
     public void ToggleAutoSkill()
     {
         AutoSkillEnabled = !AutoSkillEnabled;
+        AudioManager.instance?.PlaySFX("AutoSkillToggle");
         OnAutoSkillToggled?.Invoke(AutoSkillEnabled);
     }
 

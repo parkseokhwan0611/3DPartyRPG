@@ -21,7 +21,7 @@ MonoBehaviour:
   skillCategory: 0
   sfxEntries:
   - sfxKey: Dealer_Main2
-    delay: 0
+    delay: 0.3
   skillPriority: 1
   maxLevel: 5
   requiredCharLevel: 10
@@ -63,6 +63,7 @@ MonoBehaviour:
   zoneHitOnce: 1
   zoneActivationDelay: 1
   zoneDamageInterval: 0
+  zoneDuration: 5
   animTriggerName: doZoneSkill
   animDuration: 1.3
   effectSpawnDelay: 0.3
