@@ -709288,24 +709288,49 @@ MonoBehaviour:
   bgmClips:
   - name: LoginBGM
     clip: {fileID: 8300000, guid: a2702e463da324b47946ea6761b80b93, type: 3}
+    volumeMultiplier: 1
   - name: ForestBGM
     clip: {fileID: 8300000, guid: 5271d111bb8fae946ba110b45684b9a1, type: 3}
+    volumeMultiplier: 1
   bgmVolume: 0.5
   bgmFadeDuration: 1
   sfxClips:
+  - name: UIClick
+    clip: {fileID: 8300000, guid: fa0bb39517e27f443af6474eb3fa4d37, type: 3}
+    volumeMultiplier: 1
+  - name: UIOpen
+    clip: {fileID: 8300000, guid: 824842097062b024a9aa078956ba02f8, type: 3}
+    volumeMultiplier: 1
+  - name: UIClose
+    clip: {fileID: 8300000, guid: 824842097062b024a9aa078956ba02f8, type: 3}
+    volumeMultiplier: 1
   - name: Tanker_NormalAtk
     clip: {fileID: 8300000, guid: 57c9feaa536d55847bf63eae68f8d2af, type: 3}
+    volumeMultiplier: 0.4
   - name: Dealer_NormalAtk
     clip: {fileID: 8300000, guid: 81757b4a7c1bd5d4fb25d7d9c0695e50, type: 3}
+    volumeMultiplier: 0.5
   - name: Healer_NormalAtk
     clip: {fileID: 8300000, guid: 587a71d49f01bd34ea2ebe10fdbc1231, type: 3}
-  sfxVolume: 0.3
+    volumeMultiplier: 0.2
+  - name: Tanker_Main1
+    clip: {fileID: 8300000, guid: 335bad28d67f0be42bcd32cc1ebb78a6, type: 3}
+    volumeMultiplier: 1
+  - name: Tanker_Main2
+    clip: {fileID: 8300000, guid: cbd486e41831c624fb507101296d2ab1, type: 3}
+    volumeMultiplier: 1
+  - name: Tanker_Main3
+    clip: {fileID: 8300000, guid: 61ce2e988609d0c41afb9493d9110d30, type: 3}
+    volumeMultiplier: 1
+  sfxVolume: 0.5
   sfxSourceCount: 8
   sceneBgmMap:
   - sceneName: TitleScene
     bgmKey: LoginBGM
   - sceneName: Forest1
     bgmKey: ForestBGM
+  enableGlobalUiClick: 1
+  uiClickSfxKey: UIClick
 --- !u!1 &1903895678
 GameObject:
   m_ObjectHideFlags: 0

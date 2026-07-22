@@ -148,6 +148,7 @@ public class EnhancementUI : MonoBehaviour
         RefreshInventory();
         RefreshEnhanceButton();
         RefreshGold();
+        AudioManager.instance?.PlaySFX("UIOpen");
     }
 
     public void Close()
@@ -157,6 +158,7 @@ public class EnhancementUI : MonoBehaviour
         if (panel != null) panel.SetActive(false);
         IsOpen = false;
         CloseDetailPopup();
+        AudioManager.instance?.PlaySFX("UIClose");
     }
 
     // ─────────────────────────────────────────────────────────────────

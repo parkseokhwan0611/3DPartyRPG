@@ -3,6 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 // 이름(문자열 키) + AudioClip 한 쌍. 인스펙터 리스트에 등록해서 사용.
 [Serializable]
@@ -10,6 +12,10 @@ public class SoundEntry
 {
     public string name;
     public AudioClip clip;
+    [Tooltip("이 사운드에만 적용되는 개별 보정값. 최종 재생 볼륨 = SFX 볼륨 × 이 값 " +
+             "(1 = 그대로, 0.5 = 절반 크기로 재생)")]
+    [Range(0f, 2f)]
+    public float volumeMultiplier = 1f;
 }
 
 // 씬 이름 → 그 씬이 속한 구역의 BGM 키. 같은 구역의 여러 스테이지(1-1, 1-2 등)에
@@ -43,12 +49,20 @@ public class AudioManager : MonoBehaviour
     [Header("구역별 BGM (씬 이름 기준)")]
     [SerializeField] private List<SceneBgmEntry> sceneBgmMap = new List<SceneBgmEntry>();
 
+    [Header("전역 UI 클릭음")]
+    [Tooltip("Button/Toggle 등 클릭 가능한 UI 요소를 전역으로 감지해 자동으로 재생. " +
+             "개별 버튼에 별도 컴포넌트를 붙일 필요 없음")]
+    [SerializeField] private bool   enableGlobalUiClick = true;
+    [SerializeField] private string uiClickSfxKey = "UIClick";
+
     private AudioSource bgmSource;
     private AudioSource[] sfxSources;
     private int sfxIndex;
 
+    private readonly List<RaycastResult> _uiRaycastResults = new List<RaycastResult>();
+
     private Dictionary<string, AudioClip> bgmDict;
-    private Dictionary<string, AudioClip> sfxDict;
+    private Dictionary<string, SoundEntry> sfxDict;
 
     private string currentBgmKey;
     private Coroutine fadeCoroutine;
@@ -64,7 +78,7 @@ public class AudioManager : MonoBehaviour
         DontDestroyOnLoad(gameObject);
 
         bgmDict = BuildDict(bgmClips);
-        sfxDict = BuildDict(sfxClips);
+        sfxDict = BuildSfxDict(sfxClips);
 
         bgmSource = gameObject.AddComponent<AudioSource>();
         bgmSource.loop         = true;
@@ -89,6 +103,29 @@ public class AudioManager : MonoBehaviour
         SceneManager.sceneLoaded -= HandleSceneLoaded;
     }
 
+    void Update()
+    {
+        if (!enableGlobalUiClick) return;
+        if (!Input.GetMouseButtonDown(0)) return;
+        if (EventSystem.current == null) return;
+
+        var pointerData = new PointerEventData(EventSystem.current) { position = Input.mousePosition };
+        _uiRaycastResults.Clear();
+        EventSystem.current.RaycastAll(pointerData, _uiRaycastResults);
+
+        foreach (var result in _uiRaycastResults)
+        {
+            // Button/Toggle/Dropdown 등 표준 UI 요소(Selectable) + DragItemBase처럼
+            // IPointerClickHandler를 직접 구현한 커스텀 클릭 대상까지 포괄
+            if (result.gameObject.GetComponentInParent<Selectable>() != null ||
+                result.gameObject.GetComponentInParent<IPointerClickHandler>() != null)
+            {
+                PlaySFX(uiClickSfxKey);
+                return;
+            }
+        }
+    }
+
     private void HandleSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         foreach (var entry in sceneBgmMap)
@@ -105,6 +142,15 @@ public class AudioManager : MonoBehaviour
         foreach (var e in entries)
             if (e != null && !string.IsNullOrEmpty(e.name) && e.clip != null)
                 dict[e.name] = e.clip;
+        return dict;
+    }
+
+    private static Dictionary<string, SoundEntry> BuildSfxDict(List<SoundEntry> entries)
+    {
+        var dict = new Dictionary<string, SoundEntry>();
+        foreach (var e in entries)
+            if (e != null && !string.IsNullOrEmpty(e.name) && e.clip != null)
+                dict[e.name] = e;
         return dict;
     }
 
@@ -179,25 +225,25 @@ public class AudioManager : MonoBehaviour
     /// <summary>방향성 없는 2D 효과음 (UI 클릭, 레벨업, 퀘스트 완료 등)</summary>
     public void PlaySFX(string key)
     {
-        if (!sfxDict.TryGetValue(key, out var clip))
+        if (!sfxDict.TryGetValue(key, out var entry))
         {
             Debug.LogWarning($"[AudioManager] SFX 키 '{key}'를 찾을 수 없습니다.");
             return;
         }
         var src = sfxSources[sfxIndex];
         sfxIndex = (sfxIndex + 1) % sfxSources.Length;
-        src.PlayOneShot(clip, sfxVolume);
+        src.PlayOneShot(entry.clip, sfxVolume * entry.volumeMultiplier);
     }
 
     /// <summary>월드 위치가 있는 3D 효과음 (타격음, 몬스터 사망음 등)</summary>
     public void PlaySFXAtPosition(string key, Vector3 position)
     {
-        if (!sfxDict.TryGetValue(key, out var clip))
+        if (!sfxDict.TryGetValue(key, out var entry))
         {
             Debug.LogWarning($"[AudioManager] SFX 키 '{key}'를 찾을 수 없습니다.");
             return;
         }
-        AudioSource.PlayClipAtPoint(clip, position, sfxVolume);
+        AudioSource.PlayClipAtPoint(entry.clip, position, sfxVolume * entry.volumeMultiplier);
     }
 
     // ─────────────────────────────────────────────────────────────────

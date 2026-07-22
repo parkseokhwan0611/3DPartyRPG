@@ -80,6 +80,7 @@ public class DialogueUI : MonoBehaviour
         _justOpened = true;
         panel.SetActive(true);
         SetCombatUI(false);
+        AudioManager.instance?.PlaySFX("UIOpen");
 
         ShowLine(0);
     }
@@ -90,6 +91,7 @@ public class DialogueUI : MonoBehaviour
         StopTyping();
         panel?.SetActive(false);
         SetCombatUI(true);
+        AudioManager.instance?.PlaySFX("UIClose");
     }
 
     // ─────────────────────────────────────────────────────────────────

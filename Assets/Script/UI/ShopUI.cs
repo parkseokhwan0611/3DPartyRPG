@@ -254,6 +254,7 @@ public class ShopUI : MonoBehaviour
         RefreshGold();
         ClearMessage();
         CloseDetailPopup();
+        AudioManager.instance?.PlaySFX("UIOpen");
     }
 
     public void Close()
@@ -262,6 +263,7 @@ public class ShopUI : MonoBehaviour
         IsOpen = false;
         panel?.SetActive(false);
         _currentNpc = null;
+        AudioManager.instance?.PlaySFX("UIClose");
     }
 
     // ─────────────────────────────────────────────────────────────────

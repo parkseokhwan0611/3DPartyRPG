@@ -20,7 +20,9 @@ MonoBehaviour:
   requiredClass: 0
   skillType: 0
   skillCategory: 0
-  sfxKey: Tanker_Main3
+  sfxEntries:
+  - sfxKey: Tanker_Main3
+    delay: 0.5
   skillPriority: 1
   maxLevel: 5
   requiredCharLevel: 20
@@ -67,6 +69,7 @@ MonoBehaviour:
   zoneHitOnce: 0
   zoneActivationDelay: 0
   zoneDamageInterval: 0.5
+  zoneDuration: 5
   animTriggerName: doGiantSlash
   animDuration: 1.2
   effectSpawnDelay: 0.75

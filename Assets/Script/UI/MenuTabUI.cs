@@ -111,6 +111,7 @@ public class MenuTabUI : MonoBehaviour
         IsOpen = true;
         menuWindow.SetActive(true);
         ShowPanel(statWindow);
+        AudioManager.instance?.PlaySFX("UIOpen");
     }
 
     private void OpenMenuToSettings()
@@ -118,12 +119,14 @@ public class MenuTabUI : MonoBehaviour
         IsOpen = true;
         menuWindow.SetActive(true);
         ShowPanel(settingWindow);
+        AudioManager.instance?.PlaySFX("UIOpen");
     }
 
     private void CloseMenu()
     {
         IsOpen = false;
         menuWindow.SetActive(false);
+        AudioManager.instance?.PlaySFX("UIClose");
     }
 
     // ─────────────────────────────────────────────────────────────────

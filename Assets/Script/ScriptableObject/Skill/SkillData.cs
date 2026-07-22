@@ -1,5 +1,15 @@
 using UnityEngine;
+using System;
 using System.Collections.Generic;
+
+[Serializable]
+public class SkillSfxEntry
+{
+    [Tooltip("AudioManager에 등록한 SFX 키 (예: Tanker_Main1)")]
+    public string sfxKey;
+    [Tooltip("애니메이션 시작 후 몇 초 뒤에 재생할지")]
+    public float delay = 0f;
+}
 
 [CreateAssetMenu(fileName = "Skill", menuName = "Scriptable Object/SkillData")]
 public class SkillData : ScriptableObject
@@ -17,8 +27,8 @@ public class SkillData : ScriptableObject
     public SkillCategory skillCategory;
 
     [Header("사운드")]
-    [Tooltip("AudioManager에 등록한 SFX 키 (예: Tanker_Main1)")]
-    public string sfxKey;
+    [Tooltip("애니메이션 시작 시점을 기준으로, 각 사운드가 몇 초 뒤에 재생될지 지정")]
+    public List<SkillSfxEntry> sfxEntries = new List<SkillSfxEntry>();
 
     [Header("팔로워 자동 사용 우선순위")]
     [Tooltip("숫자가 낮을수록 먼저 사용 (패시브 무시). 같은 우선순위면 랜덤 선택.")]

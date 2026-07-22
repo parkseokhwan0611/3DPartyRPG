@@ -153,6 +153,31 @@ public abstract class SkillBase : MonoBehaviour
 
     protected abstract IEnumerator ExecuteSkill(Transform target);
 
+    // ─────────────────────────────────────────────────────────────────
+    // 스킬 SFX 재생 (애니메이션 시작 시점 기준, 항목별 delay 뒤에 재생)
+    // ─────────────────────────────────────────────────────────────────
+
+    protected void PlaySkillSfx(SkillData data)
+    {
+        if (data.sfxEntries == null) return;
+
+        foreach (var entry in data.sfxEntries)
+        {
+            if (entry == null || string.IsNullOrEmpty(entry.sfxKey)) continue;
+
+            if (entry.delay <= 0f)
+                AudioManager.instance?.PlaySFX(entry.sfxKey);
+            else
+                StartCoroutine(PlayDelayedSfx(entry.sfxKey, entry.delay));
+        }
+    }
+
+    private IEnumerator PlayDelayedSfx(string key, float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        AudioManager.instance?.PlaySFX(key);
+    }
+
     // DamageSkill/HealSkill이 공통으로 사용하는 스탯 스케일링 조회
     protected float GetScalingStatValue(DamageSkillData.ScalingStat stat)
     {

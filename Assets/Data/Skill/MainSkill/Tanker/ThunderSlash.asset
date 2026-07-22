@@ -20,7 +20,9 @@ MonoBehaviour:
   requiredClass: 0
   skillType: 0
   skillCategory: 0
-  sfxKey: Tanker_Main2
+  sfxEntries:
+  - sfxKey: Tanker_Main2
+    delay: 0.5
   skillPriority: 2
   maxLevel: 5
   requiredCharLevel: 10
@@ -64,6 +66,7 @@ MonoBehaviour:
   zoneHitOnce: 0
   zoneActivationDelay: 0
   zoneDamageInterval: 0.5
+  zoneDuration: 5
   animTriggerName: doThunderSlash
   animDuration: 1.2
   effectSpawnDelay: 0.9

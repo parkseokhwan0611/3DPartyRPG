@@ -20,7 +20,9 @@ MonoBehaviour:
   requiredClass: 2
   skillType: 2
   skillCategory: 1
-  sfxKey: Healer_Sub1
+  sfxEntries:
+  - sfxKey: Healer_Sub1
+    delay: 0
   skillPriority: 1
   maxLevel: 5
   requiredCharLevel: 1
