@@ -63,6 +63,9 @@ public class SaveManager : MonoBehaviour
                 foreach (var member in PartyManager.instance.partyMembers)
                     data.partyPositions.Add(member != null ? member.transform.position : Vector3.zero);
 
+            if (PartyManager.instance?.cameraFollowTarget != null)
+                data.cameraPosition = PartyManager.instance.cameraFollowTarget.transform.position;
+
             // 스킬 퀵슬롯 / 쿨타임
             data.quickSlots.Clear();
             if (PartyManager.instance != null)
@@ -166,6 +169,15 @@ public class SaveManager : MonoBehaviour
             else
                 party[i].transform.position = pos;
         }
+
+        // 캐릭터 위치만 옮기고 카메라를 그대로 두면, 카메라가 원래 있던 곳(씬 시작 시 리더
+        // 위치)에서 로드된 위치까지 서서히 따라오면서 화면이 부자연스럽게 흐르므로 함께 순간이동.
+        // cameraPosition이 저장되기 전(구버전) 세이브 파일은 기본값 Vector3.zero이므로,
+        // 그 경우엔 화면 원점으로 튀지 않도록 방금 복원한 리더 위치로 대신 스냅
+        Vector3 camPos = data.cameraPosition != Vector3.zero
+            ? data.cameraPosition
+            : PartyManager.instance?.currentLeader?.transform.position ?? Vector3.zero;
+        PartyManager.instance?.SnapCameraToPosition(camPos);
 
         RestoreQuickSlots(data);
         RestoreNpcStocks(data);

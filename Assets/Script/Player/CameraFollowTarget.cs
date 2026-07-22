@@ -35,6 +35,13 @@ public class CameraFollowTarget : MonoBehaviour
     {
         followTarget = target;
         if (target != null)
-            transform.position = target.position; // 순간이동 방지를 위해 위치 맞춤
+            WarpTo(target.position);
+    }
+
+    // 세이브 로드 등 순간이동 상황에서 호출 — SmoothDamp로 서서히 따라오지 않고 즉시 이동
+    public void WarpTo(Vector3 position)
+    {
+        transform.position = position;
+        _velocity = Vector3.zero;
     }
 }

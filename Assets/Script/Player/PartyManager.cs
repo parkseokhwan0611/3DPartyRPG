@@ -199,6 +199,25 @@ public class PartyManager : MonoBehaviour
     }
 
     // ─────────────────────────────────────────────────────────────────
+    // 카메라 순간이동 (세이브 로드 등)
+    // ─────────────────────────────────────────────────────────────────
+
+    // 캐릭터 위치만 Warp하고 카메라는 그대로 두면, 카메라가 원래 있던 곳에서 로드된
+    // 캐릭터 위치까지 SmoothDamp로 서서히 따라오면서 부자연스럽게 화면이 흐른다.
+    // 카메라 리그(cameraFollowTarget)도 즉시 옮기고, Cinemachine에도 "타겟이 순간이동했다"고
+    // 알려줘야 Transposer의 자체 데미핑으로 인한 잔여 스무스 이동까지 막을 수 있다.
+    public void SnapCameraToPosition(Vector3 position)
+    {
+        if (cameraFollowTarget == null) return;
+
+        Vector3 delta = position - cameraFollowTarget.transform.position;
+        cameraFollowTarget.WarpTo(position);
+
+        if (virtualCamera != null)
+            virtualCamera.OnTargetObjectWarped(cameraFollowTarget.transform, delta);
+    }
+
+    // ─────────────────────────────────────────────────────────────────
     // 리더 변경
     // ─────────────────────────────────────────────────────────────────
 

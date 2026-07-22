@@ -22,6 +22,7 @@ public class GameSaveData
     // 씬 / 위치
     public string                    sceneName      = "";
     public List<UnityEngine.Vector3> partyPositions = new List<UnityEngine.Vector3>();
+    public UnityEngine.Vector3       cameraPosition;
 
     // 스킬 퀵슬롯 / 쿨타임
     public List<CharacterQuickSlotSave> quickSlots = new List<CharacterQuickSlotSave>();
