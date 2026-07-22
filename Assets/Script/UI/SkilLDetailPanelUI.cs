@@ -229,7 +229,7 @@ public class SkillDetailPanelUI : MonoBehaviour
 
         if (!success) return;
 
-        skillWindow.OnSkillLevelUp();
+        skillWindow?.OnSkillLevelUp();
         ShowSkillDetail(currentSkill, status, DataManager.instance.partyLevel, currentCharIndex, currentRequiredLevel);
     }
 

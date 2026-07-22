@@ -25,7 +25,11 @@ public class QuestHudUI : MonoBehaviour
     private Coroutine  _completionCoroutine;
     private bool        _showingCompletion;
 
-    void OnEnable()
+    // OnEnable은 QuestManager.Awake()보다 먼저 실행될 수 있어(오브젝트 간 실행 순서 미보장 —
+    // QuestManager의 [DefaultExecutionOrder(-200)]만으로는 이 상시 표시 패널에서 완전히 안전하지
+    // 않았음) 구독이 조용히 누락될 수 있음. Awake는 항상 모든 Start보다 먼저 끝나는 것이
+    // 보장되므로 Start에서 구독
+    void Start()
     {
         if (QuestManager.instance != null)
         {
@@ -36,7 +40,7 @@ public class QuestHudUI : MonoBehaviour
         Refresh();
     }
 
-    void OnDisable()
+    void OnDestroy()
     {
         if (QuestManager.instance != null)
         {

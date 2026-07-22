@@ -240,7 +240,7 @@ public class SkillManager : MonoBehaviour
         {
             if (member == null) continue;
             if (member.CurrentState == PartyMemberScript.MemberState.Dead) continue;
-            var stat = member.GetComponent<CharacterStat>();
+            var stat = member.StatComp;
             if (stat == null || stat.MaxHp <= 0f) continue;
 
             float hpRatio = stat.Hp / stat.MaxHp;
@@ -351,7 +351,7 @@ public class SkillManager : MonoBehaviour
         {
             if (member == null) continue;
             if (member.CurrentState == PartyMemberScript.MemberState.Dead) continue;
-            var stat = member.GetComponent<CharacterStat>();
+            var stat = member.StatComp;
             if (stat == null || stat.MaxHp <= 0f) continue;
             if (stat.Hp / stat.MaxHp < ratio) return true;
         }
@@ -391,7 +391,7 @@ public class SkillManager : MonoBehaviour
         {
             if (member == null) continue;
             if (member.CurrentState == PartyMemberScript.MemberState.Dead) continue;
-            var stat = member.GetComponent<CharacterStat>();
+            var stat = member.StatComp;
             if (stat == null || stat.MaxHp <= 0f) continue;
 
             float hpRatio = stat.Hp / stat.MaxHp;

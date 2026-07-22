@@ -75,12 +75,11 @@ public class CharacterStat : MonoBehaviour, IDamageable
     {
         myMember      = GetComponent<PartyMemberScript>();
         shieldHandler = GetComponent<PartyStatusEffectHandler>();
-        BindStatus();
-
-        if (DataManager.instance != null)
-            DataManager.instance.OnDataInitialized += BindStatus;
     }
 
+    // DataManager.Awake()가 이 오브젝트의 Awake()보다 늦게 실행될 수 있어(오브젝트 간 실행 순서
+    // 미보장) Awake에서 바로 구독하면 DataManager.instance가 아직 null이라 조용히 스킵될 수 있음.
+    // Awake는 항상 모든 Start보다 먼저 끝나는 것이 보장되므로 Start에서 바인딩/구독
     void OnDestroy()
     {
         if (DataManager.instance != null)
@@ -110,6 +109,10 @@ public class CharacterStat : MonoBehaviour, IDamageable
 
     void Start()
     {
+        BindStatus();
+        if (DataManager.instance != null)
+            DataManager.instance.OnDataInitialized += BindStatus;
+
         StartCoroutine(RegenRoutine());
     }
 

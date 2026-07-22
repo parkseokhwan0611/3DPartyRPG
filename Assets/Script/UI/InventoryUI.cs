@@ -119,6 +119,11 @@ public class InventoryUI : MonoBehaviour
 
     void Start()
     {
+        // OnEnable은 (이 패널이 켜질 때마다) DataManager.Awake()보다 먼저 실행될 위험이 있으므로,
+        // 이벤트 구독만은 항상 모든 Start보다 먼저 Awake가 끝나는 것이 보장되는 여기서 한 번만 처리
+        if (DataManager.instance != null)
+            DataManager.instance.OnGoldChanged += RefreshGold;
+
         // 캐릭터 탭 버튼 이벤트
         for (int i = 0; i < characterTabs.Length; i++)
         {
@@ -198,9 +203,6 @@ public class InventoryUI : MonoBehaviour
 
     void OnEnable()
     {
-        if (DataManager.instance != null)
-            DataManager.instance.OnGoldChanged += RefreshGold;
-
         // 열 때는 항상 현재 리더 캐릭터로 시작
         selectedCharIndex = GetLeaderPartyIndex();
         if (DataManager.instance != null)
@@ -218,7 +220,7 @@ public class InventoryUI : MonoBehaviour
         return stat != null ? stat.partyIndex : 0;
     }
 
-    void OnDisable()
+    void OnDestroy()
     {
         if (DataManager.instance != null)
             DataManager.instance.OnGoldChanged -= RefreshGold;

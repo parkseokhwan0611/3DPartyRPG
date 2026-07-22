@@ -119,6 +119,9 @@ public class ShopUI : MonoBehaviour
 
     void Start()
     {
+        if (DataManager.instance != null)
+            DataManager.instance.OnGoldChanged += RefreshGold;
+
         // 인벤토리 슬롯 사전 생성
         _invSlots = new InvSlotCache[Inventory.MaxSlots];
         for (int i = 0; i < Inventory.MaxSlots; i++)
@@ -221,20 +224,15 @@ public class ShopUI : MonoBehaviour
         }
     }
 
-    void OnEnable()
-    {
-        if (DataManager.instance != null)
-            DataManager.instance.OnGoldChanged += RefreshGold;
-    }
-
-    void OnDisable()
+    // ShopUI 자신의 GameObject는 계속 활성 상태로 유지되고(Open/Close는 내부 panel만 토글)
+    // OnEnable은 사실상 씬 시작 시 한 번만 실행됨 — DataManager.Awake()보다 먼저 실행되면
+    // 구독이 조용히 누락되고 다시 시도할 기회가 없으므로, 항상 모든 Start보다 먼저 Awake가
+    // 끝나는 것이 보장되는 Start에서 구독
+    void OnDestroy()
     {
         if (DataManager.instance != null)
             DataManager.instance.OnGoldChanged -= RefreshGold;
-    }
 
-    void OnDestroy()
-    {
         IsOpen = false;
     }
 

@@ -24525,7 +24525,6 @@ GameObject:
   - component: {fileID: 6605401736674273346}
   - component: {fileID: 5081638046219035750}
   - component: {fileID: 2204954198718684224}
-  - component: {fileID: 213657240219376674}
   - component: {fileID: 3328162003950045149}
   m_Layer: 0
   m_Name: Cleans
@@ -29427,24 +29426,6 @@ ParticleSystemRenderer:
   m_MeshWeighting2: 1
   m_MeshWeighting3: 1
   m_MaskInteraction: 0
---- !u!114 &213657240219376674
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4885993744736997009}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a79ba5bb0b3780b4a98ce45e779b6441, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Repeating: 1
-  RepeatTime: 3
-  StartTime: 0
-  RandomVolume: 0
-  minVolume: 0.4
-  maxVolume: 1
 --- !u!114 &3328162003950045149
 MonoBehaviour:
   m_ObjectHideFlags: 0

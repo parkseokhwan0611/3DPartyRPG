@@ -49,6 +49,11 @@ public class QuestManager : MonoBehaviour
         EnemyHp.OnAnyEnemyDied += HandleEnemyDied;
         NpcInteractable.OnAnyDialogueComplete += HandleDialogueComplete;
 
+        // [DefaultExecutionOrder(-200)] 때문에 같은 씬에서 DataManager와 함께 처음 생성되는
+        // 경우엔 이 시점에 DataManager.instance가 항상 null임 — 그 경우는 StartNewGame()/
+        // RestoreProgress()가 RefreshInventorySubscription()을 다시 호출해 대신 처리한다.
+        // 여기서 이 블록이 의미 있는 건 DataManager가 이전 씬(타이틀 등)에서 DontDestroyOnLoad로
+        // 이미 살아있는 채로 넘어온 경우뿐이다.
         if (DataManager.instance != null)
         {
             DataManager.instance.OnDataInitialized += HandleDataInitialized;

@@ -44,6 +44,8 @@ public class BasicMonsterScript : MonoBehaviour
     // 어그로 테이블
     // ─────────────────────────────────────────────────────────────────
     private Dictionary<Transform, float> aggroTable = new Dictionary<Transform, float>();
+    // DecayAggro()가 매 프레임 새 List를 할당하지 않도록 재사용하는 스크래치 버퍼
+    private readonly List<Transform> _aggroKeysScratch = new List<Transform>();
     private Transform aggroTarget = null;
 
     // ─────────────────────────────────────────────────────────────────
@@ -200,8 +202,9 @@ public class BasicMonsterScript : MonoBehaviour
     {
         if (aggroTable.Count == 0) return;
 
-        List<Transform> keys = new List<Transform>(aggroTable.Keys);
-        foreach (var key in keys)
+        _aggroKeysScratch.Clear();
+        _aggroKeysScratch.AddRange(aggroTable.Keys);
+        foreach (var key in _aggroKeysScratch)
         {
             aggroTable[key] -= aggroDecayRate * Time.deltaTime;
             if (aggroTable[key] <= 0f)

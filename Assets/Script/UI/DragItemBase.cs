@@ -50,6 +50,13 @@ public abstract class DragItemBase : MonoBehaviour, IBeginDragHandler, IDragHand
         if (_ghost != null) { Destroy(_ghost); _ghost = null; }
     }
 
+    // 드래그 도중 인벤토리/강화 패널이 닫히는 등으로 이 오브젝트가 비활성화되면
+    // OnEndDrag가 호출되지 않아 고스트가 캔버스에 계속 남을 수 있음 — 방어적으로 정리
+    void OnDisable()
+    {
+        if (_ghost != null) { Destroy(_ghost); _ghost = null; }
+    }
+
     private void MoveGhost(Vector2 screenPos)
     {
         if (_ghost == null || _canvas == null) return;

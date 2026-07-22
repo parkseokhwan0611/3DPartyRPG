@@ -19,6 +19,8 @@ public class PartyMemberScript : MonoBehaviour
     private AttackBase attackComp;
     private SkillManager skillManager;
     private CharacterStat statComp;
+    // SkillManager 등 외부에서 매 프레임 GetComponent로 재조회하지 않도록 캐시된 참조 노출
+    public CharacterStat StatComp => statComp;
     private PartyStatusEffectHandler statusHandler;
     private int _chainIndex = 0;
 

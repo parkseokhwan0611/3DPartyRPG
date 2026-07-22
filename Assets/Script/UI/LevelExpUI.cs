@@ -10,24 +10,24 @@ public class LevelExpUI : MonoBehaviour
     public TextMeshProUGUI levelText;
     public Image expBar;
 
-    void OnEnable()
+    // OnEnable은 DataManager.Awake()보다 먼저 실행될 수 있어(오브젝트 간 실행 순서 미보장)
+    // 구독이 조용히 누락될 수 있음 — Awake는 항상 모든 Start보다 먼저 끝나는 것이 보장되므로
+    // Start에서 구독
+    void Start()
     {
-        // DataManager 이벤트 구독
-        if (DataManager.instance == null) return;
-        DataManager.instance.OnLevelUp  += UpdateUI;
-        DataManager.instance.OnExpGained += UpdateUI;
+        if (DataManager.instance != null)
+        {
+            DataManager.instance.OnLevelUp   += UpdateUI;
+            DataManager.instance.OnExpGained += UpdateUI;
+        }
+        UpdateUI(); // 초기값 세팅
     }
 
-    void OnDisable()
+    void OnDestroy()
     {
         if (DataManager.instance == null) return;
         DataManager.instance.OnLevelUp  -= UpdateUI;
         DataManager.instance.OnExpGained -= UpdateUI;
-    }
-
-    void Start()
-    {
-        UpdateUI(); // 초기값 세팅
     }
 
     void UpdateUI()

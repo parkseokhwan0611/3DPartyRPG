@@ -117,7 +117,6 @@ public class SaveManager : MonoBehaviour
             GameSaveData data = JsonUtility.FromJson<GameSaveData>(json);
             DataManager.instance?.LoadSaveData(data);
 
-            RestorePotionSlots(data);
             QuestManager.instance?.RestoreProgress(data);
             StartCoroutine(RestorePosition(data));
 
@@ -170,6 +169,7 @@ public class SaveManager : MonoBehaviour
 
         RestoreQuickSlots(data);
         RestoreNpcStocks(data);
+        RestorePotionSlots(data);
     }
 
     private void RestoreNpcStocks(GameSaveData data)

@@ -48,6 +48,13 @@ public class ObjectPoolManager : MonoBehaviour
     {
         IsReady = false;
 
+        if (objectInfos == null)
+        {
+            Debug.LogWarning("[ObjectPoolManager] Object Infos가 Inspector에 설정되지 않았습니다.");
+            IsReady = true;
+            return;
+        }
+
         for (int idx = 0; idx < objectInfos.Length; idx++)
         {
             IObjectPool<GameObject> pool = new ObjectPool<GameObject>(CreatePooledItem, OnTakeFromPool, OnReturnedToPool,

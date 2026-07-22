@@ -17,13 +17,16 @@ public class QuickSlotUI : MonoBehaviour
         slots = new QuickSlot[] { slotQ, slotW, slotE, slotR };
     }
 
-    void OnEnable()
+    // OnEnable은 PartyManager.Awake()보다 먼저 실행될 수 있어(오브젝트 간 실행 순서 미보장)
+    // 구독이 조용히 누락될 수 있음 — Awake는 항상 모든 Start보다 먼저 끝나는 것이 보장되므로
+    // Start에서 구독
+    void Start()
     {
         if (PartyManager.instance != null)
             PartyManager.instance.OnLeaderChanged += HandleLeaderChanged;
     }
 
-    void OnDisable()
+    void OnDestroy()
     {
         if (PartyManager.instance != null)
             PartyManager.instance.OnLeaderChanged -= HandleLeaderChanged;
