@@ -470,6 +470,8 @@ public class InventoryUI : MonoBehaviour
         if (prev != null) inv.TryAddItem(prev);
         equip.RecalculateStats(stat);
 
+        AudioManager.instance?.PlaySFX("ItemEquip");
+
         CloseDetailPopup();
         RefreshEquipSlots();
         RefreshInventory();
@@ -488,6 +490,8 @@ public class InventoryUI : MonoBehaviour
         inv.Remove(item);
         if (prev != null) inv.TryAddItem(prev);
         charEquip.RecalculateStats(stat);
+
+        AudioManager.instance?.PlaySFX("ItemEquip");
 
         CloseDetailPopup();
         RefreshEquipSlots();
@@ -508,6 +512,8 @@ public class InventoryUI : MonoBehaviour
         ItemInstance item = equip.Unequip(slot);
         if (item != null) inv.TryAddItem(item);
         equip.RecalculateStats(stat);
+
+        AudioManager.instance?.PlaySFX("ItemUnequip");
 
         CloseDetailPopup();
         RefreshEquipSlots();
@@ -591,6 +597,7 @@ public class InventoryUI : MonoBehaviour
             inv.ConsumeItem(selectedItem, qty);
 
         DataManager.instance.AddGold(totalPrice);
+        AudioManager.instance?.PlaySFX("Money");
 
         CloseDetailPopup();
         RefreshInventory();

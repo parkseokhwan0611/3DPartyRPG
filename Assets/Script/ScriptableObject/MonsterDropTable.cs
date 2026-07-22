@@ -32,6 +32,7 @@ public class MonsterDropTable : ScriptableObject
     public void SpawnDrops(Vector3 position)
     {
         if (DataManager.instance == null) return;
+        bool didDrop = false;
         foreach (var entry in entries)
         {
             if (string.IsNullOrEmpty(entry.itemId)) continue;
@@ -69,6 +70,11 @@ public class MonsterDropTable : ScriptableObject
 
             go.transform.SetPositionAndRotation(spawnPos, Quaternion.identity);
             go.GetComponent<WorldItem>()?.Setup(inst);
+            didDrop = true;
         }
+
+        // 여러 아이템이 동시에 드랍돼도 사운드는 한 번만
+        if (didDrop)
+            AudioManager.instance?.PlaySFX("ItemDrop");
     }
 }

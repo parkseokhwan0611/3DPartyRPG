@@ -94,6 +94,10 @@ public class QuestManager : MonoBehaviour
         currentProgress   = 0;
         completedQuestIds.Clear();
         RefreshInventorySubscription();
+
+        if (CurrentQuest != null)
+            AudioManager.instance?.PlaySFX("QuestAccept");
+
         OnQuestChanged?.Invoke();
     }
 
@@ -232,7 +236,14 @@ public class QuestManager : MonoBehaviour
         }
 
         _completing = false;
+
+        AudioManager.instance?.PlaySFX("QuestClear");
         OnQuestCompleted?.Invoke(quest);
+
+        // 다음 퀘스트가 있으면 자동으로 수락된 것 — 수락음도 함께 재생
+        if (CurrentQuest != null)
+            AudioManager.instance?.PlaySFX("QuestAccept");
+
         OnQuestChanged?.Invoke();
     }
 }

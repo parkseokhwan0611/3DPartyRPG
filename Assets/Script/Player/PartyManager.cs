@@ -29,6 +29,12 @@ public class PartyManager : MonoBehaviour
     // 리더가 바뀔 때 발생 — 매 프레임 폴링 대신 이 이벤트를 구독해서 갱신할 것
     public event System.Action<PartyMemberScript> OnLeaderChanged;
 
+    // ─────────────────────────────────────────
+    // 자동 스킬 사용 (팔로워 전용, T로 토글)
+    // ─────────────────────────────────────────
+    public bool AutoSkillEnabled { get; private set; } = true;
+    public event System.Action<bool> OnAutoSkillToggled;
+
     // ─────────────────────────────────────────────────────────────────
     // Unity 생명주기
     // ─────────────────────────────────────────────────────────────────
@@ -52,6 +58,9 @@ public class PartyManager : MonoBehaviour
 
         HandleLeaderChangeInput();
         HandleCommandInput();
+
+        if (Input.GetKeyDown(KeyCode.T))
+            ToggleAutoSkill();
 
         if (currentLeader == null || currentLeader.CurrentState == PartyMemberScript.MemberState.Dead) return;
 
@@ -179,6 +188,16 @@ public class PartyManager : MonoBehaviour
     }
 
     // ─────────────────────────────────────────────────────────────────
+    // 자동 스킬 토글
+    // ─────────────────────────────────────────────────────────────────
+
+    public void ToggleAutoSkill()
+    {
+        AutoSkillEnabled = !AutoSkillEnabled;
+        OnAutoSkillToggled?.Invoke(AutoSkillEnabled);
+    }
+
+    // ─────────────────────────────────────────────────────────────────
     // 리더 변경
     // ─────────────────────────────────────────────────────────────────
 
@@ -190,6 +209,11 @@ public class PartyManager : MonoBehaviour
 
         // 죽은 캐릭터로는 교체 불가
         if (newLeader.CurrentState == PartyMemberScript.MemberState.Dead) return;
+
+        // 실제로 다른 리더로 바뀔 때만 사운드 재생 (게임 시작 시 최초 지정, 팔로워 사망에 따른
+        // 체인 재구성 시 재호출되는 경우는 리더가 그대로라 제외)
+        if (currentLeader != null && currentLeader != newLeader)
+            AudioManager.instance?.PlaySFX("LeaderChange");
 
         currentLeader = newLeader;
         OnLeaderChanged?.Invoke(newLeader);
@@ -283,6 +307,7 @@ public class PartyManager : MonoBehaviour
         // yield 도중 gameOverUI가 파괴됐을 경우를 대비해 재확인
         if (gameOverUI == null) yield break;
         gameOverUI.SetActive(true);
+        AudioManager.instance?.PlaySFX("GameOver");
         Time.timeScale = 0f;
     }
 

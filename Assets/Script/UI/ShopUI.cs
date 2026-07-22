@@ -651,6 +651,8 @@ public class ShopUI : MonoBehaviour
         // 퀵슬롯에 등록된 포션이면 전투 UI 수량 갱신
         PotionQuickSlotManager.instance?.RefreshIfRegistered(entry.item);
 
+        AudioManager.instance?.PlaySFX("Money");
+
         RefreshAllShopSlots();
         RefreshInventory();
         CloseDetailPopup();
@@ -724,6 +726,7 @@ public class ShopUI : MonoBehaviour
             inv.ConsumeItem(_selectedInvItem, qty);
 
         DataManager.instance.AddGold(totalPrice);
+        AudioManager.instance?.PlaySFX("Money");
 
         // 판매 아이템이 포션 퀵슬롯에 등록된 경우 갱신 또는 해제
         if (!_selectedInvItem.IsEquipment)

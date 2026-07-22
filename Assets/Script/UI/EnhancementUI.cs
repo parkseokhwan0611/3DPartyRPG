@@ -114,6 +114,9 @@ public class EnhancementUI : MonoBehaviour
         SetupDropTargets();
         BuildInventorySlots();
 
+        // 진행률 표시 전용 — 플레이어가 드래그로 값을 바꿀 수 없도록 잠금
+        if (progressBar != null) progressBar.interactable = false;
+
         if (panel != null) panel.SetActive(false);
         HideResult();
     }
@@ -304,6 +307,8 @@ public class EnhancementUI : MonoBehaviour
     {
         if (successText != null) successText.SetActive(success);
         if (failText    != null) failText.SetActive(!success);
+
+        AudioManager.instance?.PlaySFX(success ? "EnhanceSuccess" : "EnhanceFail");
 
         if (_resultRoutine != null) StopCoroutine(_resultRoutine);
         _resultRoutine = StartCoroutine(HideResultAfter(2.5f));

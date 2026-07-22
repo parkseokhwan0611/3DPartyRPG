@@ -416,6 +416,7 @@ public class CharacterStat : MonoBehaviour, IDamageable
         // 실제 사망 처리 (myMember 없으면 파티원이 아님 → 파티 알림 스킵)
         if (myMember == null) return;
         myMember.Die();
+        AudioManager.instance?.PlaySFX("PartyMemberDeath");
         PartyManager.instance?.OnMemberDied(myMember);
     }
 

@@ -69,6 +69,7 @@ public class WorldItem : MonoBehaviour
 
         if (DataManager.instance.sharedInventory.TryAddItem(_item))
         {
+            AudioManager.instance?.PlaySFX("ItemPickup");
             if (_poolAble != null) _poolAble.ReleaseObject();
             else                   Destroy(gameObject);
         }

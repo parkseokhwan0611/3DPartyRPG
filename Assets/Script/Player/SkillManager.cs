@@ -273,6 +273,7 @@ public class SkillManager : MonoBehaviour
     private void TryAutoUseSkill()
     {
         if (IsActivatingSkill) return;
+        if (PartyManager.instance != null && !PartyManager.instance.AutoSkillEnabled) return;
 
         Transform target = attackBase.currentTarget;
 
@@ -318,7 +319,7 @@ public class SkillManager : MonoBehaviour
     private void TryAutoUseHealSkill()
     {
         if (IsActivatingSkill) return;
-        if (PartyManager.instance == null) return;
+        if (PartyManager.instance == null || !PartyManager.instance.AutoSkillEnabled) return;
 
         foreach (var slot in slots)
         {

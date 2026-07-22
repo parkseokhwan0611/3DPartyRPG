@@ -277,6 +277,7 @@ public class DataManager : MonoBehaviour
             partyExp -= GetRequiredExp(partyLevel);
             partyLevel++;
             LevelUpAllMembers();
+            AudioManager.instance?.PlaySFX("LevelUp");
             OnLevelUp?.Invoke();
         }
 

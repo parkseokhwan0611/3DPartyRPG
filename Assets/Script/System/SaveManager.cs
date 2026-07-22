@@ -89,6 +89,7 @@ public class SaveManager : MonoBehaviour
             string json = JsonUtility.ToJson(data, prettyPrint: true);
             File.WriteAllText(SavePath, json);
             Debug.Log($"[SaveManager] 세이브 완료: {SavePath}");
+            AudioManager.instance?.PlaySFX("SaveComplete");
             return true;
         }
         catch (System.Exception e)
