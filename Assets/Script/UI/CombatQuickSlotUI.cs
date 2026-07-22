@@ -69,7 +69,7 @@ public class CombatQuickSlotUI : MonoBehaviour
             if (slots[i] == null) continue;
 
             SkillBase skill = currentSkillManager.GetSlot(i);
-            slots[i].SetSkill(skill?.skillData);
+            slots[i].SetSkill(skill);
         }
     }
 

@@ -1,8 +1,9 @@
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 using TMPro;
 
-public class CombatQuickSlot : MonoBehaviour
+public class CombatQuickSlot : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
     [Header("# UI 참조")]
     public Image iconImage;                  // 스킬 아이콘
@@ -11,17 +12,25 @@ public class CombatQuickSlot : MonoBehaviour
     public TextMeshProUGUI cooldownText;     // 쿨다운 남은 시간
     public Image buffDurationBar;            // 버프 지속시간 바
 
+    // 호버 디테일 팝업용 — 스킬/물약 중 등록된 쪽만 채워짐
+    private SkillBase    _skill;
+    private ItemInstance _potionItem;
+
     // ─────────────────────────────────────────────────────────────────
     // 스킬 표시
     // ─────────────────────────────────────────────────────────────────
 
-    public void SetSkill(SkillData skill)
+    public void SetSkill(SkillBase skill)
     {
+        _skill      = skill;
+        _potionItem = null;
+
         if (iconImage == null) return;
 
-        if (skill != null && skill.icon != null)
+        SkillData data = skill?.skillData;
+        if (data != null && data.icon != null)
         {
-            iconImage.sprite = skill.icon;
+            iconImage.sprite = data.icon;
             iconImage.color  = Color.white;
         }
         else
@@ -29,6 +38,14 @@ public class CombatQuickSlot : MonoBehaviour
             iconImage.sprite = null;
             iconImage.color  = new Color(1f, 1f, 1f, 0f); // 투명
         }
+    }
+
+    // 포션 슬롯 표시 (HP/MP 퀵슬롯 전용) — 디테일 팝업용으로 ItemInstance까지 함께 보관
+    public void SetPotion(ItemInstance item)
+    {
+        _potionItem = item;
+        _skill      = null;
+        SetIcon(item?.data?.icon);
     }
 
     public void SetIcon(Sprite icon)
@@ -79,5 +96,23 @@ public class CombatQuickSlot : MonoBehaviour
         return time >= 1f
             ? Mathf.CeilToInt(time).ToString()
             : time.ToString("F1");
+    }
+
+    // ─────────────────────────────────────────────────────────────────
+    // 디테일 팝업 (호버) — 스킬/물약 슬롯 공용 팝업 하나를 재사용
+    // ─────────────────────────────────────────────────────────────────
+
+    public void OnPointerEnter(PointerEventData eventData)
+    {
+        if (_skill?.skillData != null)
+            CombatDetailPopupUI.instance?.ShowSkill(_skill, transform as RectTransform);
+        else if (_potionItem != null)
+            CombatDetailPopupUI.instance?.ShowPotion(_potionItem, transform as RectTransform);
+    }
+
+    public void OnPointerExit(PointerEventData eventData)
+    {
+        // 즉시 숨기지 않고 약간 대기 — 스크롤하려고 마우스를 팝업 쪽으로 옮기는 동안 사라지는 것 방지
+        CombatDetailPopupUI.instance?.RequestHide();
     }
 }

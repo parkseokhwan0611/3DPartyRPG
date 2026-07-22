@@ -6,17 +6,11 @@ public class PotionCombatSlotUI : MonoBehaviour
     public CombatQuickSlot slotHp;
     public CombatQuickSlot slotMp;
 
+    // OnEnable은 PotionQuickSlotManager.Awake()보다 먼저 실행될 수 있어(오브젝트 간 실행 순서
+    // 미보장) 구독이 조용히 누락될 수 있음 — Awake는 항상 모든 Start보다 먼저 끝나는 것이
+    // 보장되므로 Start에서 구독 (AutoSkillIndicatorUI와 동일한 패턴)
     void Start()
     {
-        // 이벤트 구독은 OnEnable에서 처리됨 (Awake→OnEnable→Start 순서상 OnEnable이 항상 먼저 실행되므로
-        // 여기서 다시 구독하면 이중 구독이 됨). 여기서는 초기 아이콘 표시만 갱신.
-        RefreshHpSlot();
-        RefreshMpSlot();
-    }
-
-    void OnEnable()
-    {
-        // Start 이후 비활성화→활성화 시 재구독 및 아이콘 갱신
         if (PotionQuickSlotManager.instance != null)
         {
             PotionQuickSlotManager.instance.OnHpSlotChanged -= RefreshHpSlot;
@@ -28,7 +22,7 @@ public class PotionCombatSlotUI : MonoBehaviour
         RefreshMpSlot();
     }
 
-    void OnDisable()
+    void OnDestroy()
     {
         if (PotionQuickSlotManager.instance == null) return;
         PotionQuickSlotManager.instance.OnHpSlotChanged -= RefreshHpSlot;
@@ -46,7 +40,7 @@ public class PotionCombatSlotUI : MonoBehaviour
     {
         if (slotHp == null) return;
         var item = PotionQuickSlotManager.instance?.GetSlot(ConsumableType.HpPotion);
-        slotHp.SetIcon(item?.data?.icon);
+        slotHp.SetPotion(item);
         if (slotHp.keyText != null)
             slotHp.keyText.text = item != null ? $"x{item.stackCount}" : "";
     }
@@ -55,7 +49,7 @@ public class PotionCombatSlotUI : MonoBehaviour
     {
         if (slotMp == null) return;
         var item = PotionQuickSlotManager.instance?.GetSlot(ConsumableType.MpPotion);
-        slotMp.SetIcon(item?.data?.icon);
+        slotMp.SetPotion(item);
         if (slotMp.keyText != null)
             slotMp.keyText.text = item != null ? $"x{item.stackCount}" : "";
     }

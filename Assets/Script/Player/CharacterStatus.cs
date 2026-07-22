@@ -158,6 +158,8 @@ public string charName;
         if (skill is PassiveSkillData passive)
             ApplyPassive(passive, currentLevel, currentLevel + 1);
 
+        AudioManager.instance?.PlaySFX("SkillLevelUp");
+
         return true;
     }
 

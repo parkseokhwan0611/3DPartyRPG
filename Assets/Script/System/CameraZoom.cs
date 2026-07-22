@@ -28,7 +28,7 @@ public class CameraZoom : MonoBehaviour
     void Update()
     {
         // UI 열려있으면 줌 입력 차단
-        if (MenuTabUI.IsOpen || ShopUI.IsOpen || DialogueUI.IsOpen) return;
+        if (MenuTabUI.IsOpen || ShopUI.IsOpen || DialogueUI.IsOpen || CombatDetailPopupUI.IsOpen) return;
 
         float scroll = Input.GetAxis("Mouse ScrollWheel");
         if (scroll != 0f)
