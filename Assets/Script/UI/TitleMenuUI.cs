@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 
 public class TitleMenuUI : MonoBehaviour
 {
@@ -7,6 +8,14 @@ public class TitleMenuUI : MonoBehaviour
     [SerializeField] Button newGameButton;
     [SerializeField] Button loadGameButton;
     [SerializeField] Button exitButton;
+    [SerializeField] Button settingsButton;
+    [SerializeField] Button settingsBackButton;
+
+    [Header("# 패널")]
+    [Tooltip("New Game / Load Game / Exit 등 타이틀 메인 버튼들이 속한 루트 — 설정 창을 열면 숨김")]
+    [SerializeField] GameObject titlePanel;
+    [Tooltip("설정 창 루트 (SettingsUI가 붙어있는 오브젝트)")]
+    [SerializeField] GameObject settingsPanel;
 
     [Header("# 씬")]
     [SerializeField] string gameSceneName = "RPGTest";
@@ -15,9 +24,13 @@ public class TitleMenuUI : MonoBehaviour
 
     void Start()
     {
-        newGameButton?.onClick.AddListener(OnNewGameClicked);
+        newGameButton ?.onClick.AddListener(OnNewGameClicked);
         loadGameButton?.onClick.AddListener(OnLoadGameClicked);
         exitButton    ?.onClick.AddListener(OnExitClicked);
+        settingsButton?.onClick.AddListener(OnSettingsClicked);
+        settingsBackButton?.onClick.AddListener(OnSettingsBackClicked);
+
+        settingsPanel?.SetActive(false);
 
         // BGM은 AudioManager의 Scene Bgm Map(씬 이름 기반 자동 재생)으로 관리
 
@@ -25,6 +38,24 @@ public class TitleMenuUI : MonoBehaviour
         if (loadGameButton != null)
             loadGameButton.interactable = SaveManager.instance != null
                                        && SaveManager.instance.HasSaveData;
+    }
+
+    private void OnSettingsClicked()
+    {
+        titlePanel   ?.SetActive(false);
+        settingsPanel?.SetActive(true);
+
+        // 클릭한 버튼(설정)이 EventSystem에 계속 "선택됨" 상태로 남아 밑줄(Selected 라인)이
+        // 안 사라지는 걸 방지 — 패널 전환 시 선택 상태를 명시적으로 초기화
+        EventSystem.current?.SetSelectedGameObject(null);
+    }
+
+    private void OnSettingsBackClicked()
+    {
+        settingsPanel?.SetActive(false);
+        titlePanel   ?.SetActive(true);
+
+        EventSystem.current?.SetSelectedGameObject(null);
     }
 
     private void SetButtonsInteractable(bool value)
