@@ -55,8 +55,10 @@ public class CombatDetailPopupUI : MonoBehaviour
 
         CancelHide();
 
-        int level = Mathf.Max(1, skill.skillLevel);
+        // skill.skillLevel은 스킬을 실제로 "사용"할 때만 동기화되므로(SkillManager.SyncSkillLevel),
+        // 레벨업 직후 아직 한 번도 안 썼다면 값이 갱신 전일 수 있음 — 캐릭터의 실시간 레벨을 직접 조회
         CharacterStat caster = PartyManager.instance?.currentLeader?.GetComponent<CharacterStat>();
+        int level = caster != null ? Mathf.Max(1, caster.GetSkillLevel(data)) : Mathf.Max(1, skill.skillLevel);
 
         SetIconAndText(data.icon, $"Lv {level} {data.skillName}", data.description);
         if (cooldownText != null) cooldownText.text = $"{GetArrayValue(data.cooldown, level):F1}초";
@@ -66,8 +68,8 @@ public class CombatDetailPopupUI : MonoBehaviour
             var sb = new StringBuilder();
             sb.AppendLine($"MP 소모: {GetArrayValue(data.mpCost, level):F0}");
 
-            // 데미지/치유량/버프 수치 등 스킬 타입별 상세 (메뉴 스킬창과 동일한 계산식 공용 사용)
-            string detail = SkillDescriptionBuilder.BuildFullDescription(data, level, caster);
+            // 데미지/치유량/버프 수치 — 전투 팝업은 계산식 없이 최종 수치만 표시
+            string detail = SkillDescriptionBuilder.BuildCombatDescription(data, level, caster);
             if (!string.IsNullOrEmpty(detail))
                 sb.AppendLine(detail);
 

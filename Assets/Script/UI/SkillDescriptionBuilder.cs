@@ -83,6 +83,23 @@ public static class SkillDescriptionBuilder
         return lines.ToString().TrimEnd('\n', '\r');
     }
 
+    // 전투 퀵슬롯 호버 팝업 전용 — 계산식 없이 최종 데미지 수치만, [단일]/[광역] 태그도 생략
+    public static string BuildDamageFinal(DamageSkillData dmg, int level, CharacterStat caster)
+    {
+        if (caster == null) return "";
+
+        float baseStat  = dmg.useAp ? caster.TotalAp : caster.TotalAtk;
+        float mult      = dmg.GetDamageMultiplier(level);
+        float statBonus = 0f;
+        foreach (var s in dmg.statScalings)
+        {
+            if (s.stat == DamageSkillData.ScalingStat.None) continue;
+            statBonus += GetStatValue(caster, s.stat) * s.GetScaling(level);
+        }
+
+        return $"데미지: {(baseStat + statBonus) * mult:F0}";
+    }
+
     // ─────────────────────────────────────────────────────────────────
     // 힐 스킬
     // ─────────────────────────────────────────────────────────────────
@@ -129,6 +146,26 @@ public static class SkillDescriptionBuilder
             sb.AppendLine($"지속시간: {heal.GetDotDuration(level)}초");
 
         return sb.ToString().TrimEnd('\n', '\r');
+    }
+
+    // 전투 퀵슬롯 호버 팝업 전용 — 계산식 없이 최종 치유량 수치만
+    public static string BuildHealFinal(HealSkillData heal, int level, CharacterStat caster)
+    {
+        if (caster == null) return "";
+
+        float baseStat  = heal.useApRatio ? caster.TotalAp : caster.TotalAtk;
+        float mult      = heal.GetHealMultiplier(level);
+        float statBonus = 0f;
+        foreach (var s in heal.statScalings)
+        {
+            if (s.stat == DamageSkillData.ScalingStat.None) continue;
+            statBonus += GetStatValue(caster, s.stat) * s.GetScaling(level);
+        }
+
+        string result = $"치유량: {(baseStat + statBonus) * mult:F0}";
+        if (heal.isDotHeal)
+            result += $"\n지속시간: {heal.GetDotDuration(level)}초";
+        return result;
     }
 
     // ─────────────────────────────────────────────────────────────────
@@ -209,6 +246,45 @@ public static class SkillDescriptionBuilder
             BuffSkillData.BuffEffectType.ManaRegen     => $"마나 재생 +{total:F1}/초{note}",
             BuffSkillData.BuffEffectType.HpRegen       => $"체력 재생 +{total:F1}/초{note}",
             BuffSkillData.BuffEffectType.HpOnHit       => $"공격 적중 시 체력 +{total:F0}{note}",
+            BuffSkillData.BuffEffectType.DebuffImmune  => "디버프 면역",
+            BuffSkillData.BuffEffectType.DispelDebuff  => "디버프 즉시 제거",
+            _                                          => "",
+        };
+    }
+
+    // 전투 퀵슬롯 호버 팝업 전용 — 스탯 비례 계산식(괄호 안 내역) 없이 최종 수치만
+    public static string GetBuffDescriptionFinal(BuffSkillData buff, int level, CharacterStat caster)
+    {
+        if (buff.buffEffects == null || buff.buffEffects.Count == 0) return "";
+
+        string result = buff.isPartyBuff ? "[파티 버프]\n" : "[개인 버프]\n";
+        result += $"지속시간: {buff.GetDuration(level)}초\n";
+
+        foreach (var effect in buff.buffEffects)
+        {
+            float total = effect.GetValue(level) + GetScalingAmount(effect, level, caster);
+            result += FormatBuffLineFinal(effect, total) + "\n";
+        }
+
+        return result.TrimEnd('\n');
+    }
+
+    private static string FormatBuffLineFinal(BuffSkillData.BuffEffect effect, float total)
+    {
+        return effect.effectType switch
+        {
+            BuffSkillData.BuffEffectType.AtkBonus      => $"공격력 +{total:F0}",
+            BuffSkillData.BuffEffectType.ApBonus       => $"주문력 +{total:F0}",
+            BuffSkillData.BuffEffectType.DefBonus      => $"방어력 +{total:F0}",
+            BuffSkillData.BuffEffectType.MagicResBonus => $"마법 저항력 +{total:F0}",
+            BuffSkillData.BuffEffectType.CritRate      => $"치명타 확률 +{total * 100f:F1}%",
+            BuffSkillData.BuffEffectType.CritDamage    => $"치명타 배율 +{total * 100f:F1}%",
+            BuffSkillData.BuffEffectType.MaxHpBonus    => $"최대 체력 +{total:F0}",
+            BuffSkillData.BuffEffectType.SpeedBonus    => $"이동속도 +{total:F1}",
+            BuffSkillData.BuffEffectType.Shield        => $"쉴드 +{total:F0}",
+            BuffSkillData.BuffEffectType.ManaRegen     => $"마나 재생 +{total:F1}/초",
+            BuffSkillData.BuffEffectType.HpRegen       => $"체력 재생 +{total:F1}/초",
+            BuffSkillData.BuffEffectType.HpOnHit       => $"공격 적중 시 체력 +{total:F0}",
             BuffSkillData.BuffEffectType.DebuffImmune  => "디버프 면역",
             BuffSkillData.BuffEffectType.DispelDebuff  => "디버프 즉시 제거",
             _                                          => "",
@@ -336,6 +412,23 @@ public static class SkillDescriptionBuilder
         }
         if (skill is HealSkillData heal)   return BuildHealDescription(heal, level, caster);
         if (skill is BuffSkillData buff)   return GetBuffDescription(buff, level, caster);
+        if (skill is DebuffSkillData deb)  return GetDebuffDescription(deb, level);
+        if (skill is PassiveSkillData pas) return GetPassiveDescription(pas, level);
+        return "";
+    }
+
+    // 전투 퀵슬롯 호버 팝업 전용 — 계산식/[단일]·[광역] 태그 없이 최종 수치만 (데미지/치유/버프),
+    // 디버프는 원래도 최종 수치만 표기라 GetDebuffDescription을 그대로 사용
+    public static string BuildCombatDescription(SkillData skill, int level, CharacterStat caster)
+    {
+        if (skill is DamageSkillData dmg)
+        {
+            string dmgLine = BuildDamageFinal(dmg, level, caster);
+            string special = GetDamageSkillSpecial(dmg, level);
+            return string.IsNullOrEmpty(special) ? dmgLine : dmgLine + "\n" + special;
+        }
+        if (skill is HealSkillData heal)   return BuildHealFinal(heal, level, caster);
+        if (skill is BuffSkillData buff)   return GetBuffDescriptionFinal(buff, level, caster);
         if (skill is DebuffSkillData deb)  return GetDebuffDescription(deb, level);
         if (skill is PassiveSkillData pas) return GetPassiveDescription(pas, level);
         return "";
