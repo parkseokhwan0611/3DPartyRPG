@@ -32,9 +32,12 @@ public static class EnhancementSystem
         return success ? EnhanceResult.Success : EnhanceResult.Fail;
     }
 
-    /// <summary>주문서 타입과 장비 종류가 호환되는지 검사.</summary>
+    /// <summary>주문서 타입/등급과 장비 종류/등급이 모두 호환되는지 검사.
+    /// 같은 등급의 무기/방어구만 강화 가능 (예: 일반 등급 주문서는 일반 등급 장비만).</summary>
     public static bool IsScrollCompatible(ConsumableData scroll, EquipItemData equip)
     {
+        if (scroll.grade != equip.grade) return false;
+
         return scroll.consumableType switch
         {
             ConsumableType.WeaponScroll => equip.equipType is EquipType.Sword or EquipType.Staff,
