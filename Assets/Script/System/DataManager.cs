@@ -34,6 +34,11 @@ public class DataManager : MonoBehaviour
     // 스탯창·인벤토리창이 공유하는 선택된 파티원 인덱스
     public int selectedPartyIndex = 0;
 
+    // 새 게임 시작 시 true — 게임 씬 로드 후 PotionQuickSlotManager가 시작 포션을
+    // 퀵슬롯에 자동 등록하는 데 사용되고, 등록 즉시 소비(false)됨. 로드 게임은
+    // 세이브된 슬롯 정보로 복원되므로 이 플래그를 쓰지 않음
+    public bool pendingAutoRegisterPotions = false;
+
     [Header("테스트 설정")]
     [Tooltip("게임 시작 시 각 캐릭터에게 지급할 스킬 포인트")]
     public int startSkillPoint = 1;
@@ -118,6 +123,7 @@ public class DataManager : MonoBehaviour
             }
         }
 
+        pendingAutoRegisterPotions = true;
         OnDataInitialized?.Invoke();
     }
 
@@ -200,10 +206,11 @@ public class DataManager : MonoBehaviour
     {
         if (save == null || baseDataList == null) return;
 
-        partyLevel         = save.partyLevel;
-        partyExp           = save.partyExp;
-        selectedPartyIndex = save.selectedPartyIndex;
-        gold               = save.gold;
+        partyLevel                 = save.partyLevel;
+        partyExp                   = save.partyExp;
+        selectedPartyIndex         = save.selectedPartyIndex;
+        gold                       = save.gold;
+        pendingAutoRegisterPotions = false;
 
         partyStatuses.Clear();
         partyEquipments.Clear();

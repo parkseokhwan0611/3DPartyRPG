@@ -19,6 +19,32 @@ public class PotionQuickSlotManager : MonoBehaviour
         else Destroy(gameObject);
     }
 
+    void Start()
+    {
+        // 새 게임으로 씬에 처음 진입한 경우에만 소비되는 1회성 플래그 —
+        // 로드 게임은 SaveManager.RestorePotionSlots가 별도로 슬롯을 복원함
+        if (DataManager.instance != null && DataManager.instance.pendingAutoRegisterPotions)
+        {
+            DataManager.instance.pendingAutoRegisterPotions = false;
+            AutoRegisterStartingPotions();
+        }
+    }
+
+    private void AutoRegisterStartingPotions()
+    {
+        if (DataManager.instance == null) return;
+
+        foreach (var item in DataManager.instance.sharedInventory.Items)
+        {
+            if (item?.data is not ConsumableData cd) continue;
+
+            if (cd.consumableType == ConsumableType.HpPotion && _hpSlot == null)
+                RegisterPotion(item);
+            else if (cd.consumableType == ConsumableType.MpPotion && _mpSlot == null)
+                RegisterPotion(item);
+        }
+    }
+
     void Update()
     {
         if (_hpCooldownRemaining > 0f) _hpCooldownRemaining -= Time.deltaTime;
