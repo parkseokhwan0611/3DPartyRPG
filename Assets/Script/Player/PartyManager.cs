@@ -75,15 +75,25 @@ public class PartyManager : MonoBehaviour
     void HandleLeaderChangeInput()
     {
         // 죽은 캐릭터는 ChangeLeader 내부에서 걸러짐
-        if (Input.GetKeyDown(KeyCode.A)) ChangeLeader(0);
-        if (Input.GetKeyDown(KeyCode.S)) ChangeLeader(1);
-        if (Input.GetKeyDown(KeyCode.D)) ChangeLeader(2);
+        if (Input.GetKeyDown(KeyCode.Alpha1)) ChangeLeader(0);
+        if (Input.GetKeyDown(KeyCode.Alpha2)) ChangeLeader(1);
+        if (Input.GetKeyDown(KeyCode.Alpha3)) ChangeLeader(2);
     }
 
     void HandleCommandInput()
     {
         if (currentLeader == null) return;
         if (currentLeader.CurrentState == PartyMemberScript.MemberState.Dead) return;
+
+        // 롤 스타일 A+좌클릭 강제 공격 — 공격 가능한 오브젝트 위에서만 발동
+        if (Input.GetKey(KeyCode.A) && Input.GetMouseButtonDown(0))
+        {
+            Ray attackRay = mainCamera.ScreenPointToRay(Input.mousePosition);
+            if (TryGetEnemyHit(attackRay, out RaycastHit forcedHit))
+                DispatchAttackCommand(forcedHit);
+            return;
+        }
+
         if (!Input.GetMouseButtonDown(1)) return;
 
         Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
@@ -210,8 +220,9 @@ public class PartyManager : MonoBehaviour
     {
         if (cameraFollowTarget == null) return;
 
-        Vector3 delta = position - cameraFollowTarget.transform.position;
-        cameraFollowTarget.WarpTo(position);
+        Vector3 biasedPosition = cameraFollowTarget.ApplySouthBias(position);
+        Vector3 delta = biasedPosition - cameraFollowTarget.transform.position;
+        cameraFollowTarget.WarpTo(biasedPosition);
 
         if (virtualCamera != null)
             virtualCamera.OnTargetObjectWarped(cameraFollowTarget.transform, delta);

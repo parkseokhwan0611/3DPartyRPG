@@ -53,8 +53,8 @@ public class PotionQuickSlotManager : MonoBehaviour
         if (GameManager.instance == null || !GameManager.instance.isLive) return;
         if (MenuTabUI.IsOpen || ShopUI.IsOpen || DialogueUI.IsOpen || EnhancementUI.IsOpen) return;
 
-        if (Input.GetKeyDown(KeyCode.Alpha1)) TryUsePotion(ConsumableType.HpPotion);
-        if (Input.GetKeyDown(KeyCode.Alpha2)) TryUsePotion(ConsumableType.MpPotion);
+        if (Input.GetKeyDown(KeyCode.S)) TryUsePotion(ConsumableType.HpPotion);
+        if (Input.GetKeyDown(KeyCode.D)) TryUsePotion(ConsumableType.MpPotion);
     }
 
     // ─────────────────────────────────────────────────────────────────
