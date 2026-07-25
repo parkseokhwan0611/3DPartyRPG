@@ -19535,6 +19535,7 @@ MonoBehaviour:
   followTarget: {fileID: 0}
   smoothTime: 0.08
   smoothTimeY: 0.15
+  southBiasOffset: 2
 --- !u!4 &50482402
 Transform:
   m_ObjectHideFlags: 0
@@ -107665,8 +107666,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fa7155796051b734daa718462081dc5f, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
   m_BindingMode: 4
   m_FollowOffset: {x: 0, y: 7, z: -6}
   m_XDamping: 1
@@ -802788,7 +802789,7 @@ GameObject:
   - component: {fileID: 5657494931139571588}
   - component: {fileID: 5657494931139571587}
   m_Layer: 6
-  m_Name: Artemis
+  m_Name: Healer
   m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -806464,7 +806465,7 @@ GameObject:
   - component: {fileID: 8735694563876352235}
   - component: {fileID: 8735694563876352234}
   m_Layer: 6
-  m_Name: Agni
+  m_Name: Dealer
   m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

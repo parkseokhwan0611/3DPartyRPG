@@ -6,9 +6,13 @@ public class CameraZoom : MonoBehaviour
     [Header("# 카메라 참조")]
     [SerializeField] CinemachineVirtualCamera virtualCamera;
 
-    [Header("# 줌 범위")]
-    [SerializeField] Vector3 zoomOutOffset = new Vector3(0f,  7f, -6f);
-    [SerializeField] Vector3 zoomInOffset  = new Vector3(0f,  3f, -2f);
+    [Header("# 줌 범위 (카메라-타겟 오프셋)")]
+    [SerializeField] Vector3 zoomOutOffset = new Vector3(0f, 7f, -6f);
+    [SerializeField] Vector3 zoomInOffset  = new Vector3(0f, 1.2f, -2.2f);
+
+    [Header("# 줌인 시 상하 각도 (좌우 회전은 항상 고정)")]
+    [Tooltip("줌인했을 때의 카메라 피치(상하 각도, 도). 줌아웃 시엔 기존 고정 각도를 그대로 사용")]
+    [SerializeField] float zoomInPitch = 25f;
 
     [Header("# 줌 속도")]
     [SerializeField] float scrollSpeed = 3f;  // 휠 1틱당 줌 변화량
@@ -19,10 +23,18 @@ public class CameraZoom : MonoBehaviour
     private float _targetZoomT = 0f;
     private float _velocity    = 0f;
 
+    // 기존에 고정돼있던 각도 — 줌아웃 시 피치 기준값. Yaw/Roll은 항상 이 값 그대로 유지.
+    private Quaternion _baseRotation;
+    private float       _basePitch;
+
     void Awake()
     {
         if (virtualCamera != null)
-            transposer = virtualCamera.GetCinemachineComponent<CinemachineTransposer>();
+        {
+            transposer    = virtualCamera.GetCinemachineComponent<CinemachineTransposer>();
+            _baseRotation = virtualCamera.transform.rotation;
+            _basePitch    = _baseRotation.eulerAngles.x;
+        }
     }
 
     void Update()
@@ -38,5 +50,13 @@ public class CameraZoom : MonoBehaviour
 
         if (transposer != null)
             transposer.m_FollowOffset = Vector3.Lerp(zoomOutOffset, zoomInOffset, _zoomT);
+
+        if (virtualCamera != null)
+        {
+            // Yaw(Y)/Roll(Z)은 원래 고정값 그대로, Pitch(X)만 줌 정도에 따라 보간
+            float pitch = Mathf.LerpAngle(_basePitch, zoomInPitch, _zoomT);
+            virtualCamera.transform.rotation =
+                Quaternion.Euler(pitch, _baseRotation.eulerAngles.y, _baseRotation.eulerAngles.z);
+        }
     }
 }
