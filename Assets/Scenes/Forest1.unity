@@ -385694,6 +385694,13 @@ MonoBehaviour:
     GateFit: 2
     FocusDistance: 10
     m_SensorSize: {x: 1, y: 1}
+    Iso: 200
+    ShutterSpeed: 0.005
+    Aperture: 16
+    BladeCount: 5
+    Curvature: {x: 2, y: 11}
+    BarrelClipping: 0.25
+    Anamorphism: 0
   m_Transitions:
     m_BlendHint: 0
     m_InheritPosition: 0
@@ -385733,6 +385740,7 @@ MonoBehaviour:
   virtualCamera: {fileID: 1112639005}
   zoomOutOffset: {x: 0, y: 7, z: -6}
   zoomInOffset: {x: 0, y: 3, z: -2}
+  zoomInPitch: 25
   scrollSpeed: 3
   smoothTime: 0.15
 --- !u!114 &1112639008
