@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using Unity.AI.Navigation;
 
 // Terrain 컴포넌트에 붙여서 인스펙터 우클릭(컨텍스트 메뉴)으로 실행하는 지형 자동 생성 툴.
 // 실행 시 기존 높이맵/텍스처/나무를 덮어쓰므로, 실행 전 커밋해두는 걸 권장.
@@ -21,9 +22,9 @@ public class TerrainProceduralGenerator : MonoBehaviour
     [Tooltip("생성 후 스무딩 반복 횟수 — 클수록 더 완만해짐")]
     [Range(0, 8)] public int smoothIterations = 3;
 
-    [Header("외곽 경계(산) — 지형 가장자리를 높여서 자연스러운 벽으로 사용")]
+    [Header("외곽 경계(산) — 지형 가장자리를 높여서 자연스러운 벽으로 사용 (선택, 기본 꺼짐)")]
     [Tooltip("전체 생성(GenerateAll) 실행 시 이 단계를 포함할지 여부")]
-    public bool  raiseEdges         = true;
+    public bool  raiseEdges         = false;
     [Tooltip("경계 산의 최대 높이 (월드 단위, 미터) — 안쪽 언덕보다 훨씬 높게, NavMesh Max Slope를 넘길 만큼 충분히 가파르게")]
     public float edgeMountainHeight = 25f;
     [Tooltip("가장자리에서 이 비율만큼 안쪽까지 산이 퍼짐 (0.5 = 지형 절반까지). 진짜 끝만 올리고 싶으면 0.02~0.05처럼 작게")]
@@ -38,6 +39,14 @@ public class TerrainProceduralGenerator : MonoBehaviour
     public TerrainLayer steepLayer;
     [Tooltip("이 경사도(도) 이상이면 steepLayer로 칠함")]
     public float steepAngleThreshold = 25f;
+
+    [Header("외곽 이동 차단 (NavMesh 통행불가 구역 — 실제로 못 나가게 막는 투명 벽)")]
+    [Tooltip("전체 생성(GenerateAll) 실행 시 이 단계를 포함할지 여부")]
+    public bool  addBoundaryBlockers = true;
+    [Tooltip("가장자리에서 안쪽으로 이 두께(월드 단위, 미터)만큼 NavMesh 생성을 막음")]
+    public float boundaryThickness   = 5f;
+    [Tooltip("차단 구역의 높이 (월드 단위, 미터) — 지형 최고점보다 넉넉하게")]
+    public float boundaryHeight      = 50f;
 
     [Header("나무 배치 (선택 — 비워두면 건너뜀)")]
     public GameObject[] treePrefabs;
@@ -268,12 +277,51 @@ public class TerrainProceduralGenerator : MonoBehaviour
         Debug.Log($"[TerrainProceduralGenerator] 나무 {instances.Count}그루 배치 완료");
     }
 
-    [ContextMenu("전체 생성 (1 -> 2 -> 3 -> 4)")]
+    [ContextMenu("5. 외곽 이동 차단 (NavMesh 통행불가 구역)")]
+    public void GenerateBoundaryBlockers()
+    {
+        Cache();
+        if (_data == null) { Debug.LogWarning("[TerrainProceduralGenerator] TerrainData가 없습니다."); return; }
+
+        const string rootName = "BoundaryBlockers";
+        Transform existing = transform.Find(rootName);
+        if (existing != null) DestroyImmediate(existing.gameObject);
+
+        var root = new GameObject(rootName);
+        root.transform.SetParent(transform, false);
+
+        Vector3 size = _data.size; // x=가로, y=높이 범위, z=세로
+        float   t    = boundaryThickness;
+        float   hY   = boundaryHeight / 2f;
+
+        CreateBoundaryVolume(root.transform, "North", new Vector3(size.x / 2f, hY, size.z - t / 2f), new Vector3(size.x, boundaryHeight, t));
+        CreateBoundaryVolume(root.transform, "South", new Vector3(size.x / 2f, hY, t / 2f),           new Vector3(size.x, boundaryHeight, t));
+        CreateBoundaryVolume(root.transform, "East",  new Vector3(size.x - t / 2f, hY, size.z / 2f),  new Vector3(t, boundaryHeight, size.z));
+        CreateBoundaryVolume(root.transform, "West",  new Vector3(t / 2f, hY, size.z / 2f),           new Vector3(t, boundaryHeight, size.z));
+
+        Debug.Log("[TerrainProceduralGenerator] 외곽 이동 차단 구역 생성 완료 — NavMesh를 다시 베이크해야 실제로 적용됩니다.");
+    }
+
+    // area=1은 NavMesh 빌드 시 "Not Walkable" — 렌더러 없이 순수하게 NavMesh만 뚫어서 못 지나가게 함
+    private static void CreateBoundaryVolume(Transform parent, string name, Vector3 localPos, Vector3 size)
+    {
+        var go = new GameObject(name);
+        go.transform.SetParent(parent, false);
+        go.transform.localPosition = localPos;
+
+        var modifier = go.AddComponent<NavMeshModifierVolume>();
+        modifier.size   = size;
+        modifier.center = Vector3.zero;
+        modifier.area   = 1; // Not Walkable
+    }
+
+    [ContextMenu("전체 생성 (1 -> 2 -> 3 -> 4 -> 5)")]
     public void GenerateAll()
     {
         GenerateHeights();
         if (raiseEdges) RaiseEdges();
         PaintTextures();
         ScatterTrees();
+        if (addBoundaryBlockers) GenerateBoundaryBlockers();
     }
 }
