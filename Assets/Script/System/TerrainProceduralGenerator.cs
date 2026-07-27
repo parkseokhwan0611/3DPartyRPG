@@ -22,16 +22,6 @@ public class TerrainProceduralGenerator : MonoBehaviour
     [Tooltip("생성 후 스무딩 반복 횟수 — 클수록 더 완만해짐")]
     [Range(0, 8)] public int smoothIterations = 3;
 
-    [Header("외곽 경계(산) — 지형 가장자리를 높여서 자연스러운 벽으로 사용 (선택, 기본 꺼짐)")]
-    [Tooltip("전체 생성(GenerateAll) 실행 시 이 단계를 포함할지 여부")]
-    public bool  raiseEdges         = false;
-    [Tooltip("경계 산의 최대 높이 (월드 단위, 미터) — 안쪽 언덕보다 훨씬 높게, NavMesh Max Slope를 넘길 만큼 충분히 가파르게")]
-    public float edgeMountainHeight = 25f;
-    [Tooltip("가장자리에서 이 비율만큼 안쪽까지 산이 퍼짐 (0.5 = 지형 절반까지). 진짜 끝만 올리고 싶으면 0.02~0.05처럼 작게")]
-    [Range(0.01f, 0.4f)] public float edgeBorderWidth = 0.04f;
-    [Tooltip("경계 산의 울퉁불퉁함 — 값이 클수록 더 거칠고 험준해짐")]
-    [Range(1f, 20f)] public float edgeRoughness = 8f;
-
     [Header("텍스처 페인팅 (선택 — 비워두면 건너뜀)")]
     [Tooltip("완만한 지역에 칠할 레이어 (예: 잔디)")]
     public TerrainLayer flatLayer;
@@ -137,44 +127,7 @@ public class TerrainProceduralGenerator : MonoBehaviour
         }
     }
 
-    [ContextMenu("2. 외곽 경계(산) 생성")]
-    public void RaiseEdges()
-    {
-        Cache();
-        if (_data == null) { Debug.LogWarning("[TerrainProceduralGenerator] TerrainData가 없습니다."); return; }
-
-        int res = _data.heightmapResolution;
-        float[,] heights = _data.GetHeights(0, 0, res, res);
-
-        var   rng     = new System.Random(seed + 2);
-        float offsetX = rng.Next(-100000, 100000) * 0.01f;
-        float offsetY = rng.Next(-100000, 100000) * 0.01f;
-
-        float normEdgeHeight = _data.size.y > 0f ? edgeMountainHeight / _data.size.y : 0f;
-
-        for (int y = 0; y < res; y++)
-        {
-            for (int x = 0; x < res; x++)
-            {
-                float nx = (float)x / res;
-                float ny = (float)y / res;
-
-                // 가장자리까지의 거리 (0 = 가장자리, 0.5 = 지형 정중앙) → edgeBorderWidth 기준으로 0~1 정규화
-                float distToEdge = Mathf.Min(Mathf.Min(nx, 1f - nx), Mathf.Min(ny, 1f - ny));
-                float t          = edgeBorderWidth > 0f ? Mathf.Clamp01(distToEdge / edgeBorderWidth) : 1f;
-                float edgeFactor = Mathf.SmoothStep(1f, 0f, t); // t=0(가장자리)->1, t=1(경계 밖)->0
-                if (edgeFactor <= 0f) continue;
-
-                float mountainNoise = FractalNoise(nx, ny, offsetX, offsetY, 4, 0.5f, 2f, edgeRoughness);
-                heights[y, x] = Mathf.Clamp01(heights[y, x] + edgeFactor * mountainNoise * normEdgeHeight);
-            }
-        }
-
-        _data.SetHeights(0, 0, heights);
-        Debug.Log("[TerrainProceduralGenerator] 외곽 경계(산) 생성 완료");
-    }
-
-    [ContextMenu("3. 텍스처 페인팅 (경사 기반)")]
+    [ContextMenu("2. 텍스처 페인팅 (경사 기반)")]
     public void PaintTextures()
     {
         Cache();
@@ -225,7 +178,7 @@ public class TerrainProceduralGenerator : MonoBehaviour
         return newLayers.Length - 1;
     }
 
-    [ContextMenu("4. 나무 배치 (경사 회피)")]
+    [ContextMenu("3. 나무 배치 (경사 회피)")]
     public void ScatterTrees()
     {
         Cache();
@@ -277,7 +230,7 @@ public class TerrainProceduralGenerator : MonoBehaviour
         Debug.Log($"[TerrainProceduralGenerator] 나무 {instances.Count}그루 배치 완료");
     }
 
-    [ContextMenu("5. 외곽 이동 차단 (NavMesh 통행불가 구역)")]
+    [ContextMenu("4. 외곽 이동 차단 (NavMesh 통행불가 구역)")]
     public void GenerateBoundaryBlockers()
     {
         Cache();
@@ -315,11 +268,10 @@ public class TerrainProceduralGenerator : MonoBehaviour
         modifier.area   = 1; // Not Walkable
     }
 
-    [ContextMenu("전체 생성 (1 -> 2 -> 3 -> 4 -> 5)")]
+    [ContextMenu("전체 생성 (1 -> 2 -> 3 -> 4)")]
     public void GenerateAll()
     {
         GenerateHeights();
-        if (raiseEdges) RaiseEdges();
         PaintTextures();
         ScatterTrees();
         if (addBoundaryBlockers) GenerateBoundaryBlockers();
