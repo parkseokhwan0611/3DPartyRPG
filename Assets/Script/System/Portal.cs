@@ -74,8 +74,9 @@ public class Portal : MonoBehaviour
         if (promptObject != null) promptObject.SetActive(false);
 
         // 이동 직전 상태를 체크포인트로 자동 저장 — 현재 이미 보스방 안이라면
-        // SaveManager.CanSave가 알아서 막아주므로 여기서 따로 분기할 필요 없음
-        SaveManager.instance?.Save();
+        // SaveManager.CanSave가 알아서 막아주므로 여기서 따로 분기할 필요 없음.
+        // 맵 이동마다 세이브 사운드가 반복되면 거슬리므로 자동 저장은 무음으로 처리
+        SaveManager.instance?.Save(playSound: false);
 
         // 이 포탈의 목적지 기준으로 보스방 여부 갱신 — 보스전 진입/퇴장 양쪽 다 이 한 줄로 처리됨
         if (SaveManager.instance != null)
