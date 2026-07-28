@@ -44,6 +44,8 @@ public class PartyMemberScript : MonoBehaviour
     public float stopDistance   = 2.0f;
     public float resumeDistance = 3.5f;
     public float rotationSpeed  = 8.0f;
+    [Tooltip("NavMeshAgent 가속도 — 방향 전환/출발 시 목표 속도까지 얼마나 빨리 도달하는지. 높을수록 즉각적")]
+    public float moveAcceleration = 25f;
     [Tooltip("Idle 진입 후 Following 재진입을 막는 쿨다운 (초)")]
     public float followCooldown = 0.3f;
 
@@ -79,7 +81,7 @@ public class PartyMemberScript : MonoBehaviour
 
     void Start()
     {
-        agent.acceleration    = 12f;
+        agent.acceleration    = moveAcceleration;
         agent.angularSpeed    = 1000f;
         agent.stoppingDistance = stopDistance;
         // 회전은 항상 스크립트가 전담(FaceMovementDirection / SmoothLookAt / AttackBase.LookAtTarget) —
