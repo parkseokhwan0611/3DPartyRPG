@@ -67,6 +67,20 @@ public class SkillIconUI : MonoBehaviour,
         // 드래그 후 클릭 이벤트 방지
         if (eventData.dragging) return;
         if (SkillData == null) return;
+
+        // 더블클릭 → 퀵슬롯에 자동 등록 (드래그와 동일한 결과)
+        if (eventData.clickCount >= 2)
+        {
+            if (SkillLevel <= 0) return;
+            if (SkillData.skillType == SkillData.SkillType.Passive)
+            {
+                Debug.Log("[SkillIconUI] 패시브 스킬은 퀵슬롯에 등록할 수 없습니다.");
+                return;
+            }
+            skillWindow?.quickSlotPanel?.RegisterSkillToEmptySlot(SkillData);
+            return;
+        }
+
         skillWindow.OnSkillIconClicked(SkillData, RequiredLevel);
     }
 

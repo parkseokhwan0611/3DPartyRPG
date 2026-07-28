@@ -86,6 +86,23 @@ public class QuickSlotUI : MonoBehaviour
         }
     }
 
+    // 더블클릭 등록용 — 빈 슬롯이 있으면 거기에, 없으면 첫 슬롯(Q)에 등록 (드래그와 동일한 결과)
+    public void RegisterSkillToEmptySlot(SkillData skill)
+    {
+        if (skill == null || slots == null) return;
+
+        for (int i = 0; i < slots.Length; i++)
+        {
+            if (slots[i] != null && slots[i].AssignedSkill == null)
+            {
+                RegisterSkill(i, skill);
+                return;
+            }
+        }
+
+        RegisterSkill(0, skill);
+    }
+
     // ─────────────────────────────────────────────────────────────────
     // 쿨다운 갱신
     // ─────────────────────────────────────────────────────────────────
