@@ -23,6 +23,19 @@ public class EnemyHpBar : MonoBehaviour
         // 이후 HpChange()가 Update()에서 실제 값으로 자연스럽게 보간됨
         currentHpFill = 1f;
         if (Camera.main != null) camTransform = Camera.main.transform;
+
+        if (enemyHp != null) enemyHp.OnDied += HandleDied;
+    }
+
+    void OnDestroy()
+    {
+        if (enemyHp != null) enemyHp.OnDied -= HandleDied;
+    }
+
+    // 사망 시 HP가 0으로 서서히 보간되는 것을 기다리지 않고 체력바를 즉시 감춤
+    private void HandleDied()
+    {
+        gameObject.SetActive(false);
     }
 
     void LateUpdate()
