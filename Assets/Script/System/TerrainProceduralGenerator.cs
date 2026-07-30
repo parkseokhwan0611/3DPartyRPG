@@ -22,13 +22,34 @@ public class TerrainProceduralGenerator : MonoBehaviour
     [Tooltip("생성 후 스무딩 반복 횟수 — 클수록 더 완만해짐")]
     [Range(0, 8)] public int smoothIterations = 3;
 
+    [Header("마이크로 디테일 — 스무딩 후에 얹는 아주 미세한 표면 요철 (평평함 완화용)")]
+    [Tooltip("미세 요철의 높이 폭 (월드 단위, 미터). 0이면 비활성화. 0.1~0.3 정도 권장")]
+    public float microDetailHeight = 0.15f;
+    [Tooltip("미세 요철 노이즈 스케일 — 언덕 노이즈보다 훨씬 높은 값(촘촘한 잔물결)")]
+    public float microDetailScale = 30f;
+
     [Header("텍스처 페인팅 (선택 — 비워두면 건너뜀)")]
-    [Tooltip("완만한 지역에 칠할 레이어 (예: 잔디)")]
+    [Tooltip("완만한 지역의 기본 레이어 (예: 잔디)")]
     public TerrainLayer flatLayer;
+    [Tooltip("완만한 지역에 flatLayer와 함께 섞을 추가 레이어들 (선택 — 밝은/마른/이끼 낀 잔디 등). " +
+             "비워두면 flatLayer 하나만 칠해짐")]
+    public TerrainLayer[] additionalFlatLayers;
+    [Tooltip("flatLayer들을 섞는 패치 노이즈 스케일 — 작을수록 패치가 넓어짐")]
+    public float flatBlendScale = 4f;
     [Tooltip("경사가 급한 지역에 칠할 레이어 (예: 바위/절벽)")]
     public TerrainLayer steepLayer;
     [Tooltip("이 경사도(도) 이상이면 steepLayer로 칠함")]
     public float steepAngleThreshold = 25f;
+
+    [Header("디테일(잔디 등) 페인팅 (선택 — 비워두면 건너뜀)")]
+    [Tooltip("작은 디테일 프리팹 (잔디/잡초 등) — GPU 인스턴싱으로 저렴하게 흩뿌려짐")]
+    public GameObject[] detailPrefabs;
+    [Tooltip("각 칸에 디테일이 배치될 확률 (0~1)")]
+    [Range(0f, 1f)] public float detailCoverage = 0.5f;
+    [Tooltip("배치될 때의 밀도 (칸당 개수 느낌, 1~16)")]
+    [Range(1, 16)] public int detailDensity = 6;
+    [Tooltip("이 경사도(도) 이상이면 디테일을 심지 않음")]
+    public float detailMaxSlope = 25f;
 
     [Header("외곽 이동 차단 (NavMesh 통행불가 구역 — 실제로 못 나가게 막는 투명 벽)")]
     [Tooltip("전체 생성(GenerateAll) 실행 시 이 단계를 포함할지 여부")]
@@ -84,6 +105,28 @@ public class TerrainProceduralGenerator : MonoBehaviour
 
         Smooth(heights, res, smoothIterations);
 
+        // 마이크로 디테일 — 스무딩으로 다듬어진 뒤에 얹어야 뭉개지지 않음.
+        // 0..1 노이즈를 -1..1로 재매핑해서 위/아래로 고르게 요철이 생기게 함
+        if (microDetailHeight > 0f)
+        {
+            var   microRng     = new System.Random(seed + 3);
+            float microOffsetX = microRng.Next(-100000, 100000) * 0.01f;
+            float microOffsetY = microRng.Next(-100000, 100000) * 0.01f;
+            float normMicro    = _data.size.y > 0f ? microDetailHeight / _data.size.y : 0f;
+
+            for (int y = 0; y < res; y++)
+            {
+                for (int x = 0; x < res; x++)
+                {
+                    float nx = (float)x / res;
+                    float ny = (float)y / res;
+
+                    float micro = FractalNoise(nx, ny, microOffsetX, microOffsetY, 2, 0.5f, 2f, microDetailScale);
+                    heights[y, x] = Mathf.Clamp01(heights[y, x] + (micro * 2f - 1f) * normMicro);
+                }
+            }
+        }
+
         _data.SetHeights(0, 0, heights);
         Debug.Log("[TerrainProceduralGenerator] 지형 높이 생성 완료");
     }
@@ -138,8 +181,19 @@ public class TerrainProceduralGenerator : MonoBehaviour
             return;
         }
 
-        int flatIndex  = EnsureLayer(flatLayer);
+        var flatPool = new List<TerrainLayer> { flatLayer };
+        if (additionalFlatLayers != null)
+            foreach (var l in additionalFlatLayers)
+                if (l != null) flatPool.Add(l);
+
+        int[] flatIndices = new int[flatPool.Count];
+        for (int i = 0; i < flatPool.Count; i++)
+            flatIndices[i] = EnsureLayer(flatPool[i]);
         int steepIndex = EnsureLayer(steepLayer);
+
+        var   rng     = new System.Random(seed + 4);
+        float offsetX = rng.Next(-100000, 100000) * 0.01f;
+        float offsetY = rng.Next(-100000, 100000) * 0.01f;
 
         int   w          = _data.alphamapWidth;
         int   h          = _data.alphamapHeight;
@@ -154,7 +208,23 @@ public class TerrainProceduralGenerator : MonoBehaviour
                 float ny        = (float)y / h;
                 float steepness = _data.GetSteepness(nx, ny);
 
-                int chosen = steepness >= steepAngleThreshold ? steepIndex : flatIndex;
+                int chosen;
+                if (steepness >= steepAngleThreshold)
+                {
+                    chosen = steepIndex;
+                }
+                else if (flatIndices.Length > 1)
+                {
+                    // 여러 flat 레이어를 저주파 노이즈로 패치 단위로 나눠 섞음
+                    float patch  = FractalNoise(nx, ny, offsetX, offsetY, 2, 0.5f, 2f, flatBlendScale);
+                    int   pIndex = Mathf.Clamp(Mathf.FloorToInt(patch * flatIndices.Length), 0, flatIndices.Length - 1);
+                    chosen = flatIndices[pIndex];
+                }
+                else
+                {
+                    chosen = flatIndices[0];
+                }
+
                 for (int l = 0; l < layerCount; l++)
                     alphas[y, x, l] = (l == chosen) ? 1f : 0f;
             }
@@ -178,7 +248,73 @@ public class TerrainProceduralGenerator : MonoBehaviour
         return newLayers.Length - 1;
     }
 
-    [ContextMenu("3. 나무 배치 (경사 회피)")]
+    [ContextMenu("3. 디테일(잔디) 페인팅")]
+    public void PaintDetails()
+    {
+        Cache();
+        if (_data == null) { Debug.LogWarning("[TerrainProceduralGenerator] TerrainData가 없습니다."); return; }
+
+        var validPrefabs = new List<GameObject>();
+        if (detailPrefabs != null)
+            foreach (var p in detailPrefabs)
+                if (p != null) validPrefabs.Add(p);
+
+        if (validPrefabs.Count == 0)
+        {
+            Debug.LogWarning("[TerrainProceduralGenerator] detailPrefabs가 비어있어 디테일 페인팅을 건너뜁니다.");
+            return;
+        }
+
+        int dw = _data.detailWidth;
+        int dh = _data.detailHeight;
+        if (dw <= 0 || dh <= 0)
+        {
+            Debug.LogWarning("[TerrainProceduralGenerator] Terrain의 Detail Resolution이 0입니다. Terrain 설정에서 먼저 지정해주세요.");
+            return;
+        }
+
+        var prototypes = new List<DetailPrototype>();
+        foreach (var prefab in validPrefabs)
+        {
+            prototypes.Add(new DetailPrototype
+            {
+                prototype        = prefab,
+                usePrototypeMesh = true,
+                renderMode       = DetailRenderMode.VertexLit,
+                useInstancing    = true,
+                healthyColor     = Color.white,
+                dryColor         = Color.white,
+                minWidth  = 0.8f, maxWidth  = 1.2f,
+                minHeight = 0.8f, maxHeight = 1.2f,
+                noiseSeed = seed,
+            });
+        }
+        _data.detailPrototypes = prototypes.ToArray();
+
+        for (int p = 0; p < prototypes.Count; p++)
+        {
+            var rng      = new System.Random(seed + 10 + p);
+            var layerMap = new int[dh, dw];
+
+            for (int y = 0; y < dh; y++)
+            {
+                for (int x = 0; x < dw; x++)
+                {
+                    float nx = (float)x / dw;
+                    float ny = (float)y / dh;
+
+                    if (_data.GetSteepness(nx, ny) > detailMaxSlope) continue;
+                    layerMap[y, x] = rng.NextDouble() < detailCoverage ? detailDensity : 0;
+                }
+            }
+
+            _data.SetDetailLayer(0, 0, p, layerMap);
+        }
+
+        Debug.Log($"[TerrainProceduralGenerator] 디테일 페인팅 완료 ({prototypes.Count}종류)");
+    }
+
+    [ContextMenu("4. 나무 배치 (경사 회피)")]
     public void ScatterTrees()
     {
         Cache();
@@ -230,7 +366,7 @@ public class TerrainProceduralGenerator : MonoBehaviour
         Debug.Log($"[TerrainProceduralGenerator] 나무 {instances.Count}그루 배치 완료");
     }
 
-    [ContextMenu("4. 외곽 이동 차단 (NavMesh 통행불가 구역)")]
+    [ContextMenu("5. 외곽 이동 차단 (NavMesh 통행불가 구역)")]
     public void GenerateBoundaryBlockers()
     {
         Cache();
@@ -268,11 +404,12 @@ public class TerrainProceduralGenerator : MonoBehaviour
         modifier.area   = 1; // Not Walkable
     }
 
-    [ContextMenu("전체 생성 (1 -> 2 -> 3 -> 4)")]
+    [ContextMenu("전체 생성 (1 -> 2 -> 3 -> 4 -> 5)")]
     public void GenerateAll()
     {
         GenerateHeights();
         PaintTextures();
+        PaintDetails();
         ScatterTrees();
         if (addBoundaryBlockers) GenerateBoundaryBlockers();
     }

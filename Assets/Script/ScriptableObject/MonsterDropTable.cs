@@ -21,6 +21,9 @@ public class MonsterDropTable : ScriptableObject
     [Header("드랍 연출")]
     [Tooltip("Normal / Advanced / Elite / Legendary / Mythic 순서로 5개")]
     public GameObject[] gradePrefabs = new GameObject[5];
+    [Tooltip("산개된 스폰 위치의 실제 지면 높이를 찾기 위한 레이캐스트 대상 레이어. " +
+             "비워두면(Nothing) 지면 보정 없이 기존 방식으로 동작")]
+    public LayerMask groundLayer;
     [Tooltip("ObjectPoolManager에 등록한 풀 키 (gradePrefabs와 같은 순서, 5개). " +
              "비워두면 해당 등급은 풀링 없이 기존처럼 Instantiate/Destroy로 동작")]
     public string[] gradePoolKeys = new string[5];
@@ -58,6 +61,14 @@ public class MonsterDropTable : ScriptableObject
             // 몬스터 발 위치 주변에 랜덤 산개
             Vector2 scatter = Random.insideUnitCircle * 1.5f;
             Vector3 spawnPos = position + new Vector3(scatter.x, 0.5f, scatter.y);
+
+            // 산개된 지점은 사망 위치와 지면 높이가 다를 수 있음(경사/굴곡) — 실제 지면에 다시 스냅
+            if (groundLayer.value != 0)
+            {
+                Vector3 rayOrigin = spawnPos + Vector3.up * 10f;
+                if (Physics.Raycast(rayOrigin, Vector3.down, out RaycastHit groundHit, 30f, groundLayer))
+                    spawnPos = groundHit.point + Vector3.up * 0.5f;
+            }
 
             // 풀 키가 설정돼 있으면 풀에서 꺼내고, 아니면 기존처럼 Instantiate (설정 전에도 정상 동작)
             string poolKey = gradeIndex < gradePoolKeys.Length ? gradePoolKeys[gradeIndex] : null;
