@@ -46,6 +46,7 @@ public class EnemyHp : MonoBehaviour, IDamageable
         animator = GetComponent<Animator>();
         navAgent = GetComponent<NavMeshAgent>();
         col      = GetComponent<Collider>();
+        if (col == null) col = GetComponentInChildren<Collider>(); // 콜라이더가 자식 오브젝트에 있는 프리팹도 대응
     }
 
     void Start()

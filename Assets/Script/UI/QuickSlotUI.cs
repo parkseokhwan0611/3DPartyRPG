@@ -11,6 +11,7 @@ public class QuickSlotUI : MonoBehaviour
     private QuickSlot[] slots;
     private int currentCharIndex = -1; // -1 = 리더 기준
     private SkillManager _cachedSkillManager;
+    private SkillWindowUI _cachedSkillWindow;
 
     void Awake()
     {
@@ -47,9 +48,12 @@ public class QuickSlotUI : MonoBehaviour
         if (slotIndex < 0 || slotIndex >= slots.Length) return;
 
         // 현재 스킬창에서 보고 있는 캐릭터 기준으로 등록
-        SkillWindowUI skillWindow = FindObjectOfType<SkillWindowUI>();
-        int charIndex = skillWindow != null
-            ? skillWindow.GetCurrentCharIndex()
+        // 스킬창은 평소 비활성 패널일 수 있어 매번 스캔하지 않고 최초 1회만 찾아서 캐싱
+        if (_cachedSkillWindow == null)
+            _cachedSkillWindow = FindObjectOfType<SkillWindowUI>(true);
+
+        int charIndex = _cachedSkillWindow != null
+            ? _cachedSkillWindow.GetCurrentCharIndex()
             : 0;
 
         if (PartyManager.instance == null) return;
@@ -90,6 +94,13 @@ public class QuickSlotUI : MonoBehaviour
     public void RegisterSkillToEmptySlot(SkillData skill)
     {
         if (skill == null || slots == null) return;
+
+        // 이미 등록된 슬롯이 있으면 그대로 둠 (드래그 등록과 동일하게 취급 — 다른 슬롯을 잃지 않도록)
+        for (int i = 0; i < slots.Length; i++)
+        {
+            if (slots[i] != null && slots[i].AssignedSkill == skill)
+                return;
+        }
 
         for (int i = 0; i < slots.Length; i++)
         {

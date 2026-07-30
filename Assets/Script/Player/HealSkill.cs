@@ -87,9 +87,15 @@ public class HealSkill : SkillBase
     private void ApplyHeal(CharacterStat stat, float amount, HealSkillData data)
     {
         if (data.isDotHeal)
-            StartCoroutine(DotHealRoutine(stat, amount, data.dotInterval, data.GetDotDuration(skillLevel)));
+        {
+            // PartyManager에서 코루틴 실행: 시전자(힐러)가 죽어 SetActive(false)되어도 HoT가 유지되도록
+            if (PartyManager.instance != null)
+                PartyManager.instance.StartCoroutine(DotHealRoutine(stat, amount, data.dotInterval, data.GetDotDuration(skillLevel)));
+        }
         else
+        {
             HealTarget(stat, amount);
+        }
     }
 
     private IEnumerator DotHealRoutine(CharacterStat stat, float amountPerTick, float interval, float duration)

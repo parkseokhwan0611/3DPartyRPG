@@ -7,7 +7,7 @@ public class WorldItem : MonoBehaviour
     public TextMeshPro nameLabel;
 
     private ItemInstance _item;
-    private bool _playerInRange;
+    private int _insideCount;
     private Camera _camera;
     private PoolAble _poolAble;
 
@@ -24,7 +24,7 @@ public class WorldItem : MonoBehaviour
     // 풀에서 재사용될 때마다 이전 상태(범위 체크 등)가 남아있지 않도록 초기화
     void OnEnable()
     {
-        _playerInRange = false;
+        _insideCount = 0;
     }
 
     public void Setup(ItemInstance item)
@@ -40,18 +40,18 @@ public class WorldItem : MonoBehaviour
             nameLabel.transform.rotation = _camera.transform.rotation;
 
         // F키 줍기
-        if (_playerInRange && Input.GetKeyDown(KeyCode.F))
+        if (_insideCount > 0 && Input.GetKeyDown(KeyCode.F))
             TryPickup();
     }
 
     void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Player")) _playerInRange = true;
+        if (other.CompareTag("Player")) _insideCount++;
     }
 
     void OnTriggerExit(Collider other)
     {
-        if (other.CompareTag("Player")) _playerInRange = false;
+        if (other.CompareTag("Player")) _insideCount = Mathf.Max(0, _insideCount - 1);
     }
 
     private void ApplyGradeVisuals()

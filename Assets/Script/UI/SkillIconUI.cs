@@ -81,7 +81,7 @@ public class SkillIconUI : MonoBehaviour,
             return;
         }
 
-        skillWindow.OnSkillIconClicked(SkillData, RequiredLevel);
+        skillWindow?.OnSkillIconClicked(SkillData, RequiredLevel);
     }
 
     // ─────────────────────────────────────────────────────────────────

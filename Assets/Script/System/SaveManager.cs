@@ -149,35 +149,39 @@ public class SaveManager : MonoBehaviour
 
     private IEnumerator RestorePosition(GameSaveData data)
     {
-        if (string.IsNullOrEmpty(data.sceneName) || data.partyPositions.Count == 0) yield break;
+        if (string.IsNullOrEmpty(data.sceneName)) yield break;
 
         // 씬 전환은 호출자(TitleMenuUI 등)가 담당 — 여기서는 씬이 준비될 때까지만 대기
         yield return new WaitUntil(() => SceneManager.GetActiveScene().name == data.sceneName);
         yield return null; // 오브젝트 초기화 1프레임 대기
 
         var party = PartyManager.instance?.partyMembers;
-        if (party == null) yield break;
 
-        for (int i = 0; i < party.Count && i < data.partyPositions.Count; i++)
+        // 파티 위치/카메라 복원은 partyPositions가 있을 때만 — 구버전 세이브 등으로 비어있어도
+        // 퀵슬롯/NPC재고/포션슬롯 복원은 서로 무관하므로 계속 진행해야 함
+        if (party != null && data.partyPositions.Count > 0)
         {
-            if (party[i] == null) continue;
-            Vector3 pos = data.partyPositions[i];
+            for (int i = 0; i < party.Count && i < data.partyPositions.Count; i++)
+            {
+                if (party[i] == null) continue;
+                Vector3 pos = data.partyPositions[i];
 
-            NavMeshAgent agent = party[i].GetComponent<NavMeshAgent>();
-            if (agent != null && agent.enabled && agent.isOnNavMesh)
-                agent.Warp(pos);
-            else
-                party[i].transform.position = pos;
+                NavMeshAgent agent = party[i].GetComponent<NavMeshAgent>();
+                if (agent != null && agent.enabled && agent.isOnNavMesh)
+                    agent.Warp(pos);
+                else
+                    party[i].transform.position = pos;
+            }
+
+            // 캐릭터 위치만 옮기고 카메라를 그대로 두면, 카메라가 원래 있던 곳(씬 시작 시 리더
+            // 위치)에서 로드된 위치까지 서서히 따라오면서 화면이 부자연스럽게 흐르므로 함께 순간이동.
+            // cameraPosition이 저장되기 전(구버전) 세이브 파일은 기본값 Vector3.zero이므로,
+            // 그 경우엔 화면 원점으로 튀지 않도록 방금 복원한 리더 위치로 대신 스냅
+            Vector3 camPos = data.cameraPosition != Vector3.zero
+                ? data.cameraPosition
+                : PartyManager.instance?.currentLeader?.transform.position ?? Vector3.zero;
+            PartyManager.instance?.SnapCameraToPosition(camPos);
         }
-
-        // 캐릭터 위치만 옮기고 카메라를 그대로 두면, 카메라가 원래 있던 곳(씬 시작 시 리더
-        // 위치)에서 로드된 위치까지 서서히 따라오면서 화면이 부자연스럽게 흐르므로 함께 순간이동.
-        // cameraPosition이 저장되기 전(구버전) 세이브 파일은 기본값 Vector3.zero이므로,
-        // 그 경우엔 화면 원점으로 튀지 않도록 방금 복원한 리더 위치로 대신 스냅
-        Vector3 camPos = data.cameraPosition != Vector3.zero
-            ? data.cameraPosition
-            : PartyManager.instance?.currentLeader?.transform.position ?? Vector3.zero;
-        PartyManager.instance?.SnapCameraToPosition(camPos);
 
         RestoreQuickSlots(data);
         RestoreNpcStocks(data);

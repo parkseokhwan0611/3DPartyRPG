@@ -24,9 +24,6 @@ public class ObjectPoolManager : MonoBehaviour
     [SerializeField]
     private ObjectInfo[] objectInfos = null;
 
-    // 생성할 오브젝트의 key값지정을 위한 변수
-    private string objectName;
-
     // 오브젝트풀들을 관리할 딕셔너리
     private Dictionary<string, IObjectPool<GameObject>> ojbectPoolDic = new Dictionary<string, IObjectPool<GameObject>>();
 
@@ -57,23 +54,28 @@ public class ObjectPoolManager : MonoBehaviour
 
         for (int idx = 0; idx < objectInfos.Length; idx++)
         {
-            IObjectPool<GameObject> pool = new ObjectPool<GameObject>(CreatePooledItem, OnTakeFromPool, OnReturnedToPool,
-            OnDestroyPoolObject, true, objectInfos[idx].count, objectInfos[idx].count);
+            string     name   = objectInfos[idx].objectName;
+            GameObject prefab = objectInfos[idx].perfab;
 
-            if (goDic.ContainsKey(objectInfos[idx].objectName))
+            if (goDic.ContainsKey(name))
             {
-                Debug.LogFormat("{0} 이미 등록된 오브젝트입니다.", objectInfos[idx].objectName);
+                Debug.LogFormat("{0} 이미 등록된 오브젝트입니다.", name);
                 continue;
             }
 
-            goDic.Add(objectInfos[idx].objectName, objectInfos[idx].perfab);
-            ojbectPoolDic.Add(objectInfos[idx].objectName, pool);
+            // 풀별로 이름/프리팹을 클로저로 캡처 — 재진입(풀에서 꺼낸 오브젝트의 Awake/OnEnable이
+            // 다시 GetGo()를 호출하는 경우)에도 엉뚱한 프리팹이 생성되지 않도록 공유 필드 대신 사용
+            IObjectPool<GameObject> pool = null;
+            pool = new ObjectPool<GameObject>(() => CreatePooledItem(prefab, pool), OnTakeFromPool, OnReturnedToPool,
+                OnDestroyPoolObject, true, objectInfos[idx].count, objectInfos[idx].count);
+
+            goDic.Add(name, prefab);
+            ojbectPoolDic.Add(name, pool);
 
             // 미리 오브젝트 생성 해놓기
             for (int i = 0; i < objectInfos[idx].count; i++)
             {
-                objectName = objectInfos[idx].objectName;
-                PoolAble poolAbleGo = CreatePooledItem().GetComponent<PoolAble>();
+                PoolAble poolAbleGo = CreatePooledItem(prefab, pool).GetComponent<PoolAble>();
                 poolAbleGo.Pool.Release(poolAbleGo.gameObject);
             }
         }
@@ -83,10 +85,10 @@ public class ObjectPoolManager : MonoBehaviour
     }
 
     // 생성
-    private GameObject CreatePooledItem()
+    private GameObject CreatePooledItem(GameObject prefab, IObjectPool<GameObject> pool)
     {
-        GameObject poolGo = Instantiate(goDic[objectName]);
-        poolGo.GetComponent<PoolAble>().Pool = ojbectPoolDic[objectName];
+        GameObject poolGo = Instantiate(prefab);
+        poolGo.GetComponent<PoolAble>().Pool = pool;
         return poolGo;
     }
 
@@ -110,8 +112,6 @@ public class ObjectPoolManager : MonoBehaviour
 
     public GameObject GetGo(string goName)
     {
-        objectName = goName;
-
         if (goDic.ContainsKey(goName) == false)
         {
             Debug.LogFormat("{0} 오브젝트풀에 등록되지 않은 오브젝트입니다.", goName);

@@ -60,6 +60,7 @@ public class AudioManager : MonoBehaviour
     private int sfxIndex;
 
     private readonly List<RaycastResult> _uiRaycastResults = new List<RaycastResult>();
+    private PointerEventData _uiPointerEventData;
 
     private Dictionary<string, AudioClip> bgmDict;
     private Dictionary<string, SoundEntry> sfxDict;
@@ -109,9 +110,10 @@ public class AudioManager : MonoBehaviour
         if (!Input.GetMouseButtonDown(0)) return;
         if (EventSystem.current == null) return;
 
-        var pointerData = new PointerEventData(EventSystem.current) { position = Input.mousePosition };
+        if (_uiPointerEventData == null) _uiPointerEventData = new PointerEventData(EventSystem.current);
+        _uiPointerEventData.position = Input.mousePosition;
         _uiRaycastResults.Clear();
-        EventSystem.current.RaycastAll(pointerData, _uiRaycastResults);
+        EventSystem.current.RaycastAll(_uiPointerEventData, _uiRaycastResults);
 
         foreach (var result in _uiRaycastResults)
         {

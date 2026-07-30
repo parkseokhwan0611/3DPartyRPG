@@ -37,7 +37,8 @@ public abstract class AttackBase : MonoBehaviour
     public Transform currentTarget;
     protected EnemyHp targetHealth;
     public LayerMask enemyLayer;
-    protected StatusEffectHandler statusHandler;
+    protected StatusEffectHandler statusHandler; // Enemy 전용
+    protected PartyStatusEffectHandler partyStatusHandler; // Player 전용
     private Transform _aimPoint; // currentTarget의 AimTarget 자식 (타겟 변경 시만 갱신)
 
     // ─────────────────────────────────────────────────────────────────
@@ -46,9 +47,10 @@ public abstract class AttackBase : MonoBehaviour
 
     protected virtual void Start()
     {
-        agent         = GetComponent<NavMeshAgent>();
-        anim          = GetComponent<Animator>();
-        statusHandler = GetComponent<StatusEffectHandler>();
+        agent              = GetComponent<NavMeshAgent>();
+        anim               = GetComponent<Animator>();
+        statusHandler      = GetComponent<StatusEffectHandler>();
+        partyStatusHandler = GetComponent<PartyStatusEffectHandler>();
     }
 
     protected virtual void Update()
@@ -111,6 +113,7 @@ public abstract class AttackBase : MonoBehaviour
     protected virtual void StopAndAttack()
     {
         if (statusHandler != null && statusHandler.HasDebuff(StatusEffectType.Stun)) return;
+        if (partyStatusHandler != null && partyStatusHandler.HasDebuff(StatusEffectType.Stun)) return;
         if (IsCastingSkill) return;
 
         agent.ResetPath();

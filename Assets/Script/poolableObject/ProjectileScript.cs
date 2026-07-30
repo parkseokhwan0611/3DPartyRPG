@@ -48,6 +48,7 @@ public class ProjectileScript : PoolAble
         }
 
         if (col != null) col.enabled = true;
+        if (lightSourse != null) lightSourse.enabled = true;
 
         ResetProjectile();
 
@@ -105,14 +106,14 @@ public class ProjectileScript : PoolAble
         EnemyHp enemyStat = collision.gameObject.GetComponent<EnemyHp>();
         if (enemyStat != null)
         {
-            enemyStat.TakeDamage(damage, gameObject, damageColor);
+            enemyStat.TakeDamage(damage, owner, damageColor);
             onHitCallback?.Invoke(enemyStat);
         }
         else
         {
             // EnemyHp가 없어도 IDamageable이면 데미지는 줌 (흰색)
             IDamageable target = collision.gameObject.GetComponent<IDamageable>();
-            target?.TakeDamage(damage, gameObject);
+            target?.TakeDamage(damage, owner);
         }
 
         // 2. 투사체 물리 정지

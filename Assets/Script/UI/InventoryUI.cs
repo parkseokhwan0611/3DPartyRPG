@@ -203,8 +203,12 @@ public class InventoryUI : MonoBehaviour
 
     void OnEnable()
     {
-        // 열 때는 항상 현재 리더 캐릭터로 시작
-        selectedCharIndex = GetLeaderPartyIndex();
+        // 다른 창(스탯창/스킬창)에서 골라둔 캐릭터가 있으면 그걸 이어받고,
+        // 없으면(최초 진입 등) 현재 리더로 시작 — DataManager.selectedPartyIndex는
+        // 여러 창이 공유하는 상태라 여기서 무조건 리더로 덮어쓰면 안 됨
+        selectedCharIndex = DataManager.instance != null
+            ? DataManager.instance.selectedPartyIndex
+            : GetLeaderPartyIndex();
         if (DataManager.instance != null)
             DataManager.instance.selectedPartyIndex = selectedCharIndex;
 

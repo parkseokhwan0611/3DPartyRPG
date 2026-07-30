@@ -47,7 +47,14 @@ public class CombatQuickSlotUI : MonoBehaviour
 
     void Update()
     {
-        // 쿨다운 갱신 (리더 변경 감지는 OnLeaderChanged 이벤트로 처리)
+        // OnLeaderChanged 이벤트가 (씬 전환 등 타이밍 문제로) 누락되더라도 화면이 이전
+        // 캐릭터 스킬로 고정돼버리지 않도록, 실제 리더 기준 SkillManager와 어긋나 있으면
+        // 매 프레임 자동으로 다시 동기화
+        var actualLeaderSkillManager = PartyManager.instance?.currentLeader?.GetComponent<SkillManager>();
+        if (actualLeaderSkillManager != null && actualLeaderSkillManager != currentSkillManager)
+            RefreshSlots();
+
+        // 쿨다운 갱신
         UpdateCooldowns();
     }
 

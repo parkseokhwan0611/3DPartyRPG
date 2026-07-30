@@ -11,8 +11,10 @@ public class PartyStatusEffectHandler : MonoBehaviour
     // 쉴드 수치
     public float CurrentShield { get; private set; } = 0f;
 
-    // 디버프 면역 여부
-    public bool IsDebuffImmune { get; private set; } = false;
+    // 디버프 면역 여부 — 참조 카운트 방식 (겹쳐 걸린 면역 버프 중 하나가 먼저 만료돼도
+    // 다른 면역 버프가 남아있으면 계속 면역 유지)
+    private int debuffImmuneCount = 0;
+    public bool IsDebuffImmune => debuffImmuneCount > 0;
 
     // 버프 이벤트 (UI 갱신용)
     public System.Action OnShieldChanged;
@@ -110,6 +112,12 @@ public class PartyStatusEffectHandler : MonoBehaviour
         return activeBuffs.Exists(e => IsDebuff(e.effectType));
     }
 
+    // Enemy용 StatusEffectHandler.HasDebuff와 동일한 시그니처 — AttackBase에서 공용으로 사용
+    public bool HasDebuff(StatusEffectType type)
+    {
+        return activeBuffs.Exists(e => e.effectType == type);
+    }
+
     // 사망 시 호출 — GameObject가 비활성화되면 만료 코루틴이 강제로 죽어 스탯이 복구되지 않으므로,
     // 비활성화되기 전에 활성 버프/디버프를 전부 즉시 원상복구한다.
     public void ClearAllOnDeath()
@@ -171,7 +179,7 @@ public class PartyStatusEffectHandler : MonoBehaviour
                     attackBase.attackSpeed += effect.value * multiplier;
                 break;
             case StatusEffectType.DebuffImmune:
-                IsDebuffImmune = apply;
+                debuffImmuneCount = Mathf.Max(0, debuffImmuneCount + (apply ? 1 : -1));
                 break;
 
             // 이동속도 감소 (value = 0.3 → 30% 감속)

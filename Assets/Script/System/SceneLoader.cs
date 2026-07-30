@@ -7,6 +7,7 @@ using TMPro;
 public class SceneLoader : MonoBehaviour
 {
     public static SceneLoader instance;
+    public static bool IsLoading { get; private set; }
 
     [Header("UI")]
     [SerializeField] GameObject      loadingPanel;
@@ -40,6 +41,8 @@ public class SceneLoader : MonoBehaviour
 
     public static void Load(string sceneName)
     {
+        if (IsLoading) return; // 중복 호출 방지 (로딩 중 재트리거 등)
+
         if (instance != null)
             instance.StartCoroutine(instance.LoadAsync(sceneName));
         else
@@ -48,6 +51,7 @@ public class SceneLoader : MonoBehaviour
 
     private IEnumerator LoadAsync(string sceneName)
     {
+        IsLoading = true;
         Time.timeScale = 1f;
         if (loadingPanel != null) loadingPanel.SetActive(true);
         ShowRandomTip();
@@ -77,6 +81,7 @@ public class SceneLoader : MonoBehaviour
         yield return new WaitUntil(() => op.isDone);
 
         if (loadingPanel != null) loadingPanel.SetActive(false);
+        IsLoading = false;
     }
 
     private void SetProgress(float value)

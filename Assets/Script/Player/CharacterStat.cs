@@ -343,6 +343,7 @@ public class CharacterStat : MonoBehaviour, IDamageable
 
     public void ApplyNextSkillBuff(float bonus, float duration)
     {
+        if (myStatus == null) return;
         myStatus.nextSkillDamageBonus = bonus;
         myStatus.nextSkillBonusTimer  = duration;
 
@@ -352,7 +353,7 @@ public class CharacterStat : MonoBehaviour, IDamageable
 
     public float ConsumeNextSkillBonus()
     {
-        if (myStatus.nextSkillBonusTimer <= 0f) return 0f;
+        if (myStatus == null || myStatus.nextSkillBonusTimer <= 0f) return 0f;
 
         float bonus = myStatus.nextSkillDamageBonus;
         myStatus.nextSkillDamageBonus = 0f;

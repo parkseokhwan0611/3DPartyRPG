@@ -39,6 +39,8 @@ public class SkillManager : MonoBehaviour
         attackBase   = GetComponent<AttackBase>();
         myStat       = GetComponent<CharacterStat>();
 
+        ApplySavedSlotsFromDataManager();
+
         slots[0] = CreateSkill(slotQ);
         slots[1] = CreateSkill(slotW);
         slots[2] = CreateSkill(slotE);
@@ -46,6 +48,29 @@ public class SkillManager : MonoBehaviour
 
         if (attackBase != null)
             attackBase.OnAttackExecuted += HandleAttackCount;
+    }
+
+    // PartyManager/SkillManager는 씬 로컬이라 포탈 등으로 씬이 바뀌면 파괴 후 재생성됨.
+    // DataManager(DontDestroyOnLoad)에 이전에 배정한 퀵슬롯이 남아있으면 그걸로 덮어써서
+    // 씬 전환 후에도 유지되도록 한다. 아직 한 번도 등록한 적 없으면(null) 프리팹 기본값 유지
+    private void ApplySavedSlotsFromDataManager()
+    {
+        if (DataManager.instance == null || myStat == null) return;
+
+        var saved = DataManager.instance.GetQuickSlotSave(myStat.partyIndex);
+        if (saved == null) return;
+
+        slotQ = ResolveSavedSkill(saved.slot0, slotQ);
+        slotW = ResolveSavedSkill(saved.slot1, slotW);
+        slotE = ResolveSavedSkill(saved.slot2, slotE);
+        slotR = ResolveSavedSkill(saved.slot3, slotR);
+    }
+
+    // 저장된 skillId가 비어있으면 "명시적으로 빈 슬롯"으로 취급 — 프리팹 기본값으로 되돌리지 않음
+    private SkillData ResolveSavedSkill(string skillId, SkillData fallback)
+    {
+        if (string.IsNullOrEmpty(skillId)) return null;
+        return DataManager.instance.FindSkillById(skillId) ?? fallback;
     }
 
     void Update()
@@ -420,7 +445,16 @@ public class SkillManager : MonoBehaviour
         if (index < 0 || index >= slots.Length) return;
 
         if (slots[index] != null)
+        {
+            // 실행 중(후딜 등)인 스킬을 교체하는 경우 currentSkill이 파괴될 컴포넌트를
+            // 계속 참조하지 않도록 먼저 정리
+            if (currentSkill == slots[index])
+            {
+                currentSkill.ForceStop();
+                currentSkill = null;
+            }
             Destroy(slots[index]);
+        }
 
         slots[index] = CreateSkill(newData);
 
@@ -431,6 +465,10 @@ public class SkillManager : MonoBehaviour
             case 2: slotE = newData; break;
             case 3: slotR = newData; break;
         }
+
+        // 씬 전환(포탈 이동 등) 후에도 배정이 유지되도록 DataManager에도 실시간 반영
+        if (DataManager.instance != null && myStat != null)
+            DataManager.instance.SetQuickSlotSkillId(myStat.partyIndex, index, newData?.skillId ?? "");
     }
 
     private void OnAnySkillFinished()

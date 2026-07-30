@@ -28,6 +28,28 @@ public class PotionQuickSlotManager : MonoBehaviour
             DataManager.instance.pendingAutoRegisterPotions = false;
             AutoRegisterStartingPotions();
         }
+        else
+        {
+            // PotionQuickSlotManager는 씬 로컬이라 포탈 등으로 씬이 바뀌면 파괴 후 재생성됨 —
+            // DataManager(DontDestroyOnLoad)에 남아있는 배정을 그대로 복원 (Load()로 이미
+            // 복원된 경우에도 동일한 값을 다시 등록할 뿐이라 안전)
+            RestoreSlotFromDataManager(DataManager.instance?.hpPotionSlotItemId);
+            RestoreSlotFromDataManager(DataManager.instance?.mpPotionSlotItemId);
+        }
+    }
+
+    private void RestoreSlotFromDataManager(string itemId)
+    {
+        if (string.IsNullOrEmpty(itemId) || DataManager.instance == null) return;
+
+        foreach (var item in DataManager.instance.sharedInventory.Items)
+        {
+            if (item?.data != null && item.data.itemId == itemId)
+            {
+                RegisterPotion(item);
+                return;
+            }
+        }
     }
 
     private void AutoRegisterStartingPotions()
@@ -69,12 +91,14 @@ public class PotionQuickSlotManager : MonoBehaviour
         {
             _hpSlot              = item;
             _hpCooldownRemaining = 0f;
+            if (DataManager.instance != null) DataManager.instance.hpPotionSlotItemId = item.data.itemId;
             OnHpSlotChanged?.Invoke();
         }
         else if (cd.consumableType == ConsumableType.MpPotion)
         {
             _mpSlot              = item;
             _mpCooldownRemaining = 0f;
+            if (DataManager.instance != null) DataManager.instance.mpPotionSlotItemId = item.data.itemId;
             OnMpSlotChanged?.Invoke();
         }
     }
@@ -85,12 +109,14 @@ public class PotionQuickSlotManager : MonoBehaviour
         {
             _hpSlot              = null;
             _hpCooldownRemaining = 0f;
+            if (DataManager.instance != null) DataManager.instance.hpPotionSlotItemId = "";
             OnHpSlotChanged?.Invoke();
         }
         else if (type == ConsumableType.MpPotion)
         {
             _mpSlot              = null;
             _mpCooldownRemaining = 0f;
+            if (DataManager.instance != null) DataManager.instance.mpPotionSlotItemId = "";
             OnMpSlotChanged?.Invoke();
         }
     }

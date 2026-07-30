@@ -27,6 +27,14 @@ public class MonsterSpawner : MonoBehaviour
     void OnDestroy()
     {
         if (_respawnRoutine != null) StopCoroutine(_respawnRoutine);
+
+        // 스포너가 파괴된 뒤에도 스폰해둔 몬스터가 살아있다가 나중에 죽으면 파괴된
+        // 오브젝트의 HandleMonsterDied가 호출되어 코루틴 시작 에러가 날 수 있으므로 해제
+        if (_currentMonster != null)
+        {
+            EnemyHp hp = _currentMonster.GetComponent<EnemyHp>();
+            if (hp != null) hp.OnDied -= HandleMonsterDied;
+        }
     }
 
     private void SpawnMonster()

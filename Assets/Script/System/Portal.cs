@@ -33,6 +33,14 @@ public class Portal : MonoBehaviour
         var rb = GetComponent<Rigidbody>();
         rb.isKinematic = true;
         rb.useGravity  = false;
+
+        // Collider가 없거나 Is Trigger가 꺼져 있으면 OnTriggerEnter가 아예 호출되지 않는데
+        // 콘솔에 아무 단서도 안 남아 원인 파악이 어려우므로 미리 경고
+        var col = GetComponent<Collider>();
+        if (col == null)
+            Debug.LogWarning($"[Portal] {gameObject.name}에 Collider가 없습니다. 상호작용이 동작하지 않습니다.");
+        else if (!col.isTrigger)
+            Debug.LogWarning($"[Portal] {gameObject.name}의 Collider가 Is Trigger로 설정되지 않았습니다.");
     }
 
     void Start()
@@ -44,7 +52,7 @@ public class Portal : MonoBehaviour
     void Update()
     {
         bool anyUiOpen = MenuTabUI.IsOpen || ShopUI.IsOpen || DialogueUI.IsOpen || EnhancementUI.IsOpen;
-        if (_insideCount > 0 && !anyUiOpen && Input.GetKeyDown(KeyCode.F))
+        if (_insideCount > 0 && !anyUiOpen && !SceneLoader.IsLoading && Input.GetKeyDown(KeyCode.F))
             UsePortal();
     }
 

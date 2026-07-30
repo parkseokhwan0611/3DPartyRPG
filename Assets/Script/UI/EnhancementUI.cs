@@ -187,7 +187,9 @@ public class EnhancementUI : MonoBehaviour
 
         ReturnScroll(); // 기존 주문서 먼저 반환
 
-        DataManager.instance?.sharedInventory.ConsumeItem(item, 1);
+        bool consumed = DataManager.instance != null && DataManager.instance.sharedInventory.ConsumeItem(item, 1);
+        if (!consumed) return; // 소비 실패 시 등록도 하지 않음 (상태 불일치 방지)
+
         _scroll         = item;
         _scrollBorrowed = true;
 

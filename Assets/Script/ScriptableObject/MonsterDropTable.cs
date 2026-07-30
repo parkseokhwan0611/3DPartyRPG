@@ -66,7 +66,8 @@ public class MonsterDropTable : ScriptableObject
             if (groundLayer.value != 0)
             {
                 Vector3 rayOrigin = spawnPos + Vector3.up * 10f;
-                if (Physics.Raycast(rayOrigin, Vector3.down, out RaycastHit groundHit, 30f, groundLayer))
+                // 트리거 콜라이더(WorldItem, Portal 등)는 무시 — 실제 지형만 검사
+                if (Physics.Raycast(rayOrigin, Vector3.down, out RaycastHit groundHit, 30f, groundLayer, QueryTriggerInteraction.Ignore))
                     spawnPos = groundHit.point + Vector3.up * 0.5f;
             }
 

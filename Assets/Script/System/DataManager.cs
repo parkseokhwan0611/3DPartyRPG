@@ -34,10 +34,23 @@ public class DataManager : MonoBehaviour
     // 스탯창·인벤토리창이 공유하는 선택된 파티원 인덱스
     public int selectedPartyIndex = 0;
 
+    // 실제 조작 중인 파티 리더의 partyMembers 리스트 인덱스 — PartyManager는 씬 로컬이라
+    // 포탈 등으로 씬이 바뀌면 항상 0번(리스트 첫 캐릭터)으로 리더가 초기화됨. 여기(DataManager,
+    // DontDestroyOnLoad)에 실시간으로 기록해뒀다가 새 씬 시작 시 그대로 이어받는다
+    public int currentLeaderIndex = 0;
+
     // 새 게임 시작 시 true — 게임 씬 로드 후 PotionQuickSlotManager가 시작 포션을
     // 퀵슬롯에 자동 등록하는 데 사용되고, 등록 즉시 소비(false)됨. 로드 게임은
     // 세이브된 슬롯 정보로 복원되므로 이 플래그를 쓰지 않음
     public bool pendingAutoRegisterPotions = false;
+
+    // PartyManager/SkillManager/PotionQuickSlotManager는 씬 로컬 컴포넌트라 포탈 등으로 씬이
+    // 바뀌면 파괴 후 재생성됨 — DontDestroyOnLoad인 여기(DataManager)에 실시간으로 배정을
+    // 들고 있다가 새 씬 진입 시 다시 적용한다. 아직 한 번도 등록 안 한 상태(빈 리스트)면
+    // 프리팹 기본 스킬 슬롯을 그대로 사용
+    public List<CharacterQuickSlotSave> partyQuickSlots = new List<CharacterQuickSlotSave>();
+    public string hpPotionSlotItemId = "";
+    public string mpPotionSlotItemId = "";
 
     [Header("테스트 설정")]
     [Tooltip("게임 시작 시 각 캐릭터에게 지급할 스킬 포인트")]
@@ -90,6 +103,12 @@ public class DataManager : MonoBehaviour
         partyExp           = 0;
         gold               = 0;
         selectedPartyIndex = 0;
+
+        // 새 게임에서는 퀵슬롯 배정을 비워둠 — 각 캐릭터 프리팹의 기본 슬롯을 그대로 사용
+        partyQuickSlots.Clear();
+        hpPotionSlotItemId = "";
+        mpPotionSlotItemId = "";
+        currentLeaderIndex = 0;
 
         // 시작 아이템 지급
         if (startItems != null)
@@ -216,6 +235,12 @@ public class DataManager : MonoBehaviour
         partyEquipments.Clear();
         sharedInventory = new Inventory();
 
+        // 퀵슬롯 배정 복원 — SaveManager.RestoreQuickSlots/RestorePotionSlots가 실제 SkillManager/
+        // PotionQuickSlotManager에 적용하지만, 이후 씬 전환 시에도 유지되도록 여기에도 반영
+        partyQuickSlots     = new List<CharacterQuickSlotSave>(save.quickSlots);
+        hpPotionSlotItemId  = save.hpPotionSlotItemId;
+        mpPotionSlotItemId  = save.mpPotionSlotItemId;
+
         // 캐릭터 복원
         for (int i = 0; i < baseDataList.Count && i < save.characters.Count; i++)
         {
@@ -324,6 +349,41 @@ public class DataManager : MonoBehaviour
 
     public ClassSkillTree GetSkillTree(ClassData.ClassType classType)
         => skillTrees.Find(t => t.classType == classType);
+
+    // ─────────────────────────────────────────────────────────────────
+    // 스킬 퀵슬롯 배정 (씬 전환 후에도 유지되도록 실시간 보관)
+    // ─────────────────────────────────────────────────────────────────
+
+    // partyIndex에 해당하는 저장 항목이 아직 없으면 null — 이 경우 호출측은 프리팹 기본값 유지
+    public CharacterQuickSlotSave GetQuickSlotSave(int partyIndex)
+    {
+        if (partyIndex < 0 || partyIndex >= partyQuickSlots.Count) return null;
+        return partyQuickSlots[partyIndex];
+    }
+
+    public void SetQuickSlotSkillId(int partyIndex, int slotIndex, string skillId)
+    {
+        if (partyIndex < 0) return;
+
+        // 리스트를 늘려야 할 때 사이 인덱스는 null로 채움 — 실제 빈 CharacterQuickSlotSave를
+        // 넣으면 "한 번도 안 건드림"과 "명시적으로 다 지움"을 구분 못 해서, 예를 들어
+        // 캐릭터2를 먼저 커스터마이징하면 한 번도 안 건드린 캐릭터0/1의 슬롯까지
+        // 다음 씬에서 전부 빈 슬롯으로 취급돼버리는 버그가 있었음
+        while (partyQuickSlots.Count <= partyIndex)
+            partyQuickSlots.Add(null);
+
+        if (partyQuickSlots[partyIndex] == null)
+            partyQuickSlots[partyIndex] = new CharacterQuickSlotSave();
+
+        var entry = partyQuickSlots[partyIndex];
+        switch (slotIndex)
+        {
+            case 0: entry.slot0 = skillId; break;
+            case 1: entry.slot1 = skillId; break;
+            case 2: entry.slot2 = skillId; break;
+            case 3: entry.slot3 = skillId; break;
+        }
+    }
 
     // ─────────────────────────────────────────────────────────────────
     // ID 조회 헬퍼

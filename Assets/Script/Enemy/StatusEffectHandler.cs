@@ -8,7 +8,8 @@ public class StatusEffectHandler : MonoBehaviour
     private NavMeshAgent agent;
     private Animator anim;
     private AttackBase attackBase;
-    private MonsterMeleeAttack monsterAttack;
+    private MonsterMeleeAttack monsterMeleeAttack;
+    private MonsterRangedAttack monsterRangedAttack;
 
     // 원본 수치 저장 (디버프 해제 시 정확히 복구)
     private float baseSpeed           = 0f; // Awake 시점 고정 기준 속도 — 이후 절대 덮어쓰지 않음
@@ -35,8 +36,9 @@ public class StatusEffectHandler : MonoBehaviour
     {
         agent         = GetComponent<NavMeshAgent>();
         anim          = GetComponent<Animator>();
-        attackBase    = GetComponent<AttackBase>();
-        monsterAttack = GetComponent<MonsterMeleeAttack>();
+        attackBase          = GetComponent<AttackBase>();
+        monsterMeleeAttack  = GetComponent<MonsterMeleeAttack>();
+        monsterRangedAttack = GetComponent<MonsterRangedAttack>();
         baseSpeed     = agent != null ? agent.speed : 3f;
     }
 
@@ -102,7 +104,8 @@ public class StatusEffectHandler : MonoBehaviour
             anim.SetTrigger("isStun");
         }
 
-        if (monsterAttack != null) monsterAttack.ResetAttackState();
+        if (monsterMeleeAttack  != null) monsterMeleeAttack.ResetAttackState();
+        if (monsterRangedAttack != null) monsterRangedAttack.ResetAttackState();
         if (attackBase    != null) attackBase.ForceCancelAttack();
     }
 
@@ -249,16 +252,16 @@ public class StatusEffectHandler : MonoBehaviour
 
             // ── 공격력 감소 ──
             case StatusEffectType.AtkDown:
-                if (monsterAttack == null) break;
+                if (attackBase == null) break;
                 if (apply)
                 {
-                    originalAtkDamage          = monsterAttack.attackDamage; // 원본값 저장
-                    monsterAttack.attackDamage = originalAtkDamage * (1f - effect.value);
+                    originalAtkDamage       = attackBase.attackDamage; // 원본값 저장
+                    attackBase.attackDamage = originalAtkDamage * (1f - effect.value);
                 }
                 else
                 {
-                    monsterAttack.attackDamage = originalAtkDamage; // 원본값으로 정확히 복구
-                    originalAtkDamage          = 0f;
+                    attackBase.attackDamage = originalAtkDamage; // 원본값으로 정확히 복구
+                    originalAtkDamage       = 0f;
                 }
                 break;
 

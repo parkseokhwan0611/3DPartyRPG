@@ -46,7 +46,18 @@ public class PartyManager : MonoBehaviour
     }
     void Start()
     {
-        if (partyMembers.Count > 0) ChangeLeader(0);
+        if (partyMembers.Count == 0) return;
+
+        // PartyManager는 씬 로컬이라 씬이 바뀌면 항상 0번으로 리더가 초기화되므로,
+        // DataManager(DontDestroyOnLoad)에 남아있는 이전 리더 인덱스를 이어받는다
+        int startIndex = DataManager.instance != null ? DataManager.instance.currentLeaderIndex : 0;
+        if (startIndex < 0 || startIndex >= partyMembers.Count
+            || partyMembers[startIndex].CurrentState == PartyMemberScript.MemberState.Dead)
+        {
+            startIndex = partyMembers.FindIndex(m => m.CurrentState != PartyMemberScript.MemberState.Dead);
+        }
+
+        if (startIndex >= 0) ChangeLeader(startIndex);
     }
 
     void Update()
@@ -244,28 +255,40 @@ public class PartyManager : MonoBehaviour
         // 죽은 캐릭터로는 교체 불가
         if (newLeader.CurrentState == PartyMemberScript.MemberState.Dead) return;
 
-        // 실제로 다른 리더로 바뀔 때만 사운드 재생 (게임 시작 시 최초 지정, 팔로워 사망에 따른
-        // 체인 재구성 시 재호출되는 경우는 리더가 그대로라 제외)
-        if (currentLeader != null && currentLeader != newLeader)
+        // 실제로 다른 리더로 바뀌는지 — 게임 시작 시 최초 지정은 true, 팔로워 사망에 따른
+        // 체인 재구성(RebuildChain)에서 재호출되는 경우는 리더가 그대로라 false
+        bool leaderActuallyChanged = currentLeader != newLeader;
+
+        if (currentLeader != null && leaderActuallyChanged)
             AudioManager.instance?.PlaySFX("LeaderChange");
 
         currentLeader = newLeader;
-        OnLeaderChanged?.Invoke(newLeader);
 
-        // 카메라 타겟 변경
-        if (cameraFollowTarget != null)
+        // 씬 전환 후에도 리더가 유지되도록 DataManager에도 실시간 반영
+        if (DataManager.instance != null)
+            DataManager.instance.currentLeaderIndex = index;
+
+        if (leaderActuallyChanged)
         {
-            cameraFollowTarget.SetTarget(newLeader.transform);
-            if (virtualCamera != null)
+            OnLeaderChanged?.Invoke(newLeader);
+
+            // 카메라 타겟 변경 — SetTarget은 항상 WarpTo(즉시 스냅)를 호출하므로, 리더가
+            // 실제로 바뀔 때만 실행해야 함. 그렇지 않으면 팔로워가 죽을 때마다(RebuildChain)
+            // 카메라가 리더 위치로 매번 순간이동하는 시각적 결함이 생김.
+            if (cameraFollowTarget != null)
             {
-                virtualCamera.Follow = cameraFollowTarget.transform;
-                virtualCamera.LookAt = cameraFollowTarget.transform;
+                cameraFollowTarget.SetTarget(newLeader.transform);
+                if (virtualCamera != null)
+                {
+                    virtualCamera.Follow = cameraFollowTarget.transform;
+                    virtualCamera.LookAt = cameraFollowTarget.transform;
+                }
             }
-        }
-        else if (virtualCamera != null)
-        {
-            virtualCamera.Follow = newLeader.transform;
-            virtualCamera.LookAt = newLeader.transform;
+            else if (virtualCamera != null)
+            {
+                virtualCamera.Follow = newLeader.transform;
+                virtualCamera.LookAt = newLeader.transform;
+            }
         }
 
         // 죽은 멤버 제외하고 체인 순서 생성
