@@ -15,10 +15,15 @@ public class SaveManager : MonoBehaviour
     public bool CanSave    => !isInBossRoom;
     public bool HasSaveData => File.Exists(SavePath);
 
+    // DataManager 등 다른 매니저와 같은 오브젝트에 함께 배치되는 경우가 있어, 중복 감지 시
+    // Destroy(gameObject)로 오브젝트 전체를 지우면 아직 초기화되지 않은 형제 컴포넌트까지
+    // 함께 사라질 수 있음 — 이 컴포넌트 자신만 제거한다. DontDestroyOnLoad도 다른 형제
+    // 컴포넌트에 기대지 않고 직접 호출해 어느 씬/오브젝트에 배치되든 스스로 씬 전환에서 살아남는다
     void Awake()
     {
-        if (instance == null) instance = this;
-        else Destroy(gameObject);
+        if (instance != null && instance != this) { Destroy(this); return; }
+        instance = this;
+        DontDestroyOnLoad(gameObject);
     }
 
     // ─────────────────────────────────────────────────────────────────

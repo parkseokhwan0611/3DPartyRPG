@@ -16,7 +16,11 @@ public class QuestLogUI : MonoBehaviour
     [Tooltip("스크롤뷰 안에 넣는 텍스트 하나에 줄바꿈으로 이어붙여 표시")]
     public TextMeshProUGUI historyText;
 
-    void OnEnable()
+    // OnEnable은 QuestManager.Awake()보다 먼저 실행될 수 있어(오브젝트 간 실행 순서 미보장 —
+    // QuestHudUI에서와 동일한 이유로 완전히 안전하지 않음) 구독이 조용히 누락될 수 있음.
+    // Awake는 항상 모든 Start보다 먼저 끝나는 것이 보장되므로 Start에서 한 번만 구독하고,
+    // OnEnable은 탭이 열릴 때마다 최신 상태로 갱신하는 용도로만 사용
+    void Start()
     {
         if (QuestManager.instance != null)
         {
@@ -26,7 +30,12 @@ public class QuestLogUI : MonoBehaviour
         Refresh();
     }
 
-    void OnDisable()
+    void OnEnable()
+    {
+        Refresh();
+    }
+
+    void OnDestroy()
     {
         if (QuestManager.instance != null)
         {

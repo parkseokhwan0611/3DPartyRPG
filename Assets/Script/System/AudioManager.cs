@@ -72,9 +72,12 @@ public class AudioManager : MonoBehaviour
     // 생명주기
     // ─────────────────────────────────────────────────────────────────
 
+    // DataManager 등 다른 매니저와 같은 오브젝트에 함께 배치되는 경우가 있어, 중복 감지 시
+    // Destroy(gameObject)로 오브젝트 전체를 지우면 아직 초기화되지 않은 형제 컴포넌트까지
+    // 함께 사라질 수 있음 — 이 컴포넌트 자신만 제거한다
     void Awake()
     {
-        if (instance != null && instance != this) { Destroy(gameObject); return; }
+        if (instance != null && instance != this) { Destroy(this); return; }
         instance = this;
         DontDestroyOnLoad(gameObject);
 

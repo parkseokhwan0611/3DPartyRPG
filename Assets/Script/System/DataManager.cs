@@ -74,12 +74,17 @@ public class DataManager : MonoBehaviour
 
     void Awake()
     {
-        if (instance == null)
-        {
-            instance = this;
-            DontDestroyOnLoad(gameObject);
-            InitData();
-        }
+        // 다른 싱글톤들과 달리 중복 파괴 처리가 없었음 — 씬마다 DataManager를 배치해두면
+        // 나중에 로드되는 쪽은 instance가 되지 못한 채 파괴되지 않고 살아남는 문제가 있었음.
+        // 단, 이 오브젝트에는 QuestManager/AudioManager/SaveManager처럼 진짜 DontDestroyOnLoad로
+        // 남아야 하는 컴포넌트와 PotionQuickSlotManager처럼 씬마다 새로 초기화돼야 하는 컴포넌트가
+        // 함께 붙어있을 수 있음 — Destroy(gameObject)로 오브젝트 전체를 지우면 아직 자기 차례의
+        // Awake를 실행하지 못한 형제 컴포넌트까지 함께 사라져버리므로, 이 컴포넌트 자신만 제거한다
+        if (instance != null && instance != this) { Destroy(this); return; }
+
+        instance = this;
+        DontDestroyOnLoad(gameObject);
+        InitData();
     }
 
     // ─────────────────────────────────────────────────────────────────
