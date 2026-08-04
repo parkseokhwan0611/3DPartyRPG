@@ -362929,7 +362929,7 @@ Transform:
   m_GameObject: {fileID: 1022797102}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 91.94397, y: 11.52, z: 42.25}
+  m_LocalPosition: {x: 91.94397, y: 9.384, z: 42.25}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -370105,7 +370105,7 @@ Transform:
   m_GameObject: {fileID: 1051775997}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 90.24497, y: 11.52, z: 57.698}
+  m_LocalPosition: {x: 90.24497, y: 9.728, z: 57.698}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -488297,7 +488297,7 @@ Transform:
   m_GameObject: {fileID: 1351649778}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 87.5, y: 11.52, z: 42.1}
+  m_LocalPosition: {x: 87.5, y: 9.17, z: 42.1}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -569178,6 +569178,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Rock_C
       objectReference: {fileID: 0}
+    - target: {fileID: 5947567890977887509, guid: 980abf2bb03d4814c8a8cad9fd3fa5c2,
+        type: 3}
+      propertyPath: m_Layer
+      value: 13
+      objectReference: {fileID: 0}
     - target: {fileID: 6467681233881124783, guid: 980abf2bb03d4814c8a8cad9fd3fa5c2,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -634111,6 +634116,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Rock_B
       objectReference: {fileID: 0}
+    - target: {fileID: 8643692802015410307, guid: 95421a40962a96744afebe2e44ad5a06,
+        type: 3}
+      propertyPath: m_Layer
+      value: 13
+      objectReference: {fileID: 0}
     - target: {fileID: 8988974171862786617, guid: 95421a40962a96744afebe2e44ad5a06,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -639994,6 +640004,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Rock_E
+      objectReference: {fileID: 0}
+    - target: {fileID: 4335345327989423534, guid: e8d5ba405fa890047bbf6afded7c1441,
+        type: 3}
+      propertyPath: m_Layer
+      value: 13
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -743536,6 +743551,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Rock_C
       objectReference: {fileID: 0}
+    - target: {fileID: 5947567890977887509, guid: 980abf2bb03d4814c8a8cad9fd3fa5c2,
+        type: 3}
+      propertyPath: m_Layer
+      value: 13
+      objectReference: {fileID: 0}
     - target: {fileID: 6467681233881124783, guid: 980abf2bb03d4814c8a8cad9fd3fa5c2,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -799826,10 +799846,15 @@ PrefabInstance:
       propertyPath: m_Name
       value: Portal_Forward
       objectReference: {fileID: 0}
+    - target: {fileID: 1558694104297233144, guid: 7e9c1ab8fe9818144ac5522a50787aea,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7347453802505551625, guid: 7e9c1ab8fe9818144ac5522a50787aea,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 196.63
+      value: 193.1
       objectReference: {fileID: 0}
     - target: {fileID: 7347453802505551625, guid: 7e9c1ab8fe9818144ac5522a50787aea,
         type: 3}
@@ -799839,7 +799864,7 @@ PrefabInstance:
     - target: {fileID: 7347453802505551625, guid: 7e9c1ab8fe9818144ac5522a50787aea,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 201.88
+      value: 198.2
       objectReference: {fileID: 0}
     - target: {fileID: 7347453802505551625, guid: 7e9c1ab8fe9818144ac5522a50787aea,
         type: 3}
@@ -807156,10 +807181,15 @@ PrefabInstance:
       propertyPath: m_Name
       value: Portal_Back
       objectReference: {fileID: 0}
+    - target: {fileID: 1075712664182657804, guid: 3d9c0427d76b8714ab057048ce42863b,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 8078761070689332417, guid: 3d9c0427d76b8714ab057048ce42863b,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 42.82
+      value: 46.53
       objectReference: {fileID: 0}
     - target: {fileID: 8078761070689332417, guid: 3d9c0427d76b8714ab057048ce42863b,
         type: 3}
@@ -807169,7 +807199,7 @@ PrefabInstance:
     - target: {fileID: 8078761070689332417, guid: 3d9c0427d76b8714ab057048ce42863b,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 28.51
+      value: 31.72
       objectReference: {fileID: 0}
     - target: {fileID: 8078761070689332417, guid: 3d9c0427d76b8714ab057048ce42863b,
         type: 3}
