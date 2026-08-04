@@ -471,6 +471,7 @@ public class InventoryUI : MonoBehaviour
         inv.Remove(item);
         if (prev != null) inv.TryAddItem(prev);
         equip.RecalculateStats(stat);
+        GetCharStat(selectedCharIndex)?.RaiseHpChanged();
 
         AudioManager.instance?.PlaySFX("ItemEquip");
 
@@ -492,6 +493,7 @@ public class InventoryUI : MonoBehaviour
         inv.Remove(item);
         if (prev != null) inv.TryAddItem(prev);
         charEquip.RecalculateStats(stat);
+        GetCharStat(selectedCharIndex)?.RaiseHpChanged();
 
         AudioManager.instance?.PlaySFX("ItemEquip");
 
@@ -514,12 +516,20 @@ public class InventoryUI : MonoBehaviour
         ItemInstance item = equip.Unequip(slot);
         if (item != null) inv.TryAddItem(item);
         equip.RecalculateStats(stat);
+        GetCharStat(selectedCharIndex)?.RaiseHpChanged();
 
         AudioManager.instance?.PlaySFX("ItemUnequip");
 
         CloseDetailPopup();
         RefreshEquipSlots();
         RefreshInventory();
+    }
+
+    private CharacterStat GetCharStat(int partyIndex)
+    {
+        if (PartyManager.instance == null) return null;
+        if (partyIndex < 0 || partyIndex >= PartyManager.instance.partyMembers.Count) return null;
+        return PartyManager.instance.partyMembers[partyIndex]?.GetComponent<CharacterStat>();
     }
 
     void RefreshGold()

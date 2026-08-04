@@ -67,6 +67,13 @@ public static class EnhancementSystem
 
         var statuses = DataManager.instance.partyStatuses;
         if (partyIndex < statuses.Count)
+        {
             charEquip.RecalculateStats(statuses[partyIndex]);
+
+            // 강화로 최대체력이 바뀌었을 수 있으므로 HUD 체력바도 즉시 갱신
+            var members = PartyManager.instance?.partyMembers;
+            if (members != null && partyIndex < members.Count)
+                members[partyIndex]?.GetComponent<CharacterStat>()?.RaiseHpChanged();
+        }
     }
 }

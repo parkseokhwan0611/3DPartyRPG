@@ -121,6 +121,8 @@ public class StatWindowUI : MonoBehaviour
         CharacterStatus status = GetStatus(selectedIndex);
         if (status == null || status.statPoint <= 0) return;
 
+        float oldMaxHp = status.MaxHp;
+
         status.statPoint--;
         switch (type)
         {
@@ -128,6 +130,13 @@ public class StatWindowUI : MonoBehaviour
             case StatType.Vit: status.addedVit++; break;
             case StatType.Int: status.addedInt++; break;
             case StatType.Fth: status.addedFht++; break;
+        }
+
+        // VIT로 최대체력이 오른 만큼 현재체력도 같은 폭으로 조정
+        if (type == StatType.Vit)
+        {
+            float delta = status.MaxHp - oldMaxHp;
+            if (delta != 0f) status.currentHp = Mathf.Max(0f, status.currentHp + delta);
         }
 
         // 스탯 변동 → 파티원 UI 갱신 통지

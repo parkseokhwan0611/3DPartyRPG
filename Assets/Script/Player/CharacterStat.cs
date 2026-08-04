@@ -338,7 +338,14 @@ public class CharacterStat : MonoBehaviour, IDamageable
         ShowManaAura();
     }
 
-    public void RaiseHpChanged() => OnHpChanged?.Invoke();
+    public void RaiseHpChanged()
+    {
+        OnHpChanged?.Invoke();
+
+        // 장비 해제·스탯 변화 등 전투 피격이 아닌 경로로도 현재체력이 0 이하가 될 수 있으므로,
+        // 여기서도 전투 사망과 동일하게 처리 (부활 패시브 체크 포함)
+        if (myStatus != null && myStatus.currentHp <= 0f) Die();
+    }
     public void RaiseMpChanged() => OnMpChanged?.Invoke();
 
     public void ApplyNextSkillBuff(float bonus, float duration)
@@ -413,6 +420,9 @@ public class CharacterStat : MonoBehaviour, IDamageable
     void Die()
     {
         if (myStatus == null) return;
+
+        // 이미 사망 처리된 경우 중복 호출 방지 (RaiseHpChanged가 여러 경로에서 반복 호출될 수 있음)
+        if (myMember != null && myMember.CurrentState == PartyMemberScript.MemberState.Dead) return;
 
         // Revive 패시브 체크 (쿨타임이 0이고 스킬 보유 시 부활)
         if (TryRevive()) return;

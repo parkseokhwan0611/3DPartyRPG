@@ -59,6 +59,25 @@ public class QuestHudUI : MonoBehaviour
         ReleaseMarker();
     }
 
+    // 완료 연출 코루틴이 도중에 GameObject 비활성화로 강제 중단되면 _showingCompletion이
+    // true로 영영 남아서(코루틴 끝의 리셋 코드가 실행되지 못함) 그 이후로 퀘스트가 바뀌어도
+    // HandleQuestChanged가 계속 스킵돼 패널이 다시는 갱신/숨김되지 않는 버그가 있었음 —
+    // 비활성화 시점에 확실히 정리하고, 다시 활성화될 때 최신 상태로 갱신
+    void OnDisable()
+    {
+        if (_completionCoroutine != null)
+        {
+            StopCoroutine(_completionCoroutine);
+            _completionCoroutine = null;
+        }
+        _showingCompletion = false;
+    }
+
+    void OnEnable()
+    {
+        Refresh();
+    }
+
     // OnQuestChanged는 완료 시에도 함께 발생하는데, 그때는 완료 연출 코루틴이 갱신을 대신 처리하므로
     // 연출 중에는 즉시 갱신을 건너뛴다 (안 그러면 "완료" 문구가 뜨자마자 다음 퀘스트로 덮어써짐)
     private void HandleQuestChanged()

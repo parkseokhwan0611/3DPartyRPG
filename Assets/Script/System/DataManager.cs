@@ -290,7 +290,9 @@ public class DataManager : MonoBehaviour
             inst.enhancementLevel   = entry.enhancementLevel;
             inst.enhancementBonuses = entry.enhancementBonuses ?? new System.Collections.Generic.List<OptionBonus>();
             partyEquipments[entry.characterIndex].EquipToSlot(inst, entry.slot);
-            partyEquipments[entry.characterIndex].RecalculateStats(partyStatuses[entry.characterIndex]);
+            // currentHp는 이미 세이브 파일의 최종값(saved.currentHp)으로 세팅돼 있으므로
+            // 장비 복원으로 인한 최대체력 증가분을 또 더하면 중복 반영됨 — false로 스킵
+            partyEquipments[entry.characterIndex].RecalculateStats(partyStatuses[entry.characterIndex], preserveHpDeficit: false);
         }
 
         OnDataInitialized?.Invoke();

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 /// <summary>
 /// 캐릭터 1명의 장비 슬롯 (총 8칸).
@@ -72,9 +73,16 @@ public class CharacterEquipment
     /// 장착 아이템 전체를 기준으로 CharacterStatus의 장비 보너스를 재계산.
     /// 장착/해제 시마다 호출.
     /// </summary>
-    public void RecalculateStats(CharacterStatus status)
+    /// <param name="preserveHpDeficit">
+    /// true면 이번 재계산으로 최대체력이 바뀐 만큼 현재체력도 같은 폭으로 조정(델타 유지).
+    /// 세이브 파일 복원처럼 currentHp가 이미 최종값으로 세팅돼 있는 경우엔 false로 호출해서
+    /// 장비 보너스가 중복 반영되지 않도록 해야 함.
+    /// </param>
+    public void RecalculateStats(CharacterStatus status, bool preserveHpDeficit = true)
     {
         if (status == null) return;
+
+        float oldMaxHp = status.MaxHp;
 
         // 1. 장비 보너스 전부 초기화
         status.equipStr = status.equipVit = status.equipInt = status.equipFht = 0f;
@@ -105,6 +113,14 @@ public class CharacterEquipment
             // 서브 옵션 (고정값)
             foreach (var sub in equip.subOptions)
                 ApplySubOption(status, sub);
+        }
+
+        // 3. 장비로 인해 최대체력이 바뀐 만큼 현재체력도 같은 폭으로 조정
+        if (preserveHpDeficit)
+        {
+            float delta = status.MaxHp - oldMaxHp;
+            if (delta != 0f)
+                status.currentHp = Mathf.Max(0f, status.currentHp + delta);
         }
     }
 
