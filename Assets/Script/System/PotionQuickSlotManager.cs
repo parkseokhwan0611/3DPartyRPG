@@ -36,6 +36,25 @@ public class PotionQuickSlotManager : MonoBehaviour
             RestoreSlotFromDataManager(DataManager.instance?.hpPotionSlotItemId);
             RestoreSlotFromDataManager(DataManager.instance?.mpPotionSlotItemId);
         }
+
+        // 퀘스트 보상/몬스터 드랍처럼 ShopUI를 거치지 않고 인벤토리 스택이 바뀌는 경로에서도
+        // 퀵슬롯 개수 표시가 갱신되도록, 인벤토리 변경 이벤트를 직접 구독
+        if (DataManager.instance != null)
+            DataManager.instance.sharedInventory.OnChanged += HandleInventoryChanged;
+    }
+
+    void OnDestroy()
+    {
+        if (DataManager.instance != null)
+            DataManager.instance.sharedInventory.OnChanged -= HandleInventoryChanged;
+    }
+
+    // 등록된 슬롯이 있으면 무조건 갱신 이벤트 발생 — 어떤 아이템이 바뀌었는지 몰라도
+    // stackCount 텍스트만 다시 읽어오는 가벼운 작업이라 매번 갱신해도 무해함
+    private void HandleInventoryChanged()
+    {
+        if (_hpSlot != null) OnHpSlotChanged?.Invoke();
+        if (_mpSlot != null) OnMpSlotChanged?.Invoke();
     }
 
     private void RestoreSlotFromDataManager(string itemId)

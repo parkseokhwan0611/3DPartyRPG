@@ -8,6 +8,14 @@ public class StatWindowUI : MonoBehaviour
     [Header("# 캐릭터 탭 버튼 (인덱스 순)")]
     public Button[] charTabButtons;
 
+    [Header("# 좌측 프로필 (선택 캐릭터)")]
+    public Image portraitImage;
+    [Tooltip("charTabButtons와 같은 인덱스 순서로 캐릭터 초상화 스프라이트를 등록")]
+    public Sprite[] charPortraits;
+    public Image hpBarImage;
+    public Image mpBarImage;
+    public Image expBarImage;
+
     [Header("# 스탯 포인트")]
     public TextMeshProUGUI statPointText;
 
@@ -63,10 +71,19 @@ public class StatWindowUI : MonoBehaviour
     {
         BuildStatCache();
 
+        // 스탯창은 열 때마다 항상 현재 조작 중인 리더 기준으로 시작
+        selectedIndex = GetLeaderPartyIndex();
         if (DataManager.instance != null)
-            selectedIndex = DataManager.instance.selectedPartyIndex;
+            DataManager.instance.selectedPartyIndex = selectedIndex;
 
         Refresh();
+    }
+
+    private int GetLeaderPartyIndex()
+    {
+        if (PartyManager.instance?.currentLeader == null) return 0;
+        var stat = PartyManager.instance.currentLeader.GetComponent<CharacterStat>();
+        return stat != null ? stat.partyIndex : 0;
     }
 
     private void BuildStatCache()
@@ -162,7 +179,33 @@ public class StatWindowUI : MonoBehaviour
             SetText(mpRegenText, $"마나 재생: {status.TotalMpRegen:F1} / 초");
             SetText(critText,    $"치명타 확률: {charStat.TotalCritRate * 100f:F1}%");
             SetText(cdmgText,    $"치명타 데미지: {charStat.TotalCritDamage * 100f:F1}%");
+
+            if (hpBarImage != null) hpBarImage.fillAmount = charStat.MaxHp > 0f ? charStat.Hp / charStat.MaxHp : 0f;
+            if (mpBarImage != null) mpBarImage.fillAmount = charStat.MaxMp > 0f ? charStat.Mp / charStat.MaxMp : 0f;
         }
+
+        // ── 좌측 프로필 ──
+        RefreshPortrait();
+        RefreshExpBar();
+    }
+
+    private void RefreshPortrait()
+    {
+        if (portraitImage == null || charPortraits == null) return;
+        if (selectedIndex < 0 || selectedIndex >= charPortraits.Length) return;
+
+        Sprite sprite = charPortraits[selectedIndex];
+        if (sprite != null) portraitImage.sprite = sprite;
+    }
+
+    // 경험치는 파티원 개인이 아니라 파티 전체 공유 수치 (LevelExpUI와 동일 기준)
+    private void RefreshExpBar()
+    {
+        if (expBarImage == null || DataManager.instance == null) return;
+
+        var dm = DataManager.instance;
+        int required = dm.GetRequiredExp(dm.partyLevel);
+        expBarImage.fillAmount = required > 0 ? (float)dm.partyExp / required : 0f;
     }
 
     // ─────────────────────────────────────────────────────────────────
