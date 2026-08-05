@@ -151,12 +151,13 @@ public class MinimapCaptureTool : EditorWindow
 
     private Bounds ComputeBounds()
     {
+        Bounds bounds = default;
+        bool initialized = false;
+
+        // 일반 메쉬 오브젝트
         Renderer[] renderers = boundsRoot != null
             ? boundsRoot.GetComponentsInChildren<Renderer>()
             : Object.FindObjectsOfType<Renderer>();
-
-        Bounds bounds = default;
-        bool initialized = false;
 
         foreach (var r in renderers)
         {
@@ -165,7 +166,21 @@ public class MinimapCaptureTool : EditorWindow
             else bounds.Encapsulate(r.bounds);
         }
 
-        return bounds;
+        // Unity Terrain은 Renderer 컴포넌트가 없어 위 루프에서 잡히지 않으므로 별도로 합산
+        Terrain[] terrains = boundsRoot != null
+            ? boundsRoot.GetComponentsInChildren<Terrain>()
+            : Terrain.activeTerrains;
+
+        foreach (var t in terrains)
+        {
+            if (t == null || t.terrainData == null) continue;
+            Vector3 size = t.terrainData.size;
+            var terrainBounds = new Bounds(t.transform.position + size * 0.5f, size);
+            if (!initialized) { bounds = terrainBounds; initialized = true; }
+            else bounds.Encapsulate(terrainBounds);
+        }
+
+        return initialized ? bounds : default;
     }
 
     private void SaveTexture(Texture2D tex)

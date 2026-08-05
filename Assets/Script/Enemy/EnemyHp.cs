@@ -1,9 +1,17 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
 public class EnemyHp : MonoBehaviour, IDamageable
 {
+    // 씬 내 모든 몬스터 인스턴스 — 미니맵 등이 매번 FindObjectsOfType으로 스캔하지 않도록 자체 등록
+    // (NpcInteractable.AllInstances와 동일한 패턴)
+    public static readonly List<EnemyHp> AllInstances = new List<EnemyHp>();
+
+    void OnEnable()  => AllInstances.Add(this);
+    void OnDisable() => AllInstances.Remove(this);
+
     [Header("# HP Settings")]
     public float hp;
     public float maxHp;

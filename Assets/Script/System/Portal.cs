@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
@@ -9,6 +10,13 @@ using UnityEngine;
 [RequireComponent(typeof(Rigidbody))]
 public class Portal : MonoBehaviour
 {
+    // 씬 내 모든 포탈 인스턴스 — 미니맵 등이 매번 FindObjectsOfType으로 스캔하지 않도록 자체 등록
+    // (NpcInteractable.AllInstances / EnemyHp.AllInstances와 동일한 패턴)
+    public static readonly List<Portal> AllInstances = new List<Portal>();
+
+    void OnEnable()  => AllInstances.Add(this);
+    void OnDisable() => AllInstances.Remove(this);
+
     [Header("이동 설정")]
     [Tooltip("이 포탈을 사용하면 로드할 씬 이름")]
     [SerializeField] string destinationSceneName;
