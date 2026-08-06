@@ -110,7 +110,7 @@ public class RangedAttack : AttackBase
 
         ProjectileScript proj = effect.GetComponent<ProjectileScript>();
         if (proj != null)
-            proj.SetProjectileData(damage, gameObject, OnProjectileHit, myStat.GetDamageColor(false));
+            proj.SetProjectileData(damage, gameObject, OnProjectileHit, isMagic: true);
 
         Rigidbody rb = effect.GetComponent<Rigidbody>();
         if (rb != null)

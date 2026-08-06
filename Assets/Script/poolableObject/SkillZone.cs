@@ -21,7 +21,7 @@ public class SkillZone : MonoBehaviour
     private float  activationDelay;
     private bool   hitOnce;
     private GameObject attacker;
-    private Color  damageColor;
+    private bool   isMagicDamage;
     private float  duration;
 
     private int    enemyLayer;
@@ -32,7 +32,7 @@ public class SkillZone : MonoBehaviour
     // ─────────────────────────────────────────────────────────────────
 
     public void Setup(float damage, float range, float interval, float activationDelay,
-                      bool hitOnce, GameObject attacker, Color damageColor, float duration)
+                      bool hitOnce, GameObject attacker, bool isMagicDamage, float duration)
     {
         this.damage          = damage;
         this.range           = range;
@@ -40,7 +40,7 @@ public class SkillZone : MonoBehaviour
         this.activationDelay = activationDelay;
         this.hitOnce         = hitOnce;
         this.attacker        = attacker;
-        this.damageColor     = damageColor;
+        this.isMagicDamage   = isMagicDamage;
         this.duration        = duration;
         this.enemyLayer      = LayerMask.GetMask("Enemy");
 
@@ -101,7 +101,8 @@ public class SkillZone : MonoBehaviour
         {
             EnemyHp enemyHp = _hitBuffer[i].GetComponent<EnemyHp>();
             if (enemyHp == null) continue;
-            enemyHp.TakeDamage(damage, attacker, damageColor);
+            if (isMagicDamage) enemyHp.TakeMagicDamage(damage, attacker);
+            else                enemyHp.TakeDamage(damage, attacker);
         }
     }
 

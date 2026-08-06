@@ -22,7 +22,7 @@ public class ProjectileScript : PoolAble
     public GameObject owner;
 
     private Action<EnemyHp> onHitCallback;
-    private Color damageColor = Color.white; // 직업별 데미지 텍스트 색상
+    private bool isMagicDamage = false; // 물리/마법 판정 — 맞는 대상이 알아서 방어력/마법저항력으로 경감하고 자기 색으로 표시
 
     private Coroutine disableCoroutine;
 
@@ -72,22 +72,22 @@ public class ProjectileScript : PoolAble
     // 데이터 설정
     // ─────────────────────────────────────────────────────────────────
 
-    // 콜백 없는 버전 (기존 호환용)
-    public void SetProjectileData(float dmg, GameObject attacker)
+    // 콜백 없는 버전 (기존 호환용) — isMagic 생략 시 물리로 취급
+    public void SetProjectileData(float dmg, GameObject attacker, bool isMagic = false)
     {
         damage        = dmg;
         owner         = attacker;
-        damageColor   = Color.white;
+        isMagicDamage = isMagic;
         onHitCallback = null;
     }
 
-    // 콜백 + 색상 받는 버전 (HealerAttack, RangedAttack에서 사용)
-    public void SetProjectileData(float dmg, GameObject attacker, Action<EnemyHp> hitCallback, Color color)
+    // 콜백 받는 버전 (HealerAttack, RangedAttack에서 사용)
+    public void SetProjectileData(float dmg, GameObject attacker, Action<EnemyHp> hitCallback, bool isMagic)
     {
         damage        = dmg;
         owner         = attacker;
         onHitCallback = hitCallback;
-        damageColor   = color;
+        isMagicDamage = isMagic;
     }
 
     // ─────────────────────────────────────────────────────────────────
@@ -102,18 +102,23 @@ public class ProjectileScript : PoolAble
 
     protected virtual void OnCollisionEnter(Collision collision)
     {
-        // 1. 데미지 처리 — 색상 포함해서 전달
+        // 1. 데미지 처리 — 물리/마법 여부에 따라 맞는 대상이 알아서 경감·색상 처리
         EnemyHp enemyStat = collision.gameObject.GetComponent<EnemyHp>();
         if (enemyStat != null)
         {
-            enemyStat.TakeDamage(damage, owner, damageColor);
+            if (isMagicDamage) enemyStat.TakeMagicDamage(damage, owner);
+            else                enemyStat.TakeDamage(damage, owner);
             onHitCallback?.Invoke(enemyStat);
         }
         else
         {
-            // EnemyHp가 없어도 IDamageable이면 데미지는 줌 (흰색)
+            // EnemyHp가 없어도 IDamageable이면 데미지는 줌 (예: 플레이어가 맞은 몬스터 투사체)
             IDamageable target = collision.gameObject.GetComponent<IDamageable>();
-            target?.TakeDamage(damage, owner);
+            if (target != null)
+            {
+                if (isMagicDamage) target.TakeMagicDamage(damage, owner);
+                else                target.TakeDamage(damage, owner);
+            }
         }
 
         // 2. 투사체 물리 정지

@@ -27,6 +27,9 @@ public class CharacterStat : MonoBehaviour, IDamageable
     [Header("# 마나 회복 텍스트")]
     public string manaTextPoolKey = "HealText"; // HealText 풀 재사용 (범용 +수치 텍스트)
     public Color  manaTextColor   = new Color(0.3f, 0.5f, 1f);
+    [Header("# 피격 텍스트 색상")]
+    public Color physicalDamageColor = new Color(1f, 0f, 0f);
+    public Color magicDamageColor    = new Color(0f, 0f, 1f);
     public event Action OnHpChanged;
     public event Action OnMpChanged;
     private CharacterStatus myStatus;
@@ -172,7 +175,7 @@ public class CharacterStat : MonoBehaviour, IDamageable
 
         float reduction   = TotalDef / (TotalDef + 100f);
         float finalDamage = damage * (1f - reduction);
-        ApplyDamage(finalDamage);
+        ApplyDamage(finalDamage, physicalDamageColor);
     }
 
     // 마법 데미지 (마법저항력으로 경감)
@@ -182,10 +185,10 @@ public class CharacterStat : MonoBehaviour, IDamageable
 
         float reduction   = TotalMagicRes / (TotalMagicRes + 100f);
         float finalDamage = damage * (1f - reduction);
-        ApplyDamage(finalDamage);
+        ApplyDamage(finalDamage, magicDamageColor);
     }
 
-    private void ApplyDamage(float finalDamage)
+    private void ApplyDamage(float finalDamage, Color damageColor)
     {
         if (shieldHandler != null)
             finalDamage = shieldHandler.AbsorbDamage(finalDamage);
@@ -196,7 +199,7 @@ public class CharacterStat : MonoBehaviour, IDamageable
         myStatus.RaiseHpChanged();
         OnHpChanged?.Invoke();
 
-        SpawnDamageText(finalDamage, new Color(1f, 0.55f, 0f)); // 주황색 피격 텍스트
+        SpawnDamageText(finalDamage, damageColor);
 
         if (myStatus.currentHp <= 0) Die();
     }
@@ -308,14 +311,6 @@ public class CharacterStat : MonoBehaviour, IDamageable
 
         textObj.transform.SetPositionAndRotation(spawnPos, spawnRot);
         textObj.GetComponent<DamageText>()?.Setup(damage, color, showMinus: true);
-    }
-
-    // isPhysical: true = 물리 피해 (연한 붉은색), false = 마법 피해 (연한 파란색)
-    public Color GetDamageColor(bool isPhysical)
-    {
-        return isPhysical
-            ? new Color(1f, 0f, 0f)   // 빨강
-            : new Color(0f, 0f, 1f);  // 파랑
     }
 
     public bool TryUseMp(float cost)

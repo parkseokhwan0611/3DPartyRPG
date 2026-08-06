@@ -10,6 +10,8 @@ public class MonsterRangedAttack : AttackBase
     public Transform firePoint;
     [Tooltip("애니메이션 시작 후 투사체 발사까지 딜레이 (초)")]
     public float damageDelay = 0.35f;
+    [Tooltip("체크하면 마법 피해(마법저항력으로 경감), 해제하면 물리 피해(방어력으로 경감)")]
+    public bool isMagicAttack = false;
 
     private Coroutine attackCoroutine;
     public bool IsAttacking { get; private set; } = false;
@@ -142,10 +144,10 @@ public class MonsterRangedAttack : AttackBase
             rb.angularVelocity = Vector3.zero;
         }
 
-        // TakeDamage(damage, attacker) → CharacterStat에서 방어력 경감 처리됨
+        // isMagicAttack에 따라 맞는 대상이 방어력/마법저항력으로 알아서 경감 처리
         ProjectileScript proj = projectile.GetComponent<ProjectileScript>();
         if (proj != null)
-            proj.SetProjectileData(attackDamage, gameObject);
+            proj.SetProjectileData(attackDamage, gameObject, isMagicAttack);
     }
 
     public override void OnHit() { }

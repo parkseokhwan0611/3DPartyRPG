@@ -17,6 +17,16 @@ public class EnemyHp : MonoBehaviour, IDamageable
     public float maxHp;
     public bool isDead = false;
 
+    [Header("# 방어 스탯")]
+    [Tooltip("물리 피해 경감에 사용 (경감율 = def / (def + 100))")]
+    public float def = 0f;
+    [Tooltip("마법 피해 경감에 사용 (경감율 = magicRes / (magicRes + 100))")]
+    public float magicRes = 0f;
+
+    [Header("# 피격 텍스트 색상")]
+    public Color physicalDamageColor = new Color(1f, 0f, 0f);
+    public Color magicDamageColor    = new Color(0f, 0f, 1f);
+
     [Header("# References")]
     public string enemyName;
     [Tooltip("퀘스트(몬스터 처치)에서 몬스터 종류를 구분하는 고유 ID. 같은 종류 몬스터는 같은 값 사용")]
@@ -66,17 +76,34 @@ public class EnemyHp : MonoBehaviour, IDamageable
     // IDamageable 구현
     // ─────────────────────────────────────────────────────────────────
 
-    public void TakeDamage(float damage, GameObject attacker)
-    {
-        TakeDamage(damage, attacker, Color.white); // 기존 호환용
-    }
+    // 물리 피해 (방어력으로 경감)
+    public void TakeDamage(float damage, GameObject attacker) => TakeDamage(damage, attacker, physicalDamageColor);
 
     public void TakeDamage(float damage, GameObject attacker, Color damageColor)
     {
         if (isDead) return;
 
-        hp = Mathf.Clamp(hp - damage, 0, maxHp);
-        SpawnDamageText(damage, damageColor); // 색상 전달
+        float reduction   = def / (def + 100f);
+        float finalDamage = damage * (1f - reduction);
+        ApplyDamage(finalDamage, damageColor);
+    }
+
+    // 마법 피해 (마법저항력으로 경감)
+    public void TakeMagicDamage(float damage, GameObject attacker) => TakeMagicDamage(damage, attacker, magicDamageColor);
+
+    public void TakeMagicDamage(float damage, GameObject attacker, Color damageColor)
+    {
+        if (isDead) return;
+
+        float reduction   = magicRes / (magicRes + 100f);
+        float finalDamage = damage * (1f - reduction);
+        ApplyDamage(finalDamage, damageColor);
+    }
+
+    private void ApplyDamage(float finalDamage, Color damageColor)
+    {
+        hp = Mathf.Clamp(hp - finalDamage, 0, maxHp);
+        SpawnDamageText(finalDamage, damageColor);
         OnHpChanged?.Invoke(hp, maxHp);
         if (hp <= 0) Die();
     }

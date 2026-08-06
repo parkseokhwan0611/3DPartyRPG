@@ -113,7 +113,9 @@ public class DamageSkill : SkillBase
         if (enemyHp == null) return;
 
         float comboBonus = myStat.ConsumeNextSkillBonus();
-        enemyHp.TakeDamage(CalculateDamage(data, comboBonus), gameObject, myStat.GetDamageColor(!data.useAp));
+        float damage = CalculateDamage(data, comboBonus);
+        if (data.useAp) enemyHp.TakeMagicDamage(damage, gameObject);
+        else             enemyHp.TakeDamage(damage, gameObject);
         ApplyOnHitDebuffs(data, target);
     }
 
@@ -134,7 +136,9 @@ public class DamageSkill : SkillBase
             EnemyHp enemyHp = _hitBuffer[i].GetComponent<EnemyHp>();
             if (enemyHp == null) continue;
 
-            enemyHp.TakeDamage(CalculateDamage(data, comboBonus), gameObject, myStat.GetDamageColor(!data.useAp));
+            float damage = CalculateDamage(data, comboBonus);
+            if (data.useAp) enemyHp.TakeMagicDamage(damage, gameObject);
+            else             enemyHp.TakeDamage(damage, gameObject);
             ApplyOnHitDebuffs(data, _hitBuffer[i].transform);
         }
     }
@@ -221,7 +225,7 @@ public class DamageSkill : SkillBase
             float damage = CalculateDamage(data, comboBonus);
             float range  = data.GetRange(skillLevel);
             zone.Setup(damage, range, data.zoneDamageInterval, data.zoneActivationDelay,
-                       data.zoneHitOnce, gameObject, myStat.GetDamageColor(!data.useAp), data.zoneDuration);
+                       data.zoneHitOnce, gameObject, data.useAp, data.zoneDuration);
         }
         else
         {

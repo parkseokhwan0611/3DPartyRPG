@@ -16,13 +16,14 @@ public class GrenadeProjectile : PoolAble
     private float   _explosionRadius;
     private LayerMask _targetLayer;
     private GameObject _owner;
+    private bool _isMagicDamage;
     private float _elapsed;
     private bool  _launched;
 
     private static readonly Collider[] _hitBuffer = new Collider[16];
 
     public void Launch(Vector3 start, Vector3 landingPos, float duration, float arcHeight,
-        float damage, float explosionRadius, LayerMask targetLayer, GameObject owner)
+        float damage, float explosionRadius, LayerMask targetLayer, GameObject owner, bool isMagicDamage = false)
     {
         _start           = start;
         _landing         = landingPos;
@@ -32,6 +33,7 @@ public class GrenadeProjectile : PoolAble
         _explosionRadius = explosionRadius;
         _targetLayer     = targetLayer;
         _owner           = owner;
+        _isMagicDamage   = isMagicDamage;
         _elapsed         = 0f;
         _launched        = true;
 
@@ -71,7 +73,10 @@ public class GrenadeProjectile : PoolAble
         for (int i = 0; i < hitCount; i++)
         {
             IDamageable damageable = _hitBuffer[i].GetComponent<IDamageable>();
-            damageable?.TakeDamage(_damage, _owner);
+            if (damageable == null) continue;
+
+            if (_isMagicDamage) damageable.TakeMagicDamage(_damage, _owner);
+            else                 damageable.TakeDamage(_damage, _owner);
         }
 
         ReleaseObject();

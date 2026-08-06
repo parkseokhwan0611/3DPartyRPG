@@ -65,7 +65,6 @@ public class MeleeAttack : AttackBase
         }
 
         float damage = myStat.TotalAtk * (1f + myStat.PhysDmgBonus);
-        Color damageColor = myStat.GetDamageColor(true); // 근접 = 물리 피해
 
         if (Random.value < myStat.TotalCritRate)
         {
@@ -82,7 +81,7 @@ public class MeleeAttack : AttackBase
             var enemyStat = _hitBuffer[i].GetComponent<EnemyHp>();
 
             if (enemyStat != null)
-                enemyStat.TakeDamage(damage, gameObject, damageColor); // 색상 전달
+                enemyStat.TakeDamage(damage, gameObject); // 근접 = 물리 피해
         }
     }
     private void SpawnHitEffect(Vector3 pos)

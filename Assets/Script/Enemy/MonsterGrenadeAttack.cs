@@ -22,6 +22,8 @@ public class MonsterGrenadeAttack : AttackBase
     [Tooltip("착지 지점의 실제 지면 높이를 찾기 위한 레이캐스트 대상 레이어. " +
              "비워두면(Nothing) 보정 없이 타겟의 조준점 높이 그대로 사용 (MonsterDropTable과 동일한 방식)")]
     public LayerMask groundLayer;
+    [Tooltip("체크하면 마법 피해(마법저항력으로 경감), 해제하면 물리 피해(방어력으로 경감)")]
+    public bool isMagicAttack = false;
 
     private Coroutine attackCoroutine;
     public bool IsAttacking { get; private set; } = false;
@@ -155,7 +157,7 @@ public class MonsterGrenadeAttack : AttackBase
             return;
         }
 
-        grenade.Launch(spawnPos, landingPos, flightDuration, arcHeight, attackDamage, explosionRadius, enemyLayer, gameObject);
+        grenade.Launch(spawnPos, landingPos, flightDuration, arcHeight, attackDamage, explosionRadius, enemyLayer, gameObject, isMagicAttack);
     }
 
     public override void OnHit() { }

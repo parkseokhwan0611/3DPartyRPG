@@ -806304,6 +806304,8 @@ MonoBehaviour:
   manaAuraDuration: 1.5
   manaTextPoolKey: PlayerHealText
   manaTextColor: {r: 0.3, g: 0.5, b: 1, a: 1}
+  physicalDamageColor: {r: 1, g: 0.4713461, b: 0, a: 1}
+  magicDamageColor: {r: 0.6833925, g: 0, b: 1, a: 1}
   partyIndex: 2
 --- !u!114 &5657494931139571585
 MonoBehaviour:
@@ -808375,6 +808377,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1945803267362582713, guid: 88872af39fc031c4f8f4457cb27bc779,
         type: 3}
+      propertyPath: isMagicAttack
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1945803267362582713, guid: 88872af39fc031c4f8f4457cb27bc779,
+        type: 3}
       propertyPath: explosionRadius
       value: 1.5
       objectReference: {fileID: 0}
@@ -808573,6 +808580,8 @@ MonoBehaviour:
   manaAuraDuration: 1.5
   manaTextPoolKey: PlayerHealText
   manaTextColor: {r: 0.3, g: 0.5, b: 1, a: 1}
+  physicalDamageColor: {r: 1, g: 0.4713461, b: 0, a: 1}
+  magicDamageColor: {r: 0.6833925, g: 0, b: 1, a: 1}
   partyIndex: 0
 --- !u!114 &7233793141381228966
 MonoBehaviour:
@@ -810145,6 +810154,8 @@ MonoBehaviour:
   manaAuraDuration: 1.5
   manaTextPoolKey: PlayerHealText
   manaTextColor: {r: 0.3, g: 0.5, b: 1, a: 1}
+  physicalDamageColor: {r: 1, g: 0.4713461, b: 0, a: 1}
+  magicDamageColor: {r: 0.6833925, g: 0, b: 1, a: 1}
   partyIndex: 1
 --- !u!1 &8765942760581142733
 GameObject:

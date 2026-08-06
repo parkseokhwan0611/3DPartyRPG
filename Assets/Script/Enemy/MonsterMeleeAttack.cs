@@ -8,6 +8,8 @@ public class MonsterMeleeAttack : AttackBase
     [Header("근접 공격 판정 설정")]
     public float hitRadius = 1.5f;
     public float hitOffset = 1.0f;
+    [Tooltip("체크하면 마법 피해(마법저항력으로 경감), 해제하면 물리 피해(방어력으로 경감)")]
+    public bool isMagicAttack = false;
 
     [Header("타이밍 설정 (초 단위)")]
     public float damageDelay = 0.33f;
@@ -123,8 +125,10 @@ public class MonsterMeleeAttack : AttackBase
         for (int i = 0; i < hitCount; i++)
         {
             IDamageable damageable = _hitBuffer[i].GetComponent<IDamageable>();
-            if (damageable != null)
-                damageable.TakeDamage(attackDamage, gameObject);
+            if (damageable == null) continue;
+
+            if (isMagicAttack) damageable.TakeMagicDamage(attackDamage, gameObject);
+            else                damageable.TakeDamage(attackDamage, gameObject);
         }
     }
 
