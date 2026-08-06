@@ -603346,6 +603346,14 @@ MonoBehaviour:
   - objectName: SkeletonArrow
     perfab: {fileID: 578519138604507454, guid: c6a106962d5c5d847bf3e7a9281cf42f, type: 3}
     count: 10
+  - objectName: GoblinGrenade
+    perfab: {fileID: 5374478776143434586, guid: 65eb11be821dcf448bbe36854a013c95,
+      type: 3}
+    count: 10
+  - objectName: GrenadeExplosion
+    perfab: {fileID: 2399505414507422832, guid: 922d1ba19564df544b86a36bc65163d1,
+      type: 3}
+    count: 10
 --- !u!4 &1609027936
 Transform:
   m_ObjectHideFlags: 0
@@ -808307,6 +808315,89 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!1001 &7135653299748206147
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 1158843612016312719, guid: 88872af39fc031c4f8f4457cb27bc779,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 75.57
+      objectReference: {fileID: 0}
+    - target: {fileID: 1158843612016312719, guid: 88872af39fc031c4f8f4457cb27bc779,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 10.04422
+      objectReference: {fileID: 0}
+    - target: {fileID: 1158843612016312719, guid: 88872af39fc031c4f8f4457cb27bc779,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 55.97
+      objectReference: {fileID: 0}
+    - target: {fileID: 1158843612016312719, guid: 88872af39fc031c4f8f4457cb27bc779,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1158843612016312719, guid: 88872af39fc031c4f8f4457cb27bc779,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1158843612016312719, guid: 88872af39fc031c4f8f4457cb27bc779,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1158843612016312719, guid: 88872af39fc031c4f8f4457cb27bc779,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1158843612016312719, guid: 88872af39fc031c4f8f4457cb27bc779,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1158843612016312719, guid: 88872af39fc031c4f8f4457cb27bc779,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1158843612016312719, guid: 88872af39fc031c4f8f4457cb27bc779,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1945803267362582713, guid: 88872af39fc031c4f8f4457cb27bc779,
+        type: 3}
+      propertyPath: explosionRadius
+      value: 1.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 1945803267362582713, guid: 88872af39fc031c4f8f4457cb27bc779,
+        type: 3}
+      propertyPath: groundLayer.m_Bits
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 5891698071778192486, guid: 88872af39fc031c4f8f4457cb27bc779,
+        type: 3}
+      propertyPath: m_Name
+      value: GoblinMechanic
+      objectReference: {fileID: 0}
+    - target: {fileID: 6438341910515187914, guid: 88872af39fc031c4f8f4457cb27bc779,
+        type: 3}
+      propertyPath: m_Controller
+      value: 
+      objectReference: {fileID: 9100000, guid: 4eff26653c342bd49a54f594591faee0, type: 2}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 88872af39fc031c4f8f4457cb27bc779, type: 3}
 --- !u!1 &7146766479367016070
 GameObject:
   m_ObjectHideFlags: 0
@@ -810440,3 +810531,4 @@ SceneRoots:
   - {fileID: 148326038879753676}
   - {fileID: 969255966}
   - {fileID: 115505883}
+  - {fileID: 7135653299748206147}
