@@ -1938,7 +1938,7 @@ Animator:
   m_GameObject: {fileID: 5891698071778192486}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 22100000, guid: 00f1c4586308f5c47acc8c533b136581, type: 2}
+  m_Controller: {fileID: 9100000, guid: 4eff26653c342bd49a54f594591faee0, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -1966,7 +1966,7 @@ MonoBehaviour:
   navAgent: {fileID: 2570099937201112879}
   chaseDistance: 10
   targetSwitchThreshold: 1
-  navSpeed: 3
+  navSpeed: 2
   aggroDecayRate: 5
   aggroThreshold: 10
   wanderRadius: 5
@@ -1984,7 +1984,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4ed7bdeb58c5bf84ea89a3e46de426f6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  attackDamage: 10
+  attackDamage: 50
   attackRange: 6
   attackSpeed: 1
   attackDuration: 1
@@ -1997,10 +1997,11 @@ MonoBehaviour:
   damageDelay: 0.35
   flightDuration: 0.8
   arcHeight: 3
-  explosionRadius: 2.5
+  explosionRadius: 1.5
   groundLayer:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 8
+  isMagicAttack: 1
 --- !u!114 &4738244975205780496
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2016,7 +2017,11 @@ MonoBehaviour:
   hp: 500
   maxHp: 500
   isDead: 0
-  enemyName: "\uACE0\uBE14\uB9B0 \uD3ED\uD0C4\uBCD1"
+  def: 3
+  magicRes: 3
+  physicalDamageColor: {r: 1, g: 0, b: 0, a: 1}
+  magicDamageColor: {r: 0, g: 0, b: 1, a: 1}
+  enemyName: "\uACE0\uBE14\uB9B0 \uD3ED\uD0C4\uBCD1 (Lv.3)"
   monsterId: GoblinMechanic
   damageTextPoolKey: NormalDamageText
   hudPos: {fileID: 7310851803670456197}

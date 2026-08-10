@@ -2835,7 +2835,7 @@ MonoBehaviour:
   navAgent: {fileID: 7954425702217469426}
   chaseDistance: 10
   targetSwitchThreshold: 1
-  navSpeed: 1
+  navSpeed: 2
   aggroDecayRate: 5
   aggroThreshold: 10
   wanderRadius: 5
@@ -2856,13 +2856,14 @@ MonoBehaviour:
   attackDamage: 50
   attackRange: 1.5
   attackSpeed: 1
-  attackDuration: 1.8
+  attackDuration: 1.5
   currentTarget: {fileID: 0}
   enemyLayer:
     serializedVersion: 2
     m_Bits: 64
-  hitRadius: 1.2
+  hitRadius: 1.5
   hitOffset: 1
+  isMagicAttack: 0
   damageDelay: 0.7
 --- !u!114 &811392039888150760
 MonoBehaviour:
@@ -2879,7 +2880,11 @@ MonoBehaviour:
   hp: 400
   maxHp: 400
   isDead: 0
-  enemyName: "\uACE0\uBE14\uB9B0 \uC804\uC0AC (Lv.1)"
+  def: 5
+  magicRes: 5
+  physicalDamageColor: {r: 1, g: 0, b: 0, a: 1}
+  magicDamageColor: {r: 0, g: 0, b: 1, a: 1}
+  enemyName: "\uACE0\uBE14\uB9B0 \uB3C4\uB451 (Lv.1)"
   monsterId: GoblinThief
   damageTextPoolKey: NormalDamageText
   hudPos: {fileID: 5511221066833110898}
