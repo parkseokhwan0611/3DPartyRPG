@@ -49,6 +49,12 @@ public class PartyMemberScript : MonoBehaviour
     [Tooltip("Idle 진입 후 Following 재진입을 막는 쿨다운 (초)")]
     public float followCooldown = 0.3f;
 
+    [Header("이동 속도 (역할별 고정값)")]
+    [Tooltip("리더일 때 이동 속도. 클래스별 스탯이 아닌 이 값으로 고정 — 팔로워가 계속 따라올 수 있는 속도로 맞춤")]
+    public float leaderMoveSpeed   = 4f;
+    [Tooltip("팔로워일 때 이동 속도")]
+    public float followerMoveSpeed = 2f;
+
     private float _followCooldownTimer = 0f;
     private float _walkAnimTimer       = 0f;
     private const float WALK_ANIM_DELAY = 0.12f;
@@ -105,7 +111,11 @@ public class PartyMemberScript : MonoBehaviour
     {
         if (CurrentState == MemberState.Dead) return;
 
-        if (statComp != null) agent.speed = statComp.TotalMoveSpeed;
+        // 이동 속도는 클래스 스탯이 아닌 리더/팔로워 역할 고정값 기준 — 슬로우/헤이스트 같은
+        // 버프/디버프 배율(MoveSpeedMultiplier)만 스탯에서 반영
+        float baseSpeed = isLeader ? leaderMoveSpeed : followerMoveSpeed;
+        float speedMultiplier = statComp != null ? statComp.MoveSpeedMultiplier : 1f;
+        agent.speed = baseSpeed * speedMultiplier;
 
         UpdateAnimation();
 
@@ -268,11 +278,11 @@ public class PartyMemberScript : MonoBehaviour
         if (CurrentState == MemberState.Following)
         {
             Vector3 dest = targetToFollow.position;
-            float approachZoneSqr = stopDistance * 1.5f * (stopDistance * 1.5f);
 
-            // 정지 거리 1.5배 이내에 들어오면 목표 재설정 중단 — 도착 직전 경로 재계산으로 인한 빙빙돌기 방지
-            if (sqrDist >= approachZoneSqr &&
-                (_lastFollowDestination - dest).sqrMagnitude > FOLLOW_DEST_THRESHOLD * FOLLOW_DEST_THRESHOLD)
+            // 리더가 팔로워보다 빠르면 목표 지점이 계속 낡아버려서(멈칫멈칫 원인) — 거리 상관없이
+            // 목적지가 실제로 움직였을 때(FOLLOW_DEST_THRESHOLD 이상)마다 계속 갱신한다.
+            // 미세한 흔들림으로 인한 반복 재경로는 이 임계값 체크만으로 충분히 막힌다
+            if ((_lastFollowDestination - dest).sqrMagnitude > FOLLOW_DEST_THRESHOLD * FOLLOW_DEST_THRESHOLD)
             {
                 agent.SetDestination(dest);
                 _lastFollowDestination = dest;

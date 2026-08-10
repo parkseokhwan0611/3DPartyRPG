@@ -805275,6 +805275,7 @@ GameObject:
   - component: {fileID: 7233793141381228963}
   - component: {fileID: 7233793141381228962}
   - component: {fileID: 7233793141381228961}
+  - component: {fileID: 7233793141381228968}
   m_Layer: 6
   m_Name: Tanker
   m_TagString: Player
@@ -806317,6 +806318,7 @@ GameObject:
   - component: {fileID: 5657494931139571589}
   - component: {fileID: 5657494931139571588}
   - component: {fileID: 5657494931139571587}
+  - component: {fileID: 5657494931139571591}
   m_Layer: 6
   m_Name: Healer
   m_TagString: Player
@@ -806992,6 +806994,8 @@ MonoBehaviour:
   rotationSpeed: 8
   moveAcceleration: 40
   followCooldown: 0.3
+  leaderMoveSpeed: 4
+  followerMoveSpeed: 4
 --- !u!136 &5657494931139571587
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -807025,7 +807029,7 @@ NavMeshAgent:
   m_Enabled: 1
   m_AgentTypeID: 0
   m_Radius: 0.5
-  m_Speed: 3
+  m_Speed: 2
   m_Acceleration: 12
   avoidancePriority: 0
   m_AngularSpeed: 800
@@ -807066,6 +807070,18 @@ MonoBehaviour:
   slotE: {fileID: 0}
   slotR: {fileID: 0}
   attackPerSkill: 2
+--- !u!114 &5657494931139571591
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5028450432697365957}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2362d34b14148dd488a9d1208ad3c2b1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!4 &5661406630874647234
 Transform:
   m_ObjectHideFlags: 0
@@ -809186,6 +809202,20 @@ MonoBehaviour:
   rotationSpeed: 8
   moveAcceleration: 40
   followCooldown: 0.3
+  leaderMoveSpeed: 4
+  followerMoveSpeed: 4
+--- !u!114 &7233793141381228968
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4163688842649594208}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2362d34b14148dd488a9d1208ad3c2b1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &7258119023110856540
 GameObject:
   m_ObjectHideFlags: 0
@@ -810164,6 +810194,7 @@ GameObject:
   - component: {fileID: 8735694563876352236}
   - component: {fileID: 8735694563876352235}
   - component: {fileID: 8735694563876352234}
+  - component: {fileID: 8735694563876352239}
   m_Layer: 6
   m_Name: Dealer
   m_TagString: Player
@@ -810605,6 +810636,8 @@ MonoBehaviour:
   rotationSpeed: 8
   moveAcceleration: 40
   followCooldown: 0.3
+  leaderMoveSpeed: 4
+  followerMoveSpeed: 4
 --- !u!136 &8735694563876352234
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -810638,7 +810671,7 @@ NavMeshAgent:
   m_Enabled: 1
   m_AgentTypeID: 0
   m_Radius: 0.5
-  m_Speed: 3
+  m_Speed: 2
   m_Acceleration: 12
   avoidancePriority: 0
   m_AngularSpeed: 800
@@ -810713,6 +810746,18 @@ MonoBehaviour:
   physicalDamageColor: {r: 1, g: 0.4713461, b: 0, a: 1}
   magicDamageColor: {r: 0.6833925, g: 0, b: 1, a: 1}
   partyIndex: 1
+--- !u!114 &8735694563876352239
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8246296803559434845}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2362d34b14148dd488a9d1208ad3c2b1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &8765942760581142733
 GameObject:
   m_ObjectHideFlags: 0
