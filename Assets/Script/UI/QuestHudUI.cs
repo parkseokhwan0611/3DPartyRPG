@@ -15,7 +15,8 @@ public class QuestHudUI : MonoBehaviour
     [Tooltip("ObjectPoolManager에 등록한 마커 풀 키. PoolableObject(자동 반납형)가 아니라 " +
              "PoolAble만 붙은 프리팹이어야 함 — 퀘스트가 끝날 때까지 계속 떠있어야 하므로")]
     public string markerPoolKey = "QuestMarker";
-    public float  markerHeightOffset = 2.2f;
+    [Tooltip("NPC 발밑 기준으로 마커를 띄우는 높이 (지면에 파묻히지 않을 정도로만)")]
+    public float  markerHeightOffset = 0.3f;
 
     [Header("# 퀘스트 완료 연출")]
     [Tooltip("퀘스트 완료 문구를 보여줄 시간(초). 이 시간이 지나면 다음 퀘스트를 표시")]
