@@ -15,6 +15,9 @@ public class StatWindowUI : MonoBehaviour
     public Image hpBarImage;
     public Image mpBarImage;
     public Image expBarImage;
+    public TextMeshProUGUI hpBarValueText;
+    public TextMeshProUGUI mpBarValueText;
+    public TextMeshProUGUI expBarValueText;
 
     [Header("# 스탯 포인트")]
     public TextMeshProUGUI statPointText;
@@ -191,6 +194,8 @@ public class StatWindowUI : MonoBehaviour
 
             if (hpBarImage != null) hpBarImage.fillAmount = charStat.MaxHp > 0f ? charStat.Hp / charStat.MaxHp : 0f;
             if (mpBarImage != null) mpBarImage.fillAmount = charStat.MaxMp > 0f ? charStat.Mp / charStat.MaxMp : 0f;
+            SetText(hpBarValueText, $"{charStat.Hp:F0} / {charStat.MaxHp:F0}");
+            SetText(mpBarValueText, $"{charStat.Mp:F0} / {charStat.MaxMp:F0}");
         }
 
         // ── 좌측 프로필 ──
@@ -215,6 +220,7 @@ public class StatWindowUI : MonoBehaviour
         var dm = DataManager.instance;
         int required = dm.GetRequiredExp(dm.partyLevel);
         expBarImage.fillAmount = required > 0 ? (float)dm.partyExp / required : 0f;
+        SetText(expBarValueText, $"{dm.partyExp} / {required}");
     }
 
     // ─────────────────────────────────────────────────────────────────

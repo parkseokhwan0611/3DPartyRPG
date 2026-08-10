@@ -311,11 +311,18 @@ public class DataManager : MonoBehaviour
     {
         partyExp += (int)exp;
 
+        // 한 번에 여러 레벨을 올려도(대량 경험치 획득 등) 사운드/이펙트는 한 번만 재생
+        bool leveledUp = false;
         while (partyExp >= GetRequiredExp(partyLevel))
         {
             partyExp -= GetRequiredExp(partyLevel);
             partyLevel++;
             LevelUpAllMembers();
+            leveledUp = true;
+        }
+
+        if (leveledUp)
+        {
             AudioManager.instance?.PlaySFX("LevelUp");
             OnLevelUp?.Invoke();
         }
@@ -332,7 +339,12 @@ public class DataManager : MonoBehaviour
         }
     }
 
-    public int GetRequiredExp(int level) => level * 100;
+    [Header("경험치 계산식")]
+    [Tooltip("필요 경험치 = baseExp + expGrowthRate * level^2")]
+    public int   baseExp       = 50;
+    public float expGrowthRate = 8f;
+
+    public int GetRequiredExp(int level) => baseExp + Mathf.RoundToInt(expGrowthRate * level * level);
 
     // ─────────────────────────────────────────────────────────────────
     // 골드

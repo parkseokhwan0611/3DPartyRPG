@@ -186,11 +186,7 @@ public class PotionQuickSlotManager : MonoBehaviour
         if (slot?.data is not ConsumableData cd) return;
         if (GetCooldownRemaining(type) > 0f) return;
 
-        var leader = PartyManager.instance?.currentLeader;
-        if (leader == null) return;
-
-        CharacterStat stat = leader.GetComponent<CharacterStat>();
-        if (stat == null) return;
+        if (PartyManager.instance == null || PartyManager.instance.partyMembers.Count == 0) return;
 
         if (DataManager.instance != null)
         {
@@ -203,16 +199,20 @@ public class PotionQuickSlotManager : MonoBehaviour
                 OnMpSlotChanged?.Invoke();
         }
 
-        if (type == ConsumableType.HpPotion)
+        // 개인이 아닌 파티 전체 적용 — 생존한 모든 파티원이 동일하게 회복
+        foreach (var member in PartyManager.instance.partyMembers)
         {
-            stat.HealHp(cd.healAmount);
-            _hpCooldownRemaining = cd.cooldown;
+            if (member == null || member.CurrentState == PartyMemberScript.MemberState.Dead) continue;
+
+            CharacterStat stat = member.GetComponent<CharacterStat>();
+            if (stat == null) continue;
+
+            if (type == ConsumableType.HpPotion) stat.HealHp(cd.healAmount);
+            else                                  stat.RecoverMp(cd.healAmount);
         }
-        else
-        {
-            stat.RecoverMp(cd.healAmount);
-            _mpCooldownRemaining = cd.cooldown;
-        }
+
+        if (type == ConsumableType.HpPotion) _hpCooldownRemaining = cd.cooldown;
+        else                                  _mpCooldownRemaining = cd.cooldown;
     }
 
     // ─────────────────────────────────────────────────────────────────

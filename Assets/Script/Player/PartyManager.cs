@@ -20,6 +20,9 @@ public class PartyManager : MonoBehaviour
     public static PartyManager instance;
     [Header("게임 오버 UI")]
     public GameObject gameOverUI;
+    [Header("레벨업 이펙트")]
+    [Tooltip("ObjectPoolManager에 등록한 레벨업 이펙트 풀 키. 파티가 레벨업하면 현재 리더 위치에 재생")]
+    public string levelUpEffectPoolKey = "LevelUpEffect";
 
     private int enemyLayer;
     private Camera mainCamera;
@@ -58,6 +61,15 @@ public class PartyManager : MonoBehaviour
         }
 
         if (startIndex >= 0) ChangeLeader(startIndex);
+
+        if (DataManager.instance != null)
+            DataManager.instance.OnLevelUp += PlayLevelUpEffect;
+    }
+
+    void OnDestroy()
+    {
+        if (DataManager.instance != null)
+            DataManager.instance.OnLevelUp -= PlayLevelUpEffect;
     }
 
     void Update()
@@ -373,6 +385,22 @@ public class PartyManager : MonoBehaviour
     {
         Time.timeScale = 1f;
         if (gameOverUI != null) gameOverUI.SetActive(false);
+    }
+
+    // ─────────────────────────────────────────────────────────────────
+    // 레벨업 이펙트
+    // ─────────────────────────────────────────────────────────────────
+
+    // 파티 레벨업 시 현재 리더 위치에 이펙트 재생 — 풀에서 꺼낸 이펙트의 자동 반환은
+    // 프리팹 자체가 처리 (GrenadeProjectile의 폭발 VFX와 동일한 방식)
+    private void PlayLevelUpEffect()
+    {
+        if (currentLeader == null || ObjectPoolManager.instance == null) return;
+        if (string.IsNullOrEmpty(levelUpEffectPoolKey)) return;
+
+        var effect = ObjectPoolManager.instance.GetGo(levelUpEffectPoolKey);
+        if (effect != null)
+            effect.transform.SetPositionAndRotation(currentLeader.transform.position, Quaternion.identity);
     }
 
     // ─────────────────────────────────────────────────────────────────

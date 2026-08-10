@@ -27,6 +27,9 @@ public class MonsterDropTable : ScriptableObject
     [Tooltip("ObjectPoolManager에 등록한 풀 키 (gradePrefabs와 같은 순서, 5개). " +
              "비워두면 해당 등급은 풀링 없이 기존처럼 Instantiate/Destroy로 동작")]
     public string[] gradePoolKeys = new string[5];
+    [Tooltip("지면(또는 사망 위치) 기준 드랍 오브젝트를 띄우는 높이. 빛기둥/아이템 위치가 " +
+             "지형에 파묻히거나 붕 떠 보이면 이 값을 조절")]
+    public float spawnHeightOffset = 0.5f;
 
     [Header("드랍 목록")]
     public List<DropEntry> entries = new List<DropEntry>();
@@ -60,7 +63,7 @@ public class MonsterDropTable : ScriptableObject
 
             // 몬스터 발 위치 주변에 랜덤 산개
             Vector2 scatter = Random.insideUnitCircle * 1.5f;
-            Vector3 spawnPos = position + new Vector3(scatter.x, 0.5f, scatter.y);
+            Vector3 spawnPos = position + new Vector3(scatter.x, spawnHeightOffset, scatter.y);
 
             // 산개된 지점은 사망 위치와 지면 높이가 다를 수 있음(경사/굴곡) — 실제 지면에 다시 스냅
             if (groundLayer.value != 0)
@@ -68,7 +71,7 @@ public class MonsterDropTable : ScriptableObject
                 Vector3 rayOrigin = spawnPos + Vector3.up * 10f;
                 // 트리거 콜라이더(WorldItem, Portal 등)는 무시 — 실제 지형만 검사
                 if (Physics.Raycast(rayOrigin, Vector3.down, out RaycastHit groundHit, 30f, groundLayer, QueryTriggerInteraction.Ignore))
-                    spawnPos = groundHit.point + Vector3.up * 0.5f;
+                    spawnPos = groundHit.point + Vector3.up * spawnHeightOffset;
             }
 
             // 풀 키가 설정돼 있으면 풀에서 꺼내고, 아니면 기존처럼 Instantiate (설정 전에도 정상 동작)
