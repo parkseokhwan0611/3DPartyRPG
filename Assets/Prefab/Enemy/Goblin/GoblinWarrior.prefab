@@ -2750,6 +2750,7 @@ MonoBehaviour:
   navSpeed: 1
   aggroDecayRate: 5
   aggroThreshold: 10
+  aggroSfxKey: GoblinAggro
   wanderRadius: 5
   wanderSpeed: 1.5
   wanderInterval: 3
@@ -2776,6 +2777,7 @@ MonoBehaviour:
   hitRadius: 1.5
   hitOffset: 1
   isMagicAttack: 0
+  attackSfxKey: GoblinWarrior
   damageDelay: 1.2
   recoveryDuration: 0.8
 --- !u!114 &7925926561819551647
@@ -2805,6 +2807,7 @@ MonoBehaviour:
   expReward: 10
   goldReward: 20
   destroyDelay: 2
+  deathSfxKey: GoblinDeath
   dropTable: {fileID: 11400000, guid: f25a15cdb79af0b419076849aec8d354, type: 2}
 --- !u!114 &7729391301896545432
 MonoBehaviour:

@@ -103,7 +103,7 @@ public class EliteMonsterSkillController : MonoBehaviour
             skill.ExecuteSkill(target);
 
         if (!string.IsNullOrEmpty(skill.skillSfxKey))
-            AudioManager.instance?.PlaySFXAtPosition(skill.skillSfxKey, transform.position);
+            AudioManager.instance?.PlaySFX(skill.skillSfxKey);
 
         // 발사/실행 이후에도 애니메이션이 끝날 때까지는 계속 정지 상태 유지 —
         // 여기서 바로 풀면 던지는 모션이 재생되는 도중에 이동을 시작해버려 어색해 보인다

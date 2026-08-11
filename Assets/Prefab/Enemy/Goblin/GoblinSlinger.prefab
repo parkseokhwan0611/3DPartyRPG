@@ -2845,6 +2845,7 @@ MonoBehaviour:
   navSpeed: 1.5
   aggroDecayRate: 5
   aggroThreshold: 10
+  aggroSfxKey: GoblinAggro
   wanderRadius: 5
   wanderSpeed: 1.5
   wanderInterval: 3
@@ -2885,7 +2886,7 @@ MonoBehaviour:
   hitRadius: 1.5
   hitOffset: 1
   isMagicAttack: 0
-  attackSfxKey: 
+  attackSfxKey: GoblinWarrior
   damageDelay: 1.2
   recoveryDuration: 0.8
 --- !u!114 &7956995228672170248
@@ -2906,7 +2907,7 @@ MonoBehaviour:
   windupDuration: 0.8
   recoveryDuration: 2.35
   animTrigger: skill1
-  skillSfxKey: 
+  skillSfxKey: GoblinBomb
   grenadePoolKey: SlingerStone
   throwPoint: {fileID: 8847520510472390876}
   damage: 200
@@ -2947,6 +2948,7 @@ MonoBehaviour:
   expReward: 50
   goldReward: 100
   destroyDelay: 2
+  deathSfxKey: GoblinDeath
   dropTable: {fileID: 11400000, guid: f25a15cdb79af0b419076849aec8d354, type: 2}
 --- !u!114 &6262550061270596629
 MonoBehaviour:

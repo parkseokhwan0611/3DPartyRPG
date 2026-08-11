@@ -2838,6 +2838,7 @@ MonoBehaviour:
   navSpeed: 2
   aggroDecayRate: 5
   aggroThreshold: 10
+  aggroSfxKey: GoblinAggro
   wanderRadius: 5
   wanderSpeed: 1.5
   wanderInterval: 3
@@ -2864,6 +2865,7 @@ MonoBehaviour:
   hitRadius: 1.5
   hitOffset: 1
   isMagicAttack: 0
+  attackSfxKey: GoblinThief
   damageDelay: 0.7
   recoveryDuration: 0.8
 --- !u!114 &811392039888150760
@@ -2893,6 +2895,7 @@ MonoBehaviour:
   expReward: 10
   goldReward: 10
   destroyDelay: 2
+  deathSfxKey: GoblinDeath
   dropTable: {fileID: 11400000, guid: f25a15cdb79af0b419076849aec8d354, type: 2}
 --- !u!114 &-327002959743040393
 MonoBehaviour:

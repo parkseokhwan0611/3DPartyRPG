@@ -115,7 +115,7 @@ public class MonsterGrenadeAttack : AttackBase
             ThrowGrenade();
 
         if (!string.IsNullOrEmpty(attackSfxKey))
-            AudioManager.instance?.PlaySFXAtPosition(attackSfxKey, transform.position);
+            AudioManager.instance?.PlaySFX(attackSfxKey);
 
         // 공격 지속시간 나머지 대기
         yield return new WaitForSeconds(recoveryDuration);

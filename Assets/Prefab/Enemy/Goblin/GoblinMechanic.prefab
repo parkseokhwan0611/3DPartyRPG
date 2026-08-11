@@ -1969,6 +1969,7 @@ MonoBehaviour:
   navSpeed: 2
   aggroDecayRate: 5
   aggroThreshold: 10
+  aggroSfxKey: GoblinAggro
   wanderRadius: 5
   wanderSpeed: 1.5
   wanderInterval: 3
@@ -2003,6 +2004,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 8
   isMagicAttack: 1
+  attackSfxKey: GoblinBomb
 --- !u!114 &4738244975205780496
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2030,6 +2032,7 @@ MonoBehaviour:
   expReward: 10
   goldReward: 15
   destroyDelay: 2
+  deathSfxKey: GoblinDeath
   dropTable: {fileID: 11400000, guid: f25a15cdb79af0b419076849aec8d354, type: 2}
 --- !u!114 &4753954679520638249
 MonoBehaviour:

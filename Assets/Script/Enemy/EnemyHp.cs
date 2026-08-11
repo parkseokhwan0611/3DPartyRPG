@@ -158,7 +158,7 @@ public class EnemyHp : MonoBehaviour, IDamageable
         OnAnyEnemyDied?.Invoke(this);
 
         if (!string.IsNullOrEmpty(deathSfxKey))
-            AudioManager.instance?.PlaySFXAtPosition(deathSfxKey, transform.position);
+            AudioManager.instance?.PlaySFX(deathSfxKey);
 
         // 애니메이션
         if (animator != null) animator.SetTrigger("isDead");

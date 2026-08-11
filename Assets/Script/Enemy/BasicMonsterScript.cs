@@ -252,7 +252,7 @@ public class BasicMonsterScript : MonoBehaviour
                     navAgent.isStopped = false;
 
                     if (isFirstSpot && !string.IsNullOrEmpty(aggroSfxKey))
-                        AudioManager.instance?.PlaySFXAtPosition(aggroSfxKey, transform.position);
+                        AudioManager.instance?.PlaySFX(aggroSfxKey);
                 }
             }
             else if (attackModule.currentTarget != target)

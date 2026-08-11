@@ -103,7 +103,7 @@ public class MonsterMeleeAttack : AttackBase
             OnHit();
 
         if (!string.IsNullOrEmpty(attackSfxKey))
-            AudioManager.instance?.PlaySFXAtPosition(attackSfxKey, transform.position);
+            AudioManager.instance?.PlaySFX(attackSfxKey);
 
         yield return new WaitForSeconds(recoveryDuration);
 

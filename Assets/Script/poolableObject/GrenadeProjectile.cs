@@ -72,7 +72,7 @@ public class GrenadeProjectile : PoolAble
         }
 
         if (!string.IsNullOrEmpty(explosionSfxKey))
-            AudioManager.instance?.PlaySFXAtPosition(explosionSfxKey, _landing);
+            AudioManager.instance?.PlaySFX(explosionSfxKey);
 
         int hitCount = Physics.OverlapSphereNonAlloc(_landing, _explosionRadius, _hitBuffer, _targetLayer);
         for (int i = 0; i < hitCount; i++)
