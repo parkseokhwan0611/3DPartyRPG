@@ -32694,6 +32694,10 @@ MonoBehaviour:
     type: 3}
   monsterIconPrefab: {fileID: 4599828276651676259, guid: 3484e88b9440cac43ad025a33e38f3bb,
     type: 3}
+  eliteMonsterIconPrefab: {fileID: 4599828276651676259, guid: f7bbbc5d3f228a24db99732251639be7,
+    type: 3}
+  bossMonsterIconPrefab: {fileID: 4599828276651676259, guid: 192c30ae74d025746a1441853a3ebedf,
+    type: 3}
   npcIconPrefab: {fileID: 3041012872759229913, guid: 8335e692ebf2516498ce31d61b0dbefd,
     type: 3}
   questIconPrefab: {fileID: 153606789183430363, guid: 9cd3dfe734d48bd4faeae62421a7ba0d,
@@ -168154,6 +168158,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3856763206860892303, guid: 157c54ca89ebddf4d9146db47729ad1a,
+        type: 3}
+      propertyPath: damageDelay
+      value: 1.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3856763206860892303, guid: 157c54ca89ebddf4d9146db47729ad1a,
+        type: 3}
+      propertyPath: recoveryDuration
+      value: 0.9
       objectReference: {fileID: 0}
     - target: {fileID: 8728550806363355426, guid: 157c54ca89ebddf4d9146db47729ad1a,
         type: 3}
@@ -331095,6 +331109,74 @@ ParticleSystem:
         m_PostInfinity: 2
         m_RotationOrder: 4
     vectorLabel1_3: W
+--- !u!1001 &927772365
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 2096447415685113954, guid: b40280d1a92c91b4b825e31c1ea7c03e,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 66.27082
+      objectReference: {fileID: 0}
+    - target: {fileID: 2096447415685113954, guid: b40280d1a92c91b4b825e31c1ea7c03e,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 10.759104
+      objectReference: {fileID: 0}
+    - target: {fileID: 2096447415685113954, guid: b40280d1a92c91b4b825e31c1ea7c03e,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 50.607292
+      objectReference: {fileID: 0}
+    - target: {fileID: 2096447415685113954, guid: b40280d1a92c91b4b825e31c1ea7c03e,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2096447415685113954, guid: b40280d1a92c91b4b825e31c1ea7c03e,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2096447415685113954, guid: b40280d1a92c91b4b825e31c1ea7c03e,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2096447415685113954, guid: b40280d1a92c91b4b825e31c1ea7c03e,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2096447415685113954, guid: b40280d1a92c91b4b825e31c1ea7c03e,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2096447415685113954, guid: b40280d1a92c91b4b825e31c1ea7c03e,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2096447415685113954, guid: b40280d1a92c91b4b825e31c1ea7c03e,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8762004475818107220, guid: b40280d1a92c91b4b825e31c1ea7c03e,
+        type: 3}
+      propertyPath: m_Name
+      value: GoblinThiefMale
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: b40280d1a92c91b4b825e31c1ea7c03e, type: 3}
 --- !u!1 &928658537
 GameObject:
   m_ObjectHideFlags: 0
@@ -812053,3 +812135,4 @@ SceneRoots:
   - {fileID: 115505883}
   - {fileID: 1014762018}
   - {fileID: 558601212}
+  - {fileID: 927772365}

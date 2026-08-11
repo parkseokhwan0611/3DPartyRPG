@@ -20,7 +20,12 @@ public class MinimapUI : MonoBehaviour
 
     [Header("# 아이콘 프리팹")]
     public RectTransform playerIconPrefab;
+    [Tooltip("일반 등급 몬스터 아이콘. Elite/Boss용 아이콘을 비워두면 이 아이콘으로 대체됨")]
     public RectTransform monsterIconPrefab;
+    [Tooltip("정예(Elite) 등급 몬스터 아이콘 (비워두면 monsterIconPrefab 사용)")]
+    public RectTransform eliteMonsterIconPrefab;
+    [Tooltip("보스(Boss) 등급 몬스터 아이콘 (비워두면 monsterIconPrefab 사용)")]
+    public RectTransform bossMonsterIconPrefab;
     public RectTransform npcIconPrefab;
     public RectTransform questIconPrefab;
     public RectTransform portalIconPrefab;
@@ -118,7 +123,10 @@ public class MinimapUI : MonoBehaviour
 
             if (!_monsterIcons.TryGetValue(enemy, out var icon) || icon == null)
             {
-                icon = Instantiate(monsterIconPrefab, iconLayer);
+                RectTransform prefab = GetMonsterIconPrefab(enemy.grade);
+                if (prefab == null) continue;
+
+                icon = Instantiate(prefab, iconLayer);
                 _monsterIcons[enemy] = icon;
             }
 
@@ -137,6 +145,19 @@ public class MinimapUI : MonoBehaviour
             if (_monsterIcons.TryGetValue(key, out var icon) && icon != null)
                 Destroy(icon.gameObject);
             _monsterIcons.Remove(key);
+        }
+    }
+
+    private RectTransform GetMonsterIconPrefab(EnemyHp.MonsterGrade grade)
+    {
+        switch (grade)
+        {
+            case EnemyHp.MonsterGrade.Elite:
+                return eliteMonsterIconPrefab != null ? eliteMonsterIconPrefab : monsterIconPrefab;
+            case EnemyHp.MonsterGrade.Boss:
+                return bossMonsterIconPrefab != null ? bossMonsterIconPrefab : monsterIconPrefab;
+            default:
+                return monsterIconPrefab;
         }
     }
 
