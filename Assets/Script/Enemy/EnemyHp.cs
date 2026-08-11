@@ -12,10 +12,16 @@ public class EnemyHp : MonoBehaviour, IDamageable
     void OnEnable()  => AllInstances.Add(this);
     void OnDisable() => AllInstances.Remove(this);
 
+    public enum MonsterGrade { Normal, Elite, Boss }
+
     [Header("# HP Settings")]
     public float hp;
     public float maxHp;
     public bool isDead = false;
+
+    [Header("# 몬스터 등급")]
+    [Tooltip("일반/정예/보스 — 타겟 HP UI 등에서 등급별 추가 표시(별 등)에 사용")]
+    public MonsterGrade grade = MonsterGrade.Normal;
 
     [Header("# 방어 스탯")]
     [Tooltip("물리 피해 경감에 사용 (경감율 = def / (def + 100))")]
@@ -38,6 +44,8 @@ public class EnemyHp : MonoBehaviour, IDamageable
     public float expReward    = 5f;
     public int   goldReward   = 10;
     public float destroyDelay = 2f;
+    [Tooltip("AudioManager에 등록한 SFX 키. 사망 시 재생 (비워두면 재생 안 함)")]
+    public string deathSfxKey;
 
     [Header("# Drop Settings")]
     [Tooltip("이 몬스터의 드랍 테이블 (없으면 드랍 없음)")]
@@ -148,6 +156,9 @@ public class EnemyHp : MonoBehaviour, IDamageable
         // 사망 이벤트 발생 (GoblinThiefMaleScript 등이 구독)
         OnDied?.Invoke();
         OnAnyEnemyDied?.Invoke(this);
+
+        if (!string.IsNullOrEmpty(deathSfxKey))
+            AudioManager.instance?.PlaySFXAtPosition(deathSfxKey, transform.position);
 
         // 애니메이션
         if (animator != null) animator.SetTrigger("isDead");

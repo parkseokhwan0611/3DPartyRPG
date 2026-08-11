@@ -98,6 +98,10 @@ public class MinimapUI : MonoBehaviour
 
         _leaderIcon.gameObject.SetActive(true);
         _leaderIcon.anchoredPosition = WorldToMapPos(leader.transform.position);
+
+        // 캡처 카메라 기준 월드 +Z=화면 위, +X=화면 오른쪽이라 Y축 회전을 그대로 -Z 회전으로 매핑
+        float yaw = leader.transform.eulerAngles.y;
+        _leaderIcon.localRotation = Quaternion.Euler(0f, 0f, -yaw);
     }
 
     // ─────────────────────────────────────────────────────────────────

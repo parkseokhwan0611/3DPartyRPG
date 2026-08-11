@@ -7,6 +7,8 @@ public class GrenadeProjectile : PoolAble
 {
     [Tooltip("착지 시 재생할 폭발 이펙트의 ObjectPoolManager 풀 키 (비워두면 이펙트 없이 판정만)")]
     public string explosionPoolKey = "GrenadeExplosion";
+    [Tooltip("착지 시 재생할 AudioManager SFX 키 (비워두면 재생 안 함)")]
+    public string explosionSfxKey;
 
     private Vector3 _start;
     private Vector3 _landing;
@@ -68,6 +70,9 @@ public class GrenadeProjectile : PoolAble
                 vfx.transform.rotation = Quaternion.identity;
             }
         }
+
+        if (!string.IsNullOrEmpty(explosionSfxKey))
+            AudioManager.instance?.PlaySFXAtPosition(explosionSfxKey, _landing);
 
         int hitCount = Physics.OverlapSphereNonAlloc(_landing, _explosionRadius, _hitBuffer, _targetLayer);
         for (int i = 0; i < hitCount; i++)

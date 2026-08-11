@@ -11,6 +11,12 @@ public class TargetHpScript : MonoBehaviour
     public TMPro.TextMeshProUGUI hpText;
     public UnityEngine.UI.Image hpBarFill;
 
+    [Header("# 등급 표시 (정예/보스 전용)")]
+    [Tooltip("타겟이 Elite 등급일 때만 켜짐")]
+    public GameObject eliteIndicator;
+    [Tooltip("타겟이 Boss 등급일 때만 켜짐")]
+    public GameObject bossIndicator;
+
     private EnemyHp currentTarget;
 
     // 리더 추적용 캐시 — 리더가 바뀔 때만 AttackBase를 다시 가져옴
@@ -50,6 +56,9 @@ public class TargetHpScript : MonoBehaviour
         if (rootVisual != null) rootVisual.SetActive(true);
         if (nameText != null) nameText.text = currentTarget.enemyName;
 
+        if (eliteIndicator != null) eliteIndicator.SetActive(currentTarget.grade == EnemyHp.MonsterGrade.Elite);
+        if (bossIndicator  != null) bossIndicator.SetActive(currentTarget.grade == EnemyHp.MonsterGrade.Boss);
+
         // 3. 새 타겟 이벤트 구독 및 초기화
         currentTarget.OnHpChanged += UpdateHPBar;
         UpdateHPBar(currentTarget.hp, currentTarget.maxHp);
@@ -60,6 +69,8 @@ public class TargetHpScript : MonoBehaviour
         if (currentTarget != null) currentTarget.OnHpChanged -= UpdateHPBar;
         currentTarget = null;
         if (rootVisual != null) rootVisual.SetActive(false);
+        if (eliteIndicator != null) eliteIndicator.SetActive(false);
+        if (bossIndicator  != null) bossIndicator.SetActive(false);
     }
 
     void UpdateHPBar(float currentHp, float maxHp)

@@ -19,6 +19,8 @@ public class BasicMonsterScript : MonoBehaviour
     [Header("# Aggro Settings")]
     public float aggroDecayRate = 5f;
     public float aggroThreshold = 10f;
+    [Tooltip("AudioManager에 등록한 SFX 키. 타겟이 없다가 새로 발견했을 때만 재생 (비워두면 재생 안 함)")]
+    public string aggroSfxKey;
 
     [Header("# Wander Settings")]
     public float wanderRadius   = 5f;
@@ -242,9 +244,15 @@ public class BasicMonsterScript : MonoBehaviour
             {
                 if (attackModule.currentTarget != target)
                 {
+                    // 완전히 새로 발견한 경우(타겟 교체가 아니라 무타겟→유타겟)에만 어그로 사운드 재생
+                    bool isFirstSpot = attackModule.currentTarget == null;
+
                     attackModule.SetTargetImmediate(target);
                     navAgent.speed     = navSpeed; // 배회 속도 → 추격 속도 복귀
                     navAgent.isStopped = false;
+
+                    if (isFirstSpot && !string.IsNullOrEmpty(aggroSfxKey))
+                        AudioManager.instance?.PlaySFXAtPosition(aggroSfxKey, transform.position);
                 }
             }
             else if (attackModule.currentTarget != target)

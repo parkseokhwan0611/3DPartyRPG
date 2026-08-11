@@ -1987,14 +1987,15 @@ MonoBehaviour:
   attackDamage: 50
   attackRange: 6
   attackSpeed: 1
-  attackDuration: 1
+  attackDuration: 2
   currentTarget: {fileID: 0}
   enemyLayer:
     serializedVersion: 2
     m_Bits: 64
   grenadePoolKey: GoblinGrenade
   throwPoint: {fileID: 1158843612016312719}
-  damageDelay: 0.35
+  damageDelay: 0.7
+  recoveryDuration: 1.3
   flightDuration: 0.8
   arcHeight: 3
   explosionRadius: 1.5
@@ -2017,6 +2018,7 @@ MonoBehaviour:
   hp: 500
   maxHp: 500
   isDead: 0
+  grade: 0
   def: 3
   magicRes: 3
   physicalDamageColor: {r: 1, g: 0, b: 0, a: 1}

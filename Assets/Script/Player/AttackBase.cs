@@ -22,6 +22,10 @@ public abstract class AttackBase : MonoBehaviour
     protected float attackCooldown  = 0f;
     public bool IsCastingSkill { get; set; } = false;
     public bool IsAttackAnimPlaying { get; protected set; } = false;
+    // 몬스터 기본 공격(Melee/Ranged/Grenade)이 윈드업~후딜레이까지 진행 중인지 —
+    // 각자 로컬 프로퍼티로 따로 갖고 있던 걸 공통으로 올려서, EliteMonsterSkillController처럼
+    // AttackBase 타입만 들고 있는 쪽에서도 "지금 기본 공격 중이라 스킬을 끼워넣으면 안 된다"를 판단 가능
+    public bool IsAttacking { get; protected set; } = false;
     private float firstAttackDelay  = 0f;
 
     // 타겟이 일정 거리 이상 움직였을 때만 재경로 — 매 프레임 SetDestination 재호출로 인한 회피 벡터 재계산/떨림 방지

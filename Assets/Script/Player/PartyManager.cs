@@ -376,6 +376,9 @@ public class PartyManager : MonoBehaviour
         // yield 도중 gameOverUI가 파괴됐을 경우를 대비해 재확인
         if (gameOverUI == null) yield break;
         gameOverUI.SetActive(true);
+        // 페이드(fade:true)는 Time.deltaTime 기반 코루틴인데 바로 다음 줄에서 timeScale을 0으로
+        // 멈춰버리면 페이드가 끝까지 못 가고 볼륨이 어중간하게 멈춘 채 계속 재생됨 — 즉시 정지로 처리
+        AudioManager.instance?.StopBGM(fade: false);
         AudioManager.instance?.PlaySFX("GameOver");
         Time.timeScale = 0f;
     }

@@ -2777,6 +2777,7 @@ MonoBehaviour:
   hitOffset: 1
   isMagicAttack: 0
   damageDelay: 1.2
+  recoveryDuration: 0.8
 --- !u!114 &7925926561819551647
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2792,6 +2793,7 @@ MonoBehaviour:
   hp: 600
   maxHp: 600
   isDead: 0
+  grade: 0
   def: 10
   magicRes: 10
   physicalDamageColor: {r: 1, g: 0, b: 0, a: 1}

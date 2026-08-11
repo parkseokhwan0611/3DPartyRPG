@@ -11,13 +11,17 @@ public class MonsterMeleeAttack : AttackBase
     [Tooltip("체크하면 마법 피해(마법저항력으로 경감), 해제하면 물리 피해(방어력으로 경감)")]
     public bool isMagicAttack = false;
 
+    [Header("# 사운드")]
+    [Tooltip("AudioManager에 등록한 SFX 키. 타격 판정과 같은 타이밍에 재생 (비워두면 재생 안 함)")]
+    public string attackSfxKey;
+
     [Header("타이밍 설정 (초 단위)")]
     public float damageDelay = 0.33f;
+    [Tooltip("타격 판정 이후 애니메이션 후딜레이 — 이 시간이 끝나야 이동을 재개하고, " +
+             "정예/보스라면 이 시간이 끝나야 스킬도 고려한다. 공격 애니메이션 클립 길이에서 " +
+             "damageDelay를 뺀 만큼으로 맞추면 됨")]
+    public float recoveryDuration = 0.5f;
     private Coroutine attackCoroutine;
-
-
-    // 외부에서 읽기만 가능하도록 프로퍼티로 변경
-    public bool IsAttacking { get; private set; } = false;
 
     // ─────────────────────────────────────────────────────────────────
     // Unity 생명주기
@@ -98,7 +102,10 @@ public class MonsterMeleeAttack : AttackBase
         if (enemyHp != null && enemyHp.hp > 0)
             OnHit();
 
-        yield return new WaitForSeconds(attackDuration - damageDelay);
+        if (!string.IsNullOrEmpty(attackSfxKey))
+            AudioManager.instance?.PlaySFXAtPosition(attackSfxKey, transform.position);
+
+        yield return new WaitForSeconds(recoveryDuration);
 
         bool isStunned = statusHandler != null && statusHandler.HasDebuff(StatusEffectType.Stun);
 
