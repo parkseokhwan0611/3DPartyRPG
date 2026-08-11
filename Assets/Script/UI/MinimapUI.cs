@@ -147,6 +147,9 @@ public class MinimapUI : MonoBehaviour
         foreach (var npc in NpcInteractable.AllInstances)
         {
             if (npc == null) continue;
+            // 퀘스트(Story) NPC는 NPC 아이콘 대신 UpdateQuestMarker()의 퀘스트 아이콘만 표시
+            if (npc.Type == NpcInteractable.NpcType.Story) continue;
+
             var icon = Instantiate(npcIconPrefab, iconLayer);
             icon.anchoredPosition = WorldToMapPos(npc.transform.position);
         }

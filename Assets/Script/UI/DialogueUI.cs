@@ -91,7 +91,6 @@ public class DialogueUI : MonoBehaviour
         StopTyping();
         panel?.SetActive(false);
         SetCombatUI(true);
-        AudioManager.instance?.PlaySFX("UIClose");
     }
 
     // ─────────────────────────────────────────────────────────────────

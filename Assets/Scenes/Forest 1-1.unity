@@ -19642,7 +19642,7 @@ Transform:
   m_GameObject: {fileID: 50482400}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 66.7, y: 8.719999, z: 41.3}
+  m_LocalPosition: {x: 67.07, y: 8.719999, z: 41.29}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -363533,7 +363533,7 @@ Transform:
   m_GameObject: {fileID: 1022797102}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 91.94397, y: 9.384, z: 42.25}
+  m_LocalPosition: {x: 78.81, y: 9.384, z: 41.99}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -387558,7 +387558,7 @@ Transform:
   m_GameObject: {fileID: 1112639004}
   serializedVersion: 2
   m_LocalRotation: {x: 0.37460655, y: 0, z: 0, w: 0.9271839}
-  m_LocalPosition: {x: 66.7, y: 15.719999, z: 35.3}
+  m_LocalPosition: {x: 67.07, y: 15.719999, z: 35.29}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -707162,7 +707162,7 @@ Transform:
   m_GameObject: {fileID: 1853548217}
   serializedVersion: 2
   m_LocalRotation: {x: 0.37460655, y: 0, z: 0, w: 0.9271839}
-  m_LocalPosition: {x: 66.7, y: 15.719999, z: 35.3}
+  m_LocalPosition: {x: 67.07, y: 15.719999, z: 35.29}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -717460,6 +717460,9 @@ MonoBehaviour:
   partyExp: 0
   gold: 0
   selectedPartyIndex: 0
+  sceneDisplayNames:
+  - sceneName: Forest 1-1
+    displayName: "\uC232 1-1"
   currentLeaderIndex: 0
   pendingAutoRegisterPotions: 0
   partyQuickSlots: []
@@ -717487,9 +717490,6 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 360ee5c4417b22a47b5f196268d678de, type: 2}
   baseExp: 50
   expGrowthRate: 8
-  sceneDisplayNames:
-  - sceneName: Forest 1-1
-    displayName: "숲 1-1"
 --- !u!4 &1903425724
 Transform:
   m_ObjectHideFlags: 0

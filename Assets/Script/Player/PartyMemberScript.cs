@@ -212,7 +212,11 @@ public class PartyMemberScript : MonoBehaviour
             // 이전 리더 경로 즉시 초기화 — 남은 경로가 팔로우 로직을 방해하지 않도록
             agent.ResetPath();
             agent.velocity = Vector3.zero;
-            ChangeState(MemberState.Following);
+
+            // 리더만 바뀌었을 뿐 아무도 움직이지 않았는데 체인 순서가 바뀌었다는 이유만으로
+            // 즉시 재정렬 이동하는 것을 막기 위해 Idle로 시작 — 새 리더가 실제로 움직여서
+            // resumeDistance를 벗어나야 HandleFollowLogic이 알아서 Following으로 전환한다
+            ChangeState(MemberState.Idle);
 
             skillManager?.ResetAttackCount();
             if (leaderVFX != null) leaderVFX.SetActive(false);
