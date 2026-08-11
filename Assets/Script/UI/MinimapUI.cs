@@ -1,17 +1,7 @@
-using System;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-
-// 씬 파일 이름(영문) → 화면에 표시할 이름. AudioManager.SceneBgmEntry와 동일한 방식 —
-// 목록에 없는 씬은 그냥 씬 이름을 그대로 표시한다
-[Serializable]
-public class SceneDisplayNameEntry
-{
-    public string sceneName;
-    public string displayName;
-}
 
 // UI 좌표 투영 방식 미니맵. MinimapCaptureTool로 뽑은 배경 이미지의 월드 좌표 범위(중심/크기)를
 // mapWorldCenter/mapWorldSize에 그대로 입력해서 사용한다 (툴 캡처 완료 시 콘솔/창에 표시되는 값).
@@ -37,8 +27,6 @@ public class MinimapUI : MonoBehaviour
 
     [Header("# 씬 이름 표시")]
     public TextMeshProUGUI sceneNameText;
-    [Tooltip("씬 파일 이름(영문) → 화면에 표시할 이름 매핑. 목록에 없는 씬은 씬 이름을 그대로 표시")]
-    public List<SceneDisplayNameEntry> sceneDisplayNames = new List<SceneDisplayNameEntry>();
 
     private RectTransform _leaderIcon;
     private RectTransform _questMarkerIcon;
@@ -66,21 +54,10 @@ public class MinimapUI : MonoBehaviour
 
     private void UpdateSceneNameText()
     {
-        if (sceneNameText == null) return;
+        if (sceneNameText == null || DataManager.instance == null) return;
 
         string currentScene = SceneManager.GetActiveScene().name;
-        string display      = currentScene;
-
-        foreach (var entry in sceneDisplayNames)
-        {
-            if (entry != null && entry.sceneName == currentScene)
-            {
-                display = entry.displayName;
-                break;
-            }
-        }
-
-        sceneNameText.text = display;
+        sceneNameText.text  = DataManager.instance.GetSceneDisplayName(currentScene);
     }
 
     // ─────────────────────────────────────────────────────────────────

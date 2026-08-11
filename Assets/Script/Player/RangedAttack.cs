@@ -133,7 +133,7 @@ public class RangedAttack : AttackBase
             myStat.HealHp(myStat.HpOnHit);
 
         if (myStat != null && myStat.MpOnHit > 0f)
-            myStat.RecoverMp(myStat.MpOnHit);
+            myStat.RecoverMp(myStat.MpOnHit, showAura: false, showText: false);
     }
 
     public override void OnHit() { }

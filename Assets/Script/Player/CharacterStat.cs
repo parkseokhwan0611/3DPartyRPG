@@ -324,13 +324,15 @@ public class CharacterStat : MonoBehaviour, IDamageable
         return true;
     }
 
-    public void RecoverMp(float amount)
+    // showAura/showText: false — 기본공격 시 마나 회복(MpOnHit) 패시브처럼 매번 조용히 터지는
+    // 회복에는 연출 없이 수치만 조용히 반영하기 위한 옵션
+    public void RecoverMp(float amount, bool showAura = true, bool showText = true)
     {
         if (myStatus == null || amount <= 0f) return;
         myStatus.RecoverMp(amount);
         OnMpChanged?.Invoke();
-        SpawnManaText(amount);
-        ShowManaAura();
+        if (showText) SpawnManaText(amount);
+        if (showAura) ShowManaAura();
     }
 
     public void RaiseHpChanged()

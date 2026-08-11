@@ -18,6 +18,12 @@ public class QuestHudUI : MonoBehaviour
     [Tooltip("NPC 발밑 기준으로 마커를 띄우는 높이 (지면에 파묻히지 않을 정도로만)")]
     public float  markerHeightOffset = 0.3f;
 
+    [Header("# 진행도 텍스트 (거리/사냥 현황)")]
+    [Tooltip("NpcDialogue면 리더-NPC 남은 거리, KillMonster면 처치 현황을 표시. CollectItem은 " +
+             "objectiveText에 이미 진행도가 포함돼 있어 비워둠")]
+    public TextMeshProUGUI progressText;
+    public string distanceFormat = "{0:F0}m 남음";
+
     [Header("# 퀘스트 완료 연출")]
     [Tooltip("퀘스트 완료 문구를 보여줄 시간(초). 이 시간이 지나면 다음 퀘스트를 표시")]
     public float completionDisplayDuration = 3f;
@@ -79,6 +85,12 @@ public class QuestHudUI : MonoBehaviour
         Refresh();
     }
 
+    // 거리 표시는 리더가 계속 움직이는 동안 실시간으로 갱신돼야 하므로 이벤트가 아니라 매 프레임 갱신
+    void Update()
+    {
+        UpdateProgressText();
+    }
+
     // OnQuestChanged는 완료 시에도 함께 발생하는데, 그때는 완료 연출 코루틴이 갱신을 대신 처리하므로
     // 연출 중에는 즉시 갱신을 건너뛴다 (안 그러면 "완료" 문구가 뜨자마자 다음 퀘스트로 덮어써짐)
     private void HandleQuestChanged()
@@ -136,12 +148,7 @@ public class QuestHudUI : MonoBehaviour
             return;
         }
 
-        NpcInteractable npc = null;
-        foreach (var n in NpcInteractable.AllInstances)
-        {
-            if (n.NpcId == quest.targetNpcId) { npc = n; break; }
-        }
-
+        NpcInteractable npc = FindTargetNpc(quest);
         if (npc == null)
         {
             ReleaseMarker();
@@ -156,6 +163,57 @@ public class QuestHudUI : MonoBehaviour
         }
 
         _activeMarker.transform.position = npc.transform.position + Vector3.up * markerHeightOffset;
+    }
+
+    private static NpcInteractable FindTargetNpc(QuestData quest)
+    {
+        foreach (var n in NpcInteractable.AllInstances)
+        {
+            if (n.NpcId == quest.targetNpcId) return n;
+        }
+        return null;
+    }
+
+    // ─────────────────────────────────────────────────────────────────
+    // 진행도 텍스트 (NpcDialogue: 남은 거리 / KillMonster: 처치 현황)
+    // ─────────────────────────────────────────────────────────────────
+
+    private void UpdateProgressText()
+    {
+        if (progressText == null) return;
+
+        var quest = QuestManager.instance != null ? QuestManager.instance.CurrentQuest : null;
+        if (quest == null || _showingCompletion)
+        {
+            progressText.text = "";
+            return;
+        }
+
+        switch (quest.objectiveType)
+        {
+            case QuestObjectiveType.NpcDialogue:
+                NpcInteractable npc = FindTargetNpc(quest);
+                var leader = PartyManager.instance != null ? PartyManager.instance.currentLeader : null;
+                if (npc != null && leader != null)
+                {
+                    float distance = Vector3.Distance(leader.transform.position, npc.transform.position);
+                    progressText.text = string.Format(distanceFormat, distance);
+                }
+                else
+                {
+                    progressText.text = "";
+                }
+                break;
+
+            case QuestObjectiveType.KillMonster:
+                int shown = Mathf.Min(QuestManager.instance.CurrentProgress, quest.TargetCount);
+                progressText.text = $"{shown}/{quest.TargetCount} 마리 처치";
+                break;
+
+            default:
+                progressText.text = "";
+                break;
+        }
     }
 
     private void ReleaseMarker()

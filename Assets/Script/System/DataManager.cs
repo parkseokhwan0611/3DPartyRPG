@@ -17,6 +17,15 @@ public class StartEquipEntry
     public EquipItemData item;
 }
 
+// 씬 파일 이름(영문) → 화면에 표시할 이름. 미니맵/포탈/퀘스트 등 씬 이름을 플레이어에게 보여주는
+// 모든 곳이 이 하나의 목록을 공유한다 (DontDestroyOnLoad라 씬이 바뀌어도 유지됨)
+[System.Serializable]
+public class SceneDisplayNameEntry
+{
+    public string sceneName;
+    public string displayName;
+}
+
 public class DataManager : MonoBehaviour
 {
     public static DataManager instance;
@@ -33,6 +42,21 @@ public class DataManager : MonoBehaviour
 
     // 스탯창·인벤토리창이 공유하는 선택된 파티원 인덱스
     public int selectedPartyIndex = 0;
+
+    [Header("씬 표시 이름")]
+    [Tooltip("씬 파일 이름(영문) → 화면에 표시할 이름 매핑. 목록에 없는 씬은 씬 이름을 그대로 표시")]
+    public List<SceneDisplayNameEntry> sceneDisplayNames = new List<SceneDisplayNameEntry>();
+
+    // 미니맵/포탈/퀘스트 UI가 공통으로 사용하는 조회 함수
+    public string GetSceneDisplayName(string sceneName)
+    {
+        foreach (var entry in sceneDisplayNames)
+        {
+            if (entry != null && entry.sceneName == sceneName)
+                return entry.displayName;
+        }
+        return sceneName;
+    }
 
     // 실제 조작 중인 파티 리더의 partyMembers 리스트 인덱스 — PartyManager는 씬 로컬이라
     // 포탈 등으로 씬이 바뀌면 항상 0번(리스트 첫 캐릭터)으로 리더가 초기화됨. 여기(DataManager,

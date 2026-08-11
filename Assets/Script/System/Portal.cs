@@ -53,7 +53,13 @@ public class Portal : MonoBehaviour
 
     void Start()
     {
-        if (promptText != null) promptText.text = $"[F] {destinationSceneName}";
+        if (promptText != null)
+        {
+            string display = DataManager.instance != null
+                ? DataManager.instance.GetSceneDisplayName(destinationSceneName)
+                : destinationSceneName;
+            promptText.text = $"[F] {display}";
+        }
         if (promptObject != null) promptObject.SetActive(false);
     }
 
