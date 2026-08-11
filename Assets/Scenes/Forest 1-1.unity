@@ -331109,74 +331109,6 @@ ParticleSystem:
         m_PostInfinity: 2
         m_RotationOrder: 4
     vectorLabel1_3: W
---- !u!1001 &927772365
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 2096447415685113954, guid: b40280d1a92c91b4b825e31c1ea7c03e,
-        type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 66.27082
-      objectReference: {fileID: 0}
-    - target: {fileID: 2096447415685113954, guid: b40280d1a92c91b4b825e31c1ea7c03e,
-        type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 10.759104
-      objectReference: {fileID: 0}
-    - target: {fileID: 2096447415685113954, guid: b40280d1a92c91b4b825e31c1ea7c03e,
-        type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 50.607292
-      objectReference: {fileID: 0}
-    - target: {fileID: 2096447415685113954, guid: b40280d1a92c91b4b825e31c1ea7c03e,
-        type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2096447415685113954, guid: b40280d1a92c91b4b825e31c1ea7c03e,
-        type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2096447415685113954, guid: b40280d1a92c91b4b825e31c1ea7c03e,
-        type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2096447415685113954, guid: b40280d1a92c91b4b825e31c1ea7c03e,
-        type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2096447415685113954, guid: b40280d1a92c91b4b825e31c1ea7c03e,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2096447415685113954, guid: b40280d1a92c91b4b825e31c1ea7c03e,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2096447415685113954, guid: b40280d1a92c91b4b825e31c1ea7c03e,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8762004475818107220, guid: b40280d1a92c91b4b825e31c1ea7c03e,
-        type: 3}
-      propertyPath: m_Name
-      value: GoblinThiefMale
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: b40280d1a92c91b4b825e31c1ea7c03e, type: 3}
 --- !u!1 &928658537
 GameObject:
   m_ObjectHideFlags: 0
@@ -718108,13 +718040,13 @@ MonoBehaviour:
     volumeMultiplier: 0.5
   - name: GoblinExplosion
     clip: {fileID: 8300000, guid: 3451839e5a7dc6f43a9584c7ea145181, type: 3}
-    volumeMultiplier: 0.5
+    volumeMultiplier: 0.6
   - name: GoblinThief
     clip: {fileID: 8300000, guid: 2e94b324b8a790242ac76895a9bf8547, type: 3}
     volumeMultiplier: 0.5
   - name: GoblinWarrior
     clip: {fileID: 8300000, guid: c22daa5fb00f3a540af486bf62e52cae, type: 3}
-    volumeMultiplier: 0.5
+    volumeMultiplier: 0.6
   sfxVolume: 0.5
   sfxSourceCount: 8
   sceneBgmMap:
@@ -812135,4 +812067,3 @@ SceneRoots:
   - {fileID: 115505883}
   - {fileID: 1014762018}
   - {fileID: 558601212}
-  - {fileID: 927772365}

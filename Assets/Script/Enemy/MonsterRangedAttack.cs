@@ -20,8 +20,12 @@ public class MonsterRangedAttack : AttackBase
     [Header("# 사운드")]
     [Tooltip("AudioManager에 등록한 SFX 키. 투사체 발사와 같은 타이밍에 재생 (비워두면 재생 안 함)")]
     public string attackSfxKey;
+    [Tooltip("사운드 재생 시점 보정(초). 기본은 투사체 발사(damageDelay)와 동시에 재생되는데, " +
+             "사운드 클립 앞부분에 무음이 있어 실제로 들리는 시점이 밀리면 음수 값을 넣어 더 일찍 재생되게 조절")]
+    public float attackSfxTimingOffset = 0f;
 
     private Coroutine attackCoroutine;
+    private Coroutine sfxCoroutine;
 
     // ─────────────────────────────────────────────────────────────────
     // Unity 생명주기
@@ -71,6 +75,11 @@ public class MonsterRangedAttack : AttackBase
             StopCoroutine(attackCoroutine);
             attackCoroutine = null;
         }
+        if (sfxCoroutine != null)
+        {
+            StopCoroutine(sfxCoroutine);
+            sfxCoroutine = null;
+        }
         IsAttacking = false;
     }
 
@@ -96,14 +105,14 @@ public class MonsterRangedAttack : AttackBase
             anim.SetBool("isWalking", false);
         }
 
+        if (!string.IsNullOrEmpty(attackSfxKey))
+            sfxCoroutine = StartCoroutine(PlayAttackSfxDelayed());
+
         // 투사체 발사 타이밍 대기
         yield return new WaitForSeconds(damageDelay);
 
         if (currentTarget != null)
             FireProjectile();
-
-        if (!string.IsNullOrEmpty(attackSfxKey))
-            AudioManager.instance?.PlaySFX(attackSfxKey);
 
         // 공격 지속시간 나머지 대기
         yield return new WaitForSeconds(recoveryDuration);
@@ -116,6 +125,16 @@ public class MonsterRangedAttack : AttackBase
         attackCoroutine = null;
         RaiseAttackEnded();
         attackCooldown  = 0f;
+    }
+
+    private IEnumerator PlayAttackSfxDelayed()
+    {
+        float delay = Mathf.Max(0f, damageDelay + attackSfxTimingOffset);
+        if (delay > 0f)
+            yield return new WaitForSeconds(delay);
+
+        AudioManager.instance?.PlaySFX(attackSfxKey);
+        sfxCoroutine = null;
     }
 
     // ─────────────────────────────────────────────────────────────────
