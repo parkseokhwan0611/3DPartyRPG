@@ -10,6 +10,7 @@ public abstract class SkillBase : MonoBehaviour
     protected AttackBase attackBase;
     protected SkillManager skillManager;
     protected NavMeshAgent agent;
+    protected PartyStatusEffectHandler statusHandler;
 
     public SkillData skillData;
     public int skillLevel = 1;
@@ -43,6 +44,7 @@ public abstract class SkillBase : MonoBehaviour
         attackBase   = GetComponent<AttackBase>();
         skillManager = GetComponent<SkillManager>();
         agent        = GetComponent<NavMeshAgent>();
+        statusHandler = GetComponent<PartyStatusEffectHandler>();
     }
 
     protected virtual void Update()
@@ -117,9 +119,13 @@ public abstract class SkillBase : MonoBehaviour
             attackBase.ResetFirstAttackDelay(0.3f);
         }
 
-        // 스킬 시전 중 이동 중단 + 걷기 애니메이션 즉시 해제
-        if (agent != null)
+        // 스킬 시전 중 이동 중단 + 걷기 애니메이션 즉시 해제 — ResetPath/velocity만으로는 그 순간의
+        // 경로만 지워질 뿐이라, 시전 중에 새로 클릭해서 이동 명령이 들어오는 것 자체는 못 막는다.
+        // isStopped까지 걸어야 몬스터 스킬 시전과 동일하게 시전 내내 확실히 묶어둘 수 있음
+        // (실제 이동 명령 차단은 PartyManager.HandleCommandInput의 IsCastingSkill 체크가 담당)
+        if (agent != null && agent.enabled && agent.isOnNavMesh)
         {
+            agent.isStopped = true;
             agent.ResetPath();
             agent.velocity = Vector3.zero;
         }
@@ -133,6 +139,10 @@ public abstract class SkillBase : MonoBehaviour
 
         if (skillManager != null && skillManager.IsActivatingSkill)
             ReleaseActivating();
+
+        bool isStunned = statusHandler != null && statusHandler.HasDebuff(StatusEffectType.Stun);
+        if (!isStunned && agent != null && agent.enabled && agent.isOnNavMesh)
+            agent.isStopped = false;
 
         if (attackBase != null) attackBase.IsCastingSkill = false;
         skillManager?.UnregisterCurrentSkill();

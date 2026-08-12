@@ -89,8 +89,36 @@ public class PotionQuickSlotManager : MonoBehaviour
     // stackCount 텍스트만 다시 읽어오는 가벼운 작업이라 매번 갱신해도 무해함
     private void HandleInventoryChanged()
     {
+        RelinkIfDepleted(ConsumableType.HpPotion);
+        RelinkIfDepleted(ConsumableType.MpPotion);
+
         if (_hpSlot != null) OnHpSlotChanged?.Invoke();
         if (_mpSlot != null) OnMpSlotChanged?.Invoke();
+    }
+
+    // 슬롯에 등록된 포션이 소진(stackCount 0)된 상태에서 같은 종류 포션을 새로 얻으면,
+    // 수동으로 다시 등록하지 않아도 그 아이템으로 자동 연결 — 쿨다운은 건드리지 않는다
+    // (재고가 없어 쿨타임이 도는 중에 주웠다고 쿨타임이 리셋되면 어색함)
+    private void RelinkIfDepleted(ConsumableType type)
+    {
+        ItemInstance slot = GetSlot(type);
+        if (slot == null || slot.stackCount > 0) return;
+        if (DataManager.instance == null) return;
+
+        foreach (var item in DataManager.instance.sharedInventory.Items)
+        {
+            if (item?.data is not ConsumableData cd || cd.consumableType != type) continue;
+
+            if (type == ConsumableType.HpPotion) _hpSlot = item;
+            else                                  _mpSlot = item;
+
+            if (DataManager.instance != null)
+            {
+                if (type == ConsumableType.HpPotion) DataManager.instance.hpPotionSlotItemId = item.data.itemId;
+                else                                   DataManager.instance.mpPotionSlotItemId = item.data.itemId;
+            }
+            return;
+        }
     }
 
     private void RestoreSlotFromDataManager(string itemId)
@@ -184,6 +212,7 @@ public class PotionQuickSlotManager : MonoBehaviour
     {
         ItemInstance slot = GetSlot(type);
         if (slot?.data is not ConsumableData cd) return;
+        if (slot.stackCount <= 0) return; // 재고 소진 — 등록은 유지하되(쿨다운 표시용) 사용은 불가
         if (GetCooldownRemaining(type) > 0f) return;
 
         if (PartyManager.instance == null || PartyManager.instance.partyMembers.Count == 0) return;
@@ -191,12 +220,10 @@ public class PotionQuickSlotManager : MonoBehaviour
         if (DataManager.instance != null)
         {
             DataManager.instance.sharedInventory.ConsumeItem(slot, 1);
-            if (slot.stackCount <= 0)
-                DeregisterPotion(type);
-            else if (type == ConsumableType.HpPotion)
-                OnHpSlotChanged?.Invoke();
-            else
-                OnMpSlotChanged?.Invoke();
+            // 0개가 돼도 슬롯 등록은 그대로 유지 — 쿨다운이 계속 보이고, 다시 등록하거나
+            // 같은 포션을 얻으면(RelinkIfDepleted) 자동으로 다시 쓸 수 있게 함
+            if (type == ConsumableType.HpPotion) OnHpSlotChanged?.Invoke();
+            else                                  OnMpSlotChanged?.Invoke();
         }
 
         // 개인이 아닌 파티 전체 적용 — 생존한 모든 파티원이 동일하게 회복

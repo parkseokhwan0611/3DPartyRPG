@@ -113,6 +113,11 @@ public class PartyManager : MonoBehaviour
         if (currentLeader == null) return;
         if (currentLeader.CurrentState == PartyMemberScript.MemberState.Dead) return;
 
+        // 스킬 시전 중(버프 등)에는 이동/공격 명령 자체를 받지 않음 — 기본 공격과 동일하게
+        // 이펙트가 끝날 때까지(SkillBase.SkillRoutine이 IsCastingSkill을 풀어줄 때까지) 묶어둠
+        AttackBase leaderAttack = currentLeader.GetComponent<AttackBase>();
+        if (leaderAttack != null && leaderAttack.IsCastingSkill) return;
+
         // 롤 스타일 A+좌클릭 강제 공격 — 공격 가능한 오브젝트 위에서만 발동
         if (Input.GetKey(KeyCode.A) && Input.GetMouseButtonDown(0))
         {

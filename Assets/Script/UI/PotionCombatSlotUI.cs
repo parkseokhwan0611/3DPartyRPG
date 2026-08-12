@@ -78,8 +78,14 @@ public class PotionCombatSlotUI : MonoBehaviour
 
     private void UpdateCooldown(CombatQuickSlot slot, ConsumableType type)
     {
-        float ratio     = PotionQuickSlotManager.instance.GetCooldownRatio(type);
-        float remaining = PotionQuickSlotManager.instance.GetCooldownRemaining(type);
+        var  item     = PotionQuickSlotManager.instance.GetSlot(type);
+        bool depleted = item != null && item.stackCount <= 0;
+
+        // 재고가 없으면 실제 쿨다운과 무관하게 오버레이를 꽉 채운 채로 고정 — 쿨타임이 다 돌아서
+        // 오버레이가 사라지면 "지금 쓸 수 있다"는 착각을 주기 때문에, 다시 채워질 때까지
+        // 계속 "사용 불가" 상태로 보이게 한다
+        float ratio     = depleted ? 1f : PotionQuickSlotManager.instance.GetCooldownRatio(type);
+        float remaining = depleted ? 0f : PotionQuickSlotManager.instance.GetCooldownRemaining(type);
         slot.UpdateCooldown(ratio, remaining, 0f);
     }
 }
