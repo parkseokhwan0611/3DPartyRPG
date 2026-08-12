@@ -2840,7 +2840,7 @@ MonoBehaviour:
   animator: {fileID: 2578729871527471803}
   enemyHp: {fileID: 4960785896764141080}
   navAgent: {fileID: 2954108488559834413}
-  chaseDistance: 10
+  chaseDistance: 12
   targetSwitchThreshold: 1
   navSpeed: 1.5
   aggroDecayRate: 5
@@ -2906,6 +2906,7 @@ MonoBehaviour:
   range: 6
   useChance: 0.5
   windupDuration: 0.8
+  attackDuration: 0
   recoveryDuration: 2.35
   animTrigger: skill1
   skillSfxKey: GoblinBomb

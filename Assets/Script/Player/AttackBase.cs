@@ -40,6 +40,7 @@ public abstract class AttackBase : MonoBehaviour
     protected Animator anim;
     public Transform currentTarget;
     protected EnemyHp targetHealth;
+    protected PartyMemberScript targetPartyMember; // 타겟이 플레이어 파티원일 때(몬스터→플레이어) 사망 감지용
     public LayerMask enemyLayer;
     protected StatusEffectHandler statusHandler; // Enemy 전용
     protected PartyStatusEffectHandler partyStatusHandler; // Player 전용
@@ -64,7 +65,7 @@ public abstract class AttackBase : MonoBehaviour
         {
             firstAttackDelay -= Time.deltaTime;
             // 딜레이 중에도 타겟이 사라지거나 이미 죽었으면 즉시 해제
-            if (currentTarget == null || (targetHealth != null && targetHealth.isDead))
+            if (currentTarget == null || IsCurrentTargetDead())
             {
                 firstAttackDelay = 0f;
                 ClearTarget();
@@ -74,7 +75,7 @@ public abstract class AttackBase : MonoBehaviour
 
         if (currentTarget == null) return;
 
-        if (targetHealth != null && targetHealth.isDead)
+        if (IsCurrentTargetDead())
         {
             ClearTarget();
             return;
@@ -82,6 +83,16 @@ public abstract class AttackBase : MonoBehaviour
 
         LookAtTarget();
         HandleAttackLogic();
+    }
+
+    // targetHealth(EnemyHp, 몬스터 타겟)와 targetPartyMember(PartyMemberScript, 플레이어 타겟) 양쪽을
+    // 모두 커버 — 이게 없으면 몬스터가 플레이어를 타겟할 때는 사망 감지가 전혀 안 돼서, 공격 쿨다운이
+    // TargetingLogic의 재판정 주기보다 빠르게 돌 경우 죽은 캐릭터를 계속 때리는 상황이 생길 수 있다
+    private bool IsCurrentTargetDead()
+    {
+        if (targetHealth != null && targetHealth.isDead) return true;
+        if (targetPartyMember != null && targetPartyMember.CurrentState == PartyMemberScript.MemberState.Dead) return true;
+        return false;
     }
 
     // ─────────────────────────────────────────────────────────────────
@@ -154,13 +165,15 @@ public abstract class AttackBase : MonoBehaviour
 
         if (currentTarget != null)
         {
-            targetHealth     = currentTarget.GetComponent<EnemyHp>();
+            targetHealth       = currentTarget.GetComponent<EnemyHp>();
+            targetPartyMember  = currentTarget.GetComponent<PartyMemberScript>();
             OnAttackStarted?.Invoke();
             firstAttackDelay = 0.15f;
         }
         else
         {
-            targetHealth     = null;
+            targetHealth       = null;
+            targetPartyMember  = null;
             firstAttackDelay = 0f;
             OnAttackEnded?.Invoke();
         }
@@ -190,20 +203,23 @@ public abstract class AttackBase : MonoBehaviour
 
         if (currentTarget != null)
         {
-            targetHealth = currentTarget.GetComponent<EnemyHp>();
+            targetHealth      = currentTarget.GetComponent<EnemyHp>();
+            targetPartyMember = currentTarget.GetComponent<PartyMemberScript>();
             OnAttackStarted?.Invoke();
         }
         else
         {
-            targetHealth = null;
+            targetHealth      = null;
+            targetPartyMember = null;
             OnAttackEnded?.Invoke();
         }
     }
 
     protected void ClearTarget()
     {
-        currentTarget = null;
-        targetHealth  = null;
+        currentTarget      = null;
+        targetHealth       = null;
+        targetPartyMember  = null;
         OnAttackEnded?.Invoke();
     }
 
@@ -259,8 +275,9 @@ public abstract class AttackBase : MonoBehaviour
         firstAttackDelay = 0f;
 
         // 타겟도 같이 정리 — 안 하면 사망 후에도 LookAtTarget이 시체를 계속 회전시킴
-        currentTarget = null;
-        targetHealth  = null;
+        currentTarget      = null;
+        targetHealth       = null;
+        targetPartyMember  = null;
     }
 
     protected virtual void StopAttackCoroutine()
@@ -275,9 +292,10 @@ public abstract class AttackBase : MonoBehaviour
 
     public void ForceResetTarget()
     {
-        currentTarget    = null;
-        targetHealth     = null;
-        firstAttackDelay = 0f;
+        currentTarget      = null;
+        targetHealth       = null;
+        targetPartyMember  = null;
+        firstAttackDelay   = 0f;
     }
 
     public void CancelCurrentAttack()

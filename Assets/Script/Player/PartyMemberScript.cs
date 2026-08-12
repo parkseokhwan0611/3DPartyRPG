@@ -42,12 +42,17 @@ public class PartyMemberScript : MonoBehaviour
     // ─────────────────────────────────────────
     [Header("이동 설정")]
     public float stopDistance   = 2.0f;
-    public float resumeDistance = 3.5f;
+    public float resumeDistance = 2.7f;
     public float rotationSpeed  = 8.0f;
     [Tooltip("NavMeshAgent 가속도 — 방향 전환/출발 시 목표 속도까지 얼마나 빨리 도달하는지. 높을수록 즉각적")]
     public float moveAcceleration = 25f;
     [Tooltip("Idle 진입 후 Following 재진입을 막는 쿨다운 (초)")]
     public float followCooldown = 0.3f;
+    [Tooltip("전투 중(자기 몬스터를 공격하는 중)에도, 리더와의 거리가 resumeDistance의 이 배수를 넘으면 " +
+             "공격을 즉시 끊고 따라붙는다 — 보스 스킬 회피처럼 리더가 갑자기 멀리 움직였을 때, 공격 " +
+             "애니메이션이 끝날 때까지 팔로워가 제자리에 묶여있는 것을 막기 위함. 너무 작으면 평소 전투 " +
+             "중에도 자주 끊겨 산만해지니 2~3 정도 권장")]
+    public float emergencyFollowMultiplier = 2f;
 
     [Header("이동 속도 (역할별 고정값)")]
     [Tooltip("리더일 때 이동 속도. 클래스별 스탯이 아닌 이 값으로 고정 — 팔로워가 계속 따라올 수 있는 속도로 맞춤")]
@@ -119,7 +124,25 @@ public class PartyMemberScript : MonoBehaviour
 
         UpdateAnimation();
 
-        if (CurrentState == MemberState.Attacking) return;
+        if (CurrentState == MemberState.Attacking)
+        {
+            // 평소 전투 중에는 공격을 끝까지 재생하지만, 리더가 스킬 회피 등으로 갑자기 멀리
+            // 벗어나면(resumeDistance의 emergencyFollowMultiplier배 이상) 공격을 즉시 끊고 따라붙는다.
+            // 그러지 않으면 공격 애니메이션(윈드업+후딜)이 끝날 때까지 팔로워가 위험 지역에 그대로
+            // 묶여있게 되어, 평소 이동과 달리 전투 중 회피만 유독 굼떠 보이는 원인이 된다
+            if (!isLeader && targetToFollow != null)
+            {
+                float sqrDist      = (transform.position - targetToFollow.position).sqrMagnitude;
+                float emergencyDist = resumeDistance * emergencyFollowMultiplier;
+                if (sqrDist > emergencyDist * emergencyDist)
+                {
+                    attackComp?.ForceCancelAttack();
+                    ChangeState(MemberState.Following);
+                    _lastFollowDestination = Vector3.positiveInfinity;
+                }
+            }
+            return;
+        }
 
         if (skillManager != null && skillManager.IsActivatingSkill) return;
         if (attackComp  != null && attackComp.IsCastingSkill) return;
