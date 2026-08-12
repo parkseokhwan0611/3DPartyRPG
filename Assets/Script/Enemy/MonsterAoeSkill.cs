@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 // MonsterSkillBase 예시 구현 — 타겟 위치를 중심으로 범위 피해를 준다.
@@ -13,12 +14,45 @@ public class MonsterAoeSkill : MonsterSkillBase
     [Tooltip("ObjectPoolManager에 등록한 이펙트 풀 키 (선택 — 비워두면 이펙트 없이 피해만 적용)")]
     public string effectPoolKey;
 
-    private readonly Collider[] _hitBuffer = new Collider[16];
+    [Header("# 인디케이터 (선택 — 비워두면 표시 안 함)")]
+    [Tooltip("ObjectPoolManager에 등록한 CircleSkillIndicator 프리팹의 풀 키")]
+    public string indicatorPoolKey;
 
+    private readonly Collider[] _hitBuffer = new Collider[16];
+    private CircleSkillIndicator _activeIndicator;
+    private Vector3 _lockedCenter;
+    private Coroutine _damageRoutine;
+
+    // 예고 시작 시점의 위치를 고정 — 실행 시점에 타겟의 최신 위치를 다시 읽으면 인디케이터가
+    // 보여준 곳과 실제 판정 위치가 어긋나(플레이어가 이동한 경우) 회피가 무의미해진다
+    public override void OnWindupStart(Transform target)
+    {
+        _lockedCenter = target != null ? target.position : transform.position;
+
+        if (string.IsNullOrEmpty(indicatorPoolKey) || ObjectPoolManager.instance == null) return;
+
+        var go = ObjectPoolManager.instance.GetGo(indicatorPoolKey);
+        if (go == null) return;
+
+        _activeIndicator = go.GetComponent<CircleSkillIndicator>();
+        if (_activeIndicator == null) return;
+
+        _activeIndicator.Show(_lockedCenter, radius);
+    }
+
+    public override void OnWindupEnd()
+    {
+        if (_activeIndicator == null) return;
+        _activeIndicator.Hide();
+        _activeIndicator = null;
+    }
+
+    // 시전 이펙트는 여기서 즉시 스폰하되, 실제 데미지 판정은 attackDuration만큼 늦춰서 적용한다 —
+    // 플레이어 스킬(DamageSkill의 effectSpawnDelay/SkillZone)처럼 "이펙트가 먼저 보이고 데미지는 나중에"
+    // 패턴을 맞추기 위함. attackDuration이 0이면 기존처럼 즉시 판정
     public override void ExecuteSkill(Transform target)
     {
-        if (target == null) return;
-        Vector3 center = target.position;
+        Vector3 center = _lockedCenter;
 
         if (!string.IsNullOrEmpty(effectPoolKey) && ObjectPoolManager.instance != null)
         {
@@ -26,6 +60,29 @@ public class MonsterAoeSkill : MonsterSkillBase
             if (vfx != null) vfx.transform.SetPositionAndRotation(center, Quaternion.identity);
         }
 
+        if (attackDuration > 0f)
+            _damageRoutine = StartCoroutine(ApplyDamageAfterDelay(center, attackDuration));
+        else
+            ApplyDamage(center);
+    }
+
+    // 몬스터가 죽거나 스턴당해 시전이 강제 취소되면, 아직 안 터진 지연 데미지도 함께 취소
+    public override void OnForceCancelled()
+    {
+        if (_damageRoutine == null) return;
+        StopCoroutine(_damageRoutine);
+        _damageRoutine = null;
+    }
+
+    private IEnumerator ApplyDamageAfterDelay(Vector3 center, float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        _damageRoutine = null;
+        ApplyDamage(center);
+    }
+
+    private void ApplyDamage(Vector3 center)
+    {
         int hitCount = Physics.OverlapSphereNonAlloc(center, radius, _hitBuffer, targetLayer);
         for (int i = 0; i < hitCount; i++)
         {

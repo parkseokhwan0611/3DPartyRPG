@@ -24,17 +24,23 @@ public class MonsterGrenadeSkill : MonsterSkillBase
     [Tooltip("체크하면 마법 피해(마법저항력으로 경감), 해제하면 물리 피해(방어력으로 경감)")]
     public bool isMagicDamage = false;
 
-    public override void ExecuteSkill(Transform target)
+    [Header("# 인디케이터 (선택 — 비워두면 표시 안 함)")]
+    [Tooltip("ObjectPoolManager에 등록한 CircleSkillIndicator 프리팹의 풀 키")]
+    public string indicatorPoolKey;
+
+    private CircleSkillIndicator _activeIndicator;
+    private Vector3 _lockedLandingPos;
+
+    // 던지는 순간(예고 시작 시점)의 목표 위치를 그대로 착지 지점으로 고정 — 비행 중 타겟이 움직여도
+    // 궤적이 흔들리지 않고, 플레이어는 인디케이터를 보고 착지 전에 그 자리를 피할 수 있다
+    public override void OnWindupStart(Transform target)
     {
-        if (target == null) return;
-        if (ObjectPoolManager.instance == null || string.IsNullOrEmpty(grenadePoolKey)) return;
-
-        Vector3 spawnPos = throwPoint != null ? throwPoint.position : transform.position + Vector3.up;
-
-        // 던지는 순간의 목표 위치를 그대로 착지 지점으로 고정 — 비행 중 타겟이 움직여도
-        // 궤적이 흔들리지 않고, 플레이어는 착지 전에 그 자리를 피할 수 있다
-        Transform aimPoint  = target.Find("AimTarget");
-        Vector3   landingPos = aimPoint != null ? aimPoint.position : target.position;
+        Vector3 landingPos = transform.position;
+        if (target != null)
+        {
+            Transform aimPoint = target.Find("AimTarget");
+            landingPos = aimPoint != null ? aimPoint.position : target.position;
+        }
 
         if (groundLayer.value != 0)
         {
@@ -42,6 +48,33 @@ public class MonsterGrenadeSkill : MonsterSkillBase
             if (Physics.Raycast(rayOrigin, Vector3.down, out RaycastHit groundHit, 30f, groundLayer, QueryTriggerInteraction.Ignore))
                 landingPos = groundHit.point;
         }
+
+        _lockedLandingPos = landingPos;
+
+        if (string.IsNullOrEmpty(indicatorPoolKey) || ObjectPoolManager.instance == null) return;
+
+        var go = ObjectPoolManager.instance.GetGo(indicatorPoolKey);
+        if (go == null) return;
+
+        _activeIndicator = go.GetComponent<CircleSkillIndicator>();
+        if (_activeIndicator == null) return;
+
+        _activeIndicator.Show(_lockedLandingPos, explosionRadius);
+    }
+
+    public override void OnWindupEnd()
+    {
+        if (_activeIndicator == null) return;
+        _activeIndicator.Hide();
+        _activeIndicator = null;
+    }
+
+    public override void ExecuteSkill(Transform target)
+    {
+        if (ObjectPoolManager.instance == null || string.IsNullOrEmpty(grenadePoolKey)) return;
+
+        Vector3 spawnPos   = throwPoint != null ? throwPoint.position : transform.position + Vector3.up;
+        Vector3 landingPos = _lockedLandingPos;
 
         var grenadeGo = ObjectPoolManager.instance.GetGo(grenadePoolKey);
         if (grenadeGo == null) return;

@@ -14,7 +14,7 @@ using UnityEngine.AI;
 // 타이밍마다 "스킬을 쓸지 기본 공격을 쓸지"를 먼저 결정할 기회를 갖게 한다
 [DefaultExecutionOrder(-10)]
 [RequireComponent(typeof(AttackBase))]
-public class EliteMonsterSkillController : MonoBehaviour
+public class EliteMonsterSkillController : MonoBehaviour, ISkillCaster
 {
     [Header("# 참조")]
     [Tooltip("이 정예 몬스터가 쓸 스킬. MonsterSkillBase를 상속한 컴포넌트를 만들어 연결")]
@@ -105,6 +105,12 @@ public class EliteMonsterSkillController : MonoBehaviour
         if (!string.IsNullOrEmpty(skill.skillSfxKey))
             AudioManager.instance?.PlaySFX(skill.skillSfxKey);
 
+        // 이펙트 자체가 유지되는 시간이 있으면 인디케이터를 그만큼 더 붙잡아둠 (0이면 즉시 통과)
+        if (skill.attackDuration > 0f)
+            yield return new WaitForSeconds(skill.attackDuration);
+
+        skill.OnWindupEnd(); // 인디케이터 등 예고 연출 정리
+
         // 발사/실행 이후에도 애니메이션이 끝날 때까지는 계속 정지 상태 유지 —
         // 여기서 바로 풀면 던지는 모션이 재생되는 도중에 이동을 시작해버려 어색해 보인다
         yield return new WaitForSeconds(skill.recoveryDuration);
@@ -124,6 +130,8 @@ public class EliteMonsterSkillController : MonoBehaviour
         {
             StopCoroutine(_castRoutine);
             _castRoutine = null;
+            skill?.OnWindupEnd();       // 취소돼도 인디케이터 등 예고 연출은 반드시 정리
+            skill?.OnForceCancelled();  // 지연 실행 중이던 효과(데미지 등)가 있다면 함께 정지
         }
         if (_attackBase != null) _attackBase.IsCastingSkill = false;
         // isStopped는 여기서 풀지 않음 — 스턴 때문에 취소된 거라면 BasicMonsterScript.HandleStunEnded가

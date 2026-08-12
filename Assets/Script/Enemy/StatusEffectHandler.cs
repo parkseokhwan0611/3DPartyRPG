@@ -10,7 +10,7 @@ public class StatusEffectHandler : MonoBehaviour
     private AttackBase attackBase;
     private MonsterMeleeAttack monsterMeleeAttack;
     private MonsterRangedAttack monsterRangedAttack;
-    private EliteMonsterSkillController eliteSkillController;
+    private ISkillCaster skillCaster; // EliteMonsterSkillController / BossMonsterSkillController 공용
 
     // 원본 수치 저장 (디버프 해제 시 정확히 복구)
     private float baseSpeed           = 0f; // Awake 시점 고정 기준 속도 — 이후 절대 덮어쓰지 않음
@@ -40,7 +40,7 @@ public class StatusEffectHandler : MonoBehaviour
         attackBase          = GetComponent<AttackBase>();
         monsterMeleeAttack  = GetComponent<MonsterMeleeAttack>();
         monsterRangedAttack = GetComponent<MonsterRangedAttack>();
-        eliteSkillController = GetComponent<EliteMonsterSkillController>();
+        skillCaster          = GetComponent<ISkillCaster>();
         baseSpeed     = agent != null ? agent.speed : 3f;
     }
 
@@ -109,7 +109,7 @@ public class StatusEffectHandler : MonoBehaviour
         if (monsterMeleeAttack  != null) monsterMeleeAttack.ResetAttackState();
         if (monsterRangedAttack != null) monsterRangedAttack.ResetAttackState();
         if (attackBase    != null) attackBase.ForceCancelAttack();
-        if (eliteSkillController != null) eliteSkillController.ForceCancelSkill();
+        skillCaster?.ForceCancelSkill();
     }
 
     private void EndStun()
