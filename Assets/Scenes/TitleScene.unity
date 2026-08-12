@@ -2044,10 +2044,10 @@ MonoBehaviour:
   tipText: {fileID: 1503242662}
   minDisplayTime: 0.5
   tips:
-  - "Tip: \uD30C\uD2F0\uC6D0\uC744 A / S / D \uD0A4\uB85C \uBC14\uAFD4\uAC00\uBA70
+  - "Tip: \uD30C\uD2F0\uC6D0\uC744 1 / 2 / 3 \uD0A4\uB85C \uBC14\uAFD4\uAC00\uBA70
     \uC804\uD22C\uD558\uBA74 \uB354 \uC720\uB9AC\uD569\uB2C8\uB2E4."
-  - "Tip: \uD3EC\uC158\uC740 1\uBC88(HP), 2\uBC88(MP) \uD0A4\uB85C \uBE60\uB974\uAC8C
-    \uC0AC\uC6A9\uD560 \uC218 \uC788\uC2B5\uB2C8\uB2E4."
+  - "Tip: \uD3EC\uC158\uC740 S(HP), D(MP) \uD0A4\uB85C \uBE60\uB974\uAC8C \uC0AC\uC6A9\uD560
+    \uC218 \uC788\uC2B5\uB2C8\uB2E4."
   - "Tip: \uBCF4\uC2A4 \uB8F8\uC5D0\uC11C\uB294 \uC138\uC774\uBE0C\uD560 \uC218 \uC5C6\uC73C\uB2C8
     \uC785\uC7A5 \uC804\uC5D0 \uC800\uC7A5\uD574\uB450\uC138\uC694."
   - "Tip: \uC7A5\uBE44 \uC544\uC774\uD15C\uC740 \uC778\uBCA4\uD1A0\uB9AC\uC5D0\uC11C
@@ -2056,13 +2056,10 @@ MonoBehaviour:
     \uB4F1\uB85D\uD574\uC57C \uC0AC\uC6A9 \uAC00\uB2A5\uD569\uB2C8\uB2E4."
   - "Tip: \uD30C\uD2F0\uC6D0\uB4E4\uC740 \uC790\uB3D9\uC73C\uB85C \uB4F1\uB85D\uB41C
     \uC2A4\uD0AC\uC744 \uC0AC\uC6A9\uD569\uB2C8\uB2E4."
-  - "Tip: \uB9C8\uBC95\uC0AC\uB4E4\uC740 \uCC44\uC18C\uC640 \uD574\uC0B0\uBB3C\uC744
-    \uC2EB\uC5B4\uD569\uB2C8\uB2E4."
-  - "Tip: \uAE30\uC0AC\uC5D0\uAC8C \uC778\uC815\uBC1B\uC73C\uB824\uBA74 \uAC80\uC220\uB85C
-    \uC774\uAE30\uAC70\uB098 \uC2DD\uC0AC\uB7C9\uC73C\uB85C \uC774\uAE30\uBA74 \uB429\uB2C8\uB2E4."
   - "Tip: \uB808\uBCA8\uC5C5\uC744 \uD574\uB3C4 \uAE30\uBCF8 \uB2A5\uB825\uCE58\uB294
-    \uC0C1\uC2B9\uD558\uC9C0 \uC54A\uC2B5\uB2C8\uB2E4. \uC2A4\uD0EF\uC744 \uC62C\uB824\uC11C
-    \uB2A5\uB825\uCE58\uB97C \uC62C\uB9AC\uC138\uC694."
+    \uC0C1\uC2B9\uD558\uC9C0 \uC54A\uC2B5\uB2C8\uB2E4. \uAE30\uBCF8 \uB2A5\uB825\uCE58\uB294
+    \uB808\uBCA8\uC5C5 \uC2A4\uD0EF\uACFC \uC544\uC774\uD15C\uC73C\uB85C \uC62C\uB9B4
+    \uC218 \uC788\uC2B5\uB2C8\uB2E4."
 --- !u!4 &503716473
 Transform:
   m_ObjectHideFlags: 0
@@ -3979,277 +3976,6 @@ RectTransform:
   m_AnchoredPosition: {x: -5, y: 0}
   m_SizeDelta: {x: -20, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!1 &947273739
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 947273745}
-  - component: {fileID: 947273744}
-  - component: {fileID: 947273743}
-  - component: {fileID: 947273742}
-  - component: {fileID: 947273741}
-  - component: {fileID: 947273740}
-  m_Layer: 0
-  m_Name: DataManager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &947273740
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 947273739}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5b73b5cba48c23c44870d9e9e17fe561, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  bgmClips:
-  - name: LoginBGM
-    clip: {fileID: 8300000, guid: a2702e463da324b47946ea6761b80b93, type: 3}
-    volumeMultiplier: 1
-  - name: ForestBGM
-    clip: {fileID: 8300000, guid: 5271d111bb8fae946ba110b45684b9a1, type: 3}
-    volumeMultiplier: 1
-  bgmVolume: 0.5
-  bgmFadeDuration: 1
-  sfxClips:
-  - name: UIClick
-    clip: {fileID: 8300000, guid: fa0bb39517e27f443af6474eb3fa4d37, type: 3}
-    volumeMultiplier: 0.7
-  - name: UIOpen
-    clip: {fileID: 8300000, guid: 824842097062b024a9aa078956ba02f8, type: 3}
-    volumeMultiplier: 0.6
-  - name: UIClose
-    clip: {fileID: 8300000, guid: 824842097062b024a9aa078956ba02f8, type: 3}
-    volumeMultiplier: 0.6
-  - name: ItemDrop
-    clip: {fileID: 8300000, guid: 9fe2a65c2791a0e4f910754712bb780a, type: 3}
-    volumeMultiplier: 1
-  - name: ItemPickup
-    clip: {fileID: 8300000, guid: ee89bfdff167ccf4f861a86bad4f2f85, type: 3}
-    volumeMultiplier: 1
-  - name: QuestAccept
-    clip: {fileID: 8300000, guid: 6a1305f7dbe98a047bcbb0b09329d696, type: 3}
-    volumeMultiplier: 1
-  - name: QuestClear
-    clip: {fileID: 8300000, guid: 6546d1c98ff9f1b46b73ac0164b565e4, type: 3}
-    volumeMultiplier: 1
-  - name: Money
-    clip: {fileID: 8300000, guid: 4df385fd72bcab34abec4aaef3b5b4d7, type: 3}
-    volumeMultiplier: 2
-  - name: LevelUp
-    clip: {fileID: 8300000, guid: d07f9e264ae33124ab86d06680482d4c, type: 3}
-    volumeMultiplier: 1
-  - name: ItemEquip
-    clip: {fileID: 8300000, guid: 0dedb38f1ffb6914c874abd51300cd24, type: 3}
-    volumeMultiplier: 2
-  - name: ItemUnequip
-    clip: {fileID: 8300000, guid: 0dedb38f1ffb6914c874abd51300cd24, type: 3}
-    volumeMultiplier: 2
-  - name: EnhanceSuccess
-    clip: {fileID: 8300000, guid: 83929b6b681ea5b4db045494caf8de4f, type: 3}
-    volumeMultiplier: 1
-  - name: EnhanceFail
-    clip: {fileID: 8300000, guid: 3705c3d02ae4bd64b828de9cd3e2a4dd, type: 3}
-    volumeMultiplier: 1
-  - name: GameOver
-    clip: {fileID: 8300000, guid: b720ffea23268ae4cafdb4bbcdde3dbb, type: 3}
-    volumeMultiplier: 1
-  - name: PartyMemberDeath
-    clip: {fileID: 8300000, guid: 21b32138cd268ae4abb2a25c5b3cdbcb, type: 3}
-    volumeMultiplier: 1
-  - name: SaveComplete
-    clip: {fileID: 8300000, guid: 028d1e9bbc228e841aeaec68fa6bdb7f, type: 3}
-    volumeMultiplier: 1
-  - name: LeaderChange
-    clip: {fileID: 8300000, guid: 0c0ad3b8943f2f24cbe2961f08e9ef0c, type: 3}
-    volumeMultiplier: 1
-  - name: SkillLevelUp
-    clip: {fileID: 8300000, guid: a76f0ff6137c8c24b8740e168a6654b6, type: 3}
-    volumeMultiplier: 0.5
-  - name: AutoSkillToggle
-    clip: {fileID: 8300000, guid: 84750f4b5dce13841b157c93d50b5ae0, type: 3}
-    volumeMultiplier: 0.8
-  - name: Tanker_NormalAtk
-    clip: {fileID: 8300000, guid: 57c9feaa536d55847bf63eae68f8d2af, type: 3}
-    volumeMultiplier: 0.4
-  - name: Dealer_NormalAtk
-    clip: {fileID: 8300000, guid: 81757b4a7c1bd5d4fb25d7d9c0695e50, type: 3}
-    volumeMultiplier: 0.5
-  - name: Healer_NormalAtk
-    clip: {fileID: 8300000, guid: 587a71d49f01bd34ea2ebe10fdbc1231, type: 3}
-    volumeMultiplier: 0.2
-  - name: Tanker_Main1
-    clip: {fileID: 8300000, guid: 335bad28d67f0be42bcd32cc1ebb78a6, type: 3}
-    volumeMultiplier: 1
-  - name: Tanker_Main2
-    clip: {fileID: 8300000, guid: cbd486e41831c624fb507101296d2ab1, type: 3}
-    volumeMultiplier: 1
-  - name: Tanker_Main3
-    clip: {fileID: 8300000, guid: 61ce2e988609d0c41afb9493d9110d30, type: 3}
-    volumeMultiplier: 1
-  - name: Tanker_Sub1
-    clip: {fileID: 8300000, guid: fee467320b5449b4a968b9b2bf61e2fb, type: 3}
-    volumeMultiplier: 0.8
-  - name: Tanker_Sub2
-    clip: {fileID: 8300000, guid: fee467320b5449b4a968b9b2bf61e2fb, type: 3}
-    volumeMultiplier: 0.8
-  - name: Dealer_Main1
-    clip: {fileID: 8300000, guid: 701b023a9cd73fe429a04214a35a7a00, type: 3}
-    volumeMultiplier: 1
-  - name: Dealer_Main2
-    clip: {fileID: 8300000, guid: 55075c8e4984c00419661416afdbb266, type: 3}
-    volumeMultiplier: 1
-  - name: Dealer_Main3
-    clip: {fileID: 8300000, guid: 4654ab58d02925a45a67c66614392317, type: 3}
-    volumeMultiplier: 1
-  - name: Dealer_Sub1
-    clip: {fileID: 8300000, guid: fee467320b5449b4a968b9b2bf61e2fb, type: 3}
-    volumeMultiplier: 0.8
-  - name: Dealer_Sub2
-    clip: {fileID: 8300000, guid: fee467320b5449b4a968b9b2bf61e2fb, type: 3}
-    volumeMultiplier: 0.8
-  - name: Healer_Main1
-    clip: {fileID: 8300000, guid: bccc1f64ca0d19c46b00a541f659b0e3, type: 3}
-    volumeMultiplier: 2
-  - name: Healer_Main2
-    clip: {fileID: 8300000, guid: 46a57bd6a7feb6142bd9357672693775, type: 3}
-    volumeMultiplier: 0.3
-  - name: Healer_Main3
-    clip: {fileID: 8300000, guid: bccc1f64ca0d19c46b00a541f659b0e3, type: 3}
-    volumeMultiplier: 2
-  - name: Healer_Sub1
-    clip: {fileID: 8300000, guid: 1ba0d2fd34a01304cb2c58aa0ba96609, type: 3}
-    volumeMultiplier: 0.3
-  - name: Healer_Sub2
-    clip: {fileID: 8300000, guid: fee467320b5449b4a968b9b2bf61e2fb, type: 3}
-    volumeMultiplier: 0.8
-  sfxVolume: 0.5
-  sfxSourceCount: 8
-  sceneBgmMap:
-  - sceneName: TitleScene
-    bgmKey: LoginBGM
-  - sceneName: Forest 1-1
-    bgmKey: ForestBGM
-  enableGlobalUiClick: 1
-  uiClickSfxKey: UIClick
---- !u!114 &947273741
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 947273739}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f54dbca1ba4ec7344993ef32162032ec, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  mainQuestChain: {fileID: 11400000, guid: 18898cd7788ad6945b41fa0e3998aa4c, type: 2}
---- !u!114 &947273742
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 947273739}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 21fe7427b01b91748b1bb1b13ed7b088, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  isInBossRoom: 0
---- !u!114 &947273743
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 947273739}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7a4e7a31821415e4d87d309d6bf800f8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &947273744
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 947273739}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 898267374e83d23409ef68162b154125, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  partyEquipments: []
-  baseDataList:
-  - {fileID: 11400000, guid: 7364cb022d14fb149badfc133d4349ed, type: 2}
-  - {fileID: 11400000, guid: 9cf2668ef38f4794c96ee30e10d51d69, type: 2}
-  - {fileID: 11400000, guid: 5d131dd64cea89a4d8589ee810cb2583, type: 2}
-  skillTrees:
-  - {fileID: 11400000, guid: 64f7218b64d5ca948a695aeab713bdf9, type: 2}
-  - {fileID: 11400000, guid: 9d32c408ef0268741b90aa32fe2f11fd, type: 2}
-  - {fileID: 11400000, guid: fdd707c29e6959b4fbf4691a21ef1e72, type: 2}
-  partyLevel: 1
-  partyExp: 0
-  gold: 0
-  selectedPartyIndex: 0
-  sceneDisplayNames:
-  - sceneName: Forest 1-1
-    displayName: "\uC232 1-1"
-  currentLeaderIndex: 0
-  pendingAutoRegisterPotions: 0
-  partyQuickSlots: []
-  hpPotionSlotItemId: 
-  mpPotionSlotItemId: 
-  startSkillPoint: 1
-  startItems:
-  - item: {fileID: 11400000, guid: 780180cf1b0df8945a2df703d6f54460, type: 2}
-    count: 5
-  - item: {fileID: 11400000, guid: 090f952f171e2c04f8363455e384f321, type: 2}
-    count: 5
-  startEquips:
-  - characterIndex: 0
-    item: {fileID: 11400000, guid: 360ee5c4417b22a47b5f196268d678de, type: 2}
-  - characterIndex: 1
-    item: {fileID: 11400000, guid: fd23787e5d867214a8000ae17c9bea2d, type: 2}
-  - characterIndex: 2
-    item: {fileID: 11400000, guid: fd23787e5d867214a8000ae17c9bea2d, type: 2}
-  itemRegistry:
-  - {fileID: 11400000, guid: 780180cf1b0df8945a2df703d6f54460, type: 2}
-  - {fileID: 11400000, guid: 090f952f171e2c04f8363455e384f321, type: 2}
-  - {fileID: 11400000, guid: c48a38f824323894e972bbdd7e025ce7, type: 2}
-  - {fileID: 11400000, guid: 9022e3a27e6b96144983138f931fa959, type: 2}
-  - {fileID: 11400000, guid: fd23787e5d867214a8000ae17c9bea2d, type: 2}
-  - {fileID: 11400000, guid: 360ee5c4417b22a47b5f196268d678de, type: 2}
-  baseExp: 50
-  expGrowthRate: 8
---- !u!4 &947273745
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 947273739}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 301.08188, y: 330.7694, z: 63.146057}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &955575928
 GameObject:
   m_ObjectHideFlags: 0
@@ -6667,50 +6393,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1556132849}
   m_CullTransparentMesh: 1
---- !u!1 &1644738692
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1644738694}
-  - component: {fileID: 1644738693}
-  m_Layer: 0
-  m_Name: SettingManager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &1644738693
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1644738692}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1f80982d6d96c6947884b6ec6b728bf2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!4 &1644738694
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1644738692}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1694030632
 GameObject:
   m_ObjectHideFlags: 0
@@ -7453,6 +7135,311 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: -100}
   m_SizeDelta: {x: 1600, y: 400}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!1 &2017568980
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2017568987}
+  - component: {fileID: 2017568986}
+  - component: {fileID: 2017568985}
+  - component: {fileID: 2017568984}
+  - component: {fileID: 2017568983}
+  - component: {fileID: 2017568982}
+  - component: {fileID: 2017568981}
+  m_Layer: 0
+  m_Name: CoreSystem
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &2017568981
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2017568980}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b73b5cba48c23c44870d9e9e17fe561, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  bgmClips:
+  - name: LoginBGM
+    clip: {fileID: 8300000, guid: a2702e463da324b47946ea6761b80b93, type: 3}
+    volumeMultiplier: 1
+  - name: ForestBGM
+    clip: {fileID: 8300000, guid: 5271d111bb8fae946ba110b45684b9a1, type: 3}
+    volumeMultiplier: 1
+  bgmVolume: 0.5
+  bgmFadeDuration: 1
+  sfxClips:
+  - name: UIClick
+    clip: {fileID: 8300000, guid: fa0bb39517e27f443af6474eb3fa4d37, type: 3}
+    volumeMultiplier: 0.7
+  - name: UIOpen
+    clip: {fileID: 8300000, guid: 824842097062b024a9aa078956ba02f8, type: 3}
+    volumeMultiplier: 0.6
+  - name: UIClose
+    clip: {fileID: 8300000, guid: 824842097062b024a9aa078956ba02f8, type: 3}
+    volumeMultiplier: 0.6
+  - name: ItemDrop
+    clip: {fileID: 8300000, guid: 9fe2a65c2791a0e4f910754712bb780a, type: 3}
+    volumeMultiplier: 1
+  - name: ItemPickup
+    clip: {fileID: 8300000, guid: ee89bfdff167ccf4f861a86bad4f2f85, type: 3}
+    volumeMultiplier: 1
+  - name: QuestAccept
+    clip: {fileID: 8300000, guid: 6a1305f7dbe98a047bcbb0b09329d696, type: 3}
+    volumeMultiplier: 1
+  - name: QuestClear
+    clip: {fileID: 8300000, guid: 6546d1c98ff9f1b46b73ac0164b565e4, type: 3}
+    volumeMultiplier: 1
+  - name: Money
+    clip: {fileID: 8300000, guid: 4df385fd72bcab34abec4aaef3b5b4d7, type: 3}
+    volumeMultiplier: 2
+  - name: LevelUp
+    clip: {fileID: 8300000, guid: d07f9e264ae33124ab86d06680482d4c, type: 3}
+    volumeMultiplier: 1
+  - name: ItemEquip
+    clip: {fileID: 8300000, guid: 0dedb38f1ffb6914c874abd51300cd24, type: 3}
+    volumeMultiplier: 2
+  - name: ItemUnequip
+    clip: {fileID: 8300000, guid: 0dedb38f1ffb6914c874abd51300cd24, type: 3}
+    volumeMultiplier: 2
+  - name: EnhanceSuccess
+    clip: {fileID: 8300000, guid: 83929b6b681ea5b4db045494caf8de4f, type: 3}
+    volumeMultiplier: 1
+  - name: EnhanceFail
+    clip: {fileID: 8300000, guid: 3705c3d02ae4bd64b828de9cd3e2a4dd, type: 3}
+    volumeMultiplier: 1
+  - name: GameOver
+    clip: {fileID: 8300000, guid: b720ffea23268ae4cafdb4bbcdde3dbb, type: 3}
+    volumeMultiplier: 1
+  - name: PartyMemberDeath
+    clip: {fileID: 8300000, guid: 21b32138cd268ae4abb2a25c5b3cdbcb, type: 3}
+    volumeMultiplier: 1
+  - name: SaveComplete
+    clip: {fileID: 8300000, guid: 028d1e9bbc228e841aeaec68fa6bdb7f, type: 3}
+    volumeMultiplier: 1
+  - name: LeaderChange
+    clip: {fileID: 8300000, guid: 0c0ad3b8943f2f24cbe2961f08e9ef0c, type: 3}
+    volumeMultiplier: 1
+  - name: SkillLevelUp
+    clip: {fileID: 8300000, guid: a76f0ff6137c8c24b8740e168a6654b6, type: 3}
+    volumeMultiplier: 0.5
+  - name: AutoSkillToggle
+    clip: {fileID: 8300000, guid: 84750f4b5dce13841b157c93d50b5ae0, type: 3}
+    volumeMultiplier: 0.8
+  - name: Tanker_NormalAtk
+    clip: {fileID: 8300000, guid: 57c9feaa536d55847bf63eae68f8d2af, type: 3}
+    volumeMultiplier: 0.4
+  - name: Dealer_NormalAtk
+    clip: {fileID: 8300000, guid: 81757b4a7c1bd5d4fb25d7d9c0695e50, type: 3}
+    volumeMultiplier: 0.5
+  - name: Healer_NormalAtk
+    clip: {fileID: 8300000, guid: 587a71d49f01bd34ea2ebe10fdbc1231, type: 3}
+    volumeMultiplier: 0.2
+  - name: Tanker_Main1
+    clip: {fileID: 8300000, guid: 335bad28d67f0be42bcd32cc1ebb78a6, type: 3}
+    volumeMultiplier: 1
+  - name: Tanker_Main2
+    clip: {fileID: 8300000, guid: cbd486e41831c624fb507101296d2ab1, type: 3}
+    volumeMultiplier: 1
+  - name: Tanker_Main3
+    clip: {fileID: 8300000, guid: 61ce2e988609d0c41afb9493d9110d30, type: 3}
+    volumeMultiplier: 1
+  - name: Tanker_Sub1
+    clip: {fileID: 8300000, guid: fee467320b5449b4a968b9b2bf61e2fb, type: 3}
+    volumeMultiplier: 0.8
+  - name: Tanker_Sub2
+    clip: {fileID: 8300000, guid: fee467320b5449b4a968b9b2bf61e2fb, type: 3}
+    volumeMultiplier: 0.8
+  - name: Dealer_Main1
+    clip: {fileID: 8300000, guid: 701b023a9cd73fe429a04214a35a7a00, type: 3}
+    volumeMultiplier: 1
+  - name: Dealer_Main2
+    clip: {fileID: 8300000, guid: 55075c8e4984c00419661416afdbb266, type: 3}
+    volumeMultiplier: 1
+  - name: Dealer_Main3
+    clip: {fileID: 8300000, guid: 4654ab58d02925a45a67c66614392317, type: 3}
+    volumeMultiplier: 1
+  - name: Dealer_Sub1
+    clip: {fileID: 8300000, guid: fee467320b5449b4a968b9b2bf61e2fb, type: 3}
+    volumeMultiplier: 0.8
+  - name: Dealer_Sub2
+    clip: {fileID: 8300000, guid: fee467320b5449b4a968b9b2bf61e2fb, type: 3}
+    volumeMultiplier: 0.8
+  - name: Healer_Main1
+    clip: {fileID: 8300000, guid: bccc1f64ca0d19c46b00a541f659b0e3, type: 3}
+    volumeMultiplier: 2
+  - name: Healer_Main2
+    clip: {fileID: 8300000, guid: 46a57bd6a7feb6142bd9357672693775, type: 3}
+    volumeMultiplier: 0.3
+  - name: Healer_Main3
+    clip: {fileID: 8300000, guid: bccc1f64ca0d19c46b00a541f659b0e3, type: 3}
+    volumeMultiplier: 2
+  - name: Healer_Sub1
+    clip: {fileID: 8300000, guid: 1ba0d2fd34a01304cb2c58aa0ba96609, type: 3}
+    volumeMultiplier: 0.3
+  - name: Healer_Sub2
+    clip: {fileID: 8300000, guid: fee467320b5449b4a968b9b2bf61e2fb, type: 3}
+    volumeMultiplier: 0.8
+  - name: GoblinAggro
+    clip: {fileID: 8300000, guid: 6586d9e64eea37642b1800890cc13087, type: 3}
+    volumeMultiplier: 0.7
+  - name: GoblinAggro2
+    clip: {fileID: 8300000, guid: f0399a694bde8c14c9adaf6d6ed2a3da, type: 3}
+    volumeMultiplier: 1
+  - name: GoblinBomb
+    clip: {fileID: 8300000, guid: b017cb77b163cf64095bc55e6fd5742e, type: 3}
+    volumeMultiplier: 0.5
+  - name: GoblinDeath
+    clip: {fileID: 8300000, guid: c686370b87b644c41889c2edd625e1b3, type: 3}
+    volumeMultiplier: 0.5
+  - name: GoblinExplosion
+    clip: {fileID: 8300000, guid: 3451839e5a7dc6f43a9584c7ea145181, type: 3}
+    volumeMultiplier: 0.6
+  - name: GoblinThief
+    clip: {fileID: 8300000, guid: 2e94b324b8a790242ac76895a9bf8547, type: 3}
+    volumeMultiplier: 0.5
+  - name: GoblinWarrior
+    clip: {fileID: 8300000, guid: c22daa5fb00f3a540af486bf62e52cae, type: 3}
+    volumeMultiplier: 0.6
+  sfxVolume: 0.5
+  sfxSourceCount: 8
+  sceneBgmMap:
+  - sceneName: TitleScene
+    bgmKey: LoginBGM
+  - sceneName: Forest 1-1
+    bgmKey: ForestBGM
+  enableGlobalUiClick: 1
+  uiClickSfxKey: UIClick
+--- !u!114 &2017568982
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2017568980}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1f80982d6d96c6947884b6ec6b728bf2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &2017568983
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2017568980}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f54dbca1ba4ec7344993ef32162032ec, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mainQuestChain: {fileID: 11400000, guid: 18898cd7788ad6945b41fa0e3998aa4c, type: 2}
+--- !u!114 &2017568984
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2017568980}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 21fe7427b01b91748b1bb1b13ed7b088, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isInBossRoom: 0
+--- !u!114 &2017568985
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2017568980}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7a4e7a31821415e4d87d309d6bf800f8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &2017568986
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2017568980}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 898267374e83d23409ef68162b154125, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  partyEquipments: []
+  baseDataList:
+  - {fileID: 11400000, guid: 7364cb022d14fb149badfc133d4349ed, type: 2}
+  - {fileID: 11400000, guid: 9cf2668ef38f4794c96ee30e10d51d69, type: 2}
+  - {fileID: 11400000, guid: 5d131dd64cea89a4d8589ee810cb2583, type: 2}
+  skillTrees:
+  - {fileID: 11400000, guid: 64f7218b64d5ca948a695aeab713bdf9, type: 2}
+  - {fileID: 11400000, guid: 9d32c408ef0268741b90aa32fe2f11fd, type: 2}
+  - {fileID: 11400000, guid: fdd707c29e6959b4fbf4691a21ef1e72, type: 2}
+  partyLevel: 1
+  partyExp: 0
+  gold: 0
+  selectedPartyIndex: 0
+  sceneDisplayNames:
+  - sceneName: Forest 1-1
+    displayName: "\uC232 1-1"
+  currentLeaderIndex: 0
+  pendingAutoRegisterPotions: 0
+  partyQuickSlots: []
+  hpPotionSlotItemId: 
+  mpPotionSlotItemId: 
+  startSkillPoint: 1
+  startItems:
+  - item: {fileID: 11400000, guid: 780180cf1b0df8945a2df703d6f54460, type: 2}
+    count: 5
+  - item: {fileID: 11400000, guid: 090f952f171e2c04f8363455e384f321, type: 2}
+    count: 5
+  startEquips:
+  - characterIndex: 0
+    item: {fileID: 11400000, guid: 360ee5c4417b22a47b5f196268d678de, type: 2}
+  - characterIndex: 1
+    item: {fileID: 11400000, guid: fd23787e5d867214a8000ae17c9bea2d, type: 2}
+  - characterIndex: 2
+    item: {fileID: 11400000, guid: fd23787e5d867214a8000ae17c9bea2d, type: 2}
+  itemRegistry:
+  - {fileID: 11400000, guid: 780180cf1b0df8945a2df703d6f54460, type: 2}
+  - {fileID: 11400000, guid: 090f952f171e2c04f8363455e384f321, type: 2}
+  - {fileID: 11400000, guid: c48a38f824323894e972bbdd7e025ce7, type: 2}
+  - {fileID: 11400000, guid: 9022e3a27e6b96144983138f931fa959, type: 2}
+  - {fileID: 11400000, guid: fd23787e5d867214a8000ae17c9bea2d, type: 2}
+  - {fileID: 11400000, guid: 360ee5c4417b22a47b5f196268d678de, type: 2}
+  baseExp: 50
+  expGrowthRate: 8
+--- !u!4 &2017568987
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2017568980}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 301.08188, y: 330.7694, z: 63.146057}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2030483631
 GameObject:
   m_ObjectHideFlags: 0
@@ -8551,6 +8538,5 @@ SceneRoots:
   - {fileID: 275412967}
   - {fileID: 543540313}
   - {fileID: 503716473}
-  - {fileID: 1644738694}
-  - {fileID: 947273745}
   - {fileID: 3079684}
+  - {fileID: 2017568987}

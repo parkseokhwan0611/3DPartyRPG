@@ -106,6 +106,7 @@ public class InventoryUI : MonoBehaviour
         // 슬롯 하위 컴포넌트 캐싱 + 드롭 타겟 추가
         foreach (var kvp in equipButtons)
         {
+            if (kvp.Value == null) continue; // 인스펙터에 슬롯 버튼 연결이 빠진 경우 스킵
             Transform t = kvp.Value.transform;
             equipIcons[kvp.Key]      = t.Find("Icon")?      .GetComponent<Image>();
             equipEmptyIcons[kvp.Key] = t.Find("EmptyIcon")? .GetComponent<Image>();
@@ -134,14 +135,15 @@ public class InventoryUI : MonoBehaviour
         // 장착 슬롯 버튼 이벤트
         foreach (var kvp in equipButtons)
         {
+            if (kvp.Value == null) continue; // 인스펙터에 슬롯 버튼 연결이 빠진 경우 스킵
             EquipSlot slot = kvp.Key;
             kvp.Value.onClick.AddListener(() => OnEquipSlotClicked(slot));
         }
 
-        sortButton   .onClick.AddListener(OnSortClicked);
-        equipButton  .onClick.AddListener(OnEquipClicked);
-        unequipButton.onClick.AddListener(OnUnequipClicked);
-        sellButton   .onClick.AddListener(OnSellClicked);
+        sortButton   ?.onClick.AddListener(OnSortClicked);
+        equipButton  ?.onClick.AddListener(OnEquipClicked);
+        unequipButton?.onClick.AddListener(OnUnequipClicked);
+        sellButton   ?.onClick.AddListener(OnSellClicked);
 
         if (registerPotionButton   != null) registerPotionButton  .onClick.AddListener(OnRegisterPotionClicked);
         if (deregisterPotionButton != null) deregisterPotionButton.onClick.AddListener(OnDeregisterPotionClicked);

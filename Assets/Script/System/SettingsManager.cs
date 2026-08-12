@@ -19,7 +19,13 @@ public class SettingsManager : MonoBehaviour
         if (instance != null && instance != this) { Destroy(gameObject); return; }
         instance = this;
         DontDestroyOnLoad(gameObject);
+    }
 
+    // AudioManager.instance가 자신의 Awake()에서 할당되는데, 서로 다른 루트 오브젝트라
+    // Awake() 호출 순서가 보장되지 않는다. 모든 Awake()가 끝난 뒤 실행되는 Start()에서
+    // 적용하면 AudioManager.instance가 이미 준비된 상태임이 보장됨
+    void Start()
+    {
         ApplySavedSettings();
     }
 
@@ -76,7 +82,7 @@ public class SettingsManager : MonoBehaviour
     public void SaveFullscreen(bool fullscreen) => PlayerPrefs.SetInt(KeyFullscreen, fullscreen ? 1 : 0);
 
     public float GetBgmVolume()  => PlayerPrefs.GetFloat(KeyBgmVolume, 0.5f);
-    public float GetSfxVolume()  => PlayerPrefs.GetFloat(KeySfxVolume, 1f);
+    public float GetSfxVolume()  => PlayerPrefs.GetFloat(KeySfxVolume, 0.5f);
     public int   GetQuality()    => PlayerPrefs.GetInt(KeyQuality, QualitySettings.GetQualityLevel());
     public bool  GetFullscreen() => PlayerPrefs.GetInt(KeyFullscreen, Screen.fullScreen ? 1 : 0) == 1;
 }

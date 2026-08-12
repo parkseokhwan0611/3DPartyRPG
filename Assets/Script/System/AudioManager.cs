@@ -198,29 +198,31 @@ public class AudioManager : MonoBehaviour
 
     private IEnumerator FadeToNewBgm(AudioClip newClip)
     {
-        yield return FadeVolume(bgmSource.volume, 0f);
+        yield return FadeVolume(bgmSource.volume, () => 0f);
         bgmSource.clip = newClip;
         bgmSource.Play();
-        yield return FadeVolume(0f, bgmVolume);
+        // 목표값을 고정 캡처하지 않고 매 프레임 bgmVolume을 다시 읽어서, 페이드 도중
+        // 설정창에서 볼륨 슬라이더를 조절해도 그 값이 즉시 반영되도록 함
+        yield return FadeVolume(0f, () => bgmVolume);
     }
 
     private IEnumerator FadeOutAndStop()
     {
-        yield return FadeVolume(bgmSource.volume, 0f);
+        yield return FadeVolume(bgmSource.volume, () => 0f);
         bgmSource.Stop();
         bgmSource.volume = bgmVolume;
     }
 
-    private IEnumerator FadeVolume(float from, float to)
+    private IEnumerator FadeVolume(float from, Func<float> toGetter)
     {
         float t = 0f;
         while (t < bgmFadeDuration)
         {
             t += Time.deltaTime;
-            bgmSource.volume = Mathf.Lerp(from, to, t / bgmFadeDuration);
+            bgmSource.volume = Mathf.Lerp(from, toGetter(), t / bgmFadeDuration);
             yield return null;
         }
-        bgmSource.volume = to;
+        bgmSource.volume = toGetter();
     }
 
     // ─────────────────────────────────────────────────────────────────
@@ -238,17 +240,6 @@ public class AudioManager : MonoBehaviour
         var src = sfxSources[sfxIndex];
         sfxIndex = (sfxIndex + 1) % sfxSources.Length;
         src.PlayOneShot(entry.clip, sfxVolume * entry.volumeMultiplier);
-    }
-
-    /// <summary>월드 위치가 있는 3D 효과음 (타격음, 몬스터 사망음 등)</summary>
-    public void PlaySFXAtPosition(string key, Vector3 position)
-    {
-        if (!sfxDict.TryGetValue(key, out var entry))
-        {
-            Debug.LogWarning($"[AudioManager] SFX 키 '{key}'를 찾을 수 없습니다.");
-            return;
-        }
-        AudioSource.PlayClipAtPoint(entry.clip, position, sfxVolume * entry.volumeMultiplier);
     }
 
     // ─────────────────────────────────────────────────────────────────

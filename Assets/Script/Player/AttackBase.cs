@@ -171,6 +171,13 @@ public abstract class AttackBase : MonoBehaviour
     {
         if (currentTarget == target) return;
 
+        // 공격 윈드업/후딜 도중 더 가까운 타겟으로 전환될 때 진행 중이던 공격 코루틴을 그대로 두면
+        // 이전 타겟을 보고 있던 애니메이션 상태에서 새 타겟에게 판정이 적용되는 불일치가 생김.
+        // 코루틴을 취소하고, 취소 시점에 agent.isStopped가 true로 남아 멈춰있을 수 있으니 함께 해제
+        StopAttackCoroutine();
+        if (agent != null && agent.enabled && agent.isOnNavMesh)
+            agent.isStopped = false;
+
         attackCooldown   = 0f;
         firstAttackDelay = 0f;
 

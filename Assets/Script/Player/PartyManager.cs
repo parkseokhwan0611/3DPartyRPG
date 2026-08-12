@@ -18,6 +18,8 @@ public class PartyManager : MonoBehaviour
     public CinemachineVirtualCamera virtualCamera;
     public CameraFollowTarget cameraFollowTarget;
     public static PartyManager instance;
+    // 게임오버 화면이 떠있는 동안인지 — MenuTabUI 등에서 메뉴 열림을 차단하는 데 사용
+    public static bool IsGameOver { get; private set; }
     [Header("게임 오버 UI")]
     public GameObject gameOverUI;
     [Header("레벨업 이펙트")]
@@ -70,6 +72,9 @@ public class PartyManager : MonoBehaviour
     {
         if (DataManager.instance != null)
             DataManager.instance.OnLevelUp -= PlayLevelUpEffect;
+
+        // 씬 로컬이라 게임오버 화면이 뜬 채로 씬이 바뀌어도 다음 씬에서 메뉴가 막혀있지 않도록 초기화
+        IsGameOver = false;
     }
 
     void Update()
@@ -376,6 +381,7 @@ public class PartyManager : MonoBehaviour
         // yield 도중 gameOverUI가 파괴됐을 경우를 대비해 재확인
         if (gameOverUI == null) yield break;
         gameOverUI.SetActive(true);
+        IsGameOver = true;
         // 페이드(fade:true)는 Time.deltaTime 기반 코루틴인데 바로 다음 줄에서 timeScale을 0으로
         // 멈춰버리면 페이드가 끝까지 못 가고 볼륨이 어중간하게 멈춘 채 계속 재생됨 — 즉시 정지로 처리
         AudioManager.instance?.StopBGM(fade: false);
@@ -387,6 +393,7 @@ public class PartyManager : MonoBehaviour
     public void ResumeGame()
     {
         Time.timeScale = 1f;
+        IsGameOver = false;
         if (gameOverUI != null) gameOverUI.SetActive(false);
     }
 

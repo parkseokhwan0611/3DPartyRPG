@@ -49,6 +49,7 @@ public class MenuTabUI : MonoBehaviour
     void Update()
     {
         if (menuWindow == null) return;
+        if (PartyManager.IsGameOver) return; // 게임오버 화면에서는 메뉴/설정창 열기 차단
 
         if (Input.GetKeyDown(KeyCode.Tab))
         {

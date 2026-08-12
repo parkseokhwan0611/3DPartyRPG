@@ -138,6 +138,7 @@ public class EnhancementUI : MonoBehaviour
         IsOpen = true;
 
         if (_enhRoutine != null) { StopCoroutine(_enhRoutine); _enhRoutine = null; }
+        if (closeButton != null) closeButton.interactable = true;
 
         _equip = null;
         ReturnScroll();
@@ -156,6 +157,8 @@ public class EnhancementUI : MonoBehaviour
 
     public void Close()
     {
+        if (_enhRoutine != null) return; // 강화 진행 중에는 닫기 불가
+
         ReturnScroll();
         _equip = null;
         if (panel != null) panel.SetActive(false);
@@ -260,6 +263,7 @@ public class EnhancementUI : MonoBehaviour
         if (_enhRoutine != null) return;
 
         enhanceButton.interactable = false;
+        if (closeButton != null) closeButton.interactable = false; // 강화 진행 중 닫기 버튼 잠금
         HideResult();
         if (progressBar != null) progressBar.value = 0f;
 
@@ -298,6 +302,7 @@ public class EnhancementUI : MonoBehaviour
         if (progressBar != null) progressBar.value = 0f;
 
         _enhRoutine = null;
+        if (closeButton != null) closeButton.interactable = true;
         RefreshEnhanceButton();
     }
 

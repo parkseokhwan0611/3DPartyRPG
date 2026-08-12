@@ -124,7 +124,6 @@ public class MonsterMeleeAttack : AttackBase
         IsAttacking    = false;
         attackCoroutine = null;
         RaiseAttackEnded();
-        attackCooldown = 0f;
     }
 
     private IEnumerator PlayAttackSfxDelayed()
