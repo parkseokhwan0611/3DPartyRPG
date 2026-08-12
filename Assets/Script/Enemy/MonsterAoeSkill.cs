@@ -13,6 +13,9 @@ public class MonsterAoeSkill : MonsterSkillBase
     public bool isMagicDamage = false;
     [Tooltip("ObjectPoolManager에 등록한 이펙트 풀 키 (선택 — 비워두면 이펙트 없이 피해만 적용)")]
     public string effectPoolKey;
+    [Tooltip("이펙트 스폰 위치의 Y축 보정(m) — 데미지 판정 중심(지면 높이)에는 영향 없이 " +
+             "이펙트 비주얼만 위/아래로 띄운다. 프리팹 자체의 Y 위치는 스폰 시 덮어써지므로 무시됨")]
+    public float effectHeightOffset = 0f;
 
     [Header("# 인디케이터 (선택 — 비워두면 표시 안 함)")]
     [Tooltip("ObjectPoolManager에 등록한 CircleSkillIndicator 프리팹의 풀 키")]
@@ -57,7 +60,8 @@ public class MonsterAoeSkill : MonsterSkillBase
         if (!string.IsNullOrEmpty(effectPoolKey) && ObjectPoolManager.instance != null)
         {
             var vfx = ObjectPoolManager.instance.GetGo(effectPoolKey);
-            if (vfx != null) vfx.transform.SetPositionAndRotation(center, Quaternion.identity);
+            if (vfx != null)
+                vfx.transform.SetPositionAndRotation(center + Vector3.up * effectHeightOffset, Quaternion.identity);
         }
 
         if (attackDuration > 0f)

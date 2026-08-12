@@ -9,6 +9,9 @@ public class GrenadeProjectile : PoolAble
     public string explosionPoolKey = "GrenadeExplosion";
     [Tooltip("착지 시 재생할 AudioManager SFX 키 (비워두면 재생 안 함)")]
     public string explosionSfxKey;
+    [Tooltip("폭발 이펙트 스폰 위치의 Y축 보정(m) — 데미지 판정 중심(착지 지점)에는 영향 없이 " +
+             "이펙트 비주얼만 위/아래로 띄운다. 프리팹 자체의 Y 위치는 스폰 시 덮어써지므로 무시됨")]
+    public float explosionHeightOffset = 0f;
 
     private Vector3 _start;
     private Vector3 _landing;
@@ -66,7 +69,7 @@ public class GrenadeProjectile : PoolAble
             var vfx = ObjectPoolManager.instance.GetGo(explosionPoolKey);
             if (vfx != null)
             {
-                vfx.transform.position = _landing;
+                vfx.transform.position = _landing + Vector3.up * explosionHeightOffset;
                 vfx.transform.rotation = Quaternion.identity;
             }
         }

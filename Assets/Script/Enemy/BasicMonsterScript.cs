@@ -222,6 +222,12 @@ public class BasicMonsterScript : MonoBehaviour
 
     void TargetingLogic()
     {
+        // 기본 공격이든 스킬(정예/보스 포함)이든 시전 중이면 타겟을 바꾸거나 놓지 않는다 —
+        // 그렇지 않으면 사거리(또는 추격 범위)를 벗어나는 순간 진행 중이던 공격/스킬 코루틴이
+        // SetTargetImmediate에 의해 즉시 취소되어, 애니메이션이 중간에 캔슬된 것처럼 보인다.
+        // 시전 중엔 그냥 넘어가고, 다음 판정 주기(TargetingInterval)에 다시 평가한다
+        if (attackModule.IsAttacking || attackModule.IsCastingSkill) return;
+
         if (PartyManager.instance == null || PartyManager.instance.partyMembers.Count == 0)
         {
             attackModule.SetTargetImmediate(null);
