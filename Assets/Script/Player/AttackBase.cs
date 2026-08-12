@@ -45,6 +45,8 @@ public abstract class AttackBase : MonoBehaviour
     protected StatusEffectHandler statusHandler; // Enemy 전용
     protected PartyStatusEffectHandler partyStatusHandler; // Player 전용
     private Transform _aimPoint; // currentTarget의 AimTarget 자식 (타겟 변경 시만 갱신)
+    private Transform _pendingTarget;   // IsAttacking 도중 요청된 타겟 변경 — 공격이 끝나면 반영
+    private bool      _hasPendingTarget;
 
     // ─────────────────────────────────────────────────────────────────
     // Unity 생명주기
@@ -182,11 +184,22 @@ public abstract class AttackBase : MonoBehaviour
     // 몬스터용 — firstAttackDelay 없이 즉시 공격
     public void SetTargetImmediate(Transform target)
     {
-        if (currentTarget == target) return;
+        if (currentTarget == target) { _hasPendingTarget = false; return; }
 
-        // 공격 윈드업/후딜 도중 더 가까운 타겟으로 전환될 때 진행 중이던 공격 코루틴을 그대로 두면
-        // 이전 타겟을 보고 있던 애니메이션 상태에서 새 타겟에게 판정이 적용되는 불일치가 생김.
-        // 코루틴을 취소하고, 취소 시점에 agent.isStopped가 true로 남아 멈춰있을 수 있으니 함께 해제
+        // 공격 윈드업/후딜 도중(IsAttacking)에는 지금 당장 바꾸지 않고 대기시켰다가, 이번 공격이
+        // 자연스럽게 끝나는 시점(RaiseAttackEnded)에 반영한다. 예전엔 여기서 바로 코루틴을 취소해서
+        // 애니메이션이 중간에 끊기는 문제가 있었고, 반대로 아예 막아버리면(TargetingLogic 자체를
+        // 스킵) 더 가까운 대상이 나타나도 원래 타겟만 계속 노리는 문제가 있었음 — "지금 하던 공격은
+        // 끝까지, 그다음엔 항상 최신(가장 가까운) 타겟으로"를 동시에 만족시키는 절충안
+        if (IsAttacking)
+        {
+            _pendingTarget    = target;
+            _hasPendingTarget = true;
+            return;
+        }
+
+        // 스킬 시전 중이 아닌 상태에서 즉시 적용 — 애니메이션/코루틴이 실제로 진행 중이 아니므로
+        // 여기서 취소해도 끊길 게 없음
         StopAttackCoroutine();
         if (agent != null && agent.enabled && agent.isOnNavMesh)
             agent.isStopped = false;
@@ -288,7 +301,18 @@ public abstract class AttackBase : MonoBehaviour
     public void ResetAttackCooldown()   => attackCooldown   = 0f;
     public void ResetFirstAttackDelay(float delay = 0.15f) => firstAttackDelay = delay;
 
-    protected void RaiseAttackEnded()   => OnAttackEnded?.Invoke();
+    protected void RaiseAttackEnded()
+    {
+        OnAttackEnded?.Invoke();
+
+        // 공격 도중 대기 중이던 타겟 변경(더 가까운 대상 발견 등)이 있으면 지금 반영 —
+        // 이 시점엔 IsAttacking이 이미 false라 SetTargetImmediate가 즉시 적용 경로를 탄다
+        if (_hasPendingTarget)
+        {
+            _hasPendingTarget = false;
+            SetTargetImmediate(_pendingTarget);
+        }
+    }
 
     public void ForceResetTarget()
     {

@@ -183,6 +183,7 @@ public class PartyManager : MonoBehaviour
     {
         _lastMoveDestination = destination;
         _hasPendingDestination = true;
+
         foreach (var member in partyMembers)
         {
             if (member.CurrentState == PartyMemberScript.MemberState.Dead) continue;

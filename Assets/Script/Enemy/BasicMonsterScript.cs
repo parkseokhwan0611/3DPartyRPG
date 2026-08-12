@@ -222,11 +222,13 @@ public class BasicMonsterScript : MonoBehaviour
 
     void TargetingLogic()
     {
-        // 기본 공격이든 스킬(정예/보스 포함)이든 시전 중이면 타겟을 바꾸거나 놓지 않는다 —
-        // 그렇지 않으면 사거리(또는 추격 범위)를 벗어나는 순간 진행 중이던 공격/스킬 코루틴이
-        // SetTargetImmediate에 의해 즉시 취소되어, 애니메이션이 중간에 캔슬된 것처럼 보인다.
-        // 시전 중엔 그냥 넘어가고, 다음 판정 주기(TargetingInterval)에 다시 평가한다
-        if (attackModule.IsAttacking || attackModule.IsCastingSkill) return;
+        // 스킬 시전 중(윈드업~후딜)에는 타겟을 바꾸지 않는다 — 스킬 컨트롤러가 시전 시작 시점에
+        // 캡처해둔 타겟으로 이미 진행 중이고, agent.isStopped 등 스킬 자체의 정지 상태를 여기서
+        // 건드리면 안 되기 때문. 기본 공격 중(IsAttacking)인 경우는 막지 않음 — AttackBase.
+        // SetTargetImmediate가 내부적으로 대기시켰다가 공격이 끝나는 시점에 안전하게 반영해주므로,
+        // 여기서 막으면 오히려 공격이 계속 이어지는 동안(예: 원거리 몬스터가 쉬지 않고 쏘는 경우)
+        // 더 가까운 대상이 나타나도 원래 타겟만 계속 노리는 문제가 생긴다
+        if (attackModule.IsCastingSkill) return;
 
         if (PartyManager.instance == null || PartyManager.instance.partyMembers.Count == 0)
         {
@@ -254,8 +256,9 @@ public class BasicMonsterScript : MonoBehaviour
                     bool isFirstSpot = attackModule.currentTarget == null;
 
                     attackModule.SetTargetImmediate(target);
-                    navAgent.speed     = navSpeed; // 배회 속도 → 추격 속도 복귀
-                    navAgent.isStopped = false;
+                    navAgent.speed = navSpeed; // 배회 속도 → 추격 속도 복귀
+                    // isStopped 해제는 SetTargetImmediate가 담당 — 공격 도중이라 변경이 대기됐다면
+                    // (아직 공격 애니메이션이 안 끝났다면) 여기서 강제로 풀면 안 되기 때문에 건드리지 않음
 
                     if (isFirstSpot && !string.IsNullOrEmpty(aggroSfxKey))
                         AudioManager.instance?.PlaySFX(aggroSfxKey);
@@ -270,8 +273,7 @@ public class BasicMonsterScript : MonoBehaviour
                 if (distToTarget < currentTargetDist - targetSwitchThreshold)
                 {
                     attackModule.SetTargetImmediate(target);
-                    navAgent.speed     = navSpeed;
-                    navAgent.isStopped = false;
+                    navAgent.speed = navSpeed; // isStopped는 SetTargetImmediate가 담당 (위와 동일 이유)
                 }
             }
         }
