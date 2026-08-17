@@ -389,6 +389,33 @@ public class PartyMemberScript : MonoBehaviour
         }
     }
 
+    // 스턴 풀린 뒤 이전 타겟으로 공격 재개 시도 (PartyStatusEffectHandler.EndStun에서 호출).
+    // 스턴 걸린 동안 팔로워는 제자리에 묶여있지만 앞사람/파티는 계속 움직였을 수 있어서, 그냥
+    // SetTargetImmediate만 호출하면 바로 다음 프레임에 emergencyFollowMultiplier 비상 추격
+    // 체크가 "너무 멀어졌다"고 판단해 방금 재개한 공격을 곧바로 다시 끊어버리는 문제가 있었다.
+    // 그래서 재개 전에 미리 같은 기준으로 거리를 확인해서, 이미 너무 멀다면 공격을 재개하는 대신
+    // 바로 Following으로 전환해 따라붙게 한다
+    public void TryResumeAttackAfterStun(Transform preStunTarget)
+    {
+        if (CurrentState == MemberState.Dead) return;
+        if (preStunTarget == null || attackComp == null) return;
+        if (attackComp.currentTarget != null) return; // 스턴 도중 이미 다른 명령이 들어왔으면 존중
+
+        if (!isLeader && targetToFollow != null)
+        {
+            float sqrDist       = (transform.position - targetToFollow.position).sqrMagnitude;
+            float emergencyDist = resumeDistance * emergencyFollowMultiplier;
+            if (sqrDist > emergencyDist * emergencyDist)
+            {
+                ChangeState(MemberState.Following);
+                _lastFollowDestination = Vector3.positiveInfinity;
+                return;
+            }
+        }
+
+        attackComp.SetTargetImmediate(preStunTarget);
+    }
+
     // ─────────────────────────────────────────────────────────────────
     // 사망 처리 (CharacterStat에서 호출)
     // ─────────────────────────────────────────────────────────────────

@@ -11,6 +11,7 @@ public class PartyStatusEffectHandler : MonoBehaviour
     private NavMeshAgent agent;
     private Animator anim;
     private SkillManager skillManager;
+    private PartyMemberScript partyMember;
 
     // 쉴드 수치
     public float CurrentShield { get; private set; } = 0f;
@@ -43,6 +44,7 @@ public class PartyStatusEffectHandler : MonoBehaviour
         agent        = GetComponent<NavMeshAgent>();
         anim         = GetComponent<Animator>();
         skillManager = GetComponent<SkillManager>();
+        partyMember  = GetComponent<PartyMemberScript>();
     }
 
     void Update()
@@ -130,9 +132,15 @@ public class PartyStatusEffectHandler : MonoBehaviour
         if (anim != null) anim.SetBool("isStun", false);
 
         // 스턴 도중 플레이어가 다른 명령(새 타겟 지정 등)을 내리지 않았을 때만 자동 재개 —
-        // currentTarget이 여전히 비어있다는 건 아무도 그 사이에 새로 지정하지 않았다는 뜻
+        // currentTarget이 여전히 비어있다는 건 아무도 그 사이에 새로 지정하지 않았다는 뜻.
+        // 실제 재개 판단(비상 추격 거리 체크 포함)은 PartyMemberScript.TryResumeAttackAfterStun에 위임 —
+        // 여기서 바로 SetTargetImmediate를 부르면, 팔로워가 스턴 도중 파티와 너무 멀어진 경우
+        // 바로 다음 프레임 emergencyFollowMultiplier 체크가 방금 재개한 공격을 다시 끊어버렸었다
         if (_preStunTarget != null && attackBase != null && attackBase.currentTarget == null)
-            attackBase.SetTargetImmediate(_preStunTarget);
+        {
+            if (partyMember != null) partyMember.TryResumeAttackAfterStun(_preStunTarget);
+            else                      attackBase.SetTargetImmediate(_preStunTarget); // PartyMemberScript 없는 경우 대비 폴백
+        }
         _preStunTarget = null;
 
         OnBuffChanged?.Invoke(StatusEffectType.Stun, false);
