@@ -33,6 +33,9 @@ public class PartyStatusEffectHandler : MonoBehaviour
     private float stunTimer = 0f;
     private bool  isStunned = false;
 
+    // 스턴 걸리기 직전 공격 중이던 대상 — 스턴이 풀리면 자동으로 재개한다
+    private Transform _preStunTarget;
+
     void Awake()
     {
         myStat       = GetComponent<CharacterStat>();
@@ -92,6 +95,10 @@ public class PartyStatusEffectHandler : MonoBehaviour
         isStunned = true;
         stunTimer = effect.duration;
 
+        // 스턴 풀린 뒤 자동 재개를 위해 지금 공격 중이던 대상을 기억해둔다 (ForceCancelAttack이
+        // currentTarget을 지우기 전에 먼저 읽어야 함)
+        _preStunTarget = attackBase != null ? attackBase.currentTarget : null;
+
         if (agent != null && agent.enabled && agent.isOnNavMesh)
         {
             agent.isStopped = true;
@@ -102,7 +109,7 @@ public class PartyStatusEffectHandler : MonoBehaviour
         if (anim != null)
         {
             anim.SetBool("isWalking", false);
-            anim.SetTrigger("isStun");
+            anim.SetBool("isStun", true);
         }
 
         // 하던 공격/스킬을 그 자리에서 즉시 중단 — "지금 하던 동작은 끝까지" 원칙보다 스턴이 우선
@@ -120,7 +127,13 @@ public class PartyStatusEffectHandler : MonoBehaviour
             agent.velocity  = Vector3.zero;
         }
 
-        if (anim != null) anim.ResetTrigger("isStun");
+        if (anim != null) anim.SetBool("isStun", false);
+
+        // 스턴 도중 플레이어가 다른 명령(새 타겟 지정 등)을 내리지 않았을 때만 자동 재개 —
+        // currentTarget이 여전히 비어있다는 건 아무도 그 사이에 새로 지정하지 않았다는 뜻
+        if (_preStunTarget != null && attackBase != null && attackBase.currentTarget == null)
+            attackBase.SetTargetImmediate(_preStunTarget);
+        _preStunTarget = null;
 
         OnBuffChanged?.Invoke(StatusEffectType.Stun, false);
         OnStunEnded?.Invoke();
@@ -225,7 +238,8 @@ public class PartyStatusEffectHandler : MonoBehaviour
         {
             isStunned = false;
             stunTimer = 0f;
-            if (anim != null) anim.ResetTrigger("isStun");
+            _preStunTarget = null;
+            if (anim != null) anim.SetBool("isStun", false);
         }
 
         var buffs = new List<StatusEffect>(activeBuffs);

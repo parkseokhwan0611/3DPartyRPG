@@ -81,7 +81,7 @@ public class MonsterArrowSkill : MonsterSkillBase
 
         ProjectileScript proj = projectile.GetComponent<ProjectileScript>();
         if (proj != null)
-            proj.SetProjectileData(damage, gameObject, isMagicDamage);
+            proj.SetProjectileData(damage, gameObject, isMagicDamage, ApplyDebuff);
     }
 
     void OnDrawGizmosSelected()

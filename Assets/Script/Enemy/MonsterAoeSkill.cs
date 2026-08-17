@@ -95,6 +95,8 @@ public class MonsterAoeSkill : MonsterSkillBase
 
             if (isMagicDamage) damageable.TakeMagicDamage(damage, gameObject);
             else                damageable.TakeDamage(damage, gameObject);
+
+            ApplyDebuff(_hitBuffer[i].gameObject);
         }
     }
 

@@ -33,6 +33,17 @@ public abstract class MonsterSkillBase : MonoBehaviour
              "떨어져야 비로소 사용 가능 — 보스 페이즈 해금용)")]
     [Range(0f, 1f)] public float unlockHpRatio = 1f;
 
+    // 스킬 하나당 최대 1개까지만 디버프를 걸 수 있다 — 디버프가 없는 스킬은 None 유지
+    public enum MonsterSkillDebuff { None, Slow, Stun }
+
+    [Header("# 디버프 (선택 — 스킬 하나당 최대 1개, 필요 없으면 None)")]
+    [Tooltip("스킬에 맞은 파티원에게 함께 적용할 디버프 종류")]
+    public MonsterSkillDebuff debuff = MonsterSkillDebuff.None;
+    [Tooltip("Slow 전용 감속률 (0~1, 0.3 = 30% 감속). Stun엔 사용되지 않음")]
+    [Range(0f, 0.99f)] public float debuffValue = 0.3f;
+    [Tooltip("디버프 지속시간(초)")]
+    public float debuffDuration = 2f;
+
     private float _cooldownRemaining;
     private float _cooldownScale = 1f;
 
@@ -65,4 +76,17 @@ public abstract class MonsterSkillBase : MonoBehaviour
 
     // 예고 시간이 끝난 뒤 실제 효과 실행
     public abstract void ExecuteSkill(Transform target);
+
+    // 스킬에 맞은 대상(파티원)에게 인스펙터에 설정된 디버프를 적용 — 자식 클래스가 데미지를
+    // 실제로 적중시키는 지점(범위 판정 루프, 투사체 히트 콜백 등)에서 대상 하나당 한 번씩 호출
+    protected void ApplyDebuff(GameObject target)
+    {
+        if (debuff == MonsterSkillDebuff.None || target == null) return;
+
+        var status = target.GetComponent<PartyStatusEffectHandler>();
+        if (status == null) return;
+
+        StatusEffectType type = debuff == MonsterSkillDebuff.Stun ? StatusEffectType.Stun : StatusEffectType.Slow;
+        status.ApplyBuff(new StatusEffect(type, debuffValue, debuffDuration, gameObject));
+    }
 }

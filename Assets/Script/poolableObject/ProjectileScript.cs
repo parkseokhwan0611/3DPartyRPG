@@ -22,6 +22,7 @@ public class ProjectileScript : PoolAble
     public GameObject owner;
 
     private Action<EnemyHp> onHitCallback;
+    private Action<GameObject> onHitTargetCallback; // EnemyHp 유무와 무관하게 실제 데미지가 들어간 대상을 알려줌 (몬스터 스킬 디버프용)
     private bool isMagicDamage = false; // 물리/마법 판정 — 맞는 대상이 알아서 방어력/마법저항력으로 경감하고 자기 색으로 표시
 
     private Coroutine disableCoroutine;
@@ -79,6 +80,7 @@ public class ProjectileScript : PoolAble
         owner         = attacker;
         isMagicDamage = isMagic;
         onHitCallback = null;
+        onHitTargetCallback = null;
     }
 
     // 콜백 받는 버전 (HealerAttack, RangedAttack에서 사용)
@@ -88,6 +90,18 @@ public class ProjectileScript : PoolAble
         owner         = attacker;
         onHitCallback = hitCallback;
         isMagicDamage = isMagic;
+        onHitTargetCallback = null;
+    }
+
+    // 맞은 대상이 EnemyHp가 아니어도(플레이어 파티원 등) 실제로 데미지가 적용됐을 때 호출되는
+    // 범용 콜백 버전 — 몬스터 스킬(MonsterArrowSkill)이 맞은 대상에게 디버프를 걸 때 사용
+    public void SetProjectileData(float dmg, GameObject attacker, bool isMagic, Action<GameObject> onAnyHit)
+    {
+        damage        = dmg;
+        owner         = attacker;
+        isMagicDamage = isMagic;
+        onHitCallback = null;
+        onHitTargetCallback = onAnyHit;
     }
 
     // ─────────────────────────────────────────────────────────────────
@@ -103,12 +117,15 @@ public class ProjectileScript : PoolAble
     protected virtual void OnCollisionEnter(Collision collision)
     {
         // 1. 데미지 처리 — 물리/마법 여부에 따라 맞는 대상이 알아서 경감·색상 처리
+        bool hitValidTarget = false;
+
         EnemyHp enemyStat = collision.gameObject.GetComponent<EnemyHp>();
         if (enemyStat != null)
         {
             if (isMagicDamage) enemyStat.TakeMagicDamage(damage, owner);
             else                enemyStat.TakeDamage(damage, owner);
             onHitCallback?.Invoke(enemyStat);
+            hitValidTarget = true;
         }
         else
         {
@@ -118,8 +135,12 @@ public class ProjectileScript : PoolAble
             {
                 if (isMagicDamage) target.TakeMagicDamage(damage, owner);
                 else                target.TakeDamage(damage, owner);
+                hitValidTarget = true;
             }
         }
+
+        if (hitValidTarget)
+            onHitTargetCallback?.Invoke(collision.gameObject);
 
         // 2. 투사체 물리 정지
         if (rb != null) rb.constraints = RigidbodyConstraints.FreezeAll;

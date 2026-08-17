@@ -89,7 +89,7 @@ public class MonsterGrenadeSkill : MonsterSkillBase
             return;
         }
 
-        grenade.Launch(spawnPos, landingPos, flightDuration, arcHeight, damage, explosionRadius, targetLayer, gameObject, isMagicDamage);
+        grenade.Launch(spawnPos, landingPos, flightDuration, arcHeight, damage, explosionRadius, targetLayer, gameObject, isMagicDamage, ApplyDebuff);
     }
 
     void OnDrawGizmosSelected()
