@@ -23,6 +23,7 @@ public class SkillZone : MonoBehaviour
     private GameObject attacker;
     private bool   isMagicDamage;
     private float  duration;
+    private bool   isCrit; // DamageSkill이 스폰 시점에 굴린 크리티컬 결과 — 틱마다 재사용
 
     private int    enemyLayer;
     private Coroutine tickCoroutine;
@@ -32,7 +33,7 @@ public class SkillZone : MonoBehaviour
     // ─────────────────────────────────────────────────────────────────
 
     public void Setup(float damage, float range, float interval, float activationDelay,
-                      bool hitOnce, GameObject attacker, bool isMagicDamage, float duration)
+                      bool hitOnce, GameObject attacker, bool isMagicDamage, float duration, bool isCrit = false)
     {
         this.damage          = damage;
         this.range           = range;
@@ -42,6 +43,7 @@ public class SkillZone : MonoBehaviour
         this.attacker        = attacker;
         this.isMagicDamage   = isMagicDamage;
         this.duration        = duration;
+        this.isCrit          = isCrit;
         this.enemyLayer      = LayerMask.GetMask("Enemy");
 
         // OnEnable이 Setup보다 먼저 호출될 수 있으므로 여기서도 시작
@@ -101,8 +103,8 @@ public class SkillZone : MonoBehaviour
         {
             EnemyHp enemyHp = _hitBuffer[i].GetComponent<EnemyHp>();
             if (enemyHp == null) continue;
-            if (isMagicDamage) enemyHp.TakeMagicDamage(damage, attacker);
-            else                enemyHp.TakeDamage(damage, attacker);
+            if (isMagicDamage) enemyHp.TakeMagicDamage(damage, attacker, isCrit);
+            else                enemyHp.TakeDamage(damage, attacker, isCrit);
         }
     }
 

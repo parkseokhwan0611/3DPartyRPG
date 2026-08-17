@@ -91,8 +91,9 @@ public abstract class MonsterSkillBase : MonoBehaviour
     }
 
     // AttackBase.RollCritDamage와 동일한 공용 헬퍼 — 몬스터 스킬은 AttackBase를 상속하지 않아 따로 둔다
-    protected float RollCritDamage(float baseDamage, float critChance, float critDamageMultiplier)
+    protected float RollCritDamage(float baseDamage, float critChance, float critDamageMultiplier, out bool isCrit)
     {
-        return Random.value < critChance ? baseDamage * critDamageMultiplier : baseDamage;
+        isCrit = Random.value < critChance;
+        return isCrit ? baseDamage * critDamageMultiplier : baseDamage;
     }
 }

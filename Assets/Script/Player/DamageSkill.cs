@@ -85,8 +85,9 @@ public class DamageSkill : SkillBase
     // 데미지 계산
     // ─────────────────────────────────────────────────────────────────
 
-    private float CalculateDamage(DamageSkillData data, float comboBonus)
+    private float CalculateDamage(DamageSkillData data, float comboBonus, out bool isCrit)
     {
+        isCrit = false;
         if (myStat == null) return 0f;
 
         float baseStat = data.useAp ? myStat.TotalAp : myStat.TotalAtk;
@@ -97,7 +98,8 @@ public class DamageSkill : SkillBase
 
         damage *= (1f + comboBonus);
 
-        if (Random.value < myStat.TotalCritRate)
+        isCrit = Random.value < myStat.TotalCritRate;
+        if (isCrit)
             damage *= myStat.TotalCritDamage;
 
         return damage;
@@ -113,9 +115,9 @@ public class DamageSkill : SkillBase
         if (enemyHp == null) return;
 
         float comboBonus = myStat.ConsumeNextSkillBonus();
-        float damage = CalculateDamage(data, comboBonus);
-        if (data.useAp) enemyHp.TakeMagicDamage(damage, gameObject);
-        else             enemyHp.TakeDamage(damage, gameObject);
+        float damage = CalculateDamage(data, comboBonus, out bool isCrit);
+        if (data.useAp) enemyHp.TakeMagicDamage(damage, gameObject, isCrit);
+        else             enemyHp.TakeDamage(damage, gameObject, isCrit);
         ApplyOnHitDebuffs(data, target);
     }
 
@@ -136,9 +138,9 @@ public class DamageSkill : SkillBase
             EnemyHp enemyHp = _hitBuffer[i].GetComponent<EnemyHp>();
             if (enemyHp == null) continue;
 
-            float damage = CalculateDamage(data, comboBonus);
-            if (data.useAp) enemyHp.TakeMagicDamage(damage, gameObject);
-            else             enemyHp.TakeDamage(damage, gameObject);
+            float damage = CalculateDamage(data, comboBonus, out bool isCrit);
+            if (data.useAp) enemyHp.TakeMagicDamage(damage, gameObject, isCrit);
+            else             enemyHp.TakeDamage(damage, gameObject, isCrit);
             ApplyOnHitDebuffs(data, _hitBuffer[i].transform);
         }
     }
@@ -222,10 +224,10 @@ public class DamageSkill : SkillBase
         if (zone != null)
         {
             float comboBonus = myStat.ConsumeNextSkillBonus();
-            float damage = CalculateDamage(data, comboBonus);
+            float damage = CalculateDamage(data, comboBonus, out bool isCrit);
             float range  = data.GetRange(skillLevel);
             zone.Setup(damage, range, data.zoneDamageInterval, data.zoneActivationDelay,
-                       data.zoneHitOnce, gameObject, data.useAp, data.zoneDuration);
+                       data.zoneHitOnce, gameObject, data.useAp, data.zoneDuration, isCrit);
         }
         else
         {

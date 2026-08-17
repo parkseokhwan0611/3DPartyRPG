@@ -7,8 +7,12 @@ public class DamageText : MonoBehaviour
     public float alphaSpeed = 1f;
     public float destroyTime = 1f;
 
+    [Header("# 치명타 아이콘 (선택 — 비워두면 표시 안 함)")]
+    [SerializeField] SpriteRenderer critIcon;
+
     private TextMeshPro text;
     private Color alpha;
+    private Color critIconAlpha;
     private bool isInitialized = false;
     private PoolAble poolAble;
 
@@ -23,7 +27,7 @@ public class DamageText : MonoBehaviour
         Setup(damageAmount, Color.white);
     }
 
-    public void Setup(float damageAmount, Color color, bool showMinus = false)
+    public void Setup(float damageAmount, Color color, bool showMinus = false, bool isCrit = false)
     {
         if (text == null) text = GetComponent<TextMeshPro>();
 
@@ -39,6 +43,14 @@ public class DamageText : MonoBehaviour
         alpha.a    = 1f;
         text.color = alpha;
 
+        if (critIcon != null)
+        {
+            critIcon.gameObject.SetActive(isCrit);
+            critIconAlpha   = critIcon.color;
+            critIconAlpha.a = 1f;
+            critIcon.color  = critIconAlpha;
+        }
+
         isInitialized = true;
 
         CancelInvoke(nameof(Release));
@@ -53,6 +65,12 @@ public class DamageText : MonoBehaviour
 
         alpha.a    = Mathf.Lerp(alpha.a, 0, Time.deltaTime * alphaSpeed);
         text.color = alpha;
+
+        if (critIcon != null && critIcon.gameObject.activeSelf)
+        {
+            critIconAlpha.a = Mathf.Lerp(critIconAlpha.a, 0, Time.deltaTime * alphaSpeed);
+            critIcon.color  = critIconAlpha;
+        }
     }
 
     private void Release()

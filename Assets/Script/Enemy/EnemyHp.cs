@@ -85,33 +85,33 @@ public class EnemyHp : MonoBehaviour, IDamageable
     // ─────────────────────────────────────────────────────────────────
 
     // 물리 피해 (방어력으로 경감)
-    public void TakeDamage(float damage, GameObject attacker) => TakeDamage(damage, attacker, physicalDamageColor);
+    public void TakeDamage(float damage, GameObject attacker, bool isCrit = false) => TakeDamage(damage, attacker, physicalDamageColor, isCrit);
 
-    public void TakeDamage(float damage, GameObject attacker, Color damageColor)
+    public void TakeDamage(float damage, GameObject attacker, Color damageColor, bool isCrit = false)
     {
         if (isDead) return;
 
         float reduction   = def / (def + 100f);
         float finalDamage = damage * (1f - reduction);
-        ApplyDamage(finalDamage, damageColor);
+        ApplyDamage(finalDamage, damageColor, isCrit);
     }
 
     // 마법 피해 (마법저항력으로 경감)
-    public void TakeMagicDamage(float damage, GameObject attacker) => TakeMagicDamage(damage, attacker, magicDamageColor);
+    public void TakeMagicDamage(float damage, GameObject attacker, bool isCrit = false) => TakeMagicDamage(damage, attacker, magicDamageColor, isCrit);
 
-    public void TakeMagicDamage(float damage, GameObject attacker, Color damageColor)
+    public void TakeMagicDamage(float damage, GameObject attacker, Color damageColor, bool isCrit = false)
     {
         if (isDead) return;
 
         float reduction   = magicRes / (magicRes + 100f);
         float finalDamage = damage * (1f - reduction);
-        ApplyDamage(finalDamage, damageColor);
+        ApplyDamage(finalDamage, damageColor, isCrit);
     }
 
-    private void ApplyDamage(float finalDamage, Color damageColor)
+    private void ApplyDamage(float finalDamage, Color damageColor, bool isCrit = false)
     {
         hp = Mathf.Clamp(hp - finalDamage, 0, maxHp);
-        SpawnDamageText(finalDamage, damageColor);
+        SpawnDamageText(finalDamage, damageColor, isCrit);
         OnHpChanged?.Invoke(hp, maxHp);
         if (hp <= 0) Die();
     }
@@ -120,7 +120,7 @@ public class EnemyHp : MonoBehaviour, IDamageable
     // 내부 로직
     // ─────────────────────────────────────────────────────────────────
 
-    private void SpawnDamageText(float damage, Color color)
+    private void SpawnDamageText(float damage, Color color, bool isCrit = false)
     {
         // ObjectPoolManager가 있으면 풀링, 없으면 Instantiate 폴백
         GameObject textObj = null;
@@ -145,7 +145,7 @@ public class EnemyHp : MonoBehaviour, IDamageable
         textObj.transform.rotation = Quaternion.Euler(60f, 0f, 0f);
 
         DamageText dt = textObj.GetComponent<DamageText>();
-        if (dt != null) dt.Setup(damage, color); // 색상 전달
+        if (dt != null) dt.Setup(damage, color, isCrit: isCrit); // 색상 전달
     }
 
     private void Die()

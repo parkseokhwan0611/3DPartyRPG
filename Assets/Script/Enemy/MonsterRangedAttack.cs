@@ -180,7 +180,10 @@ public class MonsterRangedAttack : AttackBase
         // isMagicAttack에 따라 맞는 대상이 방어력/마법저항력으로 알아서 경감 처리
         ProjectileScript proj = projectile.GetComponent<ProjectileScript>();
         if (proj != null)
-            proj.SetProjectileData(RollCritDamage(attackDamage, critChance, critDamageMultiplier), gameObject, isMagicAttack);
+        {
+            float finalDamage = RollCritDamage(attackDamage, critChance, critDamageMultiplier, out bool isCrit);
+            proj.SetProjectileData(finalDamage, gameObject, isMagicAttack, isCrit);
+        }
     }
 
     public override void OnHit() { }

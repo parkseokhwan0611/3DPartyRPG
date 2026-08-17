@@ -104,8 +104,9 @@ public class HealerAttack : AttackBase
         effect.transform.rotation = preciseRot;
 
         float damage = myStat.TotalAp * (1f + myStat.MagicDmgBonus);
+        bool  isCrit = Random.value < myStat.TotalCritRate;
 
-        if (Random.value < myStat.TotalCritRate)
+        if (isCrit)
         {
             damage *= myStat.TotalCritDamage;
             if (CinemachineShake.Instance != null)
@@ -114,7 +115,7 @@ public class HealerAttack : AttackBase
 
         ProjectileScript proj = effect.GetComponent<ProjectileScript>();
         if (proj != null)
-            proj.SetProjectileData(damage, gameObject, OnProjectileHit, isMagic: true);
+            proj.SetProjectileData(damage, gameObject, OnProjectileHit, isMagic: true, crit: isCrit);
 
         Rigidbody rb = effect.GetComponent<Rigidbody>();
         if (rb != null)

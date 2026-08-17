@@ -97,10 +97,10 @@ public class MonsterAoeSkill : MonsterSkillBase
             IDamageable damageable = _hitBuffer[i].GetComponent<IDamageable>();
             if (damageable == null) continue;
 
-            float finalDamage = RollCritDamage(damage, critChance, critDamageMultiplier);
+            float finalDamage = RollCritDamage(damage, critChance, critDamageMultiplier, out bool isCrit);
 
-            if (isMagicDamage) damageable.TakeMagicDamage(finalDamage, gameObject);
-            else                damageable.TakeDamage(finalDamage, gameObject);
+            if (isMagicDamage) damageable.TakeMagicDamage(finalDamage, gameObject, isCrit);
+            else                damageable.TakeDamage(finalDamage, gameObject, isCrit);
 
             ApplyDebuff(_hitBuffer[i].gameObject);
         }

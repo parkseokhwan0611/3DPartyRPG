@@ -70,13 +70,13 @@ public class MeleeAttack : AttackBase
         }
 
         float damage = myStat.TotalAtk * (1f + myStat.PhysDmgBonus);
+        bool  isCrit = Random.value < myStat.TotalCritRate;
 
-        if (Random.value < myStat.TotalCritRate)
+        if (isCrit)
         {
             damage *= myStat.TotalCritDamage;
             if (CinemachineShake.Instance != null)
                 CinemachineShake.Instance.ShakeCamera(10f, .2f);
-            // 나중에 치명타 전용 색상이나 연출 추가 가능
         }
 
         // 3. 데미지 판정
@@ -86,7 +86,7 @@ public class MeleeAttack : AttackBase
             var enemyStat = _hitBuffer[i].GetComponent<EnemyHp>();
 
             if (enemyStat != null)
-                enemyStat.TakeDamage(damage, gameObject); // 근접 = 물리 피해
+                enemyStat.TakeDamage(damage, gameObject, isCrit); // 근접 = 물리 피해
         }
     }
     private void SpawnHitEffect(Vector3 pos)

@@ -90,10 +90,11 @@ public class GrenadeProjectile : PoolAble
             IDamageable damageable = _hitBuffer[i].GetComponent<IDamageable>();
             if (damageable == null) continue;
 
-            float finalDamage = Random.value < _critChance ? _damage * _critDamageMultiplier : _damage;
+            bool isCrit = Random.value < _critChance;
+            float finalDamage = isCrit ? _damage * _critDamageMultiplier : _damage;
 
-            if (_isMagicDamage) damageable.TakeMagicDamage(finalDamage, _owner);
-            else                 damageable.TakeDamage(finalDamage, _owner);
+            if (_isMagicDamage) damageable.TakeMagicDamage(finalDamage, _owner, isCrit);
+            else                 damageable.TakeDamage(finalDamage, _owner, isCrit);
 
             _onHitTarget?.Invoke(_hitBuffer[i].gameObject);
         }

@@ -159,9 +159,10 @@ public abstract class AttackBase : MonoBehaviour
 
     // 몬스터 기본 공격(Melee/Ranged/Grenade)이 치명타를 굴릴 때 공용으로 사용 — 플레이어 쪽은
     // CharacterStat.TotalCritRate/TotalCritDamage를 직접 쓰므로 이 헬퍼를 쓰지 않는다
-    protected float RollCritDamage(float baseDamage, float critChance, float critDamageMultiplier)
+    protected float RollCritDamage(float baseDamage, float critChance, float critDamageMultiplier, out bool isCrit)
     {
-        return UnityEngine.Random.value < critChance ? baseDamage * critDamageMultiplier : baseDamage;
+        isCrit = UnityEngine.Random.value < critChance;
+        return isCrit ? baseDamage * critDamageMultiplier : baseDamage;
     }
 
     // ─────────────────────────────────────────────────────────────────

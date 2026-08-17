@@ -24,6 +24,7 @@ public class ProjectileScript : PoolAble
     private Action<EnemyHp> onHitCallback;
     private Action<GameObject> onHitTargetCallback; // EnemyHp 유무와 무관하게 실제 데미지가 들어간 대상을 알려줌 (몬스터 스킬 디버프용)
     private bool isMagicDamage = false; // 물리/마법 판정 — 맞는 대상이 알아서 방어력/마법저항력으로 경감하고 자기 색으로 표시
+    private bool isCrit = false; // 발사 시점에 미리 굴려서 들고 있다가, 맞는 순간 데미지 텍스트에 반영
 
     private Coroutine disableCoroutine;
 
@@ -74,32 +75,35 @@ public class ProjectileScript : PoolAble
     // ─────────────────────────────────────────────────────────────────
 
     // 콜백 없는 버전 (기존 호환용) — isMagic 생략 시 물리로 취급
-    public void SetProjectileData(float dmg, GameObject attacker, bool isMagic = false)
+    public void SetProjectileData(float dmg, GameObject attacker, bool isMagic = false, bool crit = false)
     {
         damage        = dmg;
         owner         = attacker;
         isMagicDamage = isMagic;
+        isCrit        = crit;
         onHitCallback = null;
         onHitTargetCallback = null;
     }
 
     // 콜백 받는 버전 (HealerAttack, RangedAttack에서 사용)
-    public void SetProjectileData(float dmg, GameObject attacker, Action<EnemyHp> hitCallback, bool isMagic)
+    public void SetProjectileData(float dmg, GameObject attacker, Action<EnemyHp> hitCallback, bool isMagic, bool crit = false)
     {
         damage        = dmg;
         owner         = attacker;
         onHitCallback = hitCallback;
         isMagicDamage = isMagic;
+        isCrit        = crit;
         onHitTargetCallback = null;
     }
 
     // 맞은 대상이 EnemyHp가 아니어도(플레이어 파티원 등) 실제로 데미지가 적용됐을 때 호출되는
     // 범용 콜백 버전 — 몬스터 스킬(MonsterArrowSkill)이 맞은 대상에게 디버프를 걸 때 사용
-    public void SetProjectileData(float dmg, GameObject attacker, bool isMagic, Action<GameObject> onAnyHit)
+    public void SetProjectileData(float dmg, GameObject attacker, bool isMagic, Action<GameObject> onAnyHit, bool crit = false)
     {
         damage        = dmg;
         owner         = attacker;
         isMagicDamage = isMagic;
+        isCrit        = crit;
         onHitCallback = null;
         onHitTargetCallback = onAnyHit;
     }
@@ -122,8 +126,8 @@ public class ProjectileScript : PoolAble
         EnemyHp enemyStat = collision.gameObject.GetComponent<EnemyHp>();
         if (enemyStat != null)
         {
-            if (isMagicDamage) enemyStat.TakeMagicDamage(damage, owner);
-            else                enemyStat.TakeDamage(damage, owner);
+            if (isMagicDamage) enemyStat.TakeMagicDamage(damage, owner, isCrit);
+            else                enemyStat.TakeDamage(damage, owner, isCrit);
             onHitCallback?.Invoke(enemyStat);
             hitValidTarget = true;
         }
@@ -133,8 +137,8 @@ public class ProjectileScript : PoolAble
             IDamageable target = collision.gameObject.GetComponent<IDamageable>();
             if (target != null)
             {
-                if (isMagicDamage) target.TakeMagicDamage(damage, owner);
-                else                target.TakeDamage(damage, owner);
+                if (isMagicDamage) target.TakeMagicDamage(damage, owner, isCrit);
+                else                target.TakeDamage(damage, owner, isCrit);
                 hitValidTarget = true;
             }
         }

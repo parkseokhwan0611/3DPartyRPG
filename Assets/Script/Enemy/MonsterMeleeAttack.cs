@@ -158,10 +158,10 @@ public class MonsterMeleeAttack : AttackBase
             IDamageable damageable = _hitBuffer[i].GetComponent<IDamageable>();
             if (damageable == null) continue;
 
-            float finalDamage = RollCritDamage(attackDamage, critChance, critDamageMultiplier);
+            float finalDamage = RollCritDamage(attackDamage, critChance, critDamageMultiplier, out bool isCrit);
 
-            if (isMagicAttack) damageable.TakeMagicDamage(finalDamage, gameObject);
-            else                damageable.TakeDamage(finalDamage, gameObject);
+            if (isMagicAttack) damageable.TakeMagicDamage(finalDamage, gameObject, isCrit);
+            else                damageable.TakeDamage(finalDamage, gameObject, isCrit);
         }
     }
 

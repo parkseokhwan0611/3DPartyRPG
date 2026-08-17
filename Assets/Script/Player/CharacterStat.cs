@@ -169,26 +169,26 @@ public class CharacterStat : MonoBehaviour, IDamageable
     }
 
     // 물리 데미지 (방어력으로 경감)
-    public void TakeDamage(float damage, GameObject attacker)
+    public void TakeDamage(float damage, GameObject attacker, bool isCrit = false)
     {
         if (myStatus == null) return;
 
         float reduction   = TotalDef / (TotalDef + 100f);
         float finalDamage = damage * (1f - reduction);
-        ApplyDamage(finalDamage, physicalDamageColor);
+        ApplyDamage(finalDamage, physicalDamageColor, isCrit);
     }
 
     // 마법 데미지 (마법저항력으로 경감)
-    public void TakeMagicDamage(float damage, GameObject attacker)
+    public void TakeMagicDamage(float damage, GameObject attacker, bool isCrit = false)
     {
         if (myStatus == null) return;
 
         float reduction   = TotalMagicRes / (TotalMagicRes + 100f);
         float finalDamage = damage * (1f - reduction);
-        ApplyDamage(finalDamage, magicDamageColor);
+        ApplyDamage(finalDamage, magicDamageColor, isCrit);
     }
 
-    private void ApplyDamage(float finalDamage, Color damageColor)
+    private void ApplyDamage(float finalDamage, Color damageColor, bool isCrit = false)
     {
         if (shieldHandler != null)
             finalDamage = shieldHandler.AbsorbDamage(finalDamage);
@@ -199,7 +199,7 @@ public class CharacterStat : MonoBehaviour, IDamageable
         myStatus.RaiseHpChanged();
         OnHpChanged?.Invoke();
 
-        SpawnDamageText(finalDamage, damageColor);
+        SpawnDamageText(finalDamage, damageColor, isCrit);
 
         if (myStatus.currentHp <= 0) Die();
     }
@@ -290,7 +290,7 @@ public class CharacterStat : MonoBehaviour, IDamageable
         go.GetComponent<HealText>()?.Setup(amount, manaTextColor);
     }
 
-    private void SpawnDamageText(float damage, Color color)
+    private void SpawnDamageText(float damage, Color color, bool isCrit = false)
     {
         Vector3    spawnPos = hudPos != null ? hudPos.position : transform.position + Vector3.up * 2f;
         Quaternion spawnRot = Quaternion.Euler(60f, 0f, 0f);
@@ -310,7 +310,7 @@ public class CharacterStat : MonoBehaviour, IDamageable
         if (textObj == null) return;
 
         textObj.transform.SetPositionAndRotation(spawnPos, spawnRot);
-        textObj.GetComponent<DamageText>()?.Setup(damage, color, showMinus: true);
+        textObj.GetComponent<DamageText>()?.Setup(damage, color, showMinus: true, isCrit: isCrit);
     }
 
     public bool TryUseMp(float cost)
