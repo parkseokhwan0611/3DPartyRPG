@@ -11,6 +11,10 @@ public class MonsterAoeSkill : MonsterSkillBase
     public float radius = 3f;
     public LayerMask targetLayer;
     public bool isMagicDamage = false;
+    [Tooltip("치명타 확률 (0~1)")]
+    [Range(0f, 1f)] public float critChance = 0.1f;
+    [Tooltip("치명타 시 피해 배율 (1.5 = 150%)")]
+    public float critDamageMultiplier = 1.5f;
     [Tooltip("ObjectPoolManager에 등록한 이펙트 풀 키 (선택 — 비워두면 이펙트 없이 피해만 적용)")]
     public string effectPoolKey;
     [Tooltip("이펙트 스폰 위치의 Y축 보정(m) — 데미지 판정 중심(지면 높이)에는 영향 없이 " +
@@ -93,8 +97,10 @@ public class MonsterAoeSkill : MonsterSkillBase
             IDamageable damageable = _hitBuffer[i].GetComponent<IDamageable>();
             if (damageable == null) continue;
 
-            if (isMagicDamage) damageable.TakeMagicDamage(damage, gameObject);
-            else                damageable.TakeDamage(damage, gameObject);
+            float finalDamage = RollCritDamage(damage, critChance, critDamageMultiplier);
+
+            if (isMagicDamage) damageable.TakeMagicDamage(finalDamage, gameObject);
+            else                damageable.TakeDamage(finalDamage, gameObject);
 
             ApplyDebuff(_hitBuffer[i].gameObject);
         }

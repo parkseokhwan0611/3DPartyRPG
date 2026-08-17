@@ -11,6 +11,12 @@ public class MonsterMeleeAttack : AttackBase
     [Tooltip("체크하면 마법 피해(마법저항력으로 경감), 해제하면 물리 피해(방어력으로 경감)")]
     public bool isMagicAttack = false;
 
+    [Header("# 치명타")]
+    [Tooltip("치명타 확률 (0~1)")]
+    [Range(0f, 1f)] public float critChance = 0.1f;
+    [Tooltip("치명타 시 피해 배율 (1.5 = 150%)")]
+    public float critDamageMultiplier = 1.5f;
+
     [Header("# 사운드")]
     [Tooltip("AudioManager에 등록한 SFX 키. 타격 판정과 같은 타이밍에 재생 (비워두면 재생 안 함)")]
     public string attackSfxKey;
@@ -152,8 +158,10 @@ public class MonsterMeleeAttack : AttackBase
             IDamageable damageable = _hitBuffer[i].GetComponent<IDamageable>();
             if (damageable == null) continue;
 
-            if (isMagicAttack) damageable.TakeMagicDamage(attackDamage, gameObject);
-            else                damageable.TakeDamage(attackDamage, gameObject);
+            float finalDamage = RollCritDamage(attackDamage, critChance, critDamageMultiplier);
+
+            if (isMagicAttack) damageable.TakeMagicDamage(finalDamage, gameObject);
+            else                damageable.TakeDamage(finalDamage, gameObject);
         }
     }
 

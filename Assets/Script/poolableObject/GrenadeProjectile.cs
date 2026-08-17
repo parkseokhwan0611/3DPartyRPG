@@ -25,12 +25,14 @@ public class GrenadeProjectile : PoolAble
     private float _elapsed;
     private bool  _launched;
     private System.Action<GameObject> _onHitTarget; // 폭발 판정에 맞은 대상마다 호출 (몬스터 스킬 디버프용)
+    private float _critChance;
+    private float _critDamageMultiplier;
 
     private static readonly Collider[] _hitBuffer = new Collider[16];
 
     public void Launch(Vector3 start, Vector3 landingPos, float duration, float arcHeight,
         float damage, float explosionRadius, LayerMask targetLayer, GameObject owner, bool isMagicDamage = false,
-        System.Action<GameObject> onHitTarget = null)
+        System.Action<GameObject> onHitTarget = null, float critChance = 0f, float critDamageMultiplier = 1.5f)
     {
         _start           = start;
         _landing         = landingPos;
@@ -42,6 +44,8 @@ public class GrenadeProjectile : PoolAble
         _owner           = owner;
         _isMagicDamage   = isMagicDamage;
         _onHitTarget     = onHitTarget;
+        _critChance      = critChance;
+        _critDamageMultiplier = critDamageMultiplier;
         _elapsed         = 0f;
         _launched        = true;
 
@@ -86,8 +90,10 @@ public class GrenadeProjectile : PoolAble
             IDamageable damageable = _hitBuffer[i].GetComponent<IDamageable>();
             if (damageable == null) continue;
 
-            if (_isMagicDamage) damageable.TakeMagicDamage(_damage, _owner);
-            else                 damageable.TakeDamage(_damage, _owner);
+            float finalDamage = Random.value < _critChance ? _damage * _critDamageMultiplier : _damage;
+
+            if (_isMagicDamage) damageable.TakeMagicDamage(finalDamage, _owner);
+            else                 damageable.TakeDamage(finalDamage, _owner);
 
             _onHitTarget?.Invoke(_hitBuffer[i].gameObject);
         }

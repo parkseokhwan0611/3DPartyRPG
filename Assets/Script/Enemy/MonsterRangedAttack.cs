@@ -17,6 +17,12 @@ public class MonsterRangedAttack : AttackBase
     [Tooltip("체크하면 마법 피해(마법저항력으로 경감), 해제하면 물리 피해(방어력으로 경감)")]
     public bool isMagicAttack = false;
 
+    [Header("# 치명타")]
+    [Tooltip("치명타 확률 (0~1)")]
+    [Range(0f, 1f)] public float critChance = 0.1f;
+    [Tooltip("치명타 시 피해 배율 (1.5 = 150%)")]
+    public float critDamageMultiplier = 1.5f;
+
     [Header("# 사운드")]
     [Tooltip("AudioManager에 등록한 SFX 키. 투사체 발사와 같은 타이밍에 재생 (비워두면 재생 안 함)")]
     public string attackSfxKey;
@@ -174,7 +180,7 @@ public class MonsterRangedAttack : AttackBase
         // isMagicAttack에 따라 맞는 대상이 방어력/마법저항력으로 알아서 경감 처리
         ProjectileScript proj = projectile.GetComponent<ProjectileScript>();
         if (proj != null)
-            proj.SetProjectileData(attackDamage, gameObject, isMagicAttack);
+            proj.SetProjectileData(RollCritDamage(attackDamage, critChance, critDamageMultiplier), gameObject, isMagicAttack);
     }
 
     public override void OnHit() { }

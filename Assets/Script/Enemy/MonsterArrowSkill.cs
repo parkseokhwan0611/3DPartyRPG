@@ -12,6 +12,10 @@ public class MonsterArrowSkill : MonsterSkillBase
     public float damage = 15f;
     [Tooltip("체크하면 마법 피해(마법저항력으로 경감), 해제하면 물리 피해(방어력으로 경감)")]
     public bool isMagicDamage = false;
+    [Tooltip("치명타 확률 (0~1)")]
+    [Range(0f, 1f)] public float critChance = 0.1f;
+    [Tooltip("치명타 시 피해 배율 (1.5 = 150%)")]
+    public float critDamageMultiplier = 1.5f;
 
     [Header("# 인디케이터 (선택 — 비워두면 표시 안 함)")]
     [Tooltip("ObjectPoolManager에 등록한 LineSkillIndicator 프리팹의 풀 키")]
@@ -81,7 +85,7 @@ public class MonsterArrowSkill : MonsterSkillBase
 
         ProjectileScript proj = projectile.GetComponent<ProjectileScript>();
         if (proj != null)
-            proj.SetProjectileData(damage, gameObject, isMagicDamage, ApplyDebuff);
+            proj.SetProjectileData(RollCritDamage(damage, critChance, critDamageMultiplier), gameObject, isMagicDamage, ApplyDebuff);
     }
 
     void OnDrawGizmosSelected()

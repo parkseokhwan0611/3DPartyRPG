@@ -89,4 +89,10 @@ public abstract class MonsterSkillBase : MonoBehaviour
         StatusEffectType type = debuff == MonsterSkillDebuff.Stun ? StatusEffectType.Stun : StatusEffectType.Slow;
         status.ApplyBuff(new StatusEffect(type, debuffValue, debuffDuration, gameObject));
     }
+
+    // AttackBase.RollCritDamage와 동일한 공용 헬퍼 — 몬스터 스킬은 AttackBase를 상속하지 않아 따로 둔다
+    protected float RollCritDamage(float baseDamage, float critChance, float critDamageMultiplier)
+    {
+        return Random.value < critChance ? baseDamage * critDamageMultiplier : baseDamage;
+    }
 }
