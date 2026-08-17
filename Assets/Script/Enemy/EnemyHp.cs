@@ -30,8 +30,8 @@ public class EnemyHp : MonoBehaviour, IDamageable
     public float magicRes = 0f;
 
     [Header("# 피격 텍스트 색상")]
-    public Color physicalDamageColor = new Color(1f, 0f, 0f);
-    public Color magicDamageColor    = new Color(0f, 0f, 1f);
+    public Color physicalDamageColor = new Color32(0xFF, 0x6E, 0x01, 0xFF); // #FF6E01
+    public Color magicDamageColor    = new Color32(0x00, 0xC1, 0xFF, 0xFF); // #00C1FF
 
     [Header("# References")]
     public string enemyName;

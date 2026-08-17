@@ -2886,6 +2886,8 @@ MonoBehaviour:
   hitRadius: 1.5
   hitOffset: 1
   isMagicAttack: 0
+  critChance: 0.1
+  critDamageMultiplier: 1.5
   attackSfxKey: GoblinWarrior
   attackSfxTimingOffset: -0.2
   damageDelay: 1
@@ -2911,6 +2913,9 @@ MonoBehaviour:
   animTrigger: skill1
   skillSfxKey: GoblinBomb
   unlockHpRatio: 1
+  debuff: 0
+  debuffValue: 0.3
+  debuffDuration: 2
   grenadePoolKey: SlingerStone
   throwPoint: {fileID: 8847520510472390876}
   damage: 200
@@ -2924,6 +2929,8 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 8
   isMagicDamage: 1
+  critChance: 0.1
+  critDamageMultiplier: 1.5
   indicatorPoolKey: 
 --- !u!114 &4960785896764141080
 MonoBehaviour:
@@ -2943,8 +2950,8 @@ MonoBehaviour:
   grade: 1
   def: 20
   magicRes: 20
-  physicalDamageColor: {r: 1, g: 0, b: 0, a: 1}
-  magicDamageColor: {r: 0, g: 0, b: 1, a: 1}
+  physicalDamageColor: {r: 1, g: 0.43137255, b: 0.003921569, a: 1}
+  magicDamageColor: {r: 0, g: 0.75686276, b: 1, a: 1}
   enemyName: "\uACE0\uBE14\uB9B0 \uD22C\uCC99\uBCD1 (Lv.5)"
   monsterId: GoblinSlinger
   damageTextPoolKey: NormalDamageText

@@ -2865,6 +2865,8 @@ MonoBehaviour:
   hitRadius: 1.5
   hitOffset: 1
   isMagicAttack: 0
+  critChance: 0.1
+  critDamageMultiplier: 1.5
   attackSfxKey: GoblinThief
   attackSfxTimingOffset: -0.3
   damageDelay: 0.7
@@ -2887,8 +2889,8 @@ MonoBehaviour:
   grade: 0
   def: 5
   magicRes: 5
-  physicalDamageColor: {r: 1, g: 0, b: 0, a: 1}
-  magicDamageColor: {r: 0, g: 0, b: 1, a: 1}
+  physicalDamageColor: {r: 1, g: 0.43137255, b: 0.003921569, a: 1}
+  magicDamageColor: {r: 0, g: 0.75686276, b: 1, a: 1}
   enemyName: "\uACE0\uBE14\uB9B0 \uB3C4\uB451 (Lv.1)"
   monsterId: GoblinThief
   damageTextPoolKey: NormalDamageText

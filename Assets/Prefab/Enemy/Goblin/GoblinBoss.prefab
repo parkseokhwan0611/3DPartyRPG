@@ -1933,6 +1933,8 @@ MonoBehaviour:
   damageDelay: 1
   recoveryDuration: 0.8
   isMagicAttack: 1
+  critChance: 0.1
+  critDamageMultiplier: 1.5
   attackSfxKey: GoblinBossNormalAtk
   attackSfxTimingOffset: -0.2
 --- !u!114 &4938466599736208482
@@ -1953,8 +1955,8 @@ MonoBehaviour:
   grade: 2
   def: 20
   magicRes: 20
-  physicalDamageColor: {r: 1, g: 0, b: 0, a: 1}
-  magicDamageColor: {r: 0, g: 0, b: 1, a: 1}
+  physicalDamageColor: {r: 0.76470596, g: 0.49803925, b: 0.29803923, a: 1}
+  magicDamageColor: {r: 0.26666668, g: 0.5568628, b: 0.6509804, a: 1}
   enemyName: "\uACE0\uBE14\uB9B0 \uC8FC\uC220\uC0AC (Lv.20)"
   monsterId: GoblinBoss
   damageTextPoolKey: NormalDamageText
@@ -2005,12 +2007,17 @@ MonoBehaviour:
   animTrigger: skill1
   skillSfxKey: DarkExplosion
   unlockHpRatio: 1
+  debuff: 0
+  debuffValue: 0.3
+  debuffDuration: 2
   damage: 300
   radius: 2
   targetLayer:
     serializedVersion: 2
     m_Bits: 64
   isMagicDamage: 1
+  critChance: 0.1
+  critDamageMultiplier: 1.5
   effectPoolKey: GoblinDarkExplosion
   effectHeightOffset: 0.2
   indicatorPoolKey: CircleSkillIndicator
@@ -2035,6 +2042,9 @@ MonoBehaviour:
   animTrigger: skill2
   skillSfxKey: GoblinBomb
   unlockHpRatio: 1
+  debuff: 0
+  debuffValue: 0.3
+  debuffDuration: 2
   grenadePoolKey: GoblinBossBottle
   throwPoint: {fileID: 6227973869471398631}
   damage: 200
@@ -2048,6 +2058,8 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 8
   isMagicDamage: 1
+  critChance: 0.1
+  critDamageMultiplier: 1.5
   indicatorPoolKey: CircleSkillIndicator
 --- !u!114 &7165683147454634721
 MonoBehaviour:
@@ -2070,6 +2082,9 @@ MonoBehaviour:
   animTrigger: skill3
   skillSfxKey: GoblinAggro
   unlockHpRatio: 0.7
+  debuff: 0
+  debuffValue: 0.3
+  debuffDuration: 2
   summonPrefabs:
   - {fileID: 8762004475818107220, guid: b40280d1a92c91b4b825e31c1ea7c03e, type: 3}
   summonCount: 3

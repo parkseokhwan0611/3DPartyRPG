@@ -1720,6 +1720,7 @@ MonoBehaviour:
   navSpeed: 1.5
   aggroDecayRate: 5
   aggroThreshold: 10
+  aggroSfxKey: 
   wanderRadius: 5
   wanderSpeed: 1.5
   wanderInterval: 3
@@ -1745,7 +1746,13 @@ MonoBehaviour:
     m_Bits: 64
   hitRadius: 1.2
   hitOffset: 1
+  isMagicAttack: 0
+  critChance: 0.1
+  critDamageMultiplier: 1.5
+  attackSfxKey: 
+  attackSfxTimingOffset: 0
   damageDelay: 0.7
+  recoveryDuration: 0.5
 --- !u!114 &491061582447124497
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1761,6 +1768,11 @@ MonoBehaviour:
   hp: 500
   maxHp: 500
   isDead: 0
+  grade: 0
+  def: 0
+  magicRes: 0
+  physicalDamageColor: {r: 1, g: 0.43137255, b: 0.003921569, a: 1}
+  magicDamageColor: {r: 0, g: 0.75686276, b: 1, a: 1}
   enemyName: "\uC2A4\uCF08\uB808\uD1A4 (LV.1)"
   monsterId: Skeleton
   damageTextPoolKey: NormalDamageText
@@ -1768,6 +1780,7 @@ MonoBehaviour:
   expReward: 5
   goldReward: 10
   destroyDelay: 2
+  deathSfxKey: 
   dropTable: {fileID: 11400000, guid: f25a15cdb79af0b419076849aec8d354, type: 2}
 --- !u!114 &195042879704489800
 MonoBehaviour:
