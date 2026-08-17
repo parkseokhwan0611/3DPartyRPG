@@ -12,6 +12,9 @@ public class MeleeAttack : AttackBase
 
     [Header("타이밍 설정 (초 단위)")]
     public float damageDelay = 0.33f;
+    [Tooltip("타격 판정 이후 애니메이션 후딜레이 — 이 시간이 끝나야 걷는 모션으로 전환되며 이동을 재개함. " +
+             "공격 애니메이션 클립 길이에서 damageDelay를 뺀 만큼으로 맞추면 됨")]
+    public float recoveryDuration = 0.3f;
     public string hitEffectName = "Yellow Sword Slash 1";
     private Coroutine attackCoroutine;
     private bool _isAttacking = false;
@@ -37,6 +40,8 @@ public class MeleeAttack : AttackBase
 
         yield return new WaitForSeconds(damageDelay);
         OnHit();
+
+        yield return new WaitForSeconds(recoveryDuration);
 
         IsAttackAnimPlaying = false;
         _isAttacking = false;

@@ -9,6 +9,9 @@ public class RangedAttack : AttackBase
     public string projectileName = "MagicBall";
     public Transform firePoint;
     public float damageDelay = 0.35f;
+    [Tooltip("투사체 발사 이후 애니메이션 후딜레이 — 이 시간이 끝나야 걷는 모션으로 전환되며 이동을 재개함. " +
+             "공격 애니메이션 클립 길이에서 damageDelay를 뺀 만큼으로 맞추면 됨")]
+    public float recoveryDuration = 0.2f;
 
     private Coroutine attackCoroutine;
     private bool _isAttacking = false;
@@ -68,10 +71,9 @@ public class RangedAttack : AttackBase
 
         yield return new WaitForSeconds(damageDelay);
 
-        IsAttackAnimPlaying = false;
-
         if (currentTarget == null)
         {
+            IsAttackAnimPlaying = false;
             _isAttacking = false;
             attackCoroutine = null;
             yield break;
@@ -83,6 +85,7 @@ public class RangedAttack : AttackBase
 
         if (ObjectPoolManager.instance == null)
         {
+            IsAttackAnimPlaying = false;
             _isAttacking = false;
             attackCoroutine = null;
             yield break;
@@ -91,6 +94,7 @@ public class RangedAttack : AttackBase
         var effect = ObjectPoolManager.instance.GetGo(projectileName);
         if (effect == null)
         {
+            IsAttackAnimPlaying = false;
             _isAttacking = false;
             attackCoroutine = null;
             yield break;
@@ -121,6 +125,11 @@ public class RangedAttack : AttackBase
             rb.angularVelocity = Vector3.zero;
         }
 
+        // 투사체 발사 후 애니메이션이 자연스럽게 마무리되는 후딜레이 — 이 시간이 끝나야
+        // IsAttackAnimPlaying이 풀려서 걷는 모션으로 전환되며 이동을 재개한다
+        yield return new WaitForSeconds(recoveryDuration);
+
+        IsAttackAnimPlaying = false;
         _isAttacking = false;
         attackCoroutine = null;
     }

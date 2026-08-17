@@ -105,6 +105,11 @@ public abstract class AttackBase : MonoBehaviour
     {
         if (!agent.enabled) return; // 사망으로 agent 비활성화된 경우 차단
         if (IsCastingSkill) return;
+        // 공격 모션(IsAttackAnimPlaying) 재생 중에는 사거리를 벗어나도 추격을 시작하지 않는다 —
+        // 모션이 끝날 때까지 제자리에서 공격을 마치고 나서야 재추격 여부를 다시 판단한다.
+        // 이 가드 덕분에 "추격 중"과 "공격 모션 재생 중"이 겹치는 프레임이 아예 없어져서,
+        // 이동 중에 공격이 끼어들거나 공격 중에 이동이 끼어드는 상황도 함께 차단된다
+        if (IsAttackAnimPlaying) return;
 
         float distance         = Vector3.Distance(transform.position, currentTarget.position);
         agent.stoppingDistance = 0.1f;

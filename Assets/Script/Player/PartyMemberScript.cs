@@ -124,13 +124,19 @@ public class PartyMemberScript : MonoBehaviour
 
         UpdateAnimation();
 
+        // 파티원 고정 중인 팔로워 — 리더 거리와 무관하게 제자리에서 하던 공격을 계속하거나(Attacking)
+        // 가만히 대기한다. 새 공격 명령(적 클릭)은 AttackBase.SetTarget으로 바로 들어오므로 여기서
+        // 막을 필요 없음 — 이동 관련 로직(비상 추격/체인 팔로우)만 건너뛴다
+        bool holdActive = !isLeader && PartyManager.instance != null && PartyManager.instance.PartyHoldEnabled;
+
         if (CurrentState == MemberState.Attacking)
         {
             // 평소 전투 중에는 공격을 끝까지 재생하지만, 리더가 스킬 회피 등으로 갑자기 멀리
             // 벗어나면(resumeDistance의 emergencyFollowMultiplier배 이상) 공격을 즉시 끊고 따라붙는다.
             // 그러지 않으면 공격 애니메이션(윈드업+후딜)이 끝날 때까지 팔로워가 위험 지역에 그대로
-            // 묶여있게 되어, 평소 이동과 달리 전투 중 회피만 유독 굼떠 보이는 원인이 된다
-            if (!isLeader && targetToFollow != null)
+            // 묶여있게 되어, 평소 이동과 달리 전투 중 회피만 유독 굼떠 보이는 원인이 된다.
+            // 단, 파티원 고정 중에는 이 비상 탈출도 걸지 않는다 — 고정의 의도 자체가 "무슨 일이 있어도 제자리"이므로
+            if (!isLeader && targetToFollow != null && !holdActive)
             {
                 float sqrDist      = (transform.position - targetToFollow.position).sqrMagnitude;
                 float emergencyDist = resumeDistance * emergencyFollowMultiplier;
@@ -146,6 +152,7 @@ public class PartyMemberScript : MonoBehaviour
 
         if (skillManager != null && skillManager.IsActivatingSkill) return;
         if (attackComp  != null && attackComp.IsCastingSkill) return;
+        if (holdActive) return;
 
         if (isLeader)
         {

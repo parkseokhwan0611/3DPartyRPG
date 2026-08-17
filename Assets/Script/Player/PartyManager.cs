@@ -40,6 +40,13 @@ public class PartyManager : MonoBehaviour
     public bool AutoSkillEnabled { get; private set; } = true;
     public event System.Action<bool> OnAutoSkillToggled;
 
+    // ─────────────────────────────────────────
+    // 파티원 고정 (스페이스바로 토글) — 켜져 있으면 리더만 이동하고 팔로워는 제자리에 고정.
+    // 단, 공격 명령(적 클릭)은 고정 중에도 그대로 전달돼서 팔로워도 새 타겟을 공격하러 간다
+    // ─────────────────────────────────────────
+    public bool PartyHoldEnabled { get; private set; } = false;
+    public event System.Action<bool> OnPartyHoldToggled;
+
     // ─────────────────────────────────────────────────────────────────
     // Unity 생명주기
     // ─────────────────────────────────────────────────────────────────
@@ -89,6 +96,9 @@ public class PartyManager : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.T))
             ToggleAutoSkill();
+
+        if (Input.GetKeyDown(KeyCode.Space))
+            TogglePartyHold();
 
         if (currentLeader == null || currentLeader.CurrentState == PartyMemberScript.MemberState.Dead) return;
 
@@ -184,15 +194,22 @@ public class PartyManager : MonoBehaviour
         _lastMoveDestination = destination;
         _hasPendingDestination = true;
 
-        foreach (var member in partyMembers)
-        {
-            if (member.CurrentState == PartyMemberScript.MemberState.Dead) continue;
-            var attack = member.GetComponent<AttackBase>();
-            if (attack != null) attack.SetTarget(null);
+        var leaderAttack = currentLeader.GetComponent<AttackBase>();
+        if (leaderAttack != null) leaderAttack.SetTarget(null);
+        currentLeader.agent.stoppingDistance = 0.1f;
 
-            member.agent.stoppingDistance = (member == currentLeader)
-                ? 0.1f
-                : member.stopDistance;
+        // 파티원 고정 중엔 팔로워의 타겟/정지거리를 건드리지 않는다 — 하던 공격은 그 자리에서
+        // 계속하고, 이동 명령은 리더에게만 적용된다
+        if (!PartyHoldEnabled)
+        {
+            foreach (var member in partyMembers)
+            {
+                if (member == currentLeader) continue;
+                if (member.CurrentState == PartyMemberScript.MemberState.Dead) continue;
+                var attack = member.GetComponent<AttackBase>();
+                if (attack != null) attack.SetTarget(null);
+                member.agent.stoppingDistance = member.stopDistance;
+            }
         }
 
         // 리더에게만 목적지 설정 (팔로워는 PartyMemberScript가 자체적으로 따라옴)
@@ -243,6 +260,36 @@ public class PartyManager : MonoBehaviour
         AutoSkillEnabled = !AutoSkillEnabled;
         AudioManager.instance?.PlaySFX("AutoSkillToggle");
         OnAutoSkillToggled?.Invoke(AutoSkillEnabled);
+    }
+
+    // ─────────────────────────────────────────────────────────────────
+    // 파티원 고정 토글
+    // ─────────────────────────────────────────────────────────────────
+
+    public void TogglePartyHold()
+    {
+        PartyHoldEnabled = !PartyHoldEnabled;
+
+        if (PartyHoldEnabled)
+        {
+            // 켜지는 순간 팔로워를 즉시 제자리에 멈춘다 — 공격 중인 팔로워는 하던 공격을 그대로
+            // 계속하게 두고(AttackBase가 별도로 관리), 이동 중이던 팔로워만 멈춰 세운다
+            foreach (var member in partyMembers)
+            {
+                if (member == currentLeader) continue;
+                if (member.CurrentState == PartyMemberScript.MemberState.Dead) continue;
+                if (member.CurrentState == PartyMemberScript.MemberState.Attacking) continue;
+
+                if (member.agent.enabled)
+                {
+                    member.agent.ResetPath();
+                    member.agent.velocity = Vector3.zero;
+                }
+                member.ChangeState(PartyMemberScript.MemberState.Idle);
+            }
+        }
+
+        OnPartyHoldToggled?.Invoke(PartyHoldEnabled);
     }
 
     // ─────────────────────────────────────────────────────────────────
