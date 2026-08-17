@@ -22,6 +22,8 @@ public class PartyManager : MonoBehaviour
     public static bool IsGameOver { get; private set; }
     [Header("게임 오버 UI")]
     public GameObject gameOverUI;
+    [Tooltip("게임오버 화면의 '타이틀로' 버튼이 이동할 씬 이름")]
+    public string titleSceneName = "Title";
     [Header("레벨업 이펙트")]
     [Tooltip("ObjectPoolManager에 등록한 레벨업 이펙트 풀 키. 파티가 레벨업하면 현재 리더 위치에 재생")]
     public string levelUpEffectPoolKey = "LevelUpEffect";
@@ -454,6 +456,14 @@ public class PartyManager : MonoBehaviour
         Time.timeScale = 1f;
         IsGameOver = false;
         if (gameOverUI != null) gameOverUI.SetActive(false);
+    }
+
+    /// <summary>게임오버 UI의 '타이틀로' 버튼에서 호출 — timeScale 복구 후 타이틀 씬으로 이동</summary>
+    public void GoToTitle()
+    {
+        Time.timeScale = 1f;
+        IsGameOver = false;
+        SceneLoader.Load(titleSceneName);
     }
 
     // ─────────────────────────────────────────────────────────────────

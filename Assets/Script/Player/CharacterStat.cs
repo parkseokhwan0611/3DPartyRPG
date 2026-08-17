@@ -28,8 +28,8 @@ public class CharacterStat : MonoBehaviour, IDamageable
     public string manaTextPoolKey = "HealText"; // HealText 풀 재사용 (범용 +수치 텍스트)
     public Color  manaTextColor   = new Color(0.3f, 0.5f, 1f);
     [Header("# 피격 텍스트 색상")]
-    public Color physicalDamageColor = new Color(1f, 0f, 0f);
-    public Color magicDamageColor    = new Color(0f, 0f, 1f);
+    public Color physicalDamageColor = new Color32(0xFF, 0x6E, 0x01, 0xFF); // #FF6E01
+    public Color magicDamageColor    = new Color32(0x00, 0xC1, 0xFF, 0xFF); // #00C1FF
     public event Action OnHpChanged;
     public event Action OnMpChanged;
     private CharacterStatus myStatus;
