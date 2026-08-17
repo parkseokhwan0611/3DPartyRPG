@@ -110,6 +110,12 @@ public abstract class AttackBase : MonoBehaviour
         // 이 가드 덕분에 "추격 중"과 "공격 모션 재생 중"이 겹치는 프레임이 아예 없어져서,
         // 이동 중에 공격이 끼어들거나 공격 중에 이동이 끼어드는 상황도 함께 차단된다
         if (IsAttackAnimPlaying) return;
+        // 스턴 중에는 추격도 공격 시작도 하지 않는다 — 스턴이 걸리는 순간
+        // StatusEffectHandler/PartyStatusEffectHandler가 이미 ForceCancelAttack으로 하던 공격을
+        // 끊어놨으므로, 여기서는 스턴이 풀릴 때까지 새로 추격/공격을 시작하지 않게만 막으면 된다
+        if ((statusHandler != null && statusHandler.HasDebuff(StatusEffectType.Stun))
+            || (partyStatusHandler != null && partyStatusHandler.HasDebuff(StatusEffectType.Stun)))
+            return;
 
         float distance         = Vector3.Distance(transform.position, currentTarget.position);
         agent.stoppingDistance = 0.1f;

@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.AI;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -7,6 +8,9 @@ public class PartyStatusEffectHandler : MonoBehaviour
 {
     private CharacterStat myStat;
     private AttackBase attackBase;
+    private NavMeshAgent agent;
+    private Animator anim;
+    private SkillManager skillManager;
 
     // 쉴드 수치
     public float CurrentShield { get; private set; } = 0f;
@@ -19,14 +23,35 @@ public class PartyStatusEffectHandler : MonoBehaviour
     // 버프 이벤트 (UI 갱신용)
     public System.Action OnShieldChanged;
     public System.Action<StatusEffectType, bool> OnBuffChanged;
+    public System.Action OnStunEnded;
 
     // 활성화된 버프 목록
     private List<StatusEffect> activeBuffs = new List<StatusEffect>();
 
+    // 스턴은 activeBuffs 목록이 아니라 Enemy쪽 StatusEffectHandler와 동일하게 전용 타이머로 관리 —
+    // 이동/공격을 즉시 멈추고 애니메이션을 재생해야 해서 범용 버프 코루틴 흐름과 분리했다
+    private float stunTimer = 0f;
+    private bool  isStunned = false;
+
     void Awake()
     {
-        myStat     = GetComponent<CharacterStat>();
-        attackBase = GetComponent<AttackBase>();
+        myStat       = GetComponent<CharacterStat>();
+        attackBase   = GetComponent<AttackBase>();
+        agent        = GetComponent<NavMeshAgent>();
+        anim         = GetComponent<Animator>();
+        skillManager = GetComponent<SkillManager>();
+    }
+
+    void Update()
+    {
+        if (!isStunned) return;
+
+        stunTimer -= Time.deltaTime;
+        if (stunTimer <= 0f)
+        {
+            isStunned = false;
+            EndStun();
+        }
     }
 
     // ─────────────────────────────────────────────────────────────────
@@ -35,8 +60,14 @@ public class PartyStatusEffectHandler : MonoBehaviour
 
     public void ApplyBuff(StatusEffect effect)
     {
-        // 디버프 면역 중이면 디버프 무시
+        // 디버프 면역 중이면 디버프 무시 (스턴 포함)
         if (IsDebuffImmune && IsDebuff(effect.effectType)) return;
+
+        if (effect.effectType == StatusEffectType.Stun)
+        {
+            ApplyStun(effect);
+            return;
+        }
 
         // 같은 타입이라도 교체하지 않고 독립적으로 누적 — 각자 자기 지속시간에 따라 개별 종료
         activeBuffs.Add(effect);
@@ -44,6 +75,55 @@ public class PartyStatusEffectHandler : MonoBehaviour
         ApplyBuffValue(effect, true);
 
         OnBuffChanged?.Invoke(effect.effectType, true);
+    }
+
+    // ─────────────────────────────────────────────────────────────────
+    // 스턴 전용 로직 — Enemy/StatusEffectHandler.ApplyStun/EndStun과 동일한 패턴
+    // ─────────────────────────────────────────────────────────────────
+
+    private void ApplyStun(StatusEffect effect)
+    {
+        if (isStunned)
+        {
+            stunTimer = Mathf.Max(stunTimer, effect.duration);
+            return;
+        }
+
+        isStunned = true;
+        stunTimer = effect.duration;
+
+        if (agent != null && agent.enabled && agent.isOnNavMesh)
+        {
+            agent.isStopped = true;
+            agent.ResetPath();
+            agent.velocity  = Vector3.zero;
+        }
+
+        if (anim != null)
+        {
+            anim.SetBool("isWalking", false);
+            anim.SetTrigger("isStun");
+        }
+
+        // 하던 공격/스킬을 그 자리에서 즉시 중단 — "지금 하던 동작은 끝까지" 원칙보다 스턴이 우선
+        attackBase?.ForceCancelAttack();
+        skillManager?.ForceStopCurrentSkill();
+
+        OnBuffChanged?.Invoke(StatusEffectType.Stun, true);
+    }
+
+    private void EndStun()
+    {
+        if (agent != null && agent.enabled && agent.isOnNavMesh)
+        {
+            agent.isStopped = false;
+            agent.velocity  = Vector3.zero;
+        }
+
+        if (anim != null) anim.ResetTrigger("isStun");
+
+        OnBuffChanged?.Invoke(StatusEffectType.Stun, false);
+        OnStunEnded?.Invoke();
     }
 
     // 쉴드 적용
@@ -84,6 +164,16 @@ public class PartyStatusEffectHandler : MonoBehaviour
     // 해당 타입의 활성 버프를 전부 제거 (스택 전체 해제)
     public void RemoveBuff(StatusEffectType type)
     {
+        if (type == StatusEffectType.Stun)
+        {
+            if (isStunned)
+            {
+                isStunned = false;
+                EndStun();
+            }
+            return;
+        }
+
         var matches = activeBuffs.FindAll(e => e.effectType == type);
         foreach (var effect in matches)
             RemoveBuffInstance(effect);
@@ -102,6 +192,12 @@ public class PartyStatusEffectHandler : MonoBehaviour
 
     public void DispelAllDebuffs()
     {
+        if (isStunned)
+        {
+            isStunned = false;
+            EndStun();
+        }
+
         var debuffs = activeBuffs.FindAll(e => IsDebuff(e.effectType));
         foreach (var debuff in debuffs)
             RemoveBuffInstance(debuff);
@@ -109,12 +205,13 @@ public class PartyStatusEffectHandler : MonoBehaviour
 
     public bool HasActiveDebuff()
     {
-        return activeBuffs.Exists(e => IsDebuff(e.effectType));
+        return isStunned || activeBuffs.Exists(e => IsDebuff(e.effectType));
     }
 
     // Enemy용 StatusEffectHandler.HasDebuff와 동일한 시그니처 — AttackBase에서 공용으로 사용
     public bool HasDebuff(StatusEffectType type)
     {
+        if (type == StatusEffectType.Stun) return isStunned;
         return activeBuffs.Exists(e => e.effectType == type);
     }
 
@@ -122,6 +219,15 @@ public class PartyStatusEffectHandler : MonoBehaviour
     // 비활성화되기 전에 활성 버프/디버프를 전부 즉시 원상복구한다.
     public void ClearAllOnDeath()
     {
+        // Die()가 곧이어 agent 비활성화·사망 애니메이션을 직접 처리하므로 여기서는
+        // 플래그만 정리 (agent.isStopped 등을 건드려 사망 연출과 충돌시키지 않음)
+        if (isStunned)
+        {
+            isStunned = false;
+            stunTimer = 0f;
+            if (anim != null) anim.ResetTrigger("isStun");
+        }
+
         var buffs = new List<StatusEffect>(activeBuffs);
         foreach (var effect in buffs)
             RemoveBuffInstance(effect);

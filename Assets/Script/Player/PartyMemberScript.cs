@@ -124,6 +124,11 @@ public class PartyMemberScript : MonoBehaviour
 
         UpdateAnimation();
 
+        // 스턴 중에는 공격이든 이동이든 전부 멈춘다 — agent.isStopped 걸기, 하던 공격/스킬 강제
+        // 취소, 스턴 애니메이션 재생은 PartyStatusEffectHandler.ApplyStun()이 이미 처리했으므로,
+        // 여기서는 이동/추격 재개 판단 로직 자체가 다시 움직이라고 지시하지 않도록 전부 건너뛴다
+        if (statusHandler != null && statusHandler.HasDebuff(StatusEffectType.Stun)) return;
+
         // 파티원 고정 중인 팔로워 — 리더 거리와 무관하게 제자리에서 하던 공격을 계속하거나(Attacking)
         // 가만히 대기한다. 새 공격 명령(적 클릭)은 AttackBase.SetTarget으로 바로 들어오므로 여기서
         // 막을 필요 없음 — 이동 관련 로직(비상 추격/체인 팔로우)만 건너뛴다
@@ -332,6 +337,13 @@ public class PartyMemberScript : MonoBehaviour
     void UpdateAnimation()
     {
         if (anim == null) return;
+        // 스턴 애니메이션(isStun 트리거)은 PartyStatusEffectHandler가 직접 재생 — 여기서는
+        // walk 타이머만 리셋해서 걷기 애니메이션이 끼어들지 않게 함
+        if (statusHandler != null && statusHandler.HasDebuff(StatusEffectType.Stun))
+        {
+            _walkAnimTimer = 0f;
+            return;
+        }
         if (skillManager != null && skillManager.IsActivatingSkill)
         {
             _walkAnimTimer = 0f;

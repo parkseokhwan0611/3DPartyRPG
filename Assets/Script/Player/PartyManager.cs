@@ -128,6 +128,11 @@ public class PartyManager : MonoBehaviour
         AttackBase leaderAttack = currentLeader.GetComponent<AttackBase>();
         if (leaderAttack != null && leaderAttack.IsCastingSkill) return;
 
+        // 스턴 중에는 이동/공격 명령 자체를 받지 않음 — 실행이 안 되는 명령을 굳이 받아서
+        // 마커를 찍거나 타겟을 갱신할 필요 없음
+        var leaderStatus = currentLeader.GetComponent<PartyStatusEffectHandler>();
+        if (leaderStatus != null && leaderStatus.HasDebuff(StatusEffectType.Stun)) return;
+
         // 롤 스타일 A+좌클릭 강제 공격 — 공격 가능한 오브젝트 위에서만 발동
         if (Input.GetKey(KeyCode.A) && Input.GetMouseButtonDown(0))
         {
