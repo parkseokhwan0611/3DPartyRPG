@@ -294,6 +294,7 @@ public class PartyManager : MonoBehaviour
             }
         }
 
+        AudioManager.instance?.PlaySFX("AutoSkillToggle");
         OnPartyHoldToggled?.Invoke(PartyHoldEnabled);
     }
 

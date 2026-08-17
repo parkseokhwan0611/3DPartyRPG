@@ -13,6 +13,9 @@ public class CameraZoom : MonoBehaviour
     [Header("# 줌인 시 상하 각도 (좌우 회전은 항상 고정)")]
     [Tooltip("줌인했을 때의 카메라 피치(상하 각도, 도). 줌아웃 시엔 기존 고정 각도를 그대로 사용")]
     [SerializeField] float zoomInPitch = 25f;
+    [Tooltip("줌 진행도(0=최대 줌아웃, 1=최대 줌인)가 이 값을 넘어야 상하 각도 변화가 시작됨. " +
+             "예: 0.5면 줌인을 절반 이상 했을 때부터만 각도가 바뀌기 시작해서 zoomInPitch에 도달")]
+    [SerializeField, Range(0f, 0.99f)] float pitchStartT = 0.5f;
 
     [Header("# 줌 속도")]
     [SerializeField] float scrollSpeed = 3f;  // 휠 1틱당 줌 변화량
@@ -53,8 +56,10 @@ public class CameraZoom : MonoBehaviour
 
         if (virtualCamera != null)
         {
-            // Yaw(Y)/Roll(Z)은 원래 고정값 그대로, Pitch(X)만 줌 정도에 따라 보간
-            float pitch = Mathf.LerpAngle(_basePitch, zoomInPitch, _zoomT);
+            // Yaw(Y)/Roll(Z)은 원래 고정값 그대로, Pitch(X)만 줌 정도에 따라 보간 —
+            // 단 pitchStartT를 넘기 전까지는 각도를 그대로 유지하고, 넘은 뒤부터 zoomInPitch까지 보간
+            float pitchT = Mathf.Clamp01((_zoomT - pitchStartT) / (1f - pitchStartT));
+            float pitch  = Mathf.LerpAngle(_basePitch, zoomInPitch, pitchT);
             virtualCamera.transform.rotation =
                 Quaternion.Euler(pitch, _baseRotation.eulerAngles.y, _baseRotation.eulerAngles.z);
         }
