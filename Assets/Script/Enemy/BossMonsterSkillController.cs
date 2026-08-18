@@ -25,6 +25,11 @@ public class BossMonsterSkillController : MonoBehaviour, ISkillCaster
     public float enrageCooldownScale = 0.7f;
     [Tooltip("광폭화 시 기본 공격력(AttackBase.attackDamage)에 곱할 배율")]
     public float enrageDamageMultiplier = 1.3f;
+    [Tooltip("광폭화 진입 시 활성화할 아우라 이펙트 오브젝트 (보스 자식으로 미리 배치하고 기본 비활성화 " +
+             "상태로 둘 것 — Play On Awake 파티클이면 SetActive만으로 재생된다). 비워두면 아우라 없음")]
+    public GameObject enrageAuraObject;
+    [Tooltip("AudioManager에 등록한 SFX 키. 광폭화 진입 시 1회 재생 (비워두면 재생 안 함)")]
+    public string enrageSfxKey;
 
     private AttackBase          _attackBase;
     private NavMeshAgent         _agent;
@@ -77,6 +82,12 @@ public class BossMonsterSkillController : MonoBehaviour, ISkillCaster
 
         for (int i = 0; i < skills.Count; i++)
             skills[i]?.SetCooldownScale(enrageCooldownScale);
+
+        if (enrageAuraObject != null)
+            enrageAuraObject.SetActive(true);
+
+        if (!string.IsNullOrEmpty(enrageSfxKey))
+            AudioManager.instance?.PlaySFX(enrageSfxKey);
     }
 
     // ─────────────────────────────────────────────────────────────────

@@ -604813,13 +604813,17 @@ MonoBehaviour:
   - objectName: GoblinDarkExplosion
     perfab: {fileID: 5402716474444746077, guid: fbfd0e9e74b664c48b853b4068d9c0f5,
       type: 3}
-    count: 3
+    count: 1
   - objectName: PoisionBottle
     perfab: {fileID: 1270340009616595327, guid: 0236f84ff2ee05a4d9e1fe3d4b8e41d3,
       type: 3}
-    count: 3
+    count: 1
   - objectName: GoblinBossBottle
     perfab: {fileID: 1363209929856299772, guid: 132add7d8aeb4474e993ab2aea84ed45,
+      type: 3}
+    count: 1
+  - objectName: BossSummonVFX
+    perfab: {fileID: 8424819827099072664, guid: 2b0bbc5dc916ee24da1671c66c675957,
       type: 3}
     count: 3
 --- !u!4 &1609027936
@@ -803799,11 +803803,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 983320514698740326, guid: 04330b467fdc2ac4a954f0a66a8bd06e,
-        type: 3}
-      propertyPath: debuff
-      value: 2
-      objectReference: {fileID: 0}
     - target: {fileID: 1473683728507981117, guid: 04330b467fdc2ac4a954f0a66a8bd06e,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -803854,50 +803853,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 4938466599736208482, guid: 04330b467fdc2ac4a954f0a66a8bd06e,
-        type: 3}
-      propertyPath: magicDamageColor.b
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4938466599736208482, guid: 04330b467fdc2ac4a954f0a66a8bd06e,
-        type: 3}
-      propertyPath: magicDamageColor.g
-      value: 0.75510216
-      objectReference: {fileID: 0}
-    - target: {fileID: 4938466599736208482, guid: 04330b467fdc2ac4a954f0a66a8bd06e,
-        type: 3}
-      propertyPath: magicDamageColor.r
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4938466599736208482, guid: 04330b467fdc2ac4a954f0a66a8bd06e,
-        type: 3}
-      propertyPath: physicalDamageColor.b
-      value: 0.0047169924
-      objectReference: {fileID: 0}
-    - target: {fileID: 4938466599736208482, guid: 04330b467fdc2ac4a954f0a66a8bd06e,
-        type: 3}
-      propertyPath: physicalDamageColor.g
-      value: 0.4312668
-      objectReference: {fileID: 0}
-    - target: {fileID: 4938466599736208482, guid: 04330b467fdc2ac4a954f0a66a8bd06e,
-        type: 3}
-      propertyPath: physicalDamageColor.r
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 5285157052835285592, guid: 04330b467fdc2ac4a954f0a66a8bd06e,
         type: 3}
       propertyPath: m_Name
       value: GoblinBoss
-      objectReference: {fileID: 0}
-    - target: {fileID: 8335857253635887529, guid: 04330b467fdc2ac4a954f0a66a8bd06e,
-        type: 3}
-      propertyPath: debuff
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 8335857253635887529, guid: 04330b467fdc2ac4a954f0a66a8bd06e,
-        type: 3}
-      propertyPath: debuffDuration
-      value: 1.5
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
