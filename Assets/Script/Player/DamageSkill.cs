@@ -65,6 +65,9 @@ public class DamageSkill : SkillBase
             else            ApplySingleDamage(data, target);
         }
 
+        // 5.5 부가 버프 적용 (시전자 자신 — 명중 여부와 무관하게 스킬 사용 시점에 1회 적용)
+        ApplyOnCastBuffs(data);
+
         // 6. 어그로 적용
         ApplyAggro(data);
 
@@ -162,6 +165,26 @@ public class DamageSkill : SkillBase
                 debuff.effectType,
                 debuff.GetValue(skillLevel),
                 debuff.GetDuration(skillLevel),
+                gameObject
+            ));
+        }
+    }
+
+    // ─────────────────────────────────────────────────────────────────
+    // 부가 버프 (시전자 자신)
+    // ─────────────────────────────────────────────────────────────────
+
+    private void ApplyOnCastBuffs(DamageSkillData data)
+    {
+        if (data.onCastBuffs == null || data.onCastBuffs.Count == 0) return;
+        if (statusHandler == null) return;
+
+        foreach (var buff in data.onCastBuffs)
+        {
+            statusHandler.ApplyBuff(new StatusEffect(
+                buff.effectType,
+                buff.GetValue(skillLevel),
+                buff.GetDuration(skillLevel),
                 gameObject
             ));
         }

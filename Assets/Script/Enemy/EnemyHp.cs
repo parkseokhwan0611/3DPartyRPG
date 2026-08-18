@@ -62,6 +62,7 @@ public class EnemyHp : MonoBehaviour, IDamageable
     private Animator animator;
     private NavMeshAgent navAgent;
     private Collider col;
+    private StatusEffectHandler statusHandler;
 
     // ─────────────────────────────────────────────────────────────────
     // Unity 생명주기
@@ -69,9 +70,10 @@ public class EnemyHp : MonoBehaviour, IDamageable
 
     void Awake()
     {
-        animator = GetComponent<Animator>();
-        navAgent = GetComponent<NavMeshAgent>();
-        col      = GetComponent<Collider>();
+        animator      = GetComponent<Animator>();
+        navAgent      = GetComponent<NavMeshAgent>();
+        col           = GetComponent<Collider>();
+        statusHandler = GetComponent<StatusEffectHandler>();
         if (col == null) col = GetComponentInChildren<Collider>(); // 콜라이더가 자식 오브젝트에 있는 프리팹도 대응
     }
 
@@ -110,6 +112,11 @@ public class EnemyHp : MonoBehaviour, IDamageable
 
     private void ApplyDamage(float finalDamage, Color damageColor, bool isCrit = false)
     {
+        if (statusHandler != null)
+            finalDamage = statusHandler.AbsorbDamage(finalDamage);
+
+        if (finalDamage <= 0f) return; // 쉴드가 전부 흡수한 경우 — 데미지 텍스트/HP 변화 없음
+
         hp = Mathf.Clamp(hp - finalDamage, 0, maxHp);
         SpawnDamageText(finalDamage, damageColor, isCrit);
         OnHpChanged?.Invoke(hp, maxHp);

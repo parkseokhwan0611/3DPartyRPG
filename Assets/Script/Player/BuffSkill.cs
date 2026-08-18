@@ -146,8 +146,17 @@ public class BuffSkill : SkillBase
                 continue;
             }
 
+            // Shield는 activeBuffs 목록/StatusEffectType이 아니라 PartyStatusEffectHandler의
+            // 전용 CurrentShield 풀로 관리 (스택 시 수치는 합연산, 지속시간은 최신 것으로 갱신)
+            if (effect.effectType == BuffSkillData.BuffEffectType.Shield)
+            {
+                float shieldAmount = effect.GetValue(level) + GetScalingValue(effect, level, caster);
+                targetHandler.ApplyShield(shieldAmount, data.GetDuration(level), gameObject);
+                continue;
+            }
+
             StatusEffectType? mapped = MapToStatusEffectType(effect.effectType);
-            if (mapped == null) continue; // SpeedBonus/Shield/ManaRegen/HpRegen/DebuffImmune: 미구현 (기존과 동일)
+            if (mapped == null) continue; // SpeedBonus/ManaRegen/HpRegen/DebuffImmune: 미구현 (기존과 동일)
 
             float flat    = effect.GetValue(level);
             float scaling = GetScalingValue(effect, level, caster);

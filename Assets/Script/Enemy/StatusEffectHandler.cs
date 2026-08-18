@@ -24,10 +24,16 @@ public class StatusEffectHandler : MonoBehaviour
     public System.Action OnDebuffAdded;
     public System.Action OnDebuffRemoved;
     public System.Action OnStunEnded;
+    public System.Action OnShieldChanged;
 
     // 스턴 전용 타이머
     private float stunTimer = 0f;
     private bool  isStunned = false;
+
+    // 쉴드 수치 — PartyStatusEffectHandler.ApplyShield와 동일한 패턴 (스택 시 수치는 합연산,
+    // 지속시간은 최근에 건 스킬 기준으로 갱신되는 단일 풀 + 단일 만료 타이머)
+    public float CurrentShield { get; private set; } = 0f;
+    private Coroutine _shieldRoutine;
 
     // ─────────────────────────────────────────────────────────────────
     // Unity 생명주기
@@ -127,6 +133,47 @@ public class StatusEffectHandler : MonoBehaviour
         if (anim != null) anim.ResetTrigger("isStun");
 
         OnStunEnded?.Invoke();
+    }
+
+    // ─────────────────────────────────────────────────────────────────
+    // 쉴드
+    // ─────────────────────────────────────────────────────────────────
+
+    public void ApplyShield(float amount, float duration, GameObject source)
+    {
+        CurrentShield += amount;
+        OnShieldChanged?.Invoke();
+
+        if (_shieldRoutine != null) StopCoroutine(_shieldRoutine);
+        _shieldRoutine = StartCoroutine(ShieldExpireRoutine(duration));
+    }
+
+    // 데미지 적용 전 쉴드로 먼저 흡수 — EnemyHp.ApplyDamage에서 방어력 경감 이후 호출
+    public float AbsorbDamage(float damage)
+    {
+        if (CurrentShield <= 0f) return damage;
+
+        if (CurrentShield >= damage)
+        {
+            CurrentShield -= damage;
+            OnShieldChanged?.Invoke();
+            return 0f;
+        }
+
+        damage        -= CurrentShield;
+        CurrentShield  = 0f;
+        OnShieldChanged?.Invoke();
+        return damage;
+    }
+
+    // 하나의 풀을 통째로 관리하므로, 타이머가 끝나면 그동안 합산된 쉴드 전체가 함께 사라진다
+    private IEnumerator ShieldExpireRoutine(float duration)
+    {
+        yield return new WaitForSeconds(duration);
+
+        _shieldRoutine = null;
+        CurrentShield  = 0f;
+        OnShieldChanged?.Invoke();
     }
 
     // ─────────────────────────────────────────────────────────────────
