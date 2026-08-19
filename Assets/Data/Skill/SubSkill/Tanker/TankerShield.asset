@@ -1,0 +1,57 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a70ac1c355a5a5a49b0f39626fc9e2be, type: 3}
+  m_Name: TankerShield
+  m_EditorClassIdentifier: 
+  skillId: TankerShield
+  skillName: "\uC131\uC2A4\uB7EC\uC6B4 \uBCF4\uD638"
+  description: "\uD30C\uD2F0\uC6D0 \uBAA8\uB450\uC5D0\uAC8C \uBCF4\uD638\uB9C9\uC744
+    \uC90D\uB2C8\uB2E4."
+  icon: {fileID: 21300000, guid: 29430f88b5983214692d51223ffb4f00, type: 3}
+  requiredClass: 0
+  skillType: 1
+  skillCategory: 1
+  sfxEntries: []
+  skillPriority: 0
+  maxLevel: 5
+  requiredCharLevel: 50
+  mpCost:
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  cooldown:
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  skillPointCost: 0000000000000000000000000000000000000000
+  isPartyBuff: 1
+  effectStyle: 1
+  effectPoolKey: DefBuff
+  auraIndex: 3
+  animTriggerName: doBuffSkill
+  animDuration: 1.2
+  effectSpawnDelay: 0.6
+  effectSpawnOffset: {x: 0, y: 0, z: 0}
+  effectSpawnRotation: {x: 0, y: 0, z: 0}
+  baseDuration: 5
+  durationPerLevel: 1
+  buffEffects:
+  - effectType: 8
+    baseValue: 500
+    valuePerLevel: 100
+    scalingStat: 2
+    scalingCoeff: 1
+    scalingPerLevel: 0.1

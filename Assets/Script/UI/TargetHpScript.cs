@@ -10,6 +10,9 @@ public class TargetHpScript : MonoBehaviour
     public TMPro.TextMeshProUGUI nameText;
     public TMPro.TextMeshProUGUI hpText;
     public UnityEngine.UI.Image hpBarFill;
+    [Tooltip("선택 — 비워두면 쉴드 바 없음. HP 바와 반대 방향으로 깎이도록 Image의 Fill Origin을 " +
+             "Right로 설정할 것 (HP는 Left 피벗, 쉴드는 Right 피벗)")]
+    public UnityEngine.UI.Image shieldBarFill;
 
     [Header("# 등급 표시 (정예/보스 전용)")]
     [Tooltip("타겟이 Elite 등급일 때만 켜짐")]
@@ -18,6 +21,7 @@ public class TargetHpScript : MonoBehaviour
     public GameObject bossIndicator;
 
     private EnemyHp currentTarget;
+    private StatusEffectHandler shieldHandler;
 
     // 리더 추적용 캐시 — 리더가 바뀔 때만 AttackBase를 다시 가져옴
     private PartyMemberScript _trackedLeader;
@@ -50,6 +54,7 @@ public class TargetHpScript : MonoBehaviour
     {
         // 1. 기존 타겟 이벤트 구독 해제 (중요: 메모리 누수 방지)
         if (currentTarget != null) currentTarget.OnHpChanged -= UpdateHPBar;
+        if (shieldHandler != null) shieldHandler.OnShieldChanged -= UpdateShieldBar;
 
         // 2. 새 타겟 설정
         currentTarget = newTarget;
@@ -62,12 +67,18 @@ public class TargetHpScript : MonoBehaviour
         // 3. 새 타겟 이벤트 구독 및 초기화
         currentTarget.OnHpChanged += UpdateHPBar;
         UpdateHPBar(currentTarget.hp, currentTarget.maxHp);
+
+        shieldHandler = currentTarget.GetComponent<StatusEffectHandler>();
+        if (shieldHandler != null) shieldHandler.OnShieldChanged += UpdateShieldBar;
+        UpdateShieldBar();
     }
 
     private void ClearTarget()
     {
         if (currentTarget != null) currentTarget.OnHpChanged -= UpdateHPBar;
+        if (shieldHandler != null) shieldHandler.OnShieldChanged -= UpdateShieldBar;
         currentTarget = null;
+        shieldHandler = null;
         if (rootVisual != null) rootVisual.SetActive(false);
         if (eliteIndicator != null) eliteIndicator.SetActive(false);
         if (bossIndicator  != null) bossIndicator.SetActive(false);
@@ -81,5 +92,14 @@ public class TargetHpScript : MonoBehaviour
             hpText.text = $"{currentHp:F0} / {maxHp:F0}";
 
         if (currentHp <= 0 && rootVisual != null) rootVisual.SetActive(false);
+    }
+
+    // 쉴드 수치는 MaxHp 대비 비율로 표시 (HP 바와 같은 스케일) — 수치 텍스트는 아직 없음
+    void UpdateShieldBar()
+    {
+        if (shieldBarFill == null || currentTarget == null) return;
+        shieldBarFill.fillAmount = currentTarget.maxHp > 0f
+            ? Mathf.Clamp01((shieldHandler != null ? shieldHandler.CurrentShield : 0f) / currentTarget.maxHp)
+            : 0f;
     }
 }
