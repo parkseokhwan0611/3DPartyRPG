@@ -15,8 +15,6 @@ public class QuestHudUI : MonoBehaviour
     [Tooltip("ObjectPoolManager에 등록한 마커 풀 키. PoolableObject(자동 반납형)가 아니라 " +
              "PoolAble만 붙은 프리팹이어야 함 — 퀘스트가 끝날 때까지 계속 떠있어야 하므로")]
     public string markerPoolKey = "QuestMarker";
-    [Tooltip("NPC 발밑 기준으로 마커를 띄우는 높이 (지면에 파묻히지 않을 정도로만)")]
-    public float  markerHeightOffset = 0.3f;
 
     [Header("# 진행도 텍스트 (거리/사냥 현황)")]
     [Tooltip("NpcDialogue면 리더-NPC 남은 거리, KillMonster면 처치 현황을 표시. CollectItem은 " +
@@ -162,7 +160,7 @@ public class QuestHudUI : MonoBehaviour
             if (_activeMarker == null) return;
         }
 
-        _activeMarker.transform.position = npc.transform.position + Vector3.up * markerHeightOffset;
+        _activeMarker.transform.position = new Vector3(npc.transform.position.x, 0f, npc.transform.position.z);
     }
 
     private static NpcInteractable FindTargetNpc(QuestData quest)

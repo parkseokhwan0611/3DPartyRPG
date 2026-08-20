@@ -486,7 +486,7 @@ public class PartyManager : MonoBehaviour
     // 마커 스폰 (공통 유틸)
     // ─────────────────────────────────────────────────────────────────
 
-    // 마커는 항상 수평 유지 — 경사면에 파묻히지 않도록 지면 히트 지점보다 살짝 띄워서 생성
+    // 마커는 항상 Y=0 평면에 고정 (지형 높이·오프셋과 무관)
     void SpawnMarker(string poolKey, Vector3 position)
     {
         if (ObjectPoolManager.instance == null) return;
@@ -494,7 +494,7 @@ public class PartyManager : MonoBehaviour
         var marker = ObjectPoolManager.instance.GetGo(poolKey);
         if (marker != null)
         {
-            marker.transform.position = position + Vector3.up * 0.2f;
+            marker.transform.position = new Vector3(position.x, 0f, position.z);
             marker.transform.rotation = Quaternion.identity;
         }
     }
