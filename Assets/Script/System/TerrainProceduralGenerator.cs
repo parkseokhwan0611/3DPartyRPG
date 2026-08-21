@@ -43,7 +43,10 @@ public class TerrainProceduralGenerator : MonoBehaviour
     [Tooltip("1제곱미터당 나무가 생성될 확률")]
     [Range(0f, 0.05f)] public float treeDensity = 0.005f;
 
-    [Header("바위 배치 (선택 — 비워두면 건너뜀) — 나무와 동일한 Terrain Tree 시스템 공유")]
+    [Header("바위 배치 (선택 — 비워두면 건너뜀) — 실제 GameObject로 인스턴스화")]
+    [Tooltip("Terrain Tree 시스템 대신 실제 GameObject로 배치한다. Tree 시스템은 콜라이더가 " +
+             "근사 캡슐이라 NavMesh에 제대로 반영되지 않고(캐릭터가 통과함), 미니맵 캡처(일반 Renderer만 " +
+             "인식)에도 제대로 안 잡혀서 이 방식으로 바꿈")]
     public GameObject[] rockPrefabs;
     [Tooltip("1제곱미터당 바위가 생성될 확률")]
     [Range(0f, 0.05f)] public float rockDensity = 0.01f;
@@ -64,6 +67,18 @@ public class TerrainProceduralGenerator : MonoBehaviour
     {
         if (_terrain == null) _terrain = GetComponent<Terrain>();
         _data = _terrain != null ? _terrain.terrainData : null;
+    }
+
+    // 나무/바위/특수 오브젝트 공통 — GenerateBoundaryBlockers()가 만드는 가장자리 통행불가 구역과
+    // 겹치지 않도록, boundaryThickness 안쪽 영역에만 배치되게 걸러준다. worldX/worldZ는 지형
+    // 로컬 기준(0..size.x, 0..size.z) 좌표. addBoundaryBlockers를 꺼뒀으면 걸러낼 이유가 없음
+    private bool IsOutsideBoundaryZone(float worldX, float worldZ)
+    {
+        if (!addBoundaryBlockers || _data == null) return true;
+
+        float t = boundaryThickness;
+        return worldX >= t && worldX <= _data.size.x - t
+            && worldZ >= t && worldZ <= _data.size.z - t;
     }
 
     [ContextMenu("1. 지형 높이 고정 (평탄, 고도 0)")]
@@ -237,11 +252,10 @@ public class TerrainProceduralGenerator : MonoBehaviour
         Debug.Log($"[TerrainProceduralGenerator] 디테일 페인팅 완료 ({prototypes.Count}종류)");
     }
 
-    // 나무/바위 둘 다 Terrain의 Tree 시스템(GPU 인스턴싱)을 공유한다. treePrototypes/SetTreeInstances는
-    // 호출할 때마다 전체를 통째로 덮어쓰기 때문에, 따로따로 호출하면 서로를 지워버린다 —
-    // 그래서 두 카테고리를 한 프로토타입 배열 + 한 인스턴스 목록으로 합쳐서 한 번에 기록한다
-    [ContextMenu("4. 나무 + 바위 배치")]
-    public void ScatterTreesAndRocks()
+    // 나무는 Terrain Tree 시스템(GPU 인스턴싱) 그대로 사용 — 순수 배경 장식이라 콜라이더/NavMesh
+    // 정밀도가 중요하지 않고, 밀도가 높아도 저렴하게 흩뿌릴 수 있는 쪽이 이득
+    [ContextMenu("4. 나무 배치")]
+    public void ScatterTrees()
     {
         Cache();
         if (_data == null) { Debug.LogWarning("[TerrainProceduralGenerator] TerrainData가 없습니다."); return; }
@@ -250,51 +264,34 @@ public class TerrainProceduralGenerator : MonoBehaviour
         if (treePrefabs != null)
             foreach (var p in treePrefabs) if (p != null) validTrees.Add(p);
 
-        var validRocks = new List<GameObject>();
-        if (rockPrefabs != null)
-            foreach (var p in rockPrefabs) if (p != null) validRocks.Add(p);
-
-        if (validTrees.Count == 0 && validRocks.Count == 0)
+        if (validTrees.Count == 0)
         {
-            Debug.LogWarning("[TerrainProceduralGenerator] treePrefabs/rockPrefabs가 모두 비어있어 배치를 건너뜁니다.");
+            Debug.LogWarning("[TerrainProceduralGenerator] treePrefabs가 비어있어 나무 배치를 건너뜁니다.");
             return;
         }
 
         var prototypes = new List<TreePrototype>();
-        int treeStart = prototypes.Count;
         foreach (var p in validTrees) prototypes.Add(new TreePrototype { prefab = p });
-        int rockStart = prototypes.Count;
-        foreach (var p in validRocks) prototypes.Add(new TreePrototype { prefab = p });
-
         _data.treePrototypes = prototypes.ToArray();
 
-        var instances = new List<TreeInstance>();
-        if (validTrees.Count > 0)
-            ScatterTreeCategory(instances, treeStart, validTrees.Count, treeDensity, seed + 1);
-        if (validRocks.Count > 0)
-            ScatterTreeCategory(instances, rockStart, validRocks.Count, rockDensity, seed + 2);
+        var   rng   = new System.Random(seed + 1);
+        float sizeX = _data.size.x;
+        float sizeZ = _data.size.z;
+        float area  = sizeX * sizeZ;
+        int   count = Mathf.RoundToInt(area * treeDensity);
 
-        _data.SetTreeInstances(instances.ToArray(), true);
-        Debug.Log($"[TerrainProceduralGenerator] 나무 {validTrees.Count}종 / 바위 {validRocks.Count}종, 총 {instances.Count}개 배치 완료");
-    }
-
-    // prototypeStart..prototypeStart+prototypeCount-1 범위 안에서 랜덤으로 골라 area*density개 흩뿌림
-    private void ScatterTreeCategory(List<TreeInstance> instances, int prototypeStart, int prototypeCount,
-                                      float density, int categorySeed)
-    {
-        var   rng   = new System.Random(categorySeed);
-        float area  = _data.size.x * _data.size.z;
-        int   count = Mathf.RoundToInt(area * density);
-
+        var instances = new List<TreeInstance>(count);
         for (int i = 0; i < count; i++)
         {
             float nx = (float)rng.NextDouble();
             float nz = (float)rng.NextDouble();
 
+            if (!IsOutsideBoundaryZone(nx * sizeX, nz * sizeZ)) continue;
+
             instances.Add(new TreeInstance
             {
                 position       = new Vector3(nx, 0f, nz), // y=0(정규화) — 평탄한 지형 표면에 그대로 놓임
-                prototypeIndex = prototypeStart + rng.Next(0, prototypeCount),
+                prototypeIndex = rng.Next(0, prototypes.Count),
                 widthScale     = 0.85f + (float)rng.NextDouble() * 0.3f,
                 heightScale    = 0.85f + (float)rng.NextDouble() * 0.3f,
                 rotation       = (float)(rng.NextDouble() * Mathf.PI * 2),
@@ -302,11 +299,62 @@ public class TerrainProceduralGenerator : MonoBehaviour
                 lightmapColor  = Color.white,
             });
         }
+
+        _data.SetTreeInstances(instances.ToArray(), true);
+        Debug.Log($"[TerrainProceduralGenerator] 나무 {instances.Count}그루 배치 완료");
     }
 
-    // 동상 등 랜드마크형 오브젝트 — Terrain Tree와 달리 개별 콜라이더/스크립트가 필요할 수 있어
-    // 실제 GameObject로 인스턴스화한다. 서로 너무 가까이 겹치지 않도록 최소 간격을 두고 배치
-    [ContextMenu("5. 특수 오브젝트 배치 (동상 등)")]
+    // 바위는 실제 GameObject로 배치 — 프리팹 자체의 콜라이더가 그대로 살아있어 NavMesh 베이크에
+    // 정확히 반영되고(캐릭터가 못 지나감), 일반 Renderer라 미니맵 캡처에도 정상적으로 잡힌다
+    [ContextMenu("5. 바위 배치")]
+    public void ScatterRocks()
+    {
+        Cache();
+        if (_data == null || _terrain == null) { Debug.LogWarning("[TerrainProceduralGenerator] TerrainData가 없습니다."); return; }
+
+        var validRocks = new List<GameObject>();
+        if (rockPrefabs != null)
+            foreach (var p in rockPrefabs) if (p != null) validRocks.Add(p);
+
+        if (validRocks.Count == 0)
+        {
+            Debug.LogWarning("[TerrainProceduralGenerator] rockPrefabs가 비어있어 바위 배치를 건너뜁니다.");
+            return;
+        }
+
+        const string rootName = "Rocks";
+        Transform existingRoot = transform.Find(rootName);
+        if (existingRoot != null) DestroyImmediate(existingRoot.gameObject);
+
+        var root = new GameObject(rootName);
+        root.transform.SetParent(transform, false);
+
+        var     rng    = new System.Random(seed + 2);
+        float   area   = _data.size.x * _data.size.z;
+        int     count  = Mathf.RoundToInt(area * rockDensity);
+        Vector3 origin = _terrain.transform.position;
+        Vector3 size   = _data.size;
+
+        for (int i = 0; i < count; i++)
+        {
+            float wx = (float)rng.NextDouble() * size.x;
+            float wz = (float)rng.NextDouble() * size.z;
+            if (!IsOutsideBoundaryZone(wx, wz)) continue;
+
+            Vector3 pos = origin + new Vector3(wx, 0f, wz);
+
+            GameObject prefab   = validRocks[rng.Next(0, validRocks.Count)];
+            GameObject instance = Instantiate(prefab, pos, Quaternion.Euler(0f, (float)rng.NextDouble() * 360f, 0f), root.transform);
+            instance.name = prefab.name;
+            instance.transform.localScale *= 0.85f + (float)rng.NextDouble() * 0.3f;
+        }
+
+        Debug.Log($"[TerrainProceduralGenerator] 바위 {count}개 배치 완료");
+    }
+
+    // 동상 등 랜드마크형 오브젝트 — 바위와 마찬가지로 실제 GameObject로 인스턴스화한다.
+    // 서로 너무 가까이 겹치지 않도록 최소 간격을 두고 배치
+    [ContextMenu("6. 특수 오브젝트 배치 (동상 등)")]
     public void ScatterSpecialObjects()
     {
         Cache();
@@ -345,6 +393,7 @@ public class TerrainProceduralGenerator : MonoBehaviour
             {
                 float wx = (float)rng.NextDouble() * size.x;
                 float wz = (float)rng.NextDouble() * size.z;
+                if (!IsOutsideBoundaryZone(wx, wz)) continue;
                 candidate = origin + new Vector3(wx, 0f, wz);
 
                 bool tooClose = false;
@@ -369,7 +418,7 @@ public class TerrainProceduralGenerator : MonoBehaviour
         Debug.Log($"[TerrainProceduralGenerator] 특수 오브젝트 {placedCount}/{specialObjectCount}개 배치 완료");
     }
 
-    [ContextMenu("6. 외곽 이동 차단 (NavMesh 통행불가 구역)")]
+    [ContextMenu("7. 외곽 이동 차단 (NavMesh 통행불가 구역)")]
     public void GenerateBoundaryBlockers()
     {
         Cache();
@@ -407,13 +456,14 @@ public class TerrainProceduralGenerator : MonoBehaviour
         modifier.area   = 1; // Not Walkable
     }
 
-    [ContextMenu("전체 생성 (1 -> 2 -> 3 -> 4 -> 5 -> 6)")]
+    [ContextMenu("전체 생성 (1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7)")]
     public void GenerateAll()
     {
         GenerateHeights();
         PaintTextures();
         PaintDetails();
-        ScatterTreesAndRocks();
+        ScatterTrees();
+        ScatterRocks();
         ScatterSpecialObjects();
         if (addBoundaryBlockers) GenerateBoundaryBlockers();
     }
