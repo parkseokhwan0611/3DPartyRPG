@@ -73,8 +73,34 @@ public class PartyManager : MonoBehaviour
 
         if (startIndex >= 0) ChangeLeader(startIndex);
 
+        // 방금 포탈을 타고 이 씬에 들어왔다면, 그 포탈이 지정한 스폰 포탈 위치로 파티 전체를 이동
+        if (Portal.TryConsumePendingSpawn(out Vector3 spawnPos))
+            RepositionPartyAt(spawnPos);
+
         if (DataManager.instance != null)
             DataManager.instance.OnLevelUp += PlayLevelUpEffect;
+    }
+
+    // 파티 전체를 targetPos로 이동시키되, 씬에 원래 배치돼 있던 파티원 간 상대 위치(포메이션)는
+    // 그대로 유지한다 — 리더 기준 오프셋을 구해서 그대로 옮기는 방식
+    private void RepositionPartyAt(Vector3 targetPos)
+    {
+        if (currentLeader == null) return;
+
+        Vector3 leaderOriginalPos = currentLeader.transform.position;
+
+        foreach (var member in partyMembers)
+        {
+            if (member == null) continue;
+
+            Vector3 offset = member.transform.position - leaderOriginalPos;
+            Vector3 newPos = targetPos + offset;
+
+            if (member.agent != null && member.agent.enabled)
+                member.agent.Warp(newPos);
+            else
+                member.transform.position = newPos;
+        }
     }
 
     void OnDestroy()

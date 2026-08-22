@@ -24,6 +24,41 @@ public class Portal : MonoBehaviour
              "(보스전으로 가는 포탈=true, 그 외=false로 설정)")]
     public bool isBossStage = false;
 
+    [Header("스폰 연동 (선택 — 비워두면 도착 씬의 기본 위치에 스폰)")]
+    [Tooltip("이 포탈의 고유 ID. 다른 씬의 포탈이 destinationSpawnId로 이 값을 가리키면, " +
+             "그 포탈을 타고 이 씬에 들어왔을 때 파티가 이 포탈의 위치에 스폰된다")]
+    [SerializeField] string portalId;
+    [Tooltip("이 포탈을 사용해서 도착한 씬에서, 파티를 스폰시킬 포탈의 portalId " +
+             "(그 씬에 있는 '돌아오는 포탈'의 ID). 예: 마을→숲 포탈의 destinationSpawnId에 " +
+             "숲에 있는 '마을로' 포탈의 portalId를 적어두면, 숲에 도착했을 때 그 포탈 위치에 스폰됨")]
+    [SerializeField] string destinationSpawnId;
+
+    // 씬 로드를 넘어 유지되는 정적 상태 — 방금 사용한 포탈이 도착 씬에서 스폰시켜야 할 포탈의 ID
+    private static string _pendingSpawnPortalId;
+
+    // 도착한 씬에서 호출 — 대기 중인 스폰 요청이 있으면 그 ID를 가진 포탈을 찾아 위치를 반환하고,
+    // 요청은 한 번 쓰고 즉시 지운다 (세이브 로드 등 포탈을 거치지 않은 다음 씬 이동에 잘못 재적용되지 않도록)
+    public static bool TryConsumePendingSpawn(out Vector3 position)
+    {
+        position = Vector3.zero;
+        if (string.IsNullOrEmpty(_pendingSpawnPortalId)) return false;
+
+        string targetId = _pendingSpawnPortalId;
+        _pendingSpawnPortalId = null;
+
+        foreach (var portal in AllInstances)
+        {
+            if (portal != null && portal.portalId == targetId)
+            {
+                position = portal.transform.position;
+                return true;
+            }
+        }
+
+        Debug.LogWarning($"[Portal] 도착 씬에서 portalId '{targetId}'를 가진 포탈을 찾지 못했습니다.");
+        return false;
+    }
+
     [Header("UI")]
     [Tooltip("범위 안에 들어왔을 때 표시할 [F] 프롬프트 오브젝트")]
     [SerializeField] GameObject promptObject;
@@ -103,6 +138,8 @@ public class Portal : MonoBehaviour
         // 이 포탈의 목적지 기준으로 보스방 여부 갱신 — 보스전 진입/퇴장 양쪽 다 이 한 줄로 처리됨
         if (SaveManager.instance != null)
             SaveManager.instance.isInBossRoom = isBossStage;
+
+        _pendingSpawnPortalId = destinationSpawnId;
 
         SceneLoader.Load(destinationSceneName);
     }
