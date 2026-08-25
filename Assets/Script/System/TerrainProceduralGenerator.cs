@@ -51,6 +51,9 @@ public class TerrainProceduralGenerator : MonoBehaviour
     public GameObject[] rockPrefabs;
     [Tooltip("1제곱미터당 바위가 생성될 확률")]
     [Range(0f, 0.05f)] public float rockDensity = 0.01f;
+    [Tooltip("바위끼리 서로 이 거리(월드 단위, 미터) 이상 떨어지도록 배치 — 너무 가까이 붙으면 " +
+             "각자의 NavMesh 차단 구역이 겹쳐서 하나의 큰 통행불가 덩어리처럼 보이는 것을 방지")]
+    public float rockMinSpacing = 4f;
 
     [Header("특수 오브젝트 배치 (동상 등, 선택 — 비워두면 건너뜀) — 실제 GameObject로 인스턴스화")]
     public GameObject[] specialObjectPrefabs;
@@ -63,6 +66,13 @@ public class TerrainProceduralGenerator : MonoBehaviour
 
     private Terrain     _terrain;
     private TerrainData _data;
+
+    // 배치 단계 버튼을 다시 누를 때마다(같은 seed라도) 조금씩 다른 배치가 나오도록 하는 카운터 —
+    // 에디터 세션 동안만 유지됨(컴파일/에디터 재시작하면 0으로 리셋). GenerateAll()은 매번 시작할 때
+    // 이 카운터들을 0으로 되돌리므로, "전체 생성"은 seed 하나만으로 항상 같은 결과가 재현된다
+    private int _treeRunCount;
+    private int _rockRunCount;
+    private int _specialObjectRunCount;
 
     private void Cache()
     {
@@ -85,18 +95,25 @@ public class TerrainProceduralGenerator : MonoBehaviour
         Debug.Log($"[TerrainProceduralGenerator] 시드를 {seed}로 새로 굴렸습니다. 배치 단계를 다시 실행해야 반영됩니다.");
     }
 
+    // 오브젝트의 모든 자식 Renderer를 합친 월드 AABB — 프리팹 피벗이 메쉬 중심과 어긋나 있을 수 있어
+    // (스폰 지점/피벗과 실제 형태의 중심이 다름), 간격 체크와 NavMesh 차단 둘 다 이 값을 공통으로 써야
+    // 눈에 보이는 실제 형태 기준으로 정확히 맞아떨어진다
+    private static bool TryGetWorldBounds(GameObject target, out Bounds bounds)
+    {
+        Renderer[] renderers = target.GetComponentsInChildren<Renderer>();
+        if (renderers.Length == 0) { bounds = default; return false; }
+
+        bounds = renderers[0].bounds;
+        for (int i = 1; i < renderers.Length; i++) bounds.Encapsulate(renderers[i].bounds);
+        return true;
+    }
+
     // 바위/특수 오브젝트 공통 — 오브젝트의 실제 렌더러 범위(월드 AABB)를 감싸는 NavMeshModifierVolume을
     // 자식으로 붙여 그 자리를 통째로 Not Walkable 처리한다. 표면이 평평한 바위/받침대는 경사도 기준
     // NavMesh 베이크에서 "걸을 수 있는 평지"로 잘못 인식되는데, 슬로프/높이 같은 베이크 설정을
     // 만지는 대신 오브젝트 단위로 확실하게 막는 방식 (CreateBoundaryVolume과 동일한 기법)
-    private static void AddNavMeshBlocker(GameObject target, float heightPadding = 2f, float footprintPadding = 0.3f)
+    private static void AddNavMeshBlocker(GameObject target, Bounds bounds, float heightPadding = 1f, float footprintPadding = 0.1f)
     {
-        Renderer[] renderers = target.GetComponentsInChildren<Renderer>();
-        if (renderers.Length == 0) return;
-
-        Bounds bounds = renderers[0].bounds;
-        for (int i = 1; i < renderers.Length; i++) bounds.Encapsulate(renderers[i].bounds);
-
         var blockerGo = new GameObject("NavBlocker");
         blockerGo.transform.SetParent(target.transform, false);
         // 월드 AABB를 그대로 감싸야 하므로 부모(바위)의 랜덤 회전을 물려받지 않도록 회전은 고정
@@ -313,7 +330,7 @@ public class TerrainProceduralGenerator : MonoBehaviour
         foreach (var p in validTrees) prototypes.Add(new TreePrototype { prefab = p });
         _data.treePrototypes = prototypes.ToArray();
 
-        var   rng   = new System.Random(seed + 1);
+        var   rng   = new System.Random(seed + 1 + _treeRunCount++);
         float sizeX = _data.size.x;
         float sizeZ = _data.size.z;
         float area  = sizeX * sizeZ;
@@ -368,11 +385,15 @@ public class TerrainProceduralGenerator : MonoBehaviour
         var root = new GameObject(rootName);
         root.transform.SetParent(transform, false);
 
-        var     rng    = new System.Random(seed + 2);
+        var     rng    = new System.Random(seed + 2 + _rockRunCount++);
         float   area   = _data.size.x * _data.size.z;
         int     count  = Mathf.RoundToInt(area * rockDensity);
         Vector3 origin = _terrain.transform.position;
         Vector3 size   = _data.size;
+
+        var   placedCenters = new List<Vector3>();
+        float minSqr        = rockMinSpacing * rockMinSpacing;
+        int   placedCount   = 0;
 
         for (int i = 0; i < count; i++)
         {
@@ -382,14 +403,40 @@ public class TerrainProceduralGenerator : MonoBehaviour
 
             Vector3 pos = origin + new Vector3(wx, 0f, wz);
 
+            // 프리팹 피벗이 메쉬 중심과 어긋나 있을 수 있어, 스폰 지점(pos)끼리 비교하면 실제
+            // 보이는 형태(와 NavMesh 차단 박스) 기준 간격과 어긋난다. 그래서 일단 배치해보고
+            // 실제 렌더러 월드 중심으로 다시 확인한 뒤, 너무 가까우면 그 자리에서 취소한다
             GameObject prefab   = validRocks[rng.Next(0, validRocks.Count)];
             GameObject instance = Instantiate(prefab, pos, Quaternion.Euler(0f, (float)rng.NextDouble() * 360f, 0f), root.transform);
-            instance.name = prefab.name;
             instance.transform.localScale *= 0.85f + (float)rng.NextDouble() * 0.3f;
-            AddNavMeshBlocker(instance);
+
+            if (!TryGetWorldBounds(instance, out Bounds bounds))
+            {
+                DestroyImmediate(instance); // Renderer가 없는 프리팹 — 배치할 수 없음
+                continue;
+            }
+
+            bool tooClose = false;
+            foreach (var c in placedCenters)
+            {
+                if ((c - bounds.center).sqrMagnitude < minSqr) { tooClose = true; break; }
+            }
+
+            // 재시도는 안 함 — 밀도가 높아 그냥 다음 후보로 넘어가도 충분히 채워짐.
+            // 재시도가 필요할 만큼 드문 배치는 ScatterSpecialObjects 쪽 방식을 쓸 것
+            if (tooClose)
+            {
+                DestroyImmediate(instance);
+                continue;
+            }
+
+            placedCenters.Add(bounds.center);
+            instance.name = prefab.name;
+            AddNavMeshBlocker(instance, bounds);
+            placedCount++;
         }
 
-        Debug.Log($"[TerrainProceduralGenerator] 바위 {count}개 배치 완료");
+        Debug.Log($"[TerrainProceduralGenerator] 바위 {placedCount}개 배치 완료");
     }
 
     // 동상 등 랜드마크형 오브젝트 — 바위와 마찬가지로 실제 GameObject로 인스턴스화한다.
@@ -417,8 +464,8 @@ public class TerrainProceduralGenerator : MonoBehaviour
         var root = new GameObject(rootName);
         root.transform.SetParent(transform, false);
 
-        var rng     = new System.Random(seed + 20);
-        var placed  = new List<Vector3>();
+        var rng            = new System.Random(seed + 20 + _specialObjectRunCount++);
+        var placedCenters  = new List<Vector3>();
         Vector3 origin = _terrain.transform.position;
         Vector3 size   = _data.size;
         float minSqr   = specialObjectMinSpacing * specialObjectMinSpacing;
@@ -429,6 +476,8 @@ public class TerrainProceduralGenerator : MonoBehaviour
             Vector3 candidate = Vector3.zero;
             bool    found     = false;
 
+            // 1차 필터 — 스폰 지점(피벗) 기준 사전 스크리닝. 프리팹 피벗이 메쉬 중심과 어긋나 있을
+            // 수 있어 완벽하진 않지만, 매 시도마다 인스턴스화하는 비용 없이 대부분을 걸러낸다
             for (int attempt = 0; attempt < specialObjectMaxAttempts; attempt++)
             {
                 float wx = (float)rng.NextDouble() * size.x;
@@ -437,9 +486,9 @@ public class TerrainProceduralGenerator : MonoBehaviour
                 candidate = origin + new Vector3(wx, 0f, wz);
 
                 bool tooClose = false;
-                foreach (var p in placed)
+                foreach (var c in placedCenters)
                 {
-                    if ((p - candidate).sqrMagnitude < minSqr) { tooClose = true; break; }
+                    if ((c - candidate).sqrMagnitude < minSqr) { tooClose = true; break; }
                 }
 
                 if (!tooClose) { found = true; break; }
@@ -447,12 +496,30 @@ public class TerrainProceduralGenerator : MonoBehaviour
 
             if (!found) continue; // 최대 시도 안에 자리를 못 찾음 — 이 개체는 건너뜀
 
-            placed.Add(candidate);
-
             GameObject prefab   = validPrefabs[rng.Next(0, validPrefabs.Count)];
             GameObject instance = Instantiate(prefab, candidate, Quaternion.Euler(0f, (float)rng.NextDouble() * 360f, 0f), root.transform);
+
+            // 2차 확인 — 실제 렌더러 월드 중심 기준으로 다시 검증 (1차 필터가 피벗 기준이라 놓칠 수 있음)
+            if (!TryGetWorldBounds(instance, out Bounds bounds))
+            {
+                DestroyImmediate(instance);
+                continue;
+            }
+
+            bool stillTooClose = false;
+            foreach (var c in placedCenters)
+            {
+                if ((c - bounds.center).sqrMagnitude < minSqr) { stillTooClose = true; break; }
+            }
+            if (stillTooClose)
+            {
+                DestroyImmediate(instance);
+                continue;
+            }
+
+            placedCenters.Add(bounds.center);
             instance.name = prefab.name;
-            AddNavMeshBlocker(instance);
+            AddNavMeshBlocker(instance, bounds);
             placedCount++;
         }
 
@@ -500,6 +567,12 @@ public class TerrainProceduralGenerator : MonoBehaviour
     [ContextMenu("전체 생성 (1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7)")]
     public void GenerateAll()
     {
+        // 전체 생성은 항상 seed 하나만으로 재현 가능해야 하므로, 개별 배치 버튼을 눌러가며
+        // 다듬는 동안 늘어난 실행 카운터를 여기서 리셋
+        _treeRunCount = 0;
+        _rockRunCount = 0;
+        _specialObjectRunCount = 0;
+
         GenerateHeights();
         PaintTextures();
         PaintDetails();
