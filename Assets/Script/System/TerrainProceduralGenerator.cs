@@ -8,7 +8,8 @@ using Unity.AI.Navigation;
 public class TerrainProceduralGenerator : MonoBehaviour
 {
     [Header("높이 — 탑다운 게임으로 결정하면서 고저차 없이 항상 평탄(고도 0)으로 고정")]
-    [Tooltip("랜덤 시드. 같은 값이면 항상 같은 배치가 나옴")]
+    [Tooltip("랜덤 시드. 같은 값이면 항상 같은 배치가 나옴 — 다른 씬에 이 컴포넌트를 복사해서 " +
+             "쓰면 이 값도 그대로 복사되니 배치가 똑같이 나온다. 아래 컨텍스트 메뉴로 새로 굴릴 것")]
     public int seed = 0;
     [Tooltip("지형 전체 고도 (월드 단위, 미터). 탑다운이라 기본 0 고정 — 필요 시에만 조정")]
     public float baseHeight = 0f;
@@ -67,6 +68,44 @@ public class TerrainProceduralGenerator : MonoBehaviour
     {
         if (_terrain == null) _terrain = GetComponent<Terrain>();
         _data = _terrain != null ? _terrain.terrainData : null;
+    }
+
+    // 컴포넌트를 처음 추가하거나 인스펙터에서 Reset을 누르면 자동으로 새 시드로 시작 —
+    // 다만 이미 다른 씬에서 값이 채워진 채로 복사·붙여넣기한 경우엔 호출되지 않으므로,
+    // 그럴 땐 아래 "시드 무작위로 바꾸기" 컨텍스트 메뉴를 직접 눌러야 한다
+    private void Reset()
+    {
+        seed = Random.Range(int.MinValue, int.MaxValue);
+    }
+
+    [ContextMenu("시드 무작위로 바꾸기")]
+    public void RandomizeSeed()
+    {
+        seed = Random.Range(int.MinValue, int.MaxValue);
+        Debug.Log($"[TerrainProceduralGenerator] 시드를 {seed}로 새로 굴렸습니다. 배치 단계를 다시 실행해야 반영됩니다.");
+    }
+
+    // 바위/특수 오브젝트 공통 — 오브젝트의 실제 렌더러 범위(월드 AABB)를 감싸는 NavMeshModifierVolume을
+    // 자식으로 붙여 그 자리를 통째로 Not Walkable 처리한다. 표면이 평평한 바위/받침대는 경사도 기준
+    // NavMesh 베이크에서 "걸을 수 있는 평지"로 잘못 인식되는데, 슬로프/높이 같은 베이크 설정을
+    // 만지는 대신 오브젝트 단위로 확실하게 막는 방식 (CreateBoundaryVolume과 동일한 기법)
+    private static void AddNavMeshBlocker(GameObject target, float heightPadding = 2f, float footprintPadding = 0.3f)
+    {
+        Renderer[] renderers = target.GetComponentsInChildren<Renderer>();
+        if (renderers.Length == 0) return;
+
+        Bounds bounds = renderers[0].bounds;
+        for (int i = 1; i < renderers.Length; i++) bounds.Encapsulate(renderers[i].bounds);
+
+        var blockerGo = new GameObject("NavBlocker");
+        blockerGo.transform.SetParent(target.transform, false);
+        // 월드 AABB를 그대로 감싸야 하므로 부모(바위)의 랜덤 회전을 물려받지 않도록 회전은 고정
+        blockerGo.transform.SetPositionAndRotation(bounds.center, Quaternion.identity);
+
+        var modifier = blockerGo.AddComponent<NavMeshModifierVolume>();
+        modifier.size   = new Vector3(bounds.size.x + footprintPadding, bounds.size.y + heightPadding, bounds.size.z + footprintPadding);
+        modifier.center = Vector3.zero;
+        modifier.area   = 1; // Not Walkable
     }
 
     // 나무/바위/특수 오브젝트 공통 — GenerateBoundaryBlockers()가 만드는 가장자리 통행불가 구역과
@@ -347,6 +386,7 @@ public class TerrainProceduralGenerator : MonoBehaviour
             GameObject instance = Instantiate(prefab, pos, Quaternion.Euler(0f, (float)rng.NextDouble() * 360f, 0f), root.transform);
             instance.name = prefab.name;
             instance.transform.localScale *= 0.85f + (float)rng.NextDouble() * 0.3f;
+            AddNavMeshBlocker(instance);
         }
 
         Debug.Log($"[TerrainProceduralGenerator] 바위 {count}개 배치 완료");
@@ -412,6 +452,7 @@ public class TerrainProceduralGenerator : MonoBehaviour
             GameObject prefab   = validPrefabs[rng.Next(0, validPrefabs.Count)];
             GameObject instance = Instantiate(prefab, candidate, Quaternion.Euler(0f, (float)rng.NextDouble() * 360f, 0f), root.transform);
             instance.name = prefab.name;
+            AddNavMeshBlocker(instance);
             placedCount++;
         }
 

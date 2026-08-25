@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.AI;
 using System.Collections.Generic;
 using Cinemachine;
 
@@ -17,6 +18,11 @@ public class PartyManager : MonoBehaviour
     public LayerMask groundLayer;
     public CinemachineVirtualCamera virtualCamera;
     public CameraFollowTarget cameraFollowTarget;
+    [Tooltip("이동 클릭 지점이 NavMesh와 이 거리(미터) 이내면 그 위의 정확한 지점으로 스냅해서 " +
+             "이동, 더 멀면(바위 등 장애물 위) 이동 명령 자체를 무시함. 작게 유지해야 함 — " +
+             "너무 크면 장애물 위를 클릭해도 그 장애물 가장자리 NavMesh가 이 반경 안에 걸려서 " +
+             "여전히 '근처로 이동'해버림")]
+    public float maxWalkableSnapDistance = 0.15f;
     public static PartyManager instance;
     // 게임오버 화면이 떠있는 동안인지 — MenuTabUI 등에서 메뉴 열림을 차단하는 데 사용
     public static bool IsGameOver { get; private set; }
@@ -184,8 +190,23 @@ public class PartyManager : MonoBehaviour
         // 우선순위 2: 땅 클릭 → 이동 명령
         if (TryGetGroundHit(ray, out RaycastHit groundHit))
         {
-            DispatchMoveCommand(groundHit.point);
+            // 바위 등 장애물 위(NavMesh가 없는 지점)를 클릭하면 명령 자체를 무시 —
+            // 그냥 보내면 NavMeshAgent가 장애물 근처까지 걸어가 버려서 "이동 불가"가 아니라
+            // "근처까지 감"처럼 보이는 문제가 있었음
+            if (!TryGetWalkablePoint(groundHit.point, out Vector3 walkablePoint)) return;
+            DispatchMoveCommand(walkablePoint);
         }
+    }
+
+    // 클릭 지점 근처에 실제로 걸을 수 있는 NavMesh가 있는지 확인. 있으면 그 위의 정확한 지점으로 스냅.
+    bool TryGetWalkablePoint(Vector3 rawPoint, out Vector3 walkablePoint)
+    {
+        walkablePoint = rawPoint;
+        if (!NavMesh.SamplePosition(rawPoint, out NavMeshHit navHit, maxWalkableSnapDistance, NavMesh.AllAreas))
+            return false;
+
+        walkablePoint = navHit.position;
+        return true;
     }
 
     // ─────────────────────────────────────────────────────────────────

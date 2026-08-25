@@ -148,8 +148,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7347453802505551625}
-  - component: {fileID: 1447765524980138355}
   - component: {fileID: 6117105883450423558}
+  - component: {fileID: 1447765524980138355}
   - component: {fileID: 811691794625583456}
   - component: {fileID: 849151523164920121}
   - component: {fileID: 2613286978870674840}
@@ -179,6 +179,24 @@ Transform:
   - {fileID: 8539317019389804720}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &6117105883450423558
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1558694104297233144}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 23bf8f23f29561c4e8bb90e312c5bbd9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  destinationSceneName: Forest1
+  isBossStage: 0
+  portalId: 
+  destinationSpawnId: 
+  promptObject: {fileID: 888118765494876142}
+  promptText: {fileID: 5644765922444996196}
 --- !u!198 &1447765524980138355
 ParticleSystem:
   m_ObjectHideFlags: 0
@@ -4960,22 +4978,6 @@ ParticleSystem:
         m_PostInfinity: 2
         m_RotationOrder: 4
     vectorLabel1_3: W
---- !u!114 &6117105883450423558
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1558694104297233144}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 23bf8f23f29561c4e8bb90e312c5bbd9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  destinationSceneName: Forest1
-  isBossStage: 0
-  promptObject: {fileID: 888118765494876142}
-  promptText: {fileID: 5644765922444996196}
 --- !u!199 &811691794625583456
 ParticleSystemRenderer:
   serializedVersion: 6
