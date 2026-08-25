@@ -13,10 +13,10 @@ public class PartyStatusEffectHandler : MonoBehaviour
     private SkillManager skillManager;
     private PartyMemberScript partyMember;
 
-    // 쉴드 수치 — 중첩 시 수치는 합연산, 지속시간은 가장 최근에 건 스킬 기준으로 갱신 (개별 스택이
-    // 아니라 하나의 풀 + 하나의 만료 타이머로 관리)
-    public float CurrentShield { get; private set; } = 0f;
-    private Coroutine _shieldRoutine;
+    // 쉴드 수치 풀 — Enemy StatusEffectHandler와 공용 로직인 ShieldPool에 위임 (중첩 시 수치는
+    // 합연산, 지속시간은 가장 최근에 건 스킬 기준으로 갱신)
+    private ShieldPool _shield;
+    public float CurrentShield => _shield.Current;
 
     // 디버프 면역 여부 — 참조 카운트 방식 (겹쳐 걸린 면역 버프 중 하나가 먼저 만료돼도
     // 다른 면역 버프가 남아있으면 계속 면역 유지)
@@ -47,6 +47,9 @@ public class PartyStatusEffectHandler : MonoBehaviour
         anim         = GetComponent<Animator>();
         skillManager = GetComponent<SkillManager>();
         partyMember  = GetComponent<PartyMemberScript>();
+
+        _shield = new ShieldPool(this);
+        _shield.OnChanged += () => OnShieldChanged?.Invoke();
     }
 
     void Update()
@@ -159,37 +162,13 @@ public class PartyStatusEffectHandler : MonoBehaviour
     // 쉴드 적용 — 수치는 기존 쉴드에 합산하고, 만료 타이머는 이번 지속시간으로 새로 갱신한다
     // (예: 5초짜리 쉴드가 걸린 지 3초 지난 상태에서 8초짜리 쉴드를 또 걸면, 수치는 합쳐지고
     // 전체가 지금부터 8초 뒤에 함께 만료된다)
-    public void ApplyShield(float amount, float duration, GameObject source)
-    {
-        CurrentShield += amount;
-        OnShieldChanged?.Invoke();
-
-        if (_shieldRoutine != null) StopCoroutine(_shieldRoutine);
-        _shieldRoutine = StartCoroutine(ShieldExpireRoutine(duration));
-    }
+    public void ApplyShield(float amount, float duration, GameObject source) => _shield.Apply(amount, duration);
 
     // ─────────────────────────────────────────────────────────────────
     // 데미지 시 쉴드 먼저 소모
     // ─────────────────────────────────────────────────────────────────
 
-    public float AbsorbDamage(float damage)
-    {
-        if (CurrentShield <= 0) return damage;
-
-        if (CurrentShield >= damage)
-        {
-            CurrentShield -= damage;
-            OnShieldChanged?.Invoke();
-            return 0f; // 데미지 전부 흡수
-        }
-        else
-        {
-            damage        -= CurrentShield;
-            CurrentShield  = 0f;
-            OnShieldChanged?.Invoke();
-            return damage; // 남은 데미지 반환
-        }
-    }
+    public float AbsorbDamage(float damage) => _shield.Absorb(damage);
 
     // ─────────────────────────────────────────────────────────────────
     // 버프 제거
@@ -269,9 +248,7 @@ public class PartyStatusEffectHandler : MonoBehaviour
 
         // 코루틴 자체는 GameObject 비활성화로 이미 죽지만, 핸들만 정리 (재활성화 후 스킬로 새로
         // 건 쉴드를 옛 핸들의 StopCoroutine이 건드리지 않도록)
-        _shieldRoutine = null;
-        CurrentShield  = 0f;
-        OnShieldChanged?.Invoke();
+        _shield.Clear();
     }
 
     // ─────────────────────────────────────────────────────────────────
@@ -283,16 +260,6 @@ public class PartyStatusEffectHandler : MonoBehaviour
         yield return new WaitForSeconds(effect.duration);
         effect.routine = null; // 정상 만료 시 StopCoroutine 대상 아님을 표시
         RemoveBuffInstance(effect);
-    }
-
-    // 하나의 풀을 통째로 관리하므로, 타이머가 끝나면 그동안 합산된 쉴드 전체가 함께 사라진다
-    private IEnumerator ShieldExpireRoutine(float duration)
-    {
-        yield return new WaitForSeconds(duration);
-
-        _shieldRoutine = null;
-        CurrentShield  = 0f;
-        OnShieldChanged?.Invoke();
     }
 
     // ─────────────────────────────────────────────────────────────────
@@ -353,6 +320,23 @@ public class PartyStatusEffectHandler : MonoBehaviour
                 break;
             case StatusEffectType.HpOnHitUp:
                 status.hpOnHit += effect.value * multiplier;
+                break;
+
+            // 공격력/방어력 감소 (value = 0.3 → 30% 감소) — Slow와 동일하게 곱연산 배율로 적용하고
+            // 100% 감소 시 해제할 때 0으로 나누는 사고를 막기 위해 0.99로 클램프
+            case StatusEffectType.AtkDown:
+                {
+                    float safeAtkValue = Mathf.Clamp(effect.value, 0f, 0.99f);
+                    if (apply) status.atkDebuffMultiplier *= (1f - safeAtkValue);
+                    else       status.atkDebuffMultiplier /= (1f - safeAtkValue);
+                }
+                break;
+            case StatusEffectType.DefDown:
+                {
+                    float safeDefValue = Mathf.Clamp(effect.value, 0f, 0.99f);
+                    if (apply) status.defDebuffMultiplier *= (1f - safeDefValue);
+                    else       status.defDebuffMultiplier /= (1f - safeDefValue);
+                }
                 break;
         }
     }

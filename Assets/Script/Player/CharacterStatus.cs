@@ -65,8 +65,12 @@ public string charName;
     public float TotalMpRegen => classData.baseMpRegen
                                + (classData.baseFht + addedFht + equipFht) * classData.mpRegenPerFth
                                + addedMpRegen;
-    public float TotalAtk => (classData.baseStr + addedStr + equipStr) * classData.atkPerStr
-                           + bonusAtk + equipAtk;
+    // 공격력/방어력 감소 디버프 배율 (스킬로 조정, 1.0 = 기본) — Slow의 moveSpeedMultiplier와 동일한 패턴
+    public float atkDebuffMultiplier = 1f;
+    public float defDebuffMultiplier = 1f;
+
+    public float TotalAtk => ((classData.baseStr + addedStr + equipStr) * classData.atkPerStr
+                           + bonusAtk + equipAtk) * atkDebuffMultiplier;
     public float TotalAp  => ((classData.baseInt + addedInt + equipInt) * classData.apPerInt)
                            + ((classData.baseFht + addedFht + equipFht) * classData.apPerFth)
                            + bonusAp + equipAp;
@@ -81,7 +85,7 @@ public string charName;
     // 방어력 (VIT 비례 + 패시브 + 장비)
     public float addedDef = 0f;
     public float TotalDef => (((classData.baseVit + addedVit + equipVit) * classData.defPerVit)
-                           + addedDef + bonusDef + equipDef) * (1f + defPercentBonus);
+                           + addedDef + bonusDef + equipDef) * (1f + defPercentBonus) * defDebuffMultiplier;
 
     // 마법 저항력
     public float addedMagicRes = 0f;

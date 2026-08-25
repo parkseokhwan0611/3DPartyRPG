@@ -11,11 +11,13 @@ public class StatusEffectHandler : MonoBehaviour
     private MonsterMeleeAttack monsterMeleeAttack;
     private MonsterRangedAttack monsterRangedAttack;
     private ISkillCaster skillCaster; // EliteMonsterSkillController / BossMonsterSkillController 공용
+    private EnemyHp enemyHp;
 
     // 원본 수치 저장 (디버프 해제 시 정확히 복구)
     private float baseSpeed           = 0f; // Awake 시점 고정 기준 속도 — 이후 절대 덮어쓰지 않음
     private float moveSpeedMultiplier = 1f; // Slow/MoveSpeedDown 중첩 적용 배율
     private float originalAtkDamage   = 0f;
+    private float originalDef         = 0f;
 
     private List<StatusEffect> activeEffects = new List<StatusEffect>();
 
@@ -30,10 +32,10 @@ public class StatusEffectHandler : MonoBehaviour
     private float stunTimer = 0f;
     private bool  isStunned = false;
 
-    // 쉴드 수치 — PartyStatusEffectHandler.ApplyShield와 동일한 패턴 (스택 시 수치는 합연산,
-    // 지속시간은 최근에 건 스킬 기준으로 갱신되는 단일 풀 + 단일 만료 타이머)
-    public float CurrentShield { get; private set; } = 0f;
-    private Coroutine _shieldRoutine;
+    // 쉴드 수치 풀 — PartyStatusEffectHandler와 공용 로직인 ShieldPool에 위임 (스택 시 수치는
+    // 합연산, 지속시간은 최근에 건 스킬 기준으로 갱신되는 단일 풀 + 단일 만료 타이머)
+    private ShieldPool _shield;
+    public float CurrentShield => _shield.Current;
 
     // ─────────────────────────────────────────────────────────────────
     // Unity 생명주기
@@ -47,7 +49,11 @@ public class StatusEffectHandler : MonoBehaviour
         monsterMeleeAttack  = GetComponent<MonsterMeleeAttack>();
         monsterRangedAttack = GetComponent<MonsterRangedAttack>();
         skillCaster          = GetComponent<ISkillCaster>();
+        enemyHp       = GetComponent<EnemyHp>();
         baseSpeed     = agent != null ? agent.speed : 3f;
+
+        _shield = new ShieldPool(this);
+        _shield.OnChanged += () => OnShieldChanged?.Invoke();
     }
 
     void Update()
@@ -139,42 +145,10 @@ public class StatusEffectHandler : MonoBehaviour
     // 쉴드
     // ─────────────────────────────────────────────────────────────────
 
-    public void ApplyShield(float amount, float duration, GameObject source)
-    {
-        CurrentShield += amount;
-        OnShieldChanged?.Invoke();
-
-        if (_shieldRoutine != null) StopCoroutine(_shieldRoutine);
-        _shieldRoutine = StartCoroutine(ShieldExpireRoutine(duration));
-    }
+    public void ApplyShield(float amount, float duration, GameObject source) => _shield.Apply(amount, duration);
 
     // 데미지 적용 전 쉴드로 먼저 흡수 — EnemyHp.ApplyDamage에서 방어력 경감 이후 호출
-    public float AbsorbDamage(float damage)
-    {
-        if (CurrentShield <= 0f) return damage;
-
-        if (CurrentShield >= damage)
-        {
-            CurrentShield -= damage;
-            OnShieldChanged?.Invoke();
-            return 0f;
-        }
-
-        damage        -= CurrentShield;
-        CurrentShield  = 0f;
-        OnShieldChanged?.Invoke();
-        return damage;
-    }
-
-    // 하나의 풀을 통째로 관리하므로, 타이머가 끝나면 그동안 합산된 쉴드 전체가 함께 사라진다
-    private IEnumerator ShieldExpireRoutine(float duration)
-    {
-        yield return new WaitForSeconds(duration);
-
-        _shieldRoutine = null;
-        CurrentShield  = 0f;
-        OnShieldChanged?.Invoke();
-    }
+    public float AbsorbDamage(float damage) => _shield.Absorb(damage);
 
     // ─────────────────────────────────────────────────────────────────
     // 상태이상 확인
@@ -301,12 +275,14 @@ public class StatusEffectHandler : MonoBehaviour
                 break;
 
             // ── 공격력 감소 ──
+            // 100% 감소 시 공격력이 음수로 뒤집히지 않도록 0.99로 클램프 (Slow/MoveSpeedDown과 동일한 이유)
             case StatusEffectType.AtkDown:
                 if (attackBase == null) break;
                 if (apply)
                 {
                     originalAtkDamage       = attackBase.attackDamage; // 원본값 저장
-                    attackBase.attackDamage = originalAtkDamage * (1f - effect.value);
+                    float safeAtkValue      = Mathf.Clamp(effect.value, 0f, 0.99f);
+                    attackBase.attackDamage = originalAtkDamage * (1f - safeAtkValue);
                 }
                 else
                 {
@@ -317,7 +293,18 @@ public class StatusEffectHandler : MonoBehaviour
 
             // ── 방어력 감소 ──
             case StatusEffectType.DefDown:
-                // 필요 시 추가
+                if (enemyHp == null) break;
+                if (apply)
+                {
+                    originalDef      = enemyHp.def; // 원본값 저장
+                    float safeDefValue = Mathf.Clamp(effect.value, 0f, 0.99f);
+                    enemyHp.def      = originalDef * (1f - safeDefValue);
+                }
+                else
+                {
+                    enemyHp.def = originalDef; // 원본값으로 정확히 복구
+                    originalDef = 0f;
+                }
                 break;
         }
     }

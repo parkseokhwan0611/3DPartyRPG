@@ -83,8 +83,10 @@ public class QuickSlotUI : MonoBehaviour
         slots[slotIndex]?.SetSkill(skill);
 
         // 전투 UI도 갱신 (리더일 때만)
-        if (PartyManager.instance.currentLeader != null
-            && charIndex == PartyManager.instance.currentLeader.GetComponent<CharacterStat>().partyIndex)
+        CharacterStat leaderStat = PartyManager.instance.currentLeader != null
+            ? PartyManager.instance.currentLeader.GetComponent<CharacterStat>()
+            : null;
+        if (leaderStat != null && charIndex == leaderStat.partyIndex)
         {
             CombatQuickSlotUI.instance?.RefreshSlots();
         }

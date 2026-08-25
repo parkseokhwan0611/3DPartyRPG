@@ -1,22 +1,15 @@
 using UnityEngine;
-using System.Collections;
 
 // 포물선을 그리며 폭탄/수류탄류 투사체를 던지는 원거리 몬스터 공격.
 // MonsterRangedAttack(직선 투사체)과 동일한 골격이지만, 투사체가 물리 충돌이 아니라
 // 던지는 순간의 목표 위치에 고정 착지해 범위 폭발한다는 점이 달라 별도 클래스로 분리했다.
-public class MonsterGrenadeAttack : AttackBase
+public class MonsterGrenadeAttack : MonsterAttackBase
 {
     [Header("투척 공격 설정")]
     [Tooltip("ObjectPoolManager에 등록된 수류탄 투사체 풀 키 (GrenadeProjectile 컴포넌트 포함)")]
     public string grenadePoolKey = "MonsterGrenade";
     [Tooltip("투척 시작 위치 (없으면 자신 위치 + 1m 위)")]
     public Transform throwPoint;
-    [Tooltip("애니메이션 시작 후 투척까지 딜레이 (초)")]
-    public float damageDelay = 0.35f;
-    [Tooltip("투척 이후 애니메이션 후딜레이 — 이 시간이 끝나야 이동을 재개하고, " +
-             "정예/보스라면 이 시간이 끝나야 스킬도 고려한다. 투척 애니메이션 클립 길이에서 " +
-             "damageDelay를 뺀 만큼으로 맞추면 됨")]
-    public float recoveryDuration = 0.5f;
     [Tooltip("수류탄이 목표 지점까지 도달하는 데 걸리는 시간(초) — 포물선 궤적의 속도를 결정")]
     public float flightDuration = 0.8f;
     [Tooltip("포물선 최고 높이(m)")]
@@ -26,132 +19,10 @@ public class MonsterGrenadeAttack : AttackBase
     [Tooltip("착지 지점의 실제 지면 높이를 찾기 위한 레이캐스트 대상 레이어. " +
              "비워두면(Nothing) 보정 없이 타겟의 조준점 높이 그대로 사용 (MonsterDropTable과 동일한 방식)")]
     public LayerMask groundLayer;
-    [Tooltip("체크하면 마법 피해(마법저항력으로 경감), 해제하면 물리 피해(방어력으로 경감)")]
-    public bool isMagicAttack = false;
 
-    [Header("# 치명타")]
-    [Tooltip("치명타 확률 (0~1)")]
-    [Range(0f, 1f)] public float critChance = 0.1f;
-    [Tooltip("치명타 시 피해 배율 (1.5 = 150%)")]
-    public float critDamageMultiplier = 1.5f;
-
-    [Header("# 사운드")]
-    [Tooltip("AudioManager에 등록한 SFX 키. 투척과 같은 타이밍에 재생 (비워두면 재생 안 함)")]
-    public string attackSfxKey;
-    [Tooltip("사운드 재생 시점 보정(초). 기본은 투척(damageDelay)과 동시에 재생되는데, " +
-             "사운드 클립 앞부분에 무음이 있어 실제로 들리는 시점이 밀리면 음수 값을 넣어 더 일찍 재생되게 조절")]
-    public float attackSfxTimingOffset = 0f;
-
-    private Coroutine attackCoroutine;
-    private Coroutine sfxCoroutine;
-
-    // ─────────────────────────────────────────────────────────────────
-    // Unity 생명주기
-    // ─────────────────────────────────────────────────────────────────
-
-    protected override void Start()
+    protected override void ExecuteAttackPayload()
     {
-        base.Start();
-    }
-
-    protected override void Update()
-    {
-        base.Update();
-    }
-
-    // ─────────────────────────────────────────────────────────────────
-    // 공격 중 이동 차단
-    // ─────────────────────────────────────────────────────────────────
-
-    protected override void HandleAttackLogic()
-    {
-        if (IsAttacking) return;
-        base.HandleAttackLogic();
-    }
-
-    // ─────────────────────────────────────────────────────────────────
-    // 공격 실행
-    // ─────────────────────────────────────────────────────────────────
-
-    protected override void ExecuteAttack()
-    {
-        if (IsAttacking) return;
-
-        if (attackCoroutine != null)
-        {
-            StopCoroutine(attackCoroutine);
-            attackCoroutine = null;
-        }
-
-        attackCoroutine = StartCoroutine(AttackRoutine());
-    }
-
-    protected override void StopAttackCoroutine()
-    {
-        if (attackCoroutine != null)
-        {
-            StopCoroutine(attackCoroutine);
-            attackCoroutine = null;
-        }
-        if (sfxCoroutine != null)
-        {
-            StopCoroutine(sfxCoroutine);
-            sfxCoroutine = null;
-        }
-        IsAttacking = false;
-    }
-
-    private IEnumerator AttackRoutine()
-    {
-        IsAttacking = true;
-
-        if (agent != null && agent.isOnNavMesh)
-            agent.isStopped = true;
-
-        // 타겟 방향 조준
-        if (currentTarget != null)
-        {
-            Vector3 dir = (currentTarget.position - transform.position).normalized;
-            dir.y = 0;
-            if (dir != Vector3.zero)
-                transform.rotation = Quaternion.LookRotation(dir);
-        }
-
-        if (anim != null)
-        {
-            anim.SetTrigger("doNormalAttack");
-            anim.SetBool("isWalking", false);
-        }
-
-        if (!string.IsNullOrEmpty(attackSfxKey))
-            sfxCoroutine = StartCoroutine(PlayAttackSfxDelayed());
-
-        // 투척 타이밍 대기
-        yield return new WaitForSeconds(damageDelay);
-
-        if (currentTarget != null)
-            ThrowGrenade();
-
-        // 공격 지속시간 나머지 대기
-        yield return new WaitForSeconds(recoveryDuration);
-
-        bool isStunned = statusHandler != null && statusHandler.HasDebuff(StatusEffectType.Stun);
-        if (!isStunned && agent != null && agent.isOnNavMesh)
-            agent.isStopped = false;
-
-        IsAttacking     = false;
-        attackCoroutine = null;
-        RaiseAttackEnded();
-    }
-
-    private IEnumerator PlayAttackSfxDelayed()
-    {
-        float delay = Mathf.Max(0f, damageDelay + attackSfxTimingOffset);
-        if (delay > 0f)
-            yield return new WaitForSeconds(delay);
-
-        AudioManager.instance?.PlaySFX(attackSfxKey);
-        sfxCoroutine = null;
+        if (currentTarget != null) ThrowGrenade();
     }
 
     // ─────────────────────────────────────────────────────────────────
@@ -204,10 +75,5 @@ public class MonsterGrenadeAttack : AttackBase
     {
         Gizmos.color = Color.cyan;
         Gizmos.DrawWireSphere(transform.position, attackRange);
-    }
-
-    public void ResetAttackState()
-    {
-        IsAttacking = false;
     }
 }
