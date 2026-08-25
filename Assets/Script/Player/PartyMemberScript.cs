@@ -232,7 +232,12 @@ public class PartyMemberScript : MonoBehaviour
             // 팔로워 시절 잔여 경로/속도 초기화 — 남아있으면 리더 첫 이동 명령의 회피 계산이 꼬임
             agent.ResetPath();
             agent.velocity = Vector3.zero;
-            ChangeState(MemberState.Idle);
+            // 체인 재구성(팀원 사망, 리더 교체) 시점에 실제로 전투 중(currentTarget 유효)이었다면
+            // Attacking을 유지해야 한다 — 무조건 Idle로 덮어쓰면 AttackBase는 여전히 싸우는 중인데
+            // PartyMemberScript만 다른 상태로 착각해서 이동 로직이 끼어드는 원인이 됨(아래 팔로워
+            // 분기와 동일한 문제)
+            ChangeState(attackComp != null && attackComp.currentTarget != null
+                ? MemberState.Attacking : MemberState.Idle);
 
             if (leaderVFX != null) leaderVFX.SetActive(true);
         }
@@ -243,18 +248,22 @@ public class PartyMemberScript : MonoBehaviour
             targetToFollow         = newOrder[myIndex - 1].transform;
             _lastFollowDestination = Vector3.positiveInfinity; // 타겟 바뀌면 즉시 재경로
             agent.stoppingDistance = stopDistance;
-            // 팔로워끼리 우선순위가 전부 같으면(예전엔 모두 50) 전투 후 한꺼번에 리더 쪽으로
-            // 모여들 때 서로 누가 비켜줄지 못 정해서 Unity 회피 시스템이 속도를 크게 깎아먹는
-            // 정체가 생김 — 체인 순서(myIndex)만큼 우선순위를 벌려서 명확한 양보 순서를 만든다
-            agent.avoidancePriority = FOLLOWER_AVOIDANCE_PRIORITY + myIndex;
+            agent.avoidancePriority = FOLLOWER_AVOIDANCE_PRIORITY;
             // 이전 리더 경로 즉시 초기화 — 남은 경로가 팔로우 로직을 방해하지 않도록
             agent.ResetPath();
             agent.velocity = Vector3.zero;
 
             // 리더만 바뀌었을 뿐 아무도 움직이지 않았는데 체인 순서가 바뀌었다는 이유만으로
             // 즉시 재정렬 이동하는 것을 막기 위해 Idle로 시작 — 새 리더가 실제로 움직여서
-            // resumeDistance를 벗어나야 HandleFollowLogic이 알아서 Following으로 전환한다
-            ChangeState(MemberState.Idle);
+            // resumeDistance를 벗어나야 HandleFollowLogic이 알아서 Following으로 전환한다.
+            //
+            // 단, 지금 실제로 전투 중(currentTarget 유효)이었다면 Idle로 덮어쓰면 안 된다 — 그러면
+            // AttackBase는 여전히 몬스터를 공격 중인데 PartyMemberScript만 Idle/Following으로 착각해서,
+            // HandleFollowLogic이 리더 위치로 SetDestination을 걸어버리는 문제가 생긴다. 특히 리더가
+            // 근접 캐릭터라 몬스터 코앞에서 싸우고 있으면, 이게 "스킬 쓰고 나면 몬스터에게 다가간다"로
+            // 보인다 — 팀원 사망 등으로 체인이 재구성되는 순간 전투 중이던 팔로워가 전부 이 상태가 됐었음
+            ChangeState(attackComp != null && attackComp.currentTarget != null
+                ? MemberState.Attacking : MemberState.Idle);
 
             skillManager?.ResetAttackCount();
             if (leaderVFX != null) leaderVFX.SetActive(false);
@@ -381,6 +390,17 @@ public class PartyMemberScript : MonoBehaviour
     public void ResumeAfterSkill()
     {
         if (CurrentState == MemberState.Dead) return;
+
+        // 데미지 스킬처럼 스킬 종료 시점에도 여전히 유효한 전투 대상(currentTarget)이 있으면
+        // 굳이 리더 추격 상태로 바꾸지 않는다 — AttackBase가 알아서 계속 싸운다.
+        // 이 체크가 없으면 원거리 딜러가 (버프/힐뿐 아니라 데미지) 스킬을 쓸 때마다, 아직 몬스터를
+        // 공격 중인데도 "리더랑 멀리 떨어져 있다"는 이유만으로 Following으로 바뀌어서 리더(=근접
+        // 교전 중인 몬스터) 쪽으로 걸어가 버리는 문제가 있었다
+        if (attackComp != null && attackComp.currentTarget != null)
+        {
+            ChangeState(MemberState.Attacking);
+            return;
+        }
 
         if (!isLeader && targetToFollow != null)
         {

@@ -32,7 +32,6 @@ public class BasicMonsterScript : MonoBehaviour
     private const float TargetingInterval = 0.2f;
     private float targetingTimer          = 0f;
 
-    private Rigidbody rigid;
     private AttackBase attackModule;
     private StatusEffectHandler statusHandler;
 
@@ -57,7 +56,6 @@ public class BasicMonsterScript : MonoBehaviour
     void Awake()
     {
         animator      = GetComponent<Animator>();
-        rigid         = GetComponent<Rigidbody>();
         navAgent      = GetComponent<NavMeshAgent>();
         attackModule  = GetComponent<AttackBase>();
         statusHandler = GetComponent<StatusEffectHandler>();
@@ -352,15 +350,5 @@ public class BasicMonsterScript : MonoBehaviour
             navAgent.isStopped = true;
             navAgent.velocity  = Vector3.zero;
         }
-    }
-
-    // ─────────────────────────────────────────────────────────────────
-    // 물리
-    // ─────────────────────────────────────────────────────────────────
-
-    void OnCollisionStay(Collision collision)
-    {
-        if (rigid != null && collision.gameObject.CompareTag("Player"))
-            rigid.velocity = Vector3.zero;
     }
 }

@@ -428,15 +428,26 @@ public class PartyManager : MonoBehaviour
         foreach (var member in newOrder)
             member.UpdateChainOrder(newOrder);
 
-        // 이동 목적지가 있고 새 리더가 아직 도착 전이면 목적지 이어받기
+        // 이동 목적지가 있고 새 리더가 아직 도착 전이면 목적지 이어받기 — 단, 새 리더가 승계 시점에
+        // 이미 전투 중(Attacking, 팔로워 시절부터 몬스터를 공격하고 있었음)이었다면 이어받지 않는다.
+        // 그렇지 않으면(파티원 고정 중 리더가 죽어 팔로워가 승계하는 경우 등) 한창 싸우던 팔로워가
+        // 새 리더가 되자마자 죽은 리더의 옛 이동 목적지로 걸어가 버리는, 오늘 고친 것과 동일한
+        // 유형의 문제가 생긴다 — UpdateChainOrder가 방금 위에서 CurrentState를 올바르게 세팅해뒀으므로 그대로 신뢰
         if (_hasPendingDestination)
         {
-            float distSqr      = (newLeader.transform.position - _lastMoveDestination).sqrMagnitude;
-            float stopThresh   = newLeader.agent.stoppingDistance + 0.5f;
-            if (distSqr > stopThresh * stopThresh)
-                newLeader.agent.SetDestination(_lastMoveDestination);
+            if (newLeader.CurrentState == PartyMemberScript.MemberState.Attacking)
+            {
+                _hasPendingDestination = false;
+            }
             else
-                _hasPendingDestination = false; // 이미 도착 → 기록 초기화
+            {
+                float distSqr      = (newLeader.transform.position - _lastMoveDestination).sqrMagnitude;
+                float stopThresh   = newLeader.agent.stoppingDistance + 0.5f;
+                if (distSqr > stopThresh * stopThresh)
+                    newLeader.agent.SetDestination(_lastMoveDestination);
+                else
+                    _hasPendingDestination = false; // 이미 도착 → 기록 초기화
+            }
         }
     }
 
