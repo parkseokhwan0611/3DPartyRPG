@@ -243,7 +243,10 @@ public class PartyMemberScript : MonoBehaviour
             targetToFollow         = newOrder[myIndex - 1].transform;
             _lastFollowDestination = Vector3.positiveInfinity; // 타겟 바뀌면 즉시 재경로
             agent.stoppingDistance = stopDistance;
-            agent.avoidancePriority = FOLLOWER_AVOIDANCE_PRIORITY;
+            // 팔로워끼리 우선순위가 전부 같으면(예전엔 모두 50) 전투 후 한꺼번에 리더 쪽으로
+            // 모여들 때 서로 누가 비켜줄지 못 정해서 Unity 회피 시스템이 속도를 크게 깎아먹는
+            // 정체가 생김 — 체인 순서(myIndex)만큼 우선순위를 벌려서 명확한 양보 순서를 만든다
+            agent.avoidancePriority = FOLLOWER_AVOIDANCE_PRIORITY + myIndex;
             // 이전 리더 경로 즉시 초기화 — 남은 경로가 팔로우 로직을 방해하지 않도록
             agent.ResetPath();
             agent.velocity = Vector3.zero;
