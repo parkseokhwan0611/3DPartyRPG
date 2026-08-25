@@ -112,7 +112,10 @@ public class TerrainProceduralGenerator : MonoBehaviour
     // 자식으로 붙여 그 자리를 통째로 Not Walkable 처리한다. 표면이 평평한 바위/받침대는 경사도 기준
     // NavMesh 베이크에서 "걸을 수 있는 평지"로 잘못 인식되는데, 슬로프/높이 같은 베이크 설정을
     // 만지는 대신 오브젝트 단위로 확실하게 막는 방식 (CreateBoundaryVolume과 동일한 기법)
-    private static void AddNavMeshBlocker(GameObject target, Bounds bounds, float heightPadding = 1f, float footprintPadding = 0.1f)
+    // 여백은 NavMesh 베이크의 Voxel Size(기본 0.1666)보다 확실히 커야 한다 — 그보다 작으면
+    // 복셀 경계 반올림 때문에 바위 가장자리에 걸을 수 있는 틈이 얇게 남을 수 있다. 바위 자체가
+    // 보통 10m 이상이라 이 정도 여백은 시각적으로 티도 안 나면서 안전하게 여유를 준다
+    private static void AddNavMeshBlocker(GameObject target, Bounds bounds, float heightPadding = 2f, float footprintPadding = 1f)
     {
         var blockerGo = new GameObject("NavBlocker");
         blockerGo.transform.SetParent(target.transform, false);
@@ -123,6 +126,18 @@ public class TerrainProceduralGenerator : MonoBehaviour
         modifier.size   = new Vector3(bounds.size.x + footprintPadding, bounds.size.y + heightPadding, bounds.size.z + footprintPadding);
         modifier.center = Vector3.zero;
         modifier.area   = 1; // Not Walkable
+    }
+
+    // 바위/특수 오브젝트 공통 — 중심 간 거리만으로는 오브젝트 자체 크기를 무시하게 되어(둘 다 반경
+    // 10m짜리면 중심이 15m 떨어져 있어도 겹칠 수 있음), 각자의 실제 XZ 반경 + 여유 간격을 더한
+    // 만큼 떨어져 있는지로 판정한다. 높이(Y)는 탑다운이라 겹침 판정에 상관없어 XZ만 본다
+    private static bool IsFootprintTooClose(Vector3 centerA, Vector3 extentsA, Vector3 centerB, Vector3 extentsB, float minGap)
+    {
+        float dx = Mathf.Abs(centerA.x - centerB.x);
+        float dz = Mathf.Abs(centerA.z - centerB.z);
+        float minDx = extentsA.x + extentsB.x + minGap;
+        float minDz = extentsA.z + extentsB.z + minGap;
+        return dx < minDx && dz < minDz;
     }
 
     // 나무/바위/특수 오브젝트 공통 — GenerateBoundaryBlockers()가 만드는 가장자리 통행불가 구역과
@@ -391,9 +406,8 @@ public class TerrainProceduralGenerator : MonoBehaviour
         Vector3 origin = _terrain.transform.position;
         Vector3 size   = _data.size;
 
-        var   placedCenters = new List<Vector3>();
-        float minSqr        = rockMinSpacing * rockMinSpacing;
-        int   placedCount   = 0;
+        var placedBounds  = new List<Bounds>();
+        int placedCount   = 0;
 
         for (int i = 0; i < count; i++)
         {
@@ -405,7 +419,7 @@ public class TerrainProceduralGenerator : MonoBehaviour
 
             // 프리팹 피벗이 메쉬 중심과 어긋나 있을 수 있어, 스폰 지점(pos)끼리 비교하면 실제
             // 보이는 형태(와 NavMesh 차단 박스) 기준 간격과 어긋난다. 그래서 일단 배치해보고
-            // 실제 렌더러 월드 중심으로 다시 확인한 뒤, 너무 가까우면 그 자리에서 취소한다
+            // 실제 렌더러 월드 범위로 다시 확인한 뒤, 너무 가까우면 그 자리에서 취소한다
             GameObject prefab   = validRocks[rng.Next(0, validRocks.Count)];
             GameObject instance = Instantiate(prefab, pos, Quaternion.Euler(0f, (float)rng.NextDouble() * 360f, 0f), root.transform);
             instance.transform.localScale *= 0.85f + (float)rng.NextDouble() * 0.3f;
@@ -416,10 +430,16 @@ public class TerrainProceduralGenerator : MonoBehaviour
                 continue;
             }
 
+            // 중심 간 거리만 보면 바위 자체 크기를 무시하게 되어(둘 다 크면 여전히 겹침) 각자의
+            // 실제 XZ 반경까지 감안해서 겹침을 판정한다
             bool tooClose = false;
-            foreach (var c in placedCenters)
+            foreach (var b in placedBounds)
             {
-                if ((c - bounds.center).sqrMagnitude < minSqr) { tooClose = true; break; }
+                if (IsFootprintTooClose(b.center, b.extents, bounds.center, bounds.extents, rockMinSpacing))
+                {
+                    tooClose = true;
+                    break;
+                }
             }
 
             // 재시도는 안 함 — 밀도가 높아 그냥 다음 후보로 넘어가도 충분히 채워짐.
@@ -430,13 +450,14 @@ public class TerrainProceduralGenerator : MonoBehaviour
                 continue;
             }
 
-            placedCenters.Add(bounds.center);
+            placedBounds.Add(bounds);
             instance.name = prefab.name;
             AddNavMeshBlocker(instance, bounds);
             placedCount++;
+            Debug.Log($"[TerrainProceduralGenerator]   - {instance.name} center={bounds.center} size={bounds.size}");
         }
 
-        Debug.Log($"[TerrainProceduralGenerator] 바위 {placedCount}개 배치 완료");
+        Debug.Log($"[TerrainProceduralGenerator] 바위 {placedCount}개 배치 완료 (Rock Min Spacing={rockMinSpacing})");
     }
 
     // 동상 등 랜드마크형 오브젝트 — 바위와 마찬가지로 실제 GameObject로 인스턴스화한다.
@@ -464,11 +485,10 @@ public class TerrainProceduralGenerator : MonoBehaviour
         var root = new GameObject(rootName);
         root.transform.SetParent(transform, false);
 
-        var rng            = new System.Random(seed + 20 + _specialObjectRunCount++);
-        var placedCenters  = new List<Vector3>();
+        var rng          = new System.Random(seed + 20 + _specialObjectRunCount++);
+        var placedBounds = new List<Bounds>();
         Vector3 origin = _terrain.transform.position;
         Vector3 size   = _data.size;
-        float minSqr   = specialObjectMinSpacing * specialObjectMinSpacing;
 
         int placedCount = 0;
         for (int i = 0; i < specialObjectCount; i++)
@@ -476,8 +496,10 @@ public class TerrainProceduralGenerator : MonoBehaviour
             Vector3 candidate = Vector3.zero;
             bool    found     = false;
 
-            // 1차 필터 — 스폰 지점(피벗) 기준 사전 스크리닝. 프리팹 피벗이 메쉬 중심과 어긋나 있을
-            // 수 있어 완벽하진 않지만, 매 시도마다 인스턴스화하는 비용 없이 대부분을 걸러낸다
+            // 1차 필터 — 스폰 지점(피벗) 기준 사전 스크리닝(중심 거리만). 프리팹 피벗이 메쉬 중심과
+            // 어긋나 있고 오브젝트 자체 크기도 무시하는 근사치라 완벽하진 않지만, 매 시도마다
+            // 인스턴스화하는 비용 없이 대부분을 걸러낸다 — 정확한 판정은 2차에서 함
+            float roughMinSqr = specialObjectMinSpacing * specialObjectMinSpacing;
             for (int attempt = 0; attempt < specialObjectMaxAttempts; attempt++)
             {
                 float wx = (float)rng.NextDouble() * size.x;
@@ -486,9 +508,9 @@ public class TerrainProceduralGenerator : MonoBehaviour
                 candidate = origin + new Vector3(wx, 0f, wz);
 
                 bool tooClose = false;
-                foreach (var c in placedCenters)
+                foreach (var b in placedBounds)
                 {
-                    if ((c - candidate).sqrMagnitude < minSqr) { tooClose = true; break; }
+                    if ((b.center - candidate).sqrMagnitude < roughMinSqr) { tooClose = true; break; }
                 }
 
                 if (!tooClose) { found = true; break; }
@@ -499,7 +521,8 @@ public class TerrainProceduralGenerator : MonoBehaviour
             GameObject prefab   = validPrefabs[rng.Next(0, validPrefabs.Count)];
             GameObject instance = Instantiate(prefab, candidate, Quaternion.Euler(0f, (float)rng.NextDouble() * 360f, 0f), root.transform);
 
-            // 2차 확인 — 실제 렌더러 월드 중심 기준으로 다시 검증 (1차 필터가 피벗 기준이라 놓칠 수 있음)
+            // 2차 확인 — 실제 렌더러 월드 범위로 다시 검증 (1차 필터는 피벗 기준 근사치라 놓칠 수 있음).
+            // 중심 거리가 아니라 각자의 실제 XZ 반경까지 감안해서 겹침을 판정한다
             if (!TryGetWorldBounds(instance, out Bounds bounds))
             {
                 DestroyImmediate(instance);
@@ -507,9 +530,13 @@ public class TerrainProceduralGenerator : MonoBehaviour
             }
 
             bool stillTooClose = false;
-            foreach (var c in placedCenters)
+            foreach (var b in placedBounds)
             {
-                if ((c - bounds.center).sqrMagnitude < minSqr) { stillTooClose = true; break; }
+                if (IsFootprintTooClose(b.center, b.extents, bounds.center, bounds.extents, specialObjectMinSpacing))
+                {
+                    stillTooClose = true;
+                    break;
+                }
             }
             if (stillTooClose)
             {
@@ -517,7 +544,7 @@ public class TerrainProceduralGenerator : MonoBehaviour
                 continue;
             }
 
-            placedCenters.Add(bounds.center);
+            placedBounds.Add(bounds);
             instance.name = prefab.name;
             AddNavMeshBlocker(instance, bounds);
             placedCount++;
