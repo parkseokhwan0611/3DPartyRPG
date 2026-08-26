@@ -62,10 +62,11 @@ public class AudioManager : MonoBehaviour
     private readonly List<RaycastResult> _uiRaycastResults = new List<RaycastResult>();
     private PointerEventData _uiPointerEventData;
 
-    private Dictionary<string, AudioClip> bgmDict;
+    private Dictionary<string, SoundEntry> bgmDict;
     private Dictionary<string, SoundEntry> sfxDict;
 
     private string currentBgmKey;
+    private float currentBgmVolumeMultiplier = 1f;
     private Coroutine fadeCoroutine;
 
     // ─────────────────────────────────────────────────────────────────
@@ -81,7 +82,7 @@ public class AudioManager : MonoBehaviour
         instance = this;
         DontDestroyOnLoad(gameObject);
 
-        bgmDict = BuildDict(bgmClips);
+        bgmDict = BuildSfxDict(bgmClips);
         sfxDict = BuildSfxDict(sfxClips);
 
         bgmSource = gameObject.AddComponent<AudioSource>();
@@ -141,15 +142,6 @@ public class AudioManager : MonoBehaviour
         }
     }
 
-    private static Dictionary<string, AudioClip> BuildDict(List<SoundEntry> entries)
-    {
-        var dict = new Dictionary<string, AudioClip>();
-        foreach (var e in entries)
-            if (e != null && !string.IsNullOrEmpty(e.name) && e.clip != null)
-                dict[e.name] = e.clip;
-        return dict;
-    }
-
     private static Dictionary<string, SoundEntry> BuildSfxDict(List<SoundEntry> entries)
     {
         var dict = new Dictionary<string, SoundEntry>();
@@ -166,21 +158,22 @@ public class AudioManager : MonoBehaviour
     public void PlayBGM(string key, bool fade = true)
     {
         if (currentBgmKey == key && bgmSource.isPlaying) return;
-        if (!bgmDict.TryGetValue(key, out var clip))
+        if (!bgmDict.TryGetValue(key, out var entry))
         {
             Debug.LogWarning($"[AudioManager] BGM 키 '{key}'를 찾을 수 없습니다.");
             return;
         }
 
         currentBgmKey = key;
+        currentBgmVolumeMultiplier = entry.volumeMultiplier;
         if (fadeCoroutine != null) StopCoroutine(fadeCoroutine);
 
         if (fade && bgmSource.isPlaying)
-            fadeCoroutine = StartCoroutine(FadeToNewBgm(clip));
+            fadeCoroutine = StartCoroutine(FadeToNewBgm(entry.clip));
         else
         {
-            bgmSource.clip   = clip;
-            bgmSource.volume = bgmVolume;
+            bgmSource.clip   = entry.clip;
+            bgmSource.volume = bgmVolume * currentBgmVolumeMultiplier;
             bgmSource.Play();
         }
     }
@@ -203,14 +196,14 @@ public class AudioManager : MonoBehaviour
         bgmSource.Play();
         // 목표값을 고정 캡처하지 않고 매 프레임 bgmVolume을 다시 읽어서, 페이드 도중
         // 설정창에서 볼륨 슬라이더를 조절해도 그 값이 즉시 반영되도록 함
-        yield return FadeVolume(0f, () => bgmVolume);
+        yield return FadeVolume(0f, () => bgmVolume * currentBgmVolumeMultiplier);
     }
 
     private IEnumerator FadeOutAndStop()
     {
         yield return FadeVolume(bgmSource.volume, () => 0f);
         bgmSource.Stop();
-        bgmSource.volume = bgmVolume;
+        bgmSource.volume = bgmVolume * currentBgmVolumeMultiplier;
     }
 
     private IEnumerator FadeVolume(float from, Func<float> toGetter)
@@ -248,11 +241,13 @@ public class AudioManager : MonoBehaviour
 
     public float BgmVolume => bgmVolume;
     public float SfxVolume => sfxVolume;
+    // 지금 재생 중인 BGM 키 — 보스 BGM처럼 일시적으로 전환했다가 원래 BGM으로 되돌려야 할 때 사용
+    public string CurrentBgmKey => currentBgmKey;
 
     public void SetBgmVolume(float volume)
     {
         bgmVolume = Mathf.Clamp01(volume);
-        if (bgmSource != null) bgmSource.volume = bgmVolume;
+        if (bgmSource != null) bgmSource.volume = bgmVolume * currentBgmVolumeMultiplier;
     }
 
     public void SetSfxVolume(float volume) => sfxVolume = Mathf.Clamp01(volume);

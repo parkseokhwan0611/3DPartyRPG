@@ -11534,6 +11534,7 @@ GameObject:
   - component: {fileID: 983320514698740326}
   - component: {fileID: 8335857253635887529}
   - component: {fileID: 7165683147454634721}
+  - component: {fileID: 7677295212319549098}
   - component: {fileID: 8463187442416703229}
   - component: {fileID: 8873082998577567278}
   m_Layer: 7
@@ -11628,8 +11629,6 @@ MonoBehaviour:
   enemyLayer:
     serializedVersion: 2
     m_Bits: 64
-  projectileName: GoblinBossNormalAtk
-  firePoint: {fileID: 6227973869471398631}
   damageDelay: 1
   recoveryDuration: 0.8
   isMagicAttack: 1
@@ -11637,6 +11636,8 @@ MonoBehaviour:
   critDamageMultiplier: 1.5
   attackSfxKey: GoblinBossNormalAtk
   attackSfxTimingOffset: -0.2
+  projectileName: GoblinBossNormalAtk
+  firePoint: {fileID: 6227973869471398631}
 --- !u!114 &4938466599736208482
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -11794,6 +11795,19 @@ MonoBehaviour:
   blockIfAliveSummons: 1
   summonVfxPoolKey: BossSummonVFX
   summonVfxHeightOffset: 0
+--- !u!114 &7677295212319549098
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5285157052835285592}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b0e40a2c6af92b341a1c35435999ea33, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  bossBgmKey: GoblinBossBGM
 --- !u!195 &8463187442416703229
 NavMeshAgent:
   m_ObjectHideFlags: 0

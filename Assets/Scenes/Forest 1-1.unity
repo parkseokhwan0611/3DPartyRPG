@@ -720250,6 +720250,8 @@ MonoBehaviour:
     displayName: "\uC232 1-1"
   - sceneName: Forest 1-2
     displayName: "\uC232 1-2"
+  - sceneName: Forest_Boss
+    displayName: "\uACE0\uBE14\uB9B0 \uC8FC\uC220\uC0AC\uC758 \uC601\uC5ED"
   currentLeaderIndex: 0
   pendingAutoRegisterPotions: 0
   partyQuickSlots: []
@@ -720315,6 +720317,9 @@ MonoBehaviour:
   - name: ForestBGM
     clip: {fileID: 8300000, guid: 5271d111bb8fae946ba110b45684b9a1, type: 3}
     volumeMultiplier: 1
+  - name: GoblinBossBGM
+    clip: {fileID: 8300000, guid: 8212c405c2089a64485164244d875897, type: 3}
+    volumeMultiplier: 0.4
   bgmVolume: 0.5
   bgmFadeDuration: 1
   sfxClips:
@@ -720465,6 +720470,10 @@ MonoBehaviour:
   - sceneName: TitleScene
     bgmKey: LoginBGM
   - sceneName: Forest 1-1
+    bgmKey: ForestBGM
+  - sceneName: Forest 1-2
+    bgmKey: ForestBGM
+  - sceneName: Forest _Boss
     bgmKey: ForestBGM
   enableGlobalUiClick: 1
   uiClickSfxKey: UIClick
@@ -746907,7 +746916,7 @@ TerrainCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_TerrainData: {fileID: 15600000, guid: 6d9bfde8ccd6d5e4b836522c4baa3916, type: 2}
+  m_TerrainData: {fileID: 15600000, guid: 43a19ea50cfc8b4c07482780757c1797, type: 2}
   m_EnableTreeColliders: 1
 --- !u!218 &1956720668
 Terrain:
@@ -746918,7 +746927,7 @@ Terrain:
   m_GameObject: {fileID: 1956720665}
   m_Enabled: 1
   serializedVersion: 6
-  m_TerrainData: {fileID: 15600000, guid: 6d9bfde8ccd6d5e4b836522c4baa3916, type: 2}
+  m_TerrainData: {fileID: 15600000, guid: 43a19ea50cfc8b4c07482780757c1797, type: 2}
   m_TreeDistance: 5000
   m_TreeBillboardDistance: 50
   m_TreeCrossFadeLength: 5
@@ -805843,11 +805852,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: GoblinBoss
-      objectReference: {fileID: 0}
-    - target: {fileID: 5285157052835285592, guid: 04330b467fdc2ac4a954f0a66a8bd06e,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
