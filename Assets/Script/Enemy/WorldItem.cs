@@ -10,10 +10,12 @@ public class WorldItem : MonoBehaviour
     private int _insideCount;
     private Camera _camera;
     private PoolAble _poolAble;
+    private ParticleSystem[] _particleSystems;
 
     void Awake()
     {
         _poolAble = GetComponent<PoolAble>();
+        _particleSystems = GetComponentsInChildren<ParticleSystem>(true);
     }
 
     void Start()
@@ -31,6 +33,14 @@ public class WorldItem : MonoBehaviour
     {
         _item = item;
         ApplyGradeVisuals();
+
+        // 풀에서 재사용될 때, 월드 스페이스로 시뮬레이션되는 파티클(빛기둥 등)이 이전 위치에서
+        // 재생되던 게 그대로 남아있을 수 있어 새 위치로 옮긴 뒤 전부 초기화하고 다시 재생한다
+        foreach (var ps in _particleSystems)
+        {
+            ps.Clear(true);
+            ps.Play(true);
+        }
     }
 
     void Update()
