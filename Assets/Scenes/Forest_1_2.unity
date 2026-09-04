@@ -235379,339 +235379,6 @@ Transform:
   - {fileID: 1856692717}
   m_Father: {fileID: 485801457}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &720778605
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 720778612}
-  - component: {fileID: 720778611}
-  - component: {fileID: 720778610}
-  - component: {fileID: 720778609}
-  - component: {fileID: 720778608}
-  - component: {fileID: 720778607}
-  - component: {fileID: 720778606}
-  m_Layer: 0
-  m_Name: CoreSystem
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &720778606
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 720778605}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5b73b5cba48c23c44870d9e9e17fe561, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  bgmClips:
-  - name: LoginBGM
-    clip: {fileID: 8300000, guid: a2702e463da324b47946ea6761b80b93, type: 3}
-    volumeMultiplier: 1
-  - name: ForestBGM
-    clip: {fileID: 8300000, guid: 5271d111bb8fae946ba110b45684b9a1, type: 3}
-    volumeMultiplier: 1
-  - name: GoblinBossBGM
-    clip: {fileID: 8300000, guid: 8212c405c2089a64485164244d875897, type: 3}
-    volumeMultiplier: 0.4
-  bgmVolume: 0.5
-  bgmFadeDuration: 1
-  sfxClips:
-  - name: UIClick
-    clip: {fileID: 8300000, guid: fa0bb39517e27f443af6474eb3fa4d37, type: 3}
-    volumeMultiplier: 0.7
-  - name: UIOpen
-    clip: {fileID: 8300000, guid: 824842097062b024a9aa078956ba02f8, type: 3}
-    volumeMultiplier: 0.6
-  - name: UIClose
-    clip: {fileID: 8300000, guid: 824842097062b024a9aa078956ba02f8, type: 3}
-    volumeMultiplier: 0.6
-  - name: ItemDrop
-    clip: {fileID: 8300000, guid: 9fe2a65c2791a0e4f910754712bb780a, type: 3}
-    volumeMultiplier: 1
-  - name: ItemPickup
-    clip: {fileID: 8300000, guid: ee89bfdff167ccf4f861a86bad4f2f85, type: 3}
-    volumeMultiplier: 1
-  - name: QuestAccept
-    clip: {fileID: 8300000, guid: 6a1305f7dbe98a047bcbb0b09329d696, type: 3}
-    volumeMultiplier: 1
-  - name: QuestClear
-    clip: {fileID: 8300000, guid: 6546d1c98ff9f1b46b73ac0164b565e4, type: 3}
-    volumeMultiplier: 1
-  - name: Money
-    clip: {fileID: 8300000, guid: 4df385fd72bcab34abec4aaef3b5b4d7, type: 3}
-    volumeMultiplier: 2
-  - name: LevelUp
-    clip: {fileID: 8300000, guid: d07f9e264ae33124ab86d06680482d4c, type: 3}
-    volumeMultiplier: 1
-  - name: ItemEquip
-    clip: {fileID: 8300000, guid: 0dedb38f1ffb6914c874abd51300cd24, type: 3}
-    volumeMultiplier: 2
-  - name: ItemUnequip
-    clip: {fileID: 8300000, guid: 0dedb38f1ffb6914c874abd51300cd24, type: 3}
-    volumeMultiplier: 2
-  - name: EnhanceSuccess
-    clip: {fileID: 8300000, guid: 83929b6b681ea5b4db045494caf8de4f, type: 3}
-    volumeMultiplier: 1
-  - name: EnhanceFail
-    clip: {fileID: 8300000, guid: 3705c3d02ae4bd64b828de9cd3e2a4dd, type: 3}
-    volumeMultiplier: 1
-  - name: GameOver
-    clip: {fileID: 8300000, guid: b720ffea23268ae4cafdb4bbcdde3dbb, type: 3}
-    volumeMultiplier: 1
-  - name: PartyMemberDeath
-    clip: {fileID: 8300000, guid: 21b32138cd268ae4abb2a25c5b3cdbcb, type: 3}
-    volumeMultiplier: 1
-  - name: SaveComplete
-    clip: {fileID: 8300000, guid: 028d1e9bbc228e841aeaec68fa6bdb7f, type: 3}
-    volumeMultiplier: 1
-  - name: LeaderChange
-    clip: {fileID: 8300000, guid: 0c0ad3b8943f2f24cbe2961f08e9ef0c, type: 3}
-    volumeMultiplier: 1
-  - name: SkillLevelUp
-    clip: {fileID: 8300000, guid: a76f0ff6137c8c24b8740e168a6654b6, type: 3}
-    volumeMultiplier: 0.5
-  - name: AutoSkillToggle
-    clip: {fileID: 8300000, guid: 84750f4b5dce13841b157c93d50b5ae0, type: 3}
-    volumeMultiplier: 0.8
-  - name: Tanker_NormalAtk
-    clip: {fileID: 8300000, guid: 57c9feaa536d55847bf63eae68f8d2af, type: 3}
-    volumeMultiplier: 0.4
-  - name: Dealer_NormalAtk
-    clip: {fileID: 8300000, guid: 81757b4a7c1bd5d4fb25d7d9c0695e50, type: 3}
-    volumeMultiplier: 0.5
-  - name: Healer_NormalAtk
-    clip: {fileID: 8300000, guid: 587a71d49f01bd34ea2ebe10fdbc1231, type: 3}
-    volumeMultiplier: 0.2
-  - name: Tanker_Main1
-    clip: {fileID: 8300000, guid: 335bad28d67f0be42bcd32cc1ebb78a6, type: 3}
-    volumeMultiplier: 1
-  - name: Tanker_Main2
-    clip: {fileID: 8300000, guid: cbd486e41831c624fb507101296d2ab1, type: 3}
-    volumeMultiplier: 1
-  - name: Tanker_Main3
-    clip: {fileID: 8300000, guid: 61ce2e988609d0c41afb9493d9110d30, type: 3}
-    volumeMultiplier: 1
-  - name: Tanker_Sub1
-    clip: {fileID: 8300000, guid: fee467320b5449b4a968b9b2bf61e2fb, type: 3}
-    volumeMultiplier: 0.8
-  - name: Tanker_Sub2
-    clip: {fileID: 8300000, guid: fee467320b5449b4a968b9b2bf61e2fb, type: 3}
-    volumeMultiplier: 0.8
-  - name: Dealer_Main1
-    clip: {fileID: 8300000, guid: 701b023a9cd73fe429a04214a35a7a00, type: 3}
-    volumeMultiplier: 1
-  - name: Dealer_Main2
-    clip: {fileID: 8300000, guid: 55075c8e4984c00419661416afdbb266, type: 3}
-    volumeMultiplier: 1
-  - name: Dealer_Main3
-    clip: {fileID: 8300000, guid: 4654ab58d02925a45a67c66614392317, type: 3}
-    volumeMultiplier: 1
-  - name: Dealer_Sub1
-    clip: {fileID: 8300000, guid: fee467320b5449b4a968b9b2bf61e2fb, type: 3}
-    volumeMultiplier: 0.8
-  - name: Dealer_Sub2
-    clip: {fileID: 8300000, guid: fee467320b5449b4a968b9b2bf61e2fb, type: 3}
-    volumeMultiplier: 0.8
-  - name: Healer_Main1
-    clip: {fileID: 8300000, guid: bccc1f64ca0d19c46b00a541f659b0e3, type: 3}
-    volumeMultiplier: 2
-  - name: Healer_Main2
-    clip: {fileID: 8300000, guid: 46a57bd6a7feb6142bd9357672693775, type: 3}
-    volumeMultiplier: 0.3
-  - name: Healer_Main3
-    clip: {fileID: 8300000, guid: bccc1f64ca0d19c46b00a541f659b0e3, type: 3}
-    volumeMultiplier: 2
-  - name: Healer_Sub1
-    clip: {fileID: 8300000, guid: 1ba0d2fd34a01304cb2c58aa0ba96609, type: 3}
-    volumeMultiplier: 0.3
-  - name: Healer_Sub2
-    clip: {fileID: 8300000, guid: fee467320b5449b4a968b9b2bf61e2fb, type: 3}
-    volumeMultiplier: 0.8
-  - name: GoblinAggro
-    clip: {fileID: 8300000, guid: 6586d9e64eea37642b1800890cc13087, type: 3}
-    volumeMultiplier: 0.7
-  - name: GoblinAggro2
-    clip: {fileID: 8300000, guid: f0399a694bde8c14c9adaf6d6ed2a3da, type: 3}
-    volumeMultiplier: 1
-  - name: GoblinBomb
-    clip: {fileID: 8300000, guid: b017cb77b163cf64095bc55e6fd5742e, type: 3}
-    volumeMultiplier: 0.5
-  - name: GoblinDeath
-    clip: {fileID: 8300000, guid: c686370b87b644c41889c2edd625e1b3, type: 3}
-    volumeMultiplier: 0.5
-  - name: GoblinExplosion
-    clip: {fileID: 8300000, guid: 3451839e5a7dc6f43a9584c7ea145181, type: 3}
-    volumeMultiplier: 0.6
-  - name: GoblinThief
-    clip: {fileID: 8300000, guid: 2e94b324b8a790242ac76895a9bf8547, type: 3}
-    volumeMultiplier: 0.5
-  - name: GoblinWarrior
-    clip: {fileID: 8300000, guid: c22daa5fb00f3a540af486bf62e52cae, type: 3}
-    volumeMultiplier: 0.6
-  - name: DarkExplosion
-    clip: {fileID: 8300000, guid: 8880c0b4c3901494f8554d5a05c4847a, type: 3}
-    volumeMultiplier: 1
-  - name: GoblinBottleBreak
-    clip: {fileID: 8300000, guid: e773535acfc14eb4d82caa4209d59f51, type: 3}
-    volumeMultiplier: 0.8
-  - name: GoblinBossNormalAtk
-    clip: {fileID: 8300000, guid: 0065594a40948a8468595238468cabf9, type: 3}
-    volumeMultiplier: 1
-  sfxVolume: 0.5
-  sfxSourceCount: 8
-  sceneBgmMap:
-  - sceneName: TitleScene
-    bgmKey: LoginBGM
-  - sceneName: Forest_1_1
-    bgmKey: ForestBGM
-  - sceneName: Forest_1_2
-    bgmKey: ForestBGM
-  - sceneName: Forest_Town
-    bgmKey: ForestBGM
-  - sceneName: Forest_Boss
-    bgmKey: ForestBGM
-  enableGlobalUiClick: 1
-  uiClickSfxKey: UIClick
---- !u!114 &720778607
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 720778605}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1f80982d6d96c6947884b6ec6b728bf2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &720778608
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 720778605}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f54dbca1ba4ec7344993ef32162032ec, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  mainQuestChain: {fileID: 11400000, guid: 18898cd7788ad6945b41fa0e3998aa4c, type: 2}
---- !u!114 &720778609
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 720778605}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 21fe7427b01b91748b1bb1b13ed7b088, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  isInBossRoom: 0
---- !u!114 &720778610
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 720778605}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7a4e7a31821415e4d87d309d6bf800f8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &720778611
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 720778605}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 898267374e83d23409ef68162b154125, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  partyEquipments: []
-  baseDataList:
-  - {fileID: 11400000, guid: 7364cb022d14fb149badfc133d4349ed, type: 2}
-  - {fileID: 11400000, guid: 9cf2668ef38f4794c96ee30e10d51d69, type: 2}
-  - {fileID: 11400000, guid: 5d131dd64cea89a4d8589ee810cb2583, type: 2}
-  skillTrees:
-  - {fileID: 11400000, guid: 64f7218b64d5ca948a695aeab713bdf9, type: 2}
-  - {fileID: 11400000, guid: 9d32c408ef0268741b90aa32fe2f11fd, type: 2}
-  - {fileID: 11400000, guid: fdd707c29e6959b4fbf4691a21ef1e72, type: 2}
-  partyLevel: 1
-  partyExp: 0
-  gold: 0
-  selectedPartyIndex: 0
-  sceneDisplayNames:
-  - sceneName: Forest_1_1
-    displayName: "\uC232 1-1"
-  - sceneName: Forest_1_2
-    displayName: "\uC232 1-2"
-  - sceneName: Forest_Town
-    displayName: "\uC2DC\uC791\uC758 \uB9C8\uC744"
-  - sceneName: Forest_Boss
-    displayName: "\uACE0\uBE14\uB9B0 \uC8FC\uC220\uC0AC\uC758 \uC601\uC5ED"
-  currentLeaderIndex: 0
-  pendingAutoRegisterPotions: 0
-  partyQuickSlots: []
-  hpPotionSlotItemId: 
-  mpPotionSlotItemId: 
-  startSkillPoint: 1
-  startItems:
-  - item: {fileID: 11400000, guid: 780180cf1b0df8945a2df703d6f54460, type: 2}
-    count: 5
-  - item: {fileID: 11400000, guid: 090f952f171e2c04f8363455e384f321, type: 2}
-    count: 5
-  startEquips:
-  - characterIndex: 0
-    item: {fileID: 11400000, guid: 360ee5c4417b22a47b5f196268d678de, type: 2}
-  - characterIndex: 1
-    item: {fileID: 11400000, guid: fd23787e5d867214a8000ae17c9bea2d, type: 2}
-  - characterIndex: 2
-    item: {fileID: 11400000, guid: fd23787e5d867214a8000ae17c9bea2d, type: 2}
-  itemRegistry:
-  - {fileID: 11400000, guid: 9022e3a27e6b96144983138f931fa959, type: 2}
-  - {fileID: 11400000, guid: c72b9d38248f14f40a0c7b9a7aedc9ad, type: 2}
-  - {fileID: 11400000, guid: 54d7dee9a0d8e8c4999df667fad79c6b, type: 2}
-  - {fileID: 11400000, guid: 16a6f2fc0d7f1a147bb01e2b78a61857, type: 2}
-  - {fileID: 11400000, guid: 780180cf1b0df8945a2df703d6f54460, type: 2}
-  - {fileID: 11400000, guid: 9946e955b34c79b4a9778eb045bbf4e4, type: 2}
-  - {fileID: 11400000, guid: 090f952f171e2c04f8363455e384f321, type: 2}
-  - {fileID: 11400000, guid: fd23787e5d867214a8000ae17c9bea2d, type: 2}
-  - {fileID: 11400000, guid: 360ee5c4417b22a47b5f196268d678de, type: 2}
-  - {fileID: 11400000, guid: c48a38f824323894e972bbdd7e025ce7, type: 2}
-  baseExp: 50
-  expGrowthRate: 8
---- !u!4 &720778612
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 720778605}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 301.08188, y: 330.7694, z: 63.146057}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &720864385
 GameObject:
   m_ObjectHideFlags: 0
@@ -414185,6 +413852,344 @@ Transform:
   m_Children:
   - {fileID: 775947885}
   m_Father: {fileID: 1645867757}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1151038908
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1151038915}
+  - component: {fileID: 1151038914}
+  - component: {fileID: 1151038913}
+  - component: {fileID: 1151038912}
+  - component: {fileID: 1151038911}
+  - component: {fileID: 1151038910}
+  - component: {fileID: 1151038909}
+  m_Layer: 0
+  m_Name: CoreSystem
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1151038909
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1151038908}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b73b5cba48c23c44870d9e9e17fe561, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  bgmClips:
+  - name: LoginBGM
+    clip: {fileID: 8300000, guid: a2702e463da324b47946ea6761b80b93, type: 3}
+    volumeMultiplier: 1
+  - name: ForestBGM
+    clip: {fileID: 8300000, guid: 5271d111bb8fae946ba110b45684b9a1, type: 3}
+    volumeMultiplier: 1
+  - name: GoblinBossBGM
+    clip: {fileID: 8300000, guid: 8212c405c2089a64485164244d875897, type: 3}
+    volumeMultiplier: 0.4
+  - name: PrologueBGM
+    clip: {fileID: 8300000, guid: 1aedb4b00c3b1ad488fd31dfd716c31e, type: 3}
+    volumeMultiplier: 0.4
+  bgmVolume: 0.5
+  bgmFadeDuration: 1
+  sfxClips:
+  - name: UIClick
+    clip: {fileID: 8300000, guid: fa0bb39517e27f443af6474eb3fa4d37, type: 3}
+    volumeMultiplier: 0.7
+  - name: UIOpen
+    clip: {fileID: 8300000, guid: 824842097062b024a9aa078956ba02f8, type: 3}
+    volumeMultiplier: 0.6
+  - name: UIClose
+    clip: {fileID: 8300000, guid: 824842097062b024a9aa078956ba02f8, type: 3}
+    volumeMultiplier: 0.6
+  - name: ItemDrop
+    clip: {fileID: 8300000, guid: 9fe2a65c2791a0e4f910754712bb780a, type: 3}
+    volumeMultiplier: 1
+  - name: ItemPickup
+    clip: {fileID: 8300000, guid: ee89bfdff167ccf4f861a86bad4f2f85, type: 3}
+    volumeMultiplier: 1
+  - name: QuestAccept
+    clip: {fileID: 8300000, guid: 6a1305f7dbe98a047bcbb0b09329d696, type: 3}
+    volumeMultiplier: 1
+  - name: QuestClear
+    clip: {fileID: 8300000, guid: 6546d1c98ff9f1b46b73ac0164b565e4, type: 3}
+    volumeMultiplier: 1
+  - name: Money
+    clip: {fileID: 8300000, guid: 4df385fd72bcab34abec4aaef3b5b4d7, type: 3}
+    volumeMultiplier: 2
+  - name: LevelUp
+    clip: {fileID: 8300000, guid: d07f9e264ae33124ab86d06680482d4c, type: 3}
+    volumeMultiplier: 1
+  - name: ItemEquip
+    clip: {fileID: 8300000, guid: 0dedb38f1ffb6914c874abd51300cd24, type: 3}
+    volumeMultiplier: 2
+  - name: ItemUnequip
+    clip: {fileID: 8300000, guid: 0dedb38f1ffb6914c874abd51300cd24, type: 3}
+    volumeMultiplier: 2
+  - name: EnhanceSuccess
+    clip: {fileID: 8300000, guid: 83929b6b681ea5b4db045494caf8de4f, type: 3}
+    volumeMultiplier: 1
+  - name: EnhanceFail
+    clip: {fileID: 8300000, guid: 3705c3d02ae4bd64b828de9cd3e2a4dd, type: 3}
+    volumeMultiplier: 1
+  - name: GameOver
+    clip: {fileID: 8300000, guid: b720ffea23268ae4cafdb4bbcdde3dbb, type: 3}
+    volumeMultiplier: 1
+  - name: PartyMemberDeath
+    clip: {fileID: 8300000, guid: 21b32138cd268ae4abb2a25c5b3cdbcb, type: 3}
+    volumeMultiplier: 1
+  - name: SaveComplete
+    clip: {fileID: 8300000, guid: 028d1e9bbc228e841aeaec68fa6bdb7f, type: 3}
+    volumeMultiplier: 1
+  - name: LeaderChange
+    clip: {fileID: 8300000, guid: 0c0ad3b8943f2f24cbe2961f08e9ef0c, type: 3}
+    volumeMultiplier: 1
+  - name: SkillLevelUp
+    clip: {fileID: 8300000, guid: a76f0ff6137c8c24b8740e168a6654b6, type: 3}
+    volumeMultiplier: 0.5
+  - name: AutoSkillToggle
+    clip: {fileID: 8300000, guid: 84750f4b5dce13841b157c93d50b5ae0, type: 3}
+    volumeMultiplier: 0.8
+  - name: Tanker_NormalAtk
+    clip: {fileID: 8300000, guid: 57c9feaa536d55847bf63eae68f8d2af, type: 3}
+    volumeMultiplier: 0.4
+  - name: Dealer_NormalAtk
+    clip: {fileID: 8300000, guid: 81757b4a7c1bd5d4fb25d7d9c0695e50, type: 3}
+    volumeMultiplier: 0.5
+  - name: Healer_NormalAtk
+    clip: {fileID: 8300000, guid: 587a71d49f01bd34ea2ebe10fdbc1231, type: 3}
+    volumeMultiplier: 0.2
+  - name: Tanker_Main1
+    clip: {fileID: 8300000, guid: 335bad28d67f0be42bcd32cc1ebb78a6, type: 3}
+    volumeMultiplier: 1
+  - name: Tanker_Main2
+    clip: {fileID: 8300000, guid: cbd486e41831c624fb507101296d2ab1, type: 3}
+    volumeMultiplier: 1
+  - name: Tanker_Main3
+    clip: {fileID: 8300000, guid: 61ce2e988609d0c41afb9493d9110d30, type: 3}
+    volumeMultiplier: 1
+  - name: Tanker_Sub1
+    clip: {fileID: 8300000, guid: fee467320b5449b4a968b9b2bf61e2fb, type: 3}
+    volumeMultiplier: 0.8
+  - name: Tanker_Sub2
+    clip: {fileID: 8300000, guid: fee467320b5449b4a968b9b2bf61e2fb, type: 3}
+    volumeMultiplier: 0.8
+  - name: Dealer_Main1
+    clip: {fileID: 8300000, guid: 701b023a9cd73fe429a04214a35a7a00, type: 3}
+    volumeMultiplier: 1
+  - name: Dealer_Main2
+    clip: {fileID: 8300000, guid: 55075c8e4984c00419661416afdbb266, type: 3}
+    volumeMultiplier: 1
+  - name: Dealer_Main3
+    clip: {fileID: 8300000, guid: 4654ab58d02925a45a67c66614392317, type: 3}
+    volumeMultiplier: 1
+  - name: Dealer_Sub1
+    clip: {fileID: 8300000, guid: fee467320b5449b4a968b9b2bf61e2fb, type: 3}
+    volumeMultiplier: 0.8
+  - name: Dealer_Sub2
+    clip: {fileID: 8300000, guid: fee467320b5449b4a968b9b2bf61e2fb, type: 3}
+    volumeMultiplier: 0.8
+  - name: Healer_Main1
+    clip: {fileID: 8300000, guid: bccc1f64ca0d19c46b00a541f659b0e3, type: 3}
+    volumeMultiplier: 2
+  - name: Healer_Main2
+    clip: {fileID: 8300000, guid: 46a57bd6a7feb6142bd9357672693775, type: 3}
+    volumeMultiplier: 0.3
+  - name: Healer_Main3
+    clip: {fileID: 8300000, guid: bccc1f64ca0d19c46b00a541f659b0e3, type: 3}
+    volumeMultiplier: 2
+  - name: Healer_Sub1
+    clip: {fileID: 8300000, guid: 1ba0d2fd34a01304cb2c58aa0ba96609, type: 3}
+    volumeMultiplier: 0.3
+  - name: Healer_Sub2
+    clip: {fileID: 8300000, guid: fee467320b5449b4a968b9b2bf61e2fb, type: 3}
+    volumeMultiplier: 0.8
+  - name: GoblinAggro
+    clip: {fileID: 8300000, guid: 6586d9e64eea37642b1800890cc13087, type: 3}
+    volumeMultiplier: 0.7
+  - name: GoblinAggro2
+    clip: {fileID: 8300000, guid: f0399a694bde8c14c9adaf6d6ed2a3da, type: 3}
+    volumeMultiplier: 1
+  - name: GoblinBomb
+    clip: {fileID: 8300000, guid: b017cb77b163cf64095bc55e6fd5742e, type: 3}
+    volumeMultiplier: 0.5
+  - name: GoblinDeath
+    clip: {fileID: 8300000, guid: c686370b87b644c41889c2edd625e1b3, type: 3}
+    volumeMultiplier: 0.5
+  - name: GoblinExplosion
+    clip: {fileID: 8300000, guid: 3451839e5a7dc6f43a9584c7ea145181, type: 3}
+    volumeMultiplier: 0.6
+  - name: GoblinThief
+    clip: {fileID: 8300000, guid: 2e94b324b8a790242ac76895a9bf8547, type: 3}
+    volumeMultiplier: 0.5
+  - name: GoblinWarrior
+    clip: {fileID: 8300000, guid: c22daa5fb00f3a540af486bf62e52cae, type: 3}
+    volumeMultiplier: 0.6
+  - name: DarkExplosion
+    clip: {fileID: 8300000, guid: 8880c0b4c3901494f8554d5a05c4847a, type: 3}
+    volumeMultiplier: 1
+  - name: GoblinBottleBreak
+    clip: {fileID: 8300000, guid: e773535acfc14eb4d82caa4209d59f51, type: 3}
+    volumeMultiplier: 0.8
+  - name: GoblinBossNormalAtk
+    clip: {fileID: 8300000, guid: 0065594a40948a8468595238468cabf9, type: 3}
+    volumeMultiplier: 1
+  sfxVolume: 0.5
+  sfxSourceCount: 8
+  sceneBgmMap:
+  - sceneName: TitleScene
+    bgmKey: LoginBGM
+  - sceneName: Forest_1_1
+    bgmKey: ForestBGM
+  - sceneName: Forest_1_2
+    bgmKey: ForestBGM
+  - sceneName: Forest_Town
+    bgmKey: ForestBGM
+  - sceneName: Forest_Boss
+    bgmKey: ForestBGM
+  - sceneName: PrologueScene
+    bgmKey: PrologueBGM
+  enableGlobalUiClick: 1
+  uiClickSfxKey: UIClick
+--- !u!114 &1151038910
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1151038908}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1f80982d6d96c6947884b6ec6b728bf2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1151038911
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1151038908}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f54dbca1ba4ec7344993ef32162032ec, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mainQuestChain: {fileID: 11400000, guid: 18898cd7788ad6945b41fa0e3998aa4c, type: 2}
+--- !u!114 &1151038912
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1151038908}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 21fe7427b01b91748b1bb1b13ed7b088, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isInBossRoom: 0
+--- !u!114 &1151038913
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1151038908}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7a4e7a31821415e4d87d309d6bf800f8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1151038914
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1151038908}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 898267374e83d23409ef68162b154125, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  partyEquipments: []
+  baseDataList:
+  - {fileID: 11400000, guid: 7364cb022d14fb149badfc133d4349ed, type: 2}
+  - {fileID: 11400000, guid: 9cf2668ef38f4794c96ee30e10d51d69, type: 2}
+  - {fileID: 11400000, guid: 5d131dd64cea89a4d8589ee810cb2583, type: 2}
+  skillTrees:
+  - {fileID: 11400000, guid: 64f7218b64d5ca948a695aeab713bdf9, type: 2}
+  - {fileID: 11400000, guid: 9d32c408ef0268741b90aa32fe2f11fd, type: 2}
+  - {fileID: 11400000, guid: fdd707c29e6959b4fbf4691a21ef1e72, type: 2}
+  partyLevel: 1
+  partyExp: 0
+  gold: 0
+  selectedPartyIndex: 0
+  sceneDisplayNames:
+  - sceneName: Forest_1_1
+    displayName: "\uC232 1-1"
+  - sceneName: Forest_1_2
+    displayName: "\uC232 1-2"
+  - sceneName: Forest_Town
+    displayName: "\uC2DC\uC791\uC758 \uB9C8\uC744"
+  - sceneName: Forest_Boss
+    displayName: "\uACE0\uBE14\uB9B0 \uC8FC\uC220\uC0AC\uC758 \uC601\uC5ED"
+  currentLeaderIndex: 0
+  pendingAutoRegisterPotions: 0
+  partyQuickSlots: []
+  hpPotionSlotItemId: 
+  mpPotionSlotItemId: 
+  startSkillPoint: 1
+  startItems:
+  - item: {fileID: 11400000, guid: 780180cf1b0df8945a2df703d6f54460, type: 2}
+    count: 5
+  - item: {fileID: 11400000, guid: 090f952f171e2c04f8363455e384f321, type: 2}
+    count: 5
+  startEquips:
+  - characterIndex: 0
+    item: {fileID: 11400000, guid: 360ee5c4417b22a47b5f196268d678de, type: 2}
+  - characterIndex: 1
+    item: {fileID: 11400000, guid: fd23787e5d867214a8000ae17c9bea2d, type: 2}
+  - characterIndex: 2
+    item: {fileID: 11400000, guid: fd23787e5d867214a8000ae17c9bea2d, type: 2}
+  itemRegistry:
+  - {fileID: 11400000, guid: 9022e3a27e6b96144983138f931fa959, type: 2}
+  - {fileID: 11400000, guid: c72b9d38248f14f40a0c7b9a7aedc9ad, type: 2}
+  - {fileID: 11400000, guid: 54d7dee9a0d8e8c4999df667fad79c6b, type: 2}
+  - {fileID: 11400000, guid: 16a6f2fc0d7f1a147bb01e2b78a61857, type: 2}
+  - {fileID: 11400000, guid: 780180cf1b0df8945a2df703d6f54460, type: 2}
+  - {fileID: 11400000, guid: 9946e955b34c79b4a9778eb045bbf4e4, type: 2}
+  - {fileID: 11400000, guid: 090f952f171e2c04f8363455e384f321, type: 2}
+  - {fileID: 11400000, guid: fd23787e5d867214a8000ae17c9bea2d, type: 2}
+  - {fileID: 11400000, guid: 360ee5c4417b22a47b5f196268d678de, type: 2}
+  - {fileID: 11400000, guid: c48a38f824323894e972bbdd7e025ce7, type: 2}
+  baseExp: 50
+  expGrowthRate: 8
+--- !u!4 &1151038915
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1151038908}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 301.08188, y: 330.7694, z: 63.146057}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1151245126
 GameObject:
@@ -807843,79 +807848,6 @@ Transform:
   - {fileID: 3559927844755708708}
   m_Father: {fileID: 5227273584747190596}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1001 &1224154899021912818
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 1473683728507981117, guid: 04330b467fdc2ac4a954f0a66a8bd06e,
-        type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 71.7
-      objectReference: {fileID: 0}
-    - target: {fileID: 1473683728507981117, guid: 04330b467fdc2ac4a954f0a66a8bd06e,
-        type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0.018309593
-      objectReference: {fileID: 0}
-    - target: {fileID: 1473683728507981117, guid: 04330b467fdc2ac4a954f0a66a8bd06e,
-        type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 84.9
-      objectReference: {fileID: 0}
-    - target: {fileID: 1473683728507981117, guid: 04330b467fdc2ac4a954f0a66a8bd06e,
-        type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1473683728507981117, guid: 04330b467fdc2ac4a954f0a66a8bd06e,
-        type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1473683728507981117, guid: 04330b467fdc2ac4a954f0a66a8bd06e,
-        type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1473683728507981117, guid: 04330b467fdc2ac4a954f0a66a8bd06e,
-        type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1473683728507981117, guid: 04330b467fdc2ac4a954f0a66a8bd06e,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1473683728507981117, guid: 04330b467fdc2ac4a954f0a66a8bd06e,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1473683728507981117, guid: 04330b467fdc2ac4a954f0a66a8bd06e,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5285157052835285592, guid: 04330b467fdc2ac4a954f0a66a8bd06e,
-        type: 3}
-      propertyPath: m_Name
-      value: GoblinBoss
-      objectReference: {fileID: 0}
-    - target: {fileID: 5285157052835285592, guid: 04330b467fdc2ac4a954f0a66a8bd06e,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 04330b467fdc2ac4a954f0a66a8bd06e, type: 3}
 --- !u!4 &1262211026985024043
 Transform:
   m_ObjectHideFlags: 0
@@ -817262,7 +817194,7 @@ SceneRoots:
   - {fileID: 993845800}
   - {fileID: 2125171594}
   - {fileID: 1771052541}
-  - {fileID: 720778612}
+  - {fileID: 1151038915}
   - {fileID: 1719173684}
   - {fileID: 1562592518}
   - {fileID: 1609027936}
@@ -817282,6 +817214,5 @@ SceneRoots:
   - {fileID: 1630750541}
   - {fileID: 6560333519254815565}
   - {fileID: 148326038879753676}
-  - {fileID: 1224154899021912818}
   - {fileID: 1956720669}
   - {fileID: 115505883}

@@ -611860,6 +611860,9 @@ MonoBehaviour:
   - name: GoblinBossBGM
     clip: {fileID: 8300000, guid: 8212c405c2089a64485164244d875897, type: 3}
     volumeMultiplier: 0.4
+  - name: PrologueBGM
+    clip: {fileID: 8300000, guid: 1aedb4b00c3b1ad488fd31dfd716c31e, type: 3}
+    volumeMultiplier: 0.4
   bgmVolume: 0.5
   bgmFadeDuration: 1
   sfxClips:
@@ -612017,6 +612020,8 @@ MonoBehaviour:
     bgmKey: ForestBGM
   - sceneName: Forest_Boss
     bgmKey: ForestBGM
+  - sceneName: PrologueScene
+    bgmKey: PrologueBGM
   enableGlobalUiClick: 1
   uiClickSfxKey: UIClick
 --- !u!114 &1903425726

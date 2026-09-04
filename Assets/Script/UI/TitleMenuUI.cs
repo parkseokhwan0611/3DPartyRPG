@@ -18,7 +18,10 @@ public class TitleMenuUI : MonoBehaviour
     [SerializeField] GameObject settingsPanel;
 
     [Header("# 씬")]
-    [SerializeField] string gameSceneName = "RPGTest";
+    [Tooltip("새 게임 시작 시 이동할 씬 — 세계관 프롤로그")]
+    [SerializeField] string prologueSceneName = "PrologueScene";
+    [Tooltip("이어하기 시 곧바로 이동할 씬 — 이미 프롤로그를 본 상태이므로 스테이지로 바로 진입")]
+    [SerializeField] string gameSceneName = "Forest_1_1";
 
     private bool _isTransitioning = false;
 
@@ -72,7 +75,7 @@ public class TitleMenuUI : MonoBehaviour
         SetButtonsInteractable(false);
         DataManager.instance?.InitData();
         QuestManager.instance?.StartNewGame();
-        SceneLoader.Load(gameSceneName);
+        SceneLoader.Load(prologueSceneName);
     }
 
     private void OnLoadGameClicked()
