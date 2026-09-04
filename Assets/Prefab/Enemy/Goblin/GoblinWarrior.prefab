@@ -2851,15 +2851,15 @@ MonoBehaviour:
   enemyLayer:
     serializedVersion: 2
     m_Bits: 64
-  hitRadius: 1.5
-  hitOffset: 1
+  damageDelay: 1
+  recoveryDuration: 1
   isMagicAttack: 0
   critChance: 0.1
   critDamageMultiplier: 1.5
   attackSfxKey: GoblinWarrior
   attackSfxTimingOffset: -0.2
-  damageDelay: 1
-  recoveryDuration: 1
+  hitRadius: 1.5
+  hitOffset: 1
 --- !u!114 &7925926561819551647
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2872,8 +2872,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: db5518911df8ae84da3b30d78b763b17, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hp: 600
-  maxHp: 600
+  hp: 800
+  maxHp: 800
   isDead: 0
   grade: 0
   def: 10
