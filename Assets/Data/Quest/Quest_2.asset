@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4a4c602ee5d4f304899658fedf2a3ef4, type: 3}
+  m_Name: Quest_2
+  m_EditorClassIdentifier: 
+  questId: quest_2
+  questName: "\uC0AC\uB0E5\uAFBC\uC758 \uC758\uB8B0"
+  description: "\uB2E4\uC74C \uAD6C\uC5ED\uC758 \uC0AC\uB0E5\uAFBC \uB9E5\uC744 \uCC3E\uC544\uAC00\uC138\uC694."
+  objectiveType: 0
+  targetNpcId: NPC_Mac
+  targetNpcDisplayName: "\uC0AC\uB0E5\uAFBC \uB9E5"
+  targetItem: {fileID: 0}
+  targetItemCount: 1
+  targetMonsterId: 
+  targetMonsterDisplayName: 
+  targetMonsterCount: 0
+  reportNpcId: 
+  reportNpcDisplayName: 
+  rewardExp: 30
+  rewardGold: 30
+  rewardItems:
+  - item: {fileID: 11400000, guid: 780180cf1b0df8945a2df703d6f54460, type: 2}
+    count: 3
+  - item: {fileID: 11400000, guid: 090f952f171e2c04f8363455e384f321, type: 2}
+    count: 3

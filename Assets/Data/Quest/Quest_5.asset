@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4a4c602ee5d4f304899658fedf2a3ef4, type: 3}
+  m_Name: Quest_5
+  m_EditorClassIdentifier: 
+  questId: quest_5
+  questName: "\uACE0\uBE14\uB9B0 \uC804\uC0AC \uCC98\uCE58"
+  description: "\uAC15\uB825\uD55C \uACE0\uBE14\uB9B0 \uC804\uC0AC 10\uB9C8\uB9AC
+    \uCC98\uCE58\uD558\uACE0 \uC232 \uBD81\uCABD\uC758 \uD30C\uC218\uAFBC \uB370\uCE74\uB974\uD2B8\uC5D0\uAC8C
+    \uBCF4\uACE0\uD558\uC2ED\uC2DC\uC624."
+  objectiveType: 2
+  targetNpcId: NPC_Decart
+  targetNpcDisplayName: "\uD30C\uC218\uAFBC \uB370\uCE74\uB974\uD2B8"
+  targetItem: {fileID: 0}
+  targetItemCount: 1
+  targetMonsterId: GoblinWarrior
+  targetMonsterDisplayName: "\uACE0\uBE14\uB9B0 \uC804\uC0AC"
+  targetMonsterCount: 10
+  reportNpcId: NPC_Decart
+  reportNpcDisplayName: "\uD30C\uC218\uAFBC \uB370\uCE74\uB974\uD2B8"
+  rewardExp: 50
+  rewardGold: 50
+  rewardItems:
+  - item: {fileID: 11400000, guid: 9946e955b34c79b4a9778eb045bbf4e4, type: 2}
+    count: 1
+  - item: {fileID: 11400000, guid: 54d7dee9a0d8e8c4999df667fad79c6b, type: 2}
+    count: 1

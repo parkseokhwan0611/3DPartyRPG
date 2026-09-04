@@ -133,7 +133,7 @@ public class QuestHudUI : MonoBehaviour
 
         if (root != null) root.SetActive(true);
         if (questNameText != null) questNameText.text = quest.questName;
-        if (objectiveText != null) objectiveText.text = quest.GetObjectiveText(QuestManager.instance.CurrentProgress);
+        if (objectiveText != null) objectiveText.text = quest.GetObjectiveText(QuestManager.instance.CurrentProgress, QuestManager.instance.IsAwaitingReport);
 
         UpdateMarker(quest);
     }

@@ -66,7 +66,7 @@ public class QuestLogUI : MonoBehaviour
 
         if (currentQuestNameText != null) currentQuestNameText.text = quest.questName;
         if (currentQuestDescText != null) currentQuestDescText.text = quest.description;
-        if (currentObjectiveText != null) currentObjectiveText.text = quest.GetObjectiveText(qm.CurrentProgress);
+        if (currentObjectiveText != null) currentObjectiveText.text = quest.GetObjectiveText(qm.CurrentProgress, qm.IsAwaitingReport);
     }
 
     private void RefreshHistory()

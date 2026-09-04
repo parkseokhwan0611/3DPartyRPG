@@ -25,6 +25,9 @@ public class QuestManager : MonoBehaviour
             : null;
 
     public int CurrentProgress => currentProgress;
+    // 처치 목표는 다 채웠지만 보고 대상 NPC와의 대화가 아직 남아있는 상태
+    public bool IsAwaitingReport =>
+        CurrentQuest != null && CurrentQuest.RequiresReport && currentProgress >= CurrentQuest.TargetCount;
     public IReadOnlyList<string> CompletedQuestIds => completedQuestIds;
     public bool IsAllQuestsComplete => mainQuestChain != null && currentQuestIndex >= mainQuestChain.quests.Count;
     public MainQuestChain Chain => mainQuestChain;
@@ -147,18 +150,32 @@ public class QuestManager : MonoBehaviour
         currentProgress = Mathf.Min(currentProgress + 1, quest.TargetCount);
         OnQuestProgressChanged?.Invoke();
 
-        if (currentProgress >= quest.TargetCount)
+        // 보고 대상 NPC가 지정된 처치 퀘스트는 수량을 채워도 자동 완료하지 않고
+        // HandleDialogueComplete에서 그 NPC와 대화했을 때 완료 처리한다
+        if (currentProgress >= quest.TargetCount && !quest.RequiresReport)
             CompleteCurrentQuest();
     }
 
     private void HandleDialogueComplete(NpcInteractable npc)
     {
         var quest = CurrentQuest;
-        if (quest == null || quest.objectiveType != QuestObjectiveType.NpcDialogue) return;
-        if (npc == null || string.IsNullOrEmpty(quest.targetNpcId)) return;
+        if (quest == null || npc == null) return;
 
         // 상점/강화 NPC는 퀘스트와 무관 — 애초에 퀘스트 매칭 대상에서 제외
         if (npc.Type == NpcInteractable.NpcType.Shop || npc.Type == NpcInteractable.NpcType.Enhancement) return;
+
+        // 처치 퀘스트 — 목표 수량을 채운 뒤 보고 대상 NPC와 대화하면 완료
+        if (quest.objectiveType == QuestObjectiveType.KillMonster)
+        {
+            if (!quest.RequiresReport || currentProgress < quest.TargetCount) return;
+            if (npc.NpcId != quest.reportNpcId) return;
+
+            CompleteCurrentQuest();
+            return;
+        }
+
+        if (quest.objectiveType != QuestObjectiveType.NpcDialogue) return;
+        if (string.IsNullOrEmpty(quest.targetNpcId)) return;
 
         if (npc.NpcId != quest.targetNpcId)
         {

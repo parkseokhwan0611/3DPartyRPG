@@ -36,7 +36,7 @@ public class AudioManager : MonoBehaviour
 
     [Header("BGM")]
     [SerializeField] private List<SoundEntry> bgmClips = new List<SoundEntry>();
-    [SerializeField] [Range(0f, 1f)] private float bgmVolume = 0.5f;
+    [SerializeField] [Range(0f, 1f)] private float bgmVolume = 0.3f;
     [Tooltip("BGM 전환 시 페이드 아웃/인 시간 (초)")]
     [SerializeField] private float bgmFadeDuration = 1f;
 

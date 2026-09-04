@@ -18,6 +18,11 @@ public class NpcInteractable : MonoBehaviour
     [Header("대화 (순서대로 출력)")]
     [SerializeField] DialogueLine[] dialogueLines;
 
+    [Header("퀘스트 보고 전 대사 (선택)")]
+    [Tooltip("이 NPC가 현재 퀘스트의 처치 보고 대상(QuestData.Report Npc Id)인데 아직 처치 수량을 " +
+             "다 못 채웠을 때 Dialogue Lines 대신 보여줄 대사. 비워두면 기본 문구 사용")]
+    [SerializeField] DialogueLine[] notReadyDialogueLines;
+
     [Header("상점 데이터 (Shop 타입만)")]
     [SerializeField] ShopData shopData;
 
@@ -145,15 +150,36 @@ public class NpcInteractable : MonoBehaviour
     // 대화 → UI 오픈 흐름
     // ─────────────────────────────────────────────────────────────────
 
+    // 이 NPC가 현재 진행 중인 퀘스트의 처치 보고 대상인데, 아직 목표 수량을 다 못 채운 상태인지
+    bool IsPendingReportTargetNotReady()
+    {
+        var qm    = QuestManager.instance;
+        var quest = qm?.CurrentQuest;
+        if (quest == null || !quest.RequiresReport) return false;
+        if (quest.reportNpcId != NpcId) return false;
+
+        return !qm.IsAwaitingReport;
+    }
+
     void StartDialogue()
     {
         if (DialogueUI.instance == null) return;
         _isDialogueActive = true;
         ShowPrompt(false);
 
-        DialogueLine[] lines = (dialogueLines != null && dialogueLines.Length > 0)
-            ? dialogueLines
-            : new[] { new DialogueLine { speaker = DialogueLine.Speaker.NPC, text = "어서 오세요." } };
+        DialogueLine[] lines;
+        if (IsPendingReportTargetNotReady())
+        {
+            lines = (notReadyDialogueLines != null && notReadyDialogueLines.Length > 0)
+                ? notReadyDialogueLines
+                : new[] { new DialogueLine { speaker = DialogueLine.Speaker.NPC, text = "아직 처치를 다 마치지 못한 것 같군요." } };
+        }
+        else
+        {
+            lines = (dialogueLines != null && dialogueLines.Length > 0)
+                ? dialogueLines
+                : new[] { new DialogueLine { speaker = DialogueLine.Speaker.NPC, text = "어서 오세요." } };
+        }
 
         DialogueUI.instance.Open(npcName, lines, OnDialogueComplete);
     }

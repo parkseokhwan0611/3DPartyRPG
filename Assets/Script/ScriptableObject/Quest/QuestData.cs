@@ -45,6 +45,16 @@ public class QuestData : ScriptableObject
     [Tooltip("HUD/퀘스트로그에 표시할 몬스터 이름 (예: '고블린')")]
     public string targetMonsterDisplayName;
     public int targetMonsterCount = 1;
+    [Tooltip("비워두면 목표 수량 처치 즉시 퀘스트 완료(기존 방식). 채우면 처치 완료 후 이 NPC와 " +
+             "대화해야 최종 완료됨 (NpcInteractable.NpcId와 일치해야 함)")]
+    public string reportNpcId;
+    [Tooltip("HUD/퀘스트로그에 표시할 보고 대상 NPC 이름 (예: '촌장 하리드')")]
+    public string reportNpcDisplayName;
+
+    // 처치 퀘스트인데 보고 대상 NPC가 지정돼 있으면, 목표 수량을 채워도 자동 완료되지 않고
+    // 그 NPC와 대화해야 완료됨
+    public bool RequiresReport =>
+        objectiveType == QuestObjectiveType.KillMonster && !string.IsNullOrEmpty(reportNpcId);
 
     [Header("보상")]
     public float rewardExp;
@@ -60,7 +70,7 @@ public class QuestData : ScriptableObject
     };
 
     // HUD/퀘스트로그에 표시할 목표 설명 (진행도 포함)
-    public string GetObjectiveText(int currentProgress)
+    public string GetObjectiveText(int currentProgress, bool awaitingReport = false)
     {
         int shown = Mathf.Min(currentProgress, TargetCount);
         switch (objectiveType)
@@ -73,6 +83,11 @@ public class QuestData : ScriptableObject
                 return $"{itemLabel} 수집 ({shown}/{TargetCount})";
             case QuestObjectiveType.KillMonster:
                 string monsterLabel = !string.IsNullOrEmpty(targetMonsterDisplayName) ? targetMonsterDisplayName : targetMonsterId;
+                if (awaitingReport)
+                {
+                    string reportLabel = !string.IsNullOrEmpty(reportNpcDisplayName) ? reportNpcDisplayName : reportNpcId;
+                    return $"{monsterLabel} 처치 완료 — {reportLabel}에게 보고하기";
+                }
                 return $"{monsterLabel} 처치 ({shown}/{TargetCount})";
             default:
                 return "";
