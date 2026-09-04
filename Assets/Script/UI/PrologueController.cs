@@ -138,6 +138,7 @@ public class PrologueController : MonoBehaviour
         _bodyText.alignment = TextAlignmentOptions.Center;
         _bodyText.fontSize = 42;
         _bodyText.color = Color.white;
+        _bodyText.fontStyle = FontStyles.Bold;
         _bodyText.enableWordWrapping = true;
         if (koreanFont != null) _bodyText.font = koreanFont;
         var textRect = textGo.GetComponent<RectTransform>();

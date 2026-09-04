@@ -150,7 +150,7 @@ public class DataManager : MonoBehaviour
         {
             var newStatus = new CharacterStatus();
             newStatus.classData  = baseData;
-            newStatus.charName   = baseData.name;
+            newStatus.charName   = string.IsNullOrEmpty(baseData.displayName) ? baseData.name : baseData.displayName;
             newStatus.currentHp  = newStatus.MaxHp;
             newStatus.currentMp  = newStatus.MaxMp;
             newStatus.skillPoint = startSkillPoint;
@@ -276,7 +276,7 @@ public class DataManager : MonoBehaviour
             var saved  = save.characters[i];
             var status = new CharacterStatus();
             status.classData  = baseDataList[i];
-            status.charName   = baseDataList[i].name;
+            status.charName   = string.IsNullOrEmpty(baseDataList[i].displayName) ? baseDataList[i].name : baseDataList[i].displayName;
             status.currentHp  = saved.currentHp;
             status.currentMp  = saved.currentMp;
             status.statPoint  = saved.statPoint;

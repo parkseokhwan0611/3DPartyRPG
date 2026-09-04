@@ -5,6 +5,9 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "Class", menuName = "Scriptable Object/ClassData")]
 public class ClassData : ScriptableObject
 {
+    [Tooltip("대화창 등에 표시할 캐릭터 이름. 비워두면 이 에셋의 파일명을 그대로 사용")]
+    public string displayName;
+
     public enum ClassType { Tanker, Dealer, Healer, Gunslinger }
     public ClassType classType;
     public int level;
