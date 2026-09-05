@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4a4c602ee5d4f304899658fedf2a3ef4, type: 3}
+  m_Name: Quest_7
+  m_EditorClassIdentifier: 
+  questId: quest_7
+  questName: "\uCCAB \uBC88\uC9F8 \uC78E\uC0AC\uADC0"
+  description: "\uACE0\uBE14\uB9B0 \uC8FC\uC220\uC0AC\uC5D0\uAC8C\uC11C \uC138\uACC4\uC218\uC758
+    \uC78E\uC0AC\uADC0\uB97C \uB418\uCC3E\uC73C\uC138\uC694."
+  objectiveType: 2
+  targetNpcId: 
+  targetNpcDisplayName: 
+  targetItem: {fileID: 0}
+  targetItemCount: 1
+  targetMonsterId: GoblinBoss
+  targetMonsterDisplayName: "\uACE0\uBE14\uB9B0 \uC8FC\uC220\uC0AC"
+  targetMonsterCount: 1
+  reportNpcId: NPC_Hide
+  reportNpcDisplayName: "\uCD0C\uC7A5 \uD558\uC774\uB4DC"
+  rewardExp: 200
+  rewardGold: 200
+  rewardItems:
+  - item: {fileID: 11400000, guid: 9022e3a27e6b96144983138f931fa959, type: 2}
+    count: 2
+  - item: {fileID: 11400000, guid: c48a38f824323894e972bbdd7e025ce7, type: 2}
+    count: 2
