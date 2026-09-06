@@ -129,7 +129,7 @@ public class SettingsUI : MonoBehaviour
         bool fullscreen = fullscreenToggle != null ? fullscreenToggle.isOn : Screen.fullScreen;
 
         Screen.SetResolution(r.width, r.height, fullscreen);
-        SettingsManager.instance?.SaveResolution(index, fullscreen);
+        SettingsManager.instance?.SaveResolution(r.width, r.height, fullscreen);
     }
 
     private void OnFullscreenChanged(bool isFullscreen)

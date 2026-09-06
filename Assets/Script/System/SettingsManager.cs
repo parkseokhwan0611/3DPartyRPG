@@ -11,7 +11,8 @@ public class SettingsManager : MonoBehaviour
     private const string KeyBgmVolume  = "Settings_BgmVolume";
     private const string KeySfxVolume  = "Settings_SfxVolume";
     private const string KeyQuality    = "Settings_QualityLevel";
-    private const string KeyResIndex   = "Settings_ResolutionIndex";
+    private const string KeyResWidth   = "Settings_ResolutionWidth";
+    private const string KeyResHeight  = "Settings_ResolutionHeight";
     private const string KeyFullscreen = "Settings_Fullscreen";
 
     void Awake()
@@ -38,16 +39,15 @@ public class SettingsManager : MonoBehaviour
         QualitySettings.SetQualityLevel(quality, true);
 
         bool fullscreen = GetFullscreen();
-        int resIndex = PlayerPrefs.GetInt(KeyResIndex, -1);
-        if (resIndex >= 0)
+        int width  = PlayerPrefs.GetInt(KeyResWidth, -1);
+        int height = PlayerPrefs.GetInt(KeyResHeight, -1);
+        if (width > 0 && height > 0)
         {
-            var resolutions = GetDistinctResolutions();
-            if (resIndex < resolutions.Count)
-            {
-                var r = resolutions[resIndex];
-                Screen.SetResolution(r.width, r.height, fullscreen);
-                return;
-            }
+            // Screen.resolutions의 인덱스가 아니라 실제 가로/세로 값을 직접 저장해둔 것을 그대로
+            // 적용 — 모니터 구성이 바뀌면 Screen.resolutions의 순서/구성 자체가 달라질 수 있어
+            // 인덱스로 저장하면 전혀 다른 해상도를 가리키게 될 수 있음
+            Screen.SetResolution(width, height, fullscreen);
+            return;
         }
         Screen.fullScreen = fullscreen;
     }
@@ -73,9 +73,10 @@ public class SettingsManager : MonoBehaviour
     public void SaveSfxVolume(float v) => PlayerPrefs.SetFloat(KeySfxVolume, v);
     public void SaveQuality(int level) => PlayerPrefs.SetInt(KeyQuality, level);
 
-    public void SaveResolution(int index, bool fullscreen)
+    public void SaveResolution(int width, int height, bool fullscreen)
     {
-        PlayerPrefs.SetInt(KeyResIndex, index);
+        PlayerPrefs.SetInt(KeyResWidth, width);
+        PlayerPrefs.SetInt(KeyResHeight, height);
         PlayerPrefs.SetInt(KeyFullscreen, fullscreen ? 1 : 0);
     }
 
