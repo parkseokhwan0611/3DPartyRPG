@@ -45,9 +45,6 @@ public class DamageSkillData : SkillData
     [Header("부가 버프 효과 (선택 — 시전자 자신에게 적용)")]
     public List<CastBuffEffect> onCastBuffs = new List<CastBuffEffect>();
 
-    // DebuffSkillData.DebuffEffect와 동일한 형태(값/지속시간 모두 레벨별 입력) — 대상만 타겟이 아니라
-    // 시전자 자신. Shield도 StatusEffectType에 이미 있어 그대로 사용 가능(PartyStatusEffectHandler.ApplyBuff가
-    // Shield 타입을 CurrentShield 풀로 알아서 분기 처리함)
     [System.Serializable]
     public class CastBuffEffect
     {
