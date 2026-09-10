@@ -18654,7 +18654,7 @@ Transform:
   m_GameObject: {fileID: 50482400}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 67.07, y: -0.4, z: 37.6}
+  m_LocalPosition: {x: 54.36, y: -0.4, z: 52.27}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -50952,8 +50952,8 @@ Canvas:
   m_Enabled: 1
   serializedVersion: 3
   m_RenderMode: 0
-  m_Camera: {fileID: 0}
-  m_PlaneDistance: 100
+  m_Camera: {fileID: 1853548221}
+  m_PlaneDistance: 15
   m_PixelPerfect: 0
   m_ReceivesEvents: 1
   m_OverrideSorting: 0
@@ -64968,6 +64968,37 @@ ParticleSystem:
         m_PostInfinity: 2
         m_RotationOrder: 4
     vectorLabel1_3: W
+--- !u!1 &194431250
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 194431251}
+  m_Layer: 6
+  m_Name: VFXAnchor
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &194431251
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 194431250}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 1.5, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 5657494931139571583}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &194960692
 GameObject:
   m_ObjectHideFlags: 0
@@ -237670,6 +237701,37 @@ Transform:
   - {fileID: 1761963306}
   m_Father: {fileID: 1937048891}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &742117043
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 742117044}
+  m_Layer: 6
+  m_Name: VFXAnchor
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &742117044
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 742117043}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 1.5, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 3639951238320272346}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &746024991
 GameObject:
   m_ObjectHideFlags: 0
@@ -360378,6 +360440,37 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1152971913}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1067907588
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1067907589}
+  m_Layer: 6
+  m_Name: VFXAnchor
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1067907589
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1067907588}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 1.5, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 8735694563876352231}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1068301009
 GameObject:
   m_ObjectHideFlags: 0
@@ -369292,7 +369385,7 @@ Transform:
   m_GameObject: {fileID: 1112639004}
   serializedVersion: 2
   m_LocalRotation: {x: 0.37460655, y: 0, z: 0, w: 0.9271839}
-  m_LocalPosition: {x: 67.07, y: 6.6, z: 31.599998}
+  m_LocalPosition: {x: 54.36, y: 6.6, z: 46.27}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -575988,6 +576081,17 @@ MonoBehaviour:
     perfab: {fileID: 1515737762508409511, guid: 988130f384d7fd341a928b8eca6108d3,
       type: 3}
     count: 1
+  - objectName: AtkTextVFX
+    perfab: {fileID: 4246062865696273535, guid: ae53cd52eb5a24c4fadd0a33abba26b2,
+      type: 3}
+    count: 3
+  - objectName: DefTextVFX
+    perfab: {fileID: 279788610510384803, guid: 989297ad6d719ca4dacd336fe164bd0f, type: 3}
+    count: 3
+  - objectName: CritTextVFX
+    perfab: {fileID: 3071085564086693562, guid: 228b0191eb4a8604db016a7207073d44,
+      type: 3}
+    count: 3
   - objectName: WorldItem_Normal
     perfab: {fileID: 8489436070256825637, guid: 83571b95e3087ca45940bdacd4a5c491,
       type: 3}
@@ -676711,7 +676815,7 @@ Transform:
   m_GameObject: {fileID: 1853548217}
   serializedVersion: 2
   m_LocalRotation: {x: 0.37460655, y: 0, z: 0, w: 0.9271839}
-  m_LocalPosition: {x: 67.07, y: 6.6, z: 31.599998}
+  m_LocalPosition: {x: 54.36, y: 6.6, z: 46.27}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -768581,6 +768685,7 @@ Transform:
   - {fileID: 1198441508}
   - {fileID: 1921016946}
   - {fileID: 1703587115}
+  - {fileID: 742117044}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &3650580640684474790
@@ -769114,6 +769219,7 @@ GameObject:
   - component: {fileID: 7233793141381228967}
   - component: {fileID: 7233793141381228966}
   - component: {fileID: 7233793141381228965}
+  - component: {fileID: 7233793141381228969}
   - component: {fileID: 7233793141381228964}
   - component: {fileID: 7233793141381228963}
   - component: {fileID: 7233793141381228962}
@@ -769188,8 +769294,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294967295
-  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
+    rgba: 4278254847
+  m_fontColor: {r: 1, g: 0.98664254, b: 0, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -770250,6 +770356,7 @@ GameObject:
   - component: {fileID: 5657494931139571586}
   - component: {fileID: 5657494931139571585}
   - component: {fileID: 5657494931139571584}
+  - component: {fileID: 5657494931139571592}
   - component: {fileID: 5657494931139571590}
   - component: {fileID: 5657494931139571589}
   - component: {fileID: 5657494931139571588}
@@ -770793,6 +770900,7 @@ Transform:
   - {fileID: 1056929889}
   - {fileID: 769225082}
   - {fileID: 1849474959}
+  - {fileID: 194431251}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &5657494931139571584
@@ -770965,6 +771073,29 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2362d34b14148dd488a9d1208ad3c2b1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &5657494931139571592
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5028450432697365957}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e1f01f0ef8c84d841a05c4a15f6af386, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  vfxAnchor: {fileID: 194431251}
+  offset: {x: 0, y: 2, z: 0}
+  entries:
+  - effectType: 6
+    vfxPoolKey: DefTextVFX
+  - effectType: 5
+    vfxPoolKey: AtkTextVFX
+  - effectType: 13
+    vfxPoolKey: AtkTextVFX
+  - effectType: 14
+    vfxPoolKey: CritTextVFX
 --- !u!4 &5661406630874647234
 Transform:
   m_ObjectHideFlags: 0
@@ -773021,6 +773152,29 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2362d34b14148dd488a9d1208ad3c2b1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &7233793141381228969
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4163688842649594208}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e1f01f0ef8c84d841a05c4a15f6af386, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  vfxAnchor: {fileID: 742117044}
+  offset: {x: 0, y: 2, z: 0}
+  entries:
+  - effectType: 6
+    vfxPoolKey: DefTextVFX
+  - effectType: 5
+    vfxPoolKey: AtkTextVFX
+  - effectType: 13
+    vfxPoolKey: AtkTextVFX
+  - effectType: 14
+    vfxPoolKey: CritTextVFX
 --- !u!1 &7258119023110856540
 GameObject:
   m_ObjectHideFlags: 0
@@ -773995,6 +774149,7 @@ GameObject:
   - component: {fileID: 8735694563876352233}
   - component: {fileID: 8735694563876352232}
   - component: {fileID: 8735694563876352238}
+  - component: {fileID: 8735694563876352240}
   - component: {fileID: 8735694563876352237}
   - component: {fileID: 8735694563876352236}
   - component: {fileID: 8735694563876352235}
@@ -774393,6 +774548,7 @@ Transform:
   - {fileID: 1161682173}
   - {fileID: 1756720237}
   - {fileID: 1737509976}
+  - {fileID: 1067907589}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &8735694563876352232
@@ -774565,6 +774721,29 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2362d34b14148dd488a9d1208ad3c2b1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &8735694563876352240
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8246296803559434845}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e1f01f0ef8c84d841a05c4a15f6af386, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  vfxAnchor: {fileID: 1067907589}
+  offset: {x: 0, y: 2, z: 0}
+  entries:
+  - effectType: 6
+    vfxPoolKey: DefTextVFX
+  - effectType: 5
+    vfxPoolKey: AtkTextVFX
+  - effectType: 13
+    vfxPoolKey: AtkTextVFX
+  - effectType: 14
+    vfxPoolKey: CritTextVFX
 --- !u!1 &8765942760581142733
 GameObject:
   m_ObjectHideFlags: 0
