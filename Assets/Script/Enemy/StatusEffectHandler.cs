@@ -90,7 +90,33 @@ public class StatusEffectHandler : MonoBehaviour
         }
 
         ApplyEffectValue(effect, true);
-        effect.routine = StartCoroutine(EffectRoutine(effect));
+        effect.routine = StartCoroutine(effect.effectType == StatusEffectType.Poison
+            ? PoisonRoutine(effect)
+            : EffectRoutine(effect));
+    }
+
+    // 독 — 1초마다 value만큼 마법 데미지. 건 사람을 공격자로 넘겨서 처치 판정·데미지 보너스가 그 파티원 기준으로 적용됨.
+    // 다시 걸면 CancelEffect로 기존 독이 지워지고 새 수치·지속시간으로 갱신 (중첩 없음)
+    private IEnumerator PoisonRoutine(StatusEffect effect)
+    {
+        var tick      = new WaitForSeconds(1f);
+        float elapsed = 0f;
+        while (elapsed < effect.duration)
+        {
+            yield return tick;
+            elapsed += 1f;
+            if (enemyHp == null || enemyHp.isDead) break;
+            enemyHp.TakeMagicDamage(effect.value, effect.source);
+        }
+
+        if (!activeEffects.Contains(effect)) yield break;
+
+        activeEffects.Remove(effect);
+        if (IsDebuff(effect.effectType))
+        {
+            DebuffCount = Mathf.Max(0, DebuffCount - 1);
+            OnDebuffRemoved?.Invoke();
+        }
     }
 
     // ─────────────────────────────────────────────────────────────────
@@ -315,6 +341,7 @@ public class StatusEffectHandler : MonoBehaviour
             || type == StatusEffectType.Slow
             || type == StatusEffectType.AtkDown
             || type == StatusEffectType.MoveSpeedDown
-            || type == StatusEffectType.DefDown;
+            || type == StatusEffectType.DefDown
+            || type == StatusEffectType.Poison;
     }
 }

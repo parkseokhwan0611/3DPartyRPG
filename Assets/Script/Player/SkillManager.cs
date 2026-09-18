@@ -313,6 +313,10 @@ public class SkillManager : MonoBehaviour
             // DispelDebuff 효과가 있는 스킬은 파티원에 디버프가 있을 때만 후보에 포함
             if (IsDispelSkill(slot.skillData) && !AnyMemberHasDebuff()) continue;
 
+            // 자기 자신 쿨 초기화 스킬은 초기화할 스킬이 쿨타임 중일 때만 사용 (파티 대상은 다른 파티원 상황을 모르므로 그대로)
+            if (slot.skillData.IsCooldownResetSkill && slot.skillData is BuffSkillData resetData
+                && !resetData.isPartyBuff && !HasResettableCooldown()) continue;
+
             readySlots.Add(slot);
         }
 
@@ -491,6 +495,40 @@ public class SkillManager : MonoBehaviour
     }
 
     public void ResetAttackCount() => attackCount = 0;
+
+    private bool HasResettableCooldown()
+    {
+        foreach (var slot in slots)
+            if (slot != null && slot.skillData != null && !slot.IsReady && !slot.skillData.IsCooldownResetSkill)
+                return true;
+        return false;
+    }
+
+    // 퀵슬롯 스킬 쿨타임 초기화. maxCount가 0 이하면 전부, 아니면 남은 쿨타임이 긴 것부터 maxCount개.
+    // 쿨 초기화 효과가 있는 스킬은 대상에서 뺀다 — 쿨 초기화 스킬끼리 서로 돌려주며 무한히 쓰는 연쇄 방지
+    // 반환값: 실제로 초기화한 스킬 개수
+    public int ResetCooldowns(int maxCount)
+    {
+        var candidates = new List<SkillBase>();
+        foreach (var slot in slots)
+        {
+            if (slot == null || slot.skillData == null || slot.IsReady) continue;
+            if (slot.skillData.IsCooldownResetSkill) continue;
+            candidates.Add(slot);
+        }
+
+        int count = candidates.Count;
+        if (maxCount > 0 && count > maxCount)
+        {
+            candidates.Sort((a, b) => b.CooldownRemaining.CompareTo(a.CooldownRemaining));
+            count = maxCount;
+        }
+
+        for (int i = 0; i < count; i++)
+            candidates[i].SetCooldown(0f);
+
+        return count;
+    }
 
     public float GetBuffRemainingRatio(int index)
     {

@@ -93,11 +93,8 @@ public class DamageSkill : SkillBase
         isCrit = false;
         if (myStat == null) return 0f;
 
-        float baseStat = data.useAp ? myStat.TotalAp : myStat.TotalAtk;
-
-        // (물리/마법 데미지 + 스탯 배율 합산) * 스킬 계수
-        float statBonus = data.GetTotalStatBonus(skillLevel, GetScalingStatValue);
-        float damage    = (baseStat + statBonus) * data.GetDamageMultiplier(skillLevel);
+        // (공격력 + 스탯 배율) × 스킬 계수 × (1 + 물리/마법 데미지 증가) — 예전엔 데미지 증가 %가 평타에만 적용됐었음
+        float damage = data.GetRawDamage(skillLevel, myStat);
 
         damage *= (1f + comboBonus);
 

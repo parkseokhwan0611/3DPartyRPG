@@ -61,11 +61,15 @@ public abstract class RangedAttackBase : AttackBase
             agent.velocity = Vector3.zero;
         }
 
+        // 공격속도 보너스만큼 모션과 발사·후딜 타이밍을 같이 빠르게
+        float speed = AttackAnimSpeed;
+
         if (anim != null)
         {
             anim.ResetTrigger("doNormalAttack");
             yield return null;
             yield return null;
+            ApplyAttackAnimSpeed();
             anim.SetTrigger("doNormalAttack");
         }
         else
@@ -75,7 +79,7 @@ public abstract class RangedAttackBase : AttackBase
         }
         AudioManager.instance?.PlaySFX(NormalAttackSfxKey);
 
-        yield return new WaitForSeconds(damageDelay);
+        yield return new WaitForSeconds(damageDelay / speed);
 
         if (currentTarget == null)
         {
@@ -121,7 +125,7 @@ public abstract class RangedAttackBase : AttackBase
 
         ProjectileScript proj = effect.GetComponent<ProjectileScript>();
         if (proj != null)
-            proj.SetProjectileData(damage, gameObject, OnProjectileHit, isMagic: true, crit: isCrit);
+            proj.SetProjectileData(damage, gameObject, enemy => OnProjectileHit(enemy, isCrit), isMagic: true, crit: isCrit);
 
         Rigidbody rb = effect.GetComponent<Rigidbody>();
         if (rb != null)
@@ -134,22 +138,25 @@ public abstract class RangedAttackBase : AttackBase
 
         // 투사체 발사 후 애니메이션이 자연스럽게 마무리되는 후딜레이 — 이 시간이 끝나야
         // IsAttackAnimPlaying이 풀려서 걷는 모션으로 전환되며 이동을 재개한다
-        yield return new WaitForSeconds(recoveryDuration);
+        yield return new WaitForSeconds(recoveryDuration / speed);
 
         IsAttackAnimPlaying = false;
         _isAttacking = false;
         attackCoroutine = null;
     }
 
-    private void OnProjectileHit(EnemyHp enemyStat)
+    private void OnProjectileHit(EnemyHp enemyStat, bool isCrit)
     {
-        if (enemyStat == null) return;
+        if (enemyStat == null || myStat == null) return;
 
-        if (myStat != null && myStat.HpOnHit > 0f)
+        if (myStat.HpOnHit > 0f)
             myStat.HealHp(myStat.HpOnHit, showAura: false); // 흡혈은 생명 흡수 버프 아우라만 표시
 
-        if (myStat != null && myStat.MpOnHit > 0f)
+        if (myStat.MpOnHit > 0f)
             myStat.RecoverMp(myStat.MpOnHit, showAura: false, showText: false);
+
+        // 발동형 패시브 (공격속도 증가·독·치명타 번개·쿨 초기화)
+        myStat.NotifyBasicAttackHit(enemyStat, isCrit, isMagic: true);
     }
 
     public override void OnHit() { }

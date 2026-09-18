@@ -58,6 +58,35 @@ public abstract class AttackBase : MonoBehaviour
         anim               = GetComponent<Animator>();
         statusHandler      = GetComponent<StatusEffectHandler>();
         partyStatusHandler = GetComponent<PartyStatusEffectHandler>();
+        _ownerStat         = GetComponent<CharacterStat>();
+    }
+
+    // 파티원은 패시브·버프의 공격속도 보너스(0.1 = +10%)를 곱해서 공격 간격을 줄인다. 몬스터는 CharacterStat이 없어 그대로
+    private CharacterStat _ownerStat;
+    public float EffectiveAttackSpeed
+        => Mathf.Max(0.1f, attackSpeed * (1f + (_ownerStat != null ? _ownerStat.AtkSpeedBonus : 0f)));
+
+    // 공격 애니메이션·타격 타이밍 배율 — 인스펙터의 attackSpeed가 아니라 스킬 보너스만 반영
+    // (보너스가 없으면 1이라 기존 모션 속도 그대로)
+    protected float AttackAnimSpeed
+        => Mathf.Max(0.1f, 1f + (_ownerStat != null ? _ownerStat.AtkSpeedBonus : 0f));
+
+    // 애니메이터의 NormalAttack 상태가 Speed Multiplier로 쓰는 float 파라미터
+    private static readonly int AttackSpeedParam = Animator.StringToHash("attackSpeed");
+    private int _attackSpeedParamState = -1; // -1: 미확인, 0: 없음, 1: 있음
+
+    // 공격 트리거 직전에 호출 — 파라미터가 없는 컨트롤러에서 경고 로그가 매번 뜨지 않도록 한 번만 확인
+    protected void ApplyAttackAnimSpeed()
+    {
+        if (anim == null) return;
+        if (_attackSpeedParamState < 0)
+        {
+            _attackSpeedParamState = 0;
+            foreach (var p in anim.parameters)
+                if (p.nameHash == AttackSpeedParam && p.type == AnimatorControllerParameterType.Float) { _attackSpeedParamState = 1; break; }
+        }
+        if (_attackSpeedParamState == 1)
+            anim.SetFloat(AttackSpeedParam, AttackAnimSpeed);
     }
 
     protected virtual void Update()
@@ -150,7 +179,7 @@ public abstract class AttackBase : MonoBehaviour
         if (attackCooldown <= 0)
         {
             ExecuteAttack();
-            attackCooldown = attackDuration / attackSpeed;
+            attackCooldown = attackDuration / EffectiveAttackSpeed;
             OnAttackExecuted?.Invoke();
         }
     }

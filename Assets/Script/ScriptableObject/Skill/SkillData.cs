@@ -43,6 +43,9 @@ public class SkillData : ScriptableObject
     public float[] cooldown;
     public int[] skillPointCost;
 
+    // 쿨타임 초기화 효과를 가진 스킬인지 — 쿨 초기화 스킬끼리는 서로 초기화하지 않는다 (무한 연쇄 방지)
+    public virtual bool IsCooldownResetSkill => false;
+
     public enum SkillType { Damage, Buff, Heal, Debuff, Passive }
     public enum SkillCategory { Main, Sub, Passive }
 }

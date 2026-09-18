@@ -1,4 +1,5 @@
 using System.Text;
+using UnityEngine;
 
 // 스킬 타입별 상세 설명 텍스트 빌더 — SkillDetailPanelUI(메뉴 스킬창)와
 // CombatDetailPopupUI(전투 퀵슬롯 호버 팝업)가 공용으로 사용
@@ -32,7 +33,10 @@ public static class SkillDescriptionBuilder
                 expr.Append($" + {StatName(s.stat)}({statVal:F0})×{coeff * 100f:F0}%");
             }
             expr.Append($") × {mult * 100f:F1}%");
-            sb.Append($"데미지: {expr} = {(baseStat + statBonus) * mult:F0}");
+            float dmgBonus = dmg.useAp ? caster.MagicDmgBonus : caster.PhysDmgBonus;
+            if (dmgBonus != 0f)
+                expr.Append($" × (1 + {(dmg.useAp ? "마법" : "물리")} 데미지 증가 {dmgBonus * 100f:0.#}%)");
+            sb.Append($"데미지: {expr} = {dmg.GetRawDamage(level, caster):F0}");
         }
         else
         {
@@ -70,7 +74,18 @@ public static class SkillDescriptionBuilder
                     case StatusEffectType.AtkDown:       lines.AppendLine($"  공격력 감소 {val * 100f:F0}% {duration}초"); break;
                     case StatusEffectType.MoveSpeedDown: lines.AppendLine($"  이속 감소 {val * 100f:F0}% {duration}초");   break;
                     case StatusEffectType.DefDown:       lines.AppendLine($"  방어력 감소 {val * 100f:F0}% {duration}초"); break;
+                    case StatusEffectType.Poison:        lines.AppendLine($"  독 초당 {val:F0} {duration}초");             break;
                 }
+            }
+        }
+
+        if (dmg.onCastBuffs != null && dmg.onCastBuffs.Count > 0)
+        {
+            lines.AppendLine("[시전 시 자신에게]");
+            foreach (var b in dmg.onCastBuffs)
+            {
+                string line = FormatCastBuffLine(b, level);
+                if (!string.IsNullOrEmpty(line)) lines.AppendLine($"  {line}");
             }
         }
 
@@ -83,21 +98,38 @@ public static class SkillDescriptionBuilder
         return lines.ToString().TrimEnd('\n', '\r');
     }
 
+    // 데미지 스킬의 시전 시 자기 버프 한 줄 (쉴드, 공격속도 등)
+    private static string FormatCastBuffLine(DamageSkillData.CastBuffEffect b, int level)
+    {
+        float val = b.GetValue(level);
+        float dur = b.GetDuration(level);
+        bool  pct = b.valueMode == ModifierMode.Percent;
+        string amount = pct ? $"{val * 100f:0.#}%" : $"{val:F0}";
+
+        return b.effectType switch
+        {
+            StatusEffectType.Shield         => $"쉴드 {val:F0} ({dur}초)",
+            StatusEffectType.AtkUp          => $"물리 공격력 +{amount} ({dur}초)",
+            StatusEffectType.ApUp           => $"마법 공격력 +{amount} ({dur}초)",
+            StatusEffectType.DefUp          => $"방어력 +{amount} ({dur}초)",
+            StatusEffectType.MagicResUp     => $"마법 저항력 +{amount} ({dur}초)",
+            StatusEffectType.MaxHpUp        => $"최대 체력 +{amount} ({dur}초)",
+            StatusEffectType.AtkSpeedUp     => $"공격속도 +{val * 100f:0.#}% ({dur}초)",
+            StatusEffectType.CritRateUp     => $"치명타 확률 +{val * 100f:0.#}% ({dur}초)",
+            StatusEffectType.CritDamageUp   => $"치명타 데미지 +{val * 100f:0.#}% ({dur}초)",
+            StatusEffectType.DmgReductionUp => $"받는 데미지 {val * 100f:0.#}% 감소 ({dur}초)",
+            StatusEffectType.MoveSpeedUp    => $"이동속도 +{val * 100f:0.#}% ({dur}초)",
+            StatusEffectType.Invulnerable   => $"무적 ({dur}초)",
+            StatusEffectType.DebuffImmune   => $"디버프 면역 ({dur}초)",
+            _                               => "",
+        };
+    }
+
     // 전투 퀵슬롯 호버 팝업 전용 — 계산식 없이 최종 데미지 수치만, [단일]/[광역] 태그도 생략
     public static string BuildDamageFinal(DamageSkillData dmg, int level, CharacterStat caster)
     {
         if (caster == null) return "";
-
-        float baseStat  = dmg.useAp ? caster.TotalAp : caster.TotalAtk;
-        float mult      = dmg.GetDamageMultiplier(level);
-        float statBonus = 0f;
-        foreach (var s in dmg.statScalings)
-        {
-            if (s.stat == DamageSkillData.ScalingStat.None) continue;
-            statBonus += GetStatValue(caster, s.stat) * s.GetScaling(level);
-        }
-
-        return $"데미지: {(baseStat + statBonus) * mult:F0}";
+        return $"데미지: {dmg.GetRawDamage(level, caster):F0}";
     }
 
     // ─────────────────────────────────────────────────────────────────
@@ -177,7 +209,7 @@ public static class SkillDescriptionBuilder
         if (buff.buffEffects == null || buff.buffEffects.Count == 0) return "";
 
         string result = buff.isPartyBuff ? "[파티 버프]\n" : "[개인 버프]\n";
-        result += $"지속시간: {buff.GetDuration(level)}초\n";
+        if (HasDurationEffect(buff)) result += $"지속시간: {buff.GetDuration(level)}초\n";
 
         foreach (var effect in buff.buffEffects)
         {
@@ -305,15 +337,22 @@ public static class SkillDescriptionBuilder
             BuffSkillData.BuffEffectType.CritRate      => $"치명타 확률 +{total * 100f:F1}%{note}",
             BuffSkillData.BuffEffectType.CritDamage    => $"치명타 데미지 +{total * 100f:F1}%{note}",
             BuffSkillData.BuffEffectType.MaxHpBonus    => $"최대 체력 +{amount}{note}",
-            BuffSkillData.BuffEffectType.SpeedBonus    => $"이동속도 +{total:F1}{note}",
             BuffSkillData.BuffEffectType.Shield        => $"쉴드 +{total:F0}{note}",
-            BuffSkillData.BuffEffectType.ManaRegen     => $"마나 재생 +{total:F1}/초{note}",
-            BuffSkillData.BuffEffectType.HpRegen       => $"체력 재생 +{total:F1}/초{note}",
             BuffSkillData.BuffEffectType.HpOnHit       => $"공격 적중 시 체력 +{total:F0}{note}",
-            BuffSkillData.BuffEffectType.DebuffImmune  => "디버프 면역",
-            BuffSkillData.BuffEffectType.DispelDebuff  => "디버프 즉시 제거",
-            _                                          => "",
+            _                                          => FormatBuffLineFinal(effect, total) + note,
         };
+    }
+
+    // 버프 효과 중 즉시 발동형(디버프 제거·쿨 초기화)만 있으면 지속시간 줄을 생략
+    private static bool HasDurationEffect(BuffSkillData buff)
+    {
+        foreach (var e in buff.buffEffects)
+        {
+            if (e.effectType != BuffSkillData.BuffEffectType.DispelDebuff &&
+                e.effectType != BuffSkillData.BuffEffectType.CooldownReset)
+                return true;
+        }
+        return false;
     }
 
     // 전투 퀵슬롯 호버 팝업 전용 — 스탯 비례 계산식(괄호 안 내역) 없이 최종 수치만
@@ -322,7 +361,7 @@ public static class SkillDescriptionBuilder
         if (buff.buffEffects == null || buff.buffEffects.Count == 0) return "";
 
         string result = buff.isPartyBuff ? "[파티 버프]\n" : "[개인 버프]\n";
-        result += $"지속시간: {buff.GetDuration(level)}초\n";
+        if (HasDurationEffect(buff)) result += $"지속시간: {buff.GetDuration(level)}초\n";
 
         foreach (var effect in buff.buffEffects)
         {
@@ -352,13 +391,19 @@ public static class SkillDescriptionBuilder
             BuffSkillData.BuffEffectType.CritRate      => $"치명타 확률 +{total * 100f:F1}%",
             BuffSkillData.BuffEffectType.CritDamage    => $"치명타 데미지 +{total * 100f:F1}%",
             BuffSkillData.BuffEffectType.MaxHpBonus    => $"최대 체력 +{amount}",
-            BuffSkillData.BuffEffectType.SpeedBonus    => $"이동속도 +{total:F1}",
+            BuffSkillData.BuffEffectType.SpeedBonus    => $"이동속도 +{total * 100f:0.#}%",
             BuffSkillData.BuffEffectType.Shield        => $"쉴드 +{total:F0}",
-            BuffSkillData.BuffEffectType.ManaRegen     => $"마나 재생 +{total:F1}/초",
-            BuffSkillData.BuffEffectType.HpRegen       => $"체력 재생 +{total:F1}/초",
+            BuffSkillData.BuffEffectType.ManaRegen     => $"마나 재생 +{total:0.#}/초",
+            BuffSkillData.BuffEffectType.HpRegen       => $"체력 재생 +{total:0.#}/초",
             BuffSkillData.BuffEffectType.HpOnHit       => $"공격 적중 시 체력 +{total:F0}",
             BuffSkillData.BuffEffectType.DebuffImmune  => "디버프 면역",
             BuffSkillData.BuffEffectType.DispelDebuff  => "디버프 즉시 제거",
+            BuffSkillData.BuffEffectType.AtkSpeedBonus => $"공격속도 +{total * 100f:0.#}%",
+            BuffSkillData.BuffEffectType.DmgReduction  => $"받는 데미지 {total * 100f:0.#}% 감소",
+            BuffSkillData.BuffEffectType.Invulnerable  => "무적 (데미지·디버프 무시)",
+            BuffSkillData.BuffEffectType.CooldownReset => Mathf.RoundToInt(total) > 0
+                ? $"스킬 {Mathf.RoundToInt(total)}개 쿨타임 즉시 초기화 (남은 쿨타임이 긴 순, 쿨 초기화 스킬 제외)"
+                : "모든 스킬 쿨타임 즉시 초기화 (쿨 초기화 스킬 제외)",
             _                                          => "",
         };
     }
@@ -385,6 +430,7 @@ public static class SkillDescriptionBuilder
                 case StatusEffectType.AtkDown:       result += $"공격력 감소 {value * 100f:F0}% {duration}초\n"; break;
                 case StatusEffectType.MoveSpeedDown: result += $"이속 감소 {value * 100f:F0}% {duration}초\n";  break;
                 case StatusEffectType.DefDown:       result += $"방어력 감소 {value * 100f:F0}% {duration}초\n"; break;
+                case StatusEffectType.Poison:        result += $"독 초당 {value:F0} {duration}초\n";              break;
             }
         }
 
@@ -445,7 +491,9 @@ public static class SkillDescriptionBuilder
             case PassiveSkillData.PassiveEffectType.HealPercent:
                 return $"힐량 {value * 100f:F1}% 증가";
             case PassiveSkillData.PassiveEffectType.FaithToHp:
-                return $"신앙 스탯 비례 체력 증가 (계수: {value:F2})";
+                return $"신앙 1당 최대 체력 +{value:0.##}";
+            case PassiveSkillData.PassiveEffectType.AtkSpeed:
+                return $"공격속도 {value * 100f:0.#}% 증가";
             case PassiveSkillData.PassiveEffectType.MaxMpBonus:
                 return $"최대 마나 +{value:F0}";
             case PassiveSkillData.PassiveEffectType.OnHitManaRestore:
@@ -459,22 +507,35 @@ public static class SkillDescriptionBuilder
                     ? $"받는 마법 데미지 {value * 100f:F1}% 감소"
                     : $"받는 마법 데미지 {value:F0} 감소";
             case PassiveSkillData.PassiveEffectType.OnHitAtkSpeedUp:
-                return $"평타 적중 시 공격속도 {passive.GetProcValue(level) * 100f:F0}% 증가 ({passive.GetProcChance(level)}초)";
+                return $"평타 적중 시 {ChanceText(passive, level)}공격속도 {passive.GetProcValue(level) * 100f:0.#}% 증가 ({passive.GetProcDuration(level):0.#}초)";
             case PassiveSkillData.PassiveEffectType.OnDebuffExtraDamage:
-                return $"디버프 걸린 적에게 추가 데미지 {value * 100f:F1}%";
+                return $"디버프 걸린 적에게 주는 데미지 {value * 100f:0.#}% 증가";
             case PassiveSkillData.PassiveEffectType.OnCritLightning:
-                return $"치명타 시 번개 발동 확률 {passive.GetProcChance(level) * 100f:F1}%";
+                return passive.procSkill != null
+                    ? $"평타 치명타 시 {ChanceText(passive, level)}{passive.procSkill.skillName} 발동"
+                    : $"평타 치명타 시 {ChanceText(passive, level)}번개 (마법 공격력 × {passive.GetProcValue(level) * 100f:0.#}%)";
+            case PassiveSkillData.PassiveEffectType.OnHitPoison:
+                return $"평타 적중 시 {ChanceText(passive, level)}독 — 초당 공격력의 {passive.GetProcValue(level) * 100f:0.#}% 마법 데미지 ({passive.GetProcDuration(level):0.#}초)";
             case PassiveSkillData.PassiveEffectType.OnKillHeal:
-                return $"적 처치 시 체력 {passive.GetProcValue(level)} 회복";
+                return $"적 처치 시 최대 체력의 {passive.GetProcValue(level) * 100f:0.#}% 회복";
             case PassiveSkillData.PassiveEffectType.HealCrit:
-                return "힐에 치명타 적용 (치명타 데미지로 힐량 증가)";
+                return "힐에 치명타 적용 (치명타 확률로 발동, 치명타 데미지만큼 힐량 증가)";
             case PassiveSkillData.PassiveEffectType.OnHealAtkSpeedUp:
-                return $"힐 받은 대상 공격속도 {passive.GetProcValue(level) * 100f:F0}% {passive.GetProcChance(level)}초 증가";
+                return $"힐 받은 대상 공격속도 {passive.GetProcValue(level) * 100f:0.#}% 증가 ({passive.GetProcDuration(level):0.#}초)";
+            case PassiveSkillData.PassiveEffectType.OnHitCooldownReset:
+                return $"평타 적중 시 {ChanceText(passive, level)}퀵슬롯 스킬 쿨타임 초기화 (쿨 초기화 스킬 제외)";
             case PassiveSkillData.PassiveEffectType.Revive:
                 return "사망 시 1회 부활 (쿨타임 10분)";
             default:
                 return "";
         }
+    }
+
+    // 발동 확률 100% 이상이면 생략, 아니면 "20% 확률로 "
+    private static string ChanceText(PassiveSkillData passive, int level)
+    {
+        float chance = passive.GetProcChance(level);
+        return chance >= 1f ? "" : $"{chance * 100f:0.#}% 확률로 ";
     }
 
     // ─────────────────────────────────────────────────────────────────

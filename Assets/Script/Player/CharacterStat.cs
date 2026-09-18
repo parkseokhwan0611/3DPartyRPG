@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using System; // Action을 사용하기 위해 필요
 
-public class CharacterStat : MonoBehaviour, IDamageable
+// 발동형 패시브 처리는 CharacterStatTriggers.cs (partial)에 분리
+public partial class CharacterStat : MonoBehaviour, IDamageable
 {
     [Header("# Refences")]
     public GameObject playerDamageText;
@@ -54,6 +55,7 @@ public class CharacterStat : MonoBehaviour, IDamageable
     public float PhysDmgBonus  => myStatus != null ? myStatus.TotalPhysDmgBonus  : 0f;
     public float MagicDmgBonus => myStatus != null ? myStatus.TotalMagicDmgBonus : 0f;
     public float HealBonus     => myStatus != null ? myStatus.healBonus           : 0f;
+    public float AtkSpeedBonus => myStatus != null ? myStatus.atkSpeedBonus : 0f; // 0.1 = +10%
     public float TotalMoveSpeed      => myStatus != null ? myStatus.TotalMoveSpeed          : 3f;
     public float MoveSpeedMultiplier => myStatus != null ? myStatus.moveSpeedMultiplier     : 1f;
     // 스킬 쿨타임·마나 소모 감소
@@ -172,6 +174,7 @@ public class CharacterStat : MonoBehaviour, IDamageable
     public void TakeDamage(float damage, GameObject attacker, bool isCrit = false)
     {
         if (myStatus == null) return;
+        if (IsInvulnerable) { ReflectThorns(attacker); return; } // 무적: 데미지 없음 (맞은 것으로 보고 반사는 함)
 
         float reduction   = TotalDef / (TotalDef + 100f);
         float finalDamage = damage * (1f - reduction);
@@ -184,6 +187,7 @@ public class CharacterStat : MonoBehaviour, IDamageable
     public void TakeMagicDamage(float damage, GameObject attacker, bool isCrit = false)
     {
         if (myStatus == null) return;
+        if (IsInvulnerable) { ReflectThorns(attacker); return; }
 
         float reduction   = TotalMagicRes / (TotalMagicRes + 100f);
         float finalDamage = damage * (1f - reduction);
@@ -191,6 +195,8 @@ public class CharacterStat : MonoBehaviour, IDamageable
         ApplyDamage(finalDamage, magicDamageColor, isCrit);
         ReflectThorns(attacker);
     }
+
+    private bool IsInvulnerable => shieldHandler != null && shieldHandler.IsInvulnerable;
 
     // 가시 반사 버프가 있으면 공격자에게 데미지 — 이번 공격으로 쓰러졌으면(부활 패시브로 살아난 경우 제외) 반사하지 않음
     private void ReflectThorns(GameObject attacker)

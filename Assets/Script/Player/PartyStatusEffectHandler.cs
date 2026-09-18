@@ -21,7 +21,11 @@ public class PartyStatusEffectHandler : MonoBehaviour
     // 디버프 면역 여부 — 참조 카운트 방식 (겹쳐 걸린 면역 버프 중 하나가 먼저 만료돼도
     // 다른 면역 버프가 남아있으면 계속 면역 유지)
     private int debuffImmuneCount = 0;
-    public bool IsDebuffImmune => debuffImmuneCount > 0;
+    public bool IsDebuffImmune => debuffImmuneCount > 0 || IsInvulnerable;
+
+    // 무적 — 디버프 면역과 같은 참조 카운트 방식. 데미지 차단은 CharacterStat이 이 값을 보고 처리
+    private int invulnerableCount = 0;
+    public bool IsInvulnerable => invulnerableCount > 0;
 
     // 버프 이벤트 (UI 갱신용)
     public System.Action OnShieldChanged;
@@ -162,6 +166,13 @@ public class PartyStatusEffectHandler : MonoBehaviour
         {
             ApplyShield(effect.value, effect.duration, effect.source);
             return;
+        }
+
+        // 갱신형(refreshKey 지정) — 같은 키로 걸린 기존 효과를 지우고 새로 건다 (누적 방지)
+        if (effect.refreshKey != null)
+        {
+            var old = activeBuffs.Find(e => e.refreshKey == effect.refreshKey);
+            if (old != null) RemoveBuffInstance(old);
         }
 
         // 같은 타입이라도 교체하지 않고 독립적으로 누적 — 각자 자기 지속시간에 따라 개별 종료
@@ -332,6 +343,16 @@ public class PartyStatusEffectHandler : MonoBehaviour
         _shield.Clear();
     }
 
+    // 포탈 등으로 씬이 바뀌면 이 컴포넌트는 파괴되지만 CharacterStatus(DataManager 소유)는 남는다.
+    // 만료 코루틴도 같이 죽으므로, 여기서 되돌리지 않으면 버프 수치가 다음 씬에 영구히 남는다.
+    // 파괴 중이라 UI 이벤트는 보내지 않고 수치만 조용히 복구
+    void OnDestroy()
+    {
+        foreach (var effect in activeBuffs)
+            ApplyBuffValue(effect, false, silent: true);
+        activeBuffs.Clear();
+    }
+
     // ─────────────────────────────────────────────────────────────────
     // 코루틴
     // ─────────────────────────────────────────────────────────────────
@@ -347,7 +368,8 @@ public class PartyStatusEffectHandler : MonoBehaviour
     // 버프 수치 적용/해제
     // ─────────────────────────────────────────────────────────────────
 
-    private void ApplyBuffValue(StatusEffect effect, bool apply)
+    // silent: 체력 변경 알림을 보내지 않음 (파괴 중 복구용)
+    private void ApplyBuffValue(StatusEffect effect, bool apply, bool silent = false)
     {
         if (myStat == null) return;
 
@@ -365,18 +387,36 @@ public class PartyStatusEffectHandler : MonoBehaviour
             status.AddSkillModifier(modifierStat, effect.mode, effect.value * multiplier);
 
             if (modifierStat == ModifierStat.MaxHp)
-                AdjustCurrentHpAfterMaxHpChange(status, oldMaxHp);
+                AdjustCurrentHpAfterMaxHpChange(status, oldMaxHp, silent);
             return;
         }
 
         switch (effect.effectType)
         {
+            // 공격속도는 AttackBase의 원본 수치가 아니라 CharacterStatus의 합산 보너스로 관리 —
+            // 패시브·버프·발동 효과가 같은 곳에 더해져서 해제 순서와 무관하게 정확히 복구된다
             case StatusEffectType.AtkSpeedUp:
-                if (attackBase != null)
-                    attackBase.attackSpeed += effect.value * multiplier;
+                status.atkSpeedBonus += effect.value * multiplier;
                 break;
             case StatusEffectType.DebuffImmune:
                 debuffImmuneCount = Mathf.Max(0, debuffImmuneCount + (apply ? 1 : -1));
+                break;
+            case StatusEffectType.Invulnerable:
+                invulnerableCount = Mathf.Max(0, invulnerableCount + (apply ? 1 : -1));
+                break;
+
+            case StatusEffectType.HpRegen:
+                status.buffHpRegen += effect.value * multiplier;
+                break;
+            case StatusEffectType.ManaRegen:
+                status.buffMpRegen += effect.value * multiplier;
+                break;
+            case StatusEffectType.DmgReductionUp:
+                status.buffDmgReductionPct += effect.value * multiplier;
+                break;
+            case StatusEffectType.MoveSpeedUp:
+                if (apply) status.moveSpeedMultiplier *= (1f + Mathf.Max(0f, effect.value));
+                else       status.moveSpeedMultiplier /= (1f + Mathf.Max(0f, effect.value));
                 break;
 
             // 이동속도 감소 (value = 0.3 → 30% 감속)
@@ -434,7 +474,7 @@ public class PartyStatusEffectHandler : MonoBehaviour
 
     // 최대 체력이 오르면 현재 체력도 같은 양만큼 채워주고, 내려가면 넘치는 부분만 잘라낸다
     // (버프가 끝날 때 현재 체력을 깎지 않아서 만료만으로 사망하는 일이 없게)
-    private void AdjustCurrentHpAfterMaxHpChange(CharacterStatus status, float oldMaxHp)
+    private void AdjustCurrentHpAfterMaxHpChange(CharacterStatus status, float oldMaxHp, bool silent = false)
     {
         float delta = status.MaxHp - oldMaxHp;
         if (delta > 0f && status.currentHp > 0f)
@@ -442,7 +482,7 @@ public class PartyStatusEffectHandler : MonoBehaviour
         status.currentHp = Mathf.Min(status.currentHp, status.MaxHp);
 
         // 사망 처리 중(ClearAllOnDeath)에 버프가 해제되는 경우 Die가 다시 호출되지 않도록 살아있을 때만 통지
-        if (status.currentHp > 0f)
+        if (!silent && status.currentHp > 0f)
             myStat.RaiseHpChanged();
     }
 
@@ -452,6 +492,7 @@ public class PartyStatusEffectHandler : MonoBehaviour
             || type == StatusEffectType.Slow
             || type == StatusEffectType.AtkDown
             || type == StatusEffectType.MoveSpeedDown
-            || type == StatusEffectType.DefDown;
+            || type == StatusEffectType.DefDown
+            || type == StatusEffectType.Poison;
     }
 }

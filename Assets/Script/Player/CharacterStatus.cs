@@ -72,16 +72,24 @@ public string charName;
     public float BaseMaxHp => classData.hp
                             + ((classData.baseVit + addedVit + equipVit) * classData.hpPerVit)
                             + equipMaxHp;
-    public float MaxHp => ApplySkillModifiers(ModifierStat.MaxHp, BaseMaxHp);
+    // 신앙 비례 체력(FaithToHp 패시브)은 스킬 증가분처럼 기본 수치 뒤에 더한다 — 퍼센트 버프에 곱해지지 않음
+    public float MaxHp => ApplySkillModifiers(ModifierStat.MaxHp, BaseMaxHp)
+                        + (classData.baseFht + addedFht + equipFht) * faithToHpCoeff;
     // 최대 마나는 퍼센트 증가 없이 고정 증가(addedMp)만 지원
     public float MaxMp => classData.mp + addedMp;
 
     public float TotalHpRegen => classData.baseHpRegen
                                + (classData.baseVit + addedVit + equipVit) * classData.hpRegenPerVit
-                               + addedHpRegen;
+                               + addedHpRegen + buffHpRegen;
     public float TotalMpRegen => classData.baseMpRegen
                                + (classData.baseFht + addedFht + equipFht) * classData.mpRegenPerFth
-                               + addedMpRegen;
+                               + addedMpRegen + buffMpRegen;
+
+    // ── 버프·패시브로 붙는 수치 — 세이브 대상 아님 ──
+    public float buffHpRegen    = 0f;  // 체력 재생 버프 (초당)
+    public float buffMpRegen    = 0f;  // 마나 재생 버프 (초당)
+    public float atkSpeedBonus  = 0f;  // 공격속도 증가 (0.1 = +10%, 패시브·버프·발동 효과 합산)
+    public float faithToHpCoeff = 0f;  // 신앙 1당 최대 체력
     // 공격력/방어력 감소 디버프 배율 (스킬로 조정, 1.0 = 기본) — Slow의 moveSpeedMultiplier와 동일한 패턴
     public float atkDebuffMultiplier = 1f;
     public float defDebuffMultiplier = 1f;
@@ -134,6 +142,8 @@ public string charName;
     public float magicDmgReductionPct = 0f;
     public float physDmgReductionFlat  = 0f;
     public float magicDmgReductionFlat = 0f;
+    // 받는 데미지 감소 버프 — 물리·마법 공통, 패시브 퍼센트와 합산
+    public float buffDmgReductionPct   = 0f;
 
     // 방어력/마법 저항력 경감이 끝난 데미지에 받는 데미지 감소를 적용
     // 퍼센트 합이 100%를 넘어도 음수가 되지 않게 막고, 고정 감소로는 원래 데미지가 있던 공격을
@@ -142,7 +152,7 @@ public string charName;
     {
         if (damage <= 0f) return damage;
 
-        float pct  = isMagic ? magicDmgReductionPct  : physDmgReductionPct;
+        float pct  = (isMagic ? magicDmgReductionPct : physDmgReductionPct) + buffDmgReductionPct;
         float flat = isMagic ? magicDmgReductionFlat : physDmgReductionFlat;
 
         float reduced = damage * (1f - Mathf.Clamp01(pct)) - flat;
@@ -285,20 +295,18 @@ public string charName;
                 else                              magicDmgReductionFlat += delta;
                 break;
 
-            // 트리거 패시브 — 수치 없이 등록만
-            case PassiveSkillData.PassiveEffectType.OnCritLightning:
-            case PassiveSkillData.PassiveEffectType.OnHitPoison:
-            case PassiveSkillData.PassiveEffectType.OnKillHeal:
-                RegisterTriggerPassive(passive, newLevel);
+            case PassiveSkillData.PassiveEffectType.AtkSpeed:
+                atkSpeedBonus += delta;
+                break;
+            case PassiveSkillData.PassiveEffectType.FaithToHp:
+                faithToHpCoeff += delta;
+                break;
+
+            // 발동형 패시브 — 등록만 해두고 실제 발동은 CharacterStat(PassiveTriggers)이 공격·힐·처치 시점에 확인
+            default:
+                if (PassiveSkillData.IsTriggerEffect(type))
+                    activeTriggerPassives[passive] = newLevel; // 레벨업 시 레벨도 갱신
                 break;
         }
-    }
-
-    // 트리거 패시브 등록 (공격 스크립트에서 체크할 수 있도록)
-    private void RegisterTriggerPassive(PassiveSkillData passive, int level)
-    {
-        // 활성화된 트리거 패시브 목록에 추가
-        if (!activeTriggerPassives.ContainsKey(passive))
-            activeTriggerPassives[passive] = level;
     }
 }

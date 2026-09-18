@@ -164,8 +164,18 @@ public class BuffSkill : SkillBase
                 continue;
             }
 
+            // 쿨타임 초기화는 즉시 발동 — 수치 = 초기화할 스킬 개수 (0 이하면 전부). 파티 버프면 각 파티원 자신의 스킬을 초기화.
+            // 쿨 초기화 스킬(이 스킬 포함)은 SkillManager.ResetCooldowns에서 대상에서 빠짐
+            if (effect.effectType == BuffSkillData.BuffEffectType.CooldownReset)
+            {
+                var targetSkills = targetHandler.GetComponent<SkillManager>();
+                if (targetSkills != null)
+                    targetSkills.ResetCooldowns(Mathf.RoundToInt(effect.GetValue(level) + GetScalingValue(effect, level, caster)));
+                continue;
+            }
+
             StatusEffectType? mapped = MapToStatusEffectType(effect.effectType);
-            if (mapped == null) continue; // SpeedBonus/ManaRegen/HpRegen/DebuffImmune: 미구현 (기존과 동일)
+            if (mapped == null) continue;
 
             float flat    = effect.GetValue(level);
             float scaling = GetScalingValue(effect, level, caster);
@@ -189,6 +199,13 @@ public class BuffSkill : SkillBase
             case BuffSkillData.BuffEffectType.CritDamage:    return StatusEffectType.CritDamageUp;
             case BuffSkillData.BuffEffectType.MaxHpBonus:    return StatusEffectType.MaxHpUp;
             case BuffSkillData.BuffEffectType.HpOnHit:       return StatusEffectType.HpOnHitUp;
+            case BuffSkillData.BuffEffectType.SpeedBonus:    return StatusEffectType.MoveSpeedUp;
+            case BuffSkillData.BuffEffectType.ManaRegen:     return StatusEffectType.ManaRegen;
+            case BuffSkillData.BuffEffectType.HpRegen:       return StatusEffectType.HpRegen;
+            case BuffSkillData.BuffEffectType.DebuffImmune:  return StatusEffectType.DebuffImmune;
+            case BuffSkillData.BuffEffectType.AtkSpeedBonus: return StatusEffectType.AtkSpeedUp;
+            case BuffSkillData.BuffEffectType.DmgReduction:  return StatusEffectType.DmgReductionUp;
+            case BuffSkillData.BuffEffectType.Invulnerable:  return StatusEffectType.Invulnerable;
             default:                                         return null;
         }
     }

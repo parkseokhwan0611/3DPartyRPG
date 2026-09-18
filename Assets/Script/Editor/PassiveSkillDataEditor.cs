@@ -74,6 +74,28 @@ public class PassiveSkillDataEditor : Editor
                 return "방어력/마법 저항력 경감 뒤에 적용됩니다.\n" +
                        "Percent: 0.1 = 받는 데미지 10% 감소 (여러 개면 합산)\n" +
                        "Flat: 10 = 한 대마다 10 감소 (최소 1은 들어감)";
+            case PassiveSkillData.PassiveEffectType.AtkSpeed:
+                return "기본 수치 칸: 0.1 = 공격속도 +10%";
+            case PassiveSkillData.PassiveEffectType.FaithToHp:
+                return "기본 수치 칸: 신앙 1당 최대 체력 (2 = 신앙 30이면 +60)";
+            case PassiveSkillData.PassiveEffectType.OnDebuffExtraDamage:
+                return "기본 수치 칸: 0.1 = 디버프가 1개 이상 걸린 적에게 데미지 +10% (확률 없음)";
+
+            // 발동형 — 특수 효과 설정 칸 사용
+            case PassiveSkillData.PassiveEffectType.OnHitAtkSpeedUp:
+                return "평타 적중 시 발동.\nProc Chance: 1 = 100%\nProc Value: 0.2 = 공격속도 +20%\nProc Duration: 지속시간(초). 다시 발동하면 누적 없이 갱신";
+            case PassiveSkillData.PassiveEffectType.OnHitPoison:
+                return "평타 적중 시 발동.\nProc Chance: 1 = 100%\nProc Value: 0.1 = 초당 (근접: 물리 공격력 / 원거리: 마법 공격력)의 10% 마법 데미지\nProc Duration: 독 지속시간(초)";
+            case PassiveSkillData.PassiveEffectType.OnCritLightning:
+                return "평타가 치명타일 때 발동.\nProc Chance: 1 = 100%\nProc Skill: 이 데미지 스킬의 공식으로 데미지 (비우면 마법 공격력 × Proc Value)\nProc Effect Pool Key: 대상 위치 이펙트";
+            case PassiveSkillData.PassiveEffectType.OnHitCooldownReset:
+                return "평타 적중 시 발동.\nProc Chance: 0.05 = 5%\n퀵슬롯 스킬 쿨타임을 전부 초기화 (쿨 초기화 효과가 있는 스킬은 제외)";
+            case PassiveSkillData.PassiveEffectType.OnKillHeal:
+                return "적 처치 시 항상 발동.\nProc Value: 0.05 = 최대 체력의 5% 회복";
+            case PassiveSkillData.PassiveEffectType.HealCrit:
+                return "수치 칸 없음. 힐할 때 시전자의 치명타 확률로 굴려서 치명타 데미지 배율만큼 힐량 증가";
+            case PassiveSkillData.PassiveEffectType.OnHealAtkSpeedUp:
+                return "힐 스킬로 힐할 때 항상 발동.\nProc Value: 0.2 = 대상 공격속도 +20%\nProc Duration: 지속시간(초)";
             default:
                 return null;
         }

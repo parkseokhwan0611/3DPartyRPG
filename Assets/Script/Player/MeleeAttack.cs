@@ -35,13 +35,16 @@ public class MeleeAttack : AttackBase
         yield return null;
         yield return null;
 
+        // 공격속도 보너스만큼 모션과 타격·후딜 타이밍을 같이 빠르게
+        float speed = AttackAnimSpeed;
+        ApplyAttackAnimSpeed();
         anim.SetTrigger("doNormalAttack");
         AudioManager.instance?.PlaySFX("Tanker_NormalAtk");
 
-        yield return new WaitForSeconds(damageDelay);
+        yield return new WaitForSeconds(damageDelay / speed);
         OnHit();
 
-        yield return new WaitForSeconds(recoveryDuration);
+        yield return new WaitForSeconds(recoveryDuration / speed);
 
         IsAttackAnimPlaying = false;
         _isAttacking = false;
@@ -80,14 +83,20 @@ public class MeleeAttack : AttackBase
         }
 
         // 3. 데미지 판정
+        EnemyHp primary = null; // 발동형 패시브를 적용할 대표 대상 — 지금 노리던 적이 맞았으면 그 적, 아니면 처음 맞은 적
         for (int i = 0; i < hitCount; i++)
         {
             // 최적화: 한 번만 가져와서 사용
             var enemyStat = _hitBuffer[i].GetComponent<EnemyHp>();
+            if (enemyStat == null) continue;
 
-            if (enemyStat != null)
-                enemyStat.TakeDamage(damage, gameObject, isCrit); // 근접 = 물리 피해
+            enemyStat.TakeDamage(damage, gameObject, isCrit); // 근접 = 물리 피해
+            if (primary == null || enemyStat == targetHealth) primary = enemyStat;
         }
+
+        // 4. 발동형 패시브 (공격속도 증가·독·치명타 번개·쿨 초기화) — 한 번 휘두를 때 한 번만
+        if (primary != null)
+            myStat.NotifyBasicAttackHit(primary, isCrit, isMagic: false);
     }
     private void SpawnHitEffect(Vector3 pos)
     {

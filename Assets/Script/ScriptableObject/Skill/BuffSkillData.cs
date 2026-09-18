@@ -49,6 +49,11 @@ public class BuffSkillData : SkillData
     [System.Serializable]
     public class BuffEffect
     {
+        [Tooltip("수치 단위\n" +
+                 "SpeedBonus(이동속도)·AtkSpeedBonus·DmgReduction·CritRate·CritDamage: 0.2 = 20%\n" +
+                 "ManaRegen·HpRegen: 5 = 초당 +5 / HpOnHit: 10 = 적중 시 +10 / Shield: 쉴드량\n" +
+                 "Invulnerable: 수치 안 씀 (지속시간 동안 데미지·디버프 무시)\n" +
+                 "CooldownReset: 초기화할 스킬 개수, 0 = 전부 (즉시 발동, 쿨 초기화 스킬은 제외)")]
         public BuffEffectType effectType;
 
         [Tooltip("AtkBonus/ApBonus/DefBonus/MagicResBonus/MaxHpBonus에서만 사용.\n" +
@@ -104,6 +109,22 @@ public class BuffSkillData : SkillData
         DebuffImmune,
         DispelDebuff,   // 즉시 디버프 전체 제거
         Thorns,         // 가시 반사 — 지속시간 동안 피격 시 공격자에게 데미지 (시전자 자신에게만 적용)
+        AtkSpeedBonus,  // 공격속도 증가 (0.2 = +20%)
+        DmgReduction,   // 받는 데미지 감소 — 물리·마법 공통 (0.2 = 20%)
+        Invulnerable,   // 무적 — 지속시간 동안 데미지·디버프 무시 (수치 칸은 쓰지 않음)
+        CooldownReset,  // 즉시 스킬 쿨타임 초기화 — 수치 = 초기화할 스킬 개수 (0 이하면 전부)
+    }
+
+
+    // 쿨 초기화 효과가 있는 버프 스킬은 다른 쿨 초기화(스킬·패시브)의 대상에서 빠진다
+    public override bool IsCooldownResetSkill
+    {
+        get
+        {
+            foreach (var effect in buffEffects)
+                if (effect != null && effect.effectType == BuffEffectType.CooldownReset) return true;
+            return false;
+        }
     }
 
     // ─────────────────────────────────────────────────────────────────

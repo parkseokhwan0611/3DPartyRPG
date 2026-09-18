@@ -86,6 +86,13 @@ public class HealSkill : SkillBase
 
     private void ApplyHeal(CharacterStat stat, float amount, HealSkillData data)
     {
+        // 힐 치명타 패시브 — 대상마다 따로 굴림 (지속 힐은 시전 시점에 한 번 굴려서 모든 틱에 적용)
+        if (myStat != null)
+        {
+            amount = myStat.RollHealCrit(amount);
+            myStat.NotifyHealed(stat); // 힐 받은 대상 공격속도 증가 패시브
+        }
+
         if (data.isDotHeal)
         {
             // PartyManager에서 코루틴 실행: 시전자(힐러)가 죽어 SetActive(false)되어도 HoT가 유지되도록

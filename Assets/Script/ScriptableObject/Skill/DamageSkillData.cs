@@ -107,4 +107,28 @@ public class DamageSkillData : SkillData
         }
         return total;
     }
+
+    // 치명타·연계 보너스 적용 전 데미지 = (공격력 + 스탯 배율) × 스킬 계수 × (1 + 물리/마법 데미지 증가)
+    // DamageSkill 시전과 치명타 번개 패시브(procSkill)가 같은 공식을 쓰도록 여기로 모음
+    public float GetRawDamage(int level, CharacterStat caster)
+    {
+        if (caster == null) return 0f;
+        float baseStat  = useAp ? caster.TotalAp : caster.TotalAtk;
+        float statBonus = GetTotalStatBonus(level, s => GetCasterStat(caster, s));
+        float dmgBonus  = useAp ? caster.MagicDmgBonus : caster.PhysDmgBonus;
+        return (baseStat + statBonus) * GetDamageMultiplier(level) * (1f + dmgBonus);
+    }
+
+    public static float GetCasterStat(CharacterStat caster, ScalingStat stat)
+    {
+        if (caster == null) return 0f;
+        return stat switch
+        {
+            ScalingStat.Str => caster.TotalStr,
+            ScalingStat.Vit => caster.TotalVit,
+            ScalingStat.Int => caster.TotalInt,
+            ScalingStat.Fth => caster.TotalFth,
+            _               => 0f,
+        };
+    }
 }
