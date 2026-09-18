@@ -26,6 +26,7 @@ public enum StatusEffectType
     CritDamageUp,
     MaxHpUp,
     HpOnHitUp,
+    Thorns,         // 가시 반사 — 수치 없이 시작/종료 알림용 (PartyBuffVfx 등에서 연출 매핑 가능)
 }
 
 // 버프/패시브 능력치 증가 방식

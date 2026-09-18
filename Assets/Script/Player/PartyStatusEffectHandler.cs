@@ -39,6 +39,14 @@ public class PartyStatusEffectHandler : MonoBehaviour
     // 스턴 걸리기 직전 공격 중이던 대상 — 스턴이 풀리면 자동으로 재개한다
     private Transform _preStunTarget;
 
+    // 가시 반사 — 한 번에 하나만 유지하고, 지속 중에 다시 걸면 레벨·지속시간을 새로 갱신한다.
+    // 반사 데미지는 피격 시점의 내 능력치로 매번 새로 계산 (버프로 방어력이 오르면 반사도 같이 오름)
+    private BuffSkillData            _thornsData;
+    private BuffSkillData.BuffEffect _thornsEffect;
+    private int                      _thornsLevel;
+    private float                    _thornsTimer;
+    public bool HasThorns => _thornsData != null && _thornsTimer > 0f;
+
     void Awake()
     {
         myStat       = GetComponent<CharacterStat>();
@@ -54,14 +62,84 @@ public class PartyStatusEffectHandler : MonoBehaviour
 
     void Update()
     {
-        if (!isStunned) return;
-
-        stunTimer -= Time.deltaTime;
-        if (stunTimer <= 0f)
+        if (isStunned)
         {
-            isStunned = false;
-            EndStun();
+            stunTimer -= Time.deltaTime;
+            if (stunTimer <= 0f)
+            {
+                isStunned = false;
+                EndStun();
+            }
         }
+
+        if (_thornsData != null)
+        {
+            _thornsTimer -= Time.deltaTime;
+            if (_thornsTimer <= 0f) EndThorns();
+        }
+    }
+
+    // ─────────────────────────────────────────────────────────────────
+    // 가시 반사
+    // ─────────────────────────────────────────────────────────────────
+
+    public void ApplyThorns(BuffSkillData data, BuffSkillData.BuffEffect effect, int level, float duration)
+    {
+        if (data == null || effect == null || duration <= 0f) return;
+
+        bool wasActive = HasThorns;
+        _thornsData   = data;
+        _thornsEffect = effect;
+        _thornsLevel  = level;
+        _thornsTimer  = duration;
+
+        if (!wasActive) OnBuffChanged?.Invoke(StatusEffectType.Thorns, true);
+    }
+
+    private void EndThorns()
+    {
+        if (_thornsData == null) return;
+
+        _thornsData   = null;
+        _thornsEffect = null;
+        _thornsTimer  = 0f;
+        OnBuffChanged?.Invoke(StatusEffectType.Thorns, false);
+    }
+
+    // CharacterStat이 피격 처리 직후 호출 — 쉴드로 전부 막은 공격이어도 맞은 것으로 보고 반사한다.
+    // 몬스터의 근접·투사체·수류탄·광역 스킬 모두 attacker로 몬스터 자신을 넘겨주므로 공격 종류와 무관하게 동작
+    public void TryReflectThorns(GameObject attacker)
+    {
+        if (!HasThorns || attacker == null || myStat == null) return;
+
+        EnemyHp enemyHp = attacker.GetComponentInParent<EnemyHp>();
+        if (enemyHp == null || enemyHp.isDead) return;
+
+        float damage = _thornsData.GetThornsDamage(_thornsEffect, _thornsLevel, myStat);
+        if (damage <= 0f) return;
+
+        bool isCrit = Random.value < myStat.TotalCritRate;
+        if (isCrit) damage *= myStat.TotalCritDamage;
+
+        if (_thornsData.thornsIsMagic) enemyHp.TakeMagicDamage(damage, gameObject, isCrit);
+        else                           enemyHp.TakeDamage(damage, gameObject, isCrit);
+
+        if (_thornsData.thornsAggroPerHit > 0f)
+        {
+            BasicMonsterScript monster = enemyHp.GetComponent<BasicMonsterScript>();
+            if (monster != null) monster.AddAggro(transform, _thornsData.thornsAggroPerHit);
+        }
+
+        SpawnThornsHitEffect(enemyHp.transform);
+    }
+
+    private void SpawnThornsHitEffect(Transform target)
+    {
+        if (string.IsNullOrEmpty(_thornsData.thornsHitEffectPoolKey)) return;
+        if (ObjectPoolManager.instance == null) return;
+
+        GameObject fx = ObjectPoolManager.instance.GetGo(_thornsData.thornsHitEffectPoolKey);
+        if (fx != null) fx.transform.position = target.position;
     }
 
     // ─────────────────────────────────────────────────────────────────
@@ -245,6 +323,9 @@ public class PartyStatusEffectHandler : MonoBehaviour
         var buffs = new List<StatusEffect>(activeBuffs);
         foreach (var effect in buffs)
             RemoveBuffInstance(effect);
+
+        // 가시 반사도 사망 시 해제 (부활 후 남은 시간이 이어지지 않게)
+        EndThorns();
 
         // 코루틴 자체는 GameObject 비활성화로 이미 죽지만, 핸들만 정리 (재활성화 후 스킬로 새로
         // 건 쉴드를 옛 핸들의 StopCoroutine이 건드리지 않도록)

@@ -181,6 +181,12 @@ public static class SkillDescriptionBuilder
 
         foreach (var effect in buff.buffEffects)
         {
+            if (effect.effectType == BuffSkillData.BuffEffectType.Thorns)
+            {
+                result += FormatThornsLine(buff, effect, level, caster, detailed: true) + "\n";
+                continue;
+            }
+
             float flat          = effect.GetValue(level);
             float scalingAmount = GetScalingAmount(effect, level, caster);
             float total         = flat + scalingAmount;
@@ -236,6 +242,51 @@ public static class SkillDescriptionBuilder
             : $" + {statName}×{coeff * 100f:F0}%";
     }
 
+    // 가시 반사 한 줄
+    // detailed(스킬 창): "피격 시 공격자에게 마법 데미지 230 반사 (기본 50 + 방어력(120)×150%) · 치명타 적용"
+    // 간략(전투 팝업):   "피격 시 공격자에게 마법 데미지 230 반사"
+    private static string FormatThornsLine(BuffSkillData buff, BuffSkillData.BuffEffect effect, int level,
+                                           CharacterStat caster, bool detailed)
+    {
+        string dmgType = buff.thornsIsMagic ? "마법 데미지" : "물리 데미지";
+        float  baseDmg = effect.GetValue(level);
+
+        if (!detailed)
+        {
+            return caster != null
+                ? $"피격 시 공격자에게 {dmgType} {buff.GetThornsDamage(effect, level, caster):F0} 반사"
+                : $"피격 시 공격자에게 {dmgType} 반사";
+        }
+
+        var expr = new StringBuilder($"기본 {baseDmg:F0}");
+        foreach (var s in buff.thornsScalings)
+        {
+            if (s == null || s.GetCoeff(level) == 0f) continue;
+            string name = ThornsStatName(s.stat);
+            expr.Append(caster != null
+                ? $" + {name}({BuffSkillData.GetThornsStatValue(s.stat, caster):F0})×{s.GetCoeff(level) * 100f:0.#}%"
+                : $" + {name}×{s.GetCoeff(level) * 100f:0.#}%");
+        }
+
+        return caster != null
+            ? $"피격 시 공격자에게 {dmgType} {buff.GetThornsDamage(effect, level, caster):F0} 반사 ({expr}) · 치명타 적용"
+            : $"피격 시 공격자에게 {dmgType} 반사 ({expr}) · 치명타 적용";
+    }
+
+    private static string ThornsStatName(BuffSkillData.ThornsStat stat) => stat switch
+    {
+        BuffSkillData.ThornsStat.Def      => "방어력",
+        BuffSkillData.ThornsStat.MagicRes => "마법 저항력",
+        BuffSkillData.ThornsStat.MaxHp    => "최대 체력",
+        BuffSkillData.ThornsStat.Atk      => "물리 공격력",
+        BuffSkillData.ThornsStat.Ap       => "마법 공격력",
+        BuffSkillData.ThornsStat.Str      => "힘",
+        BuffSkillData.ThornsStat.Vit      => "체력",
+        BuffSkillData.ThornsStat.Int      => "지능",
+        BuffSkillData.ThornsStat.Fth      => "신앙",
+        _                                 => "",
+    };
+
     // 능력치 증가 수치 표기 — 퍼센트 버프면 "12.5%", 고정이면 "20"
     private static string FormatStatAmount(BuffSkillData.BuffEffect effect, float total)
         => effect.IsPercent ? $"{total * 100f:0.#}%" : $"{total:F0}";
@@ -275,6 +326,12 @@ public static class SkillDescriptionBuilder
 
         foreach (var effect in buff.buffEffects)
         {
+            if (effect.effectType == BuffSkillData.BuffEffectType.Thorns)
+            {
+                result += FormatThornsLine(buff, effect, level, caster, detailed: false) + "\n";
+                continue;
+            }
+
             float total = effect.GetValue(level) + GetScalingAmount(effect, level, caster);
             result += FormatBuffLineFinal(effect, total) + "\n";
         }
@@ -393,6 +450,14 @@ public static class SkillDescriptionBuilder
                 return $"최대 마나 +{value:F0}";
             case PassiveSkillData.PassiveEffectType.OnHitManaRestore:
                 return $"평타 적중 시 마나 {value} 회복";
+            case PassiveSkillData.PassiveEffectType.PhysDmgReduction:
+                return mode == ModifierMode.Percent
+                    ? $"받는 물리 데미지 {value * 100f:F1}% 감소"
+                    : $"받는 물리 데미지 {value:F0} 감소";
+            case PassiveSkillData.PassiveEffectType.MagicDmgReduction:
+                return mode == ModifierMode.Percent
+                    ? $"받는 마법 데미지 {value * 100f:F1}% 감소"
+                    : $"받는 마법 데미지 {value:F0} 감소";
             case PassiveSkillData.PassiveEffectType.OnHitAtkSpeedUp:
                 return $"평타 적중 시 공격속도 {passive.GetProcValue(level) * 100f:F0}% 증가 ({passive.GetProcChance(level)}초)";
             case PassiveSkillData.PassiveEffectType.OnDebuffExtraDamage:

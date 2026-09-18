@@ -175,7 +175,9 @@ public class CharacterStat : MonoBehaviour, IDamageable
 
         float reduction   = TotalDef / (TotalDef + 100f);
         float finalDamage = damage * (1f - reduction);
+        finalDamage = myStatus.ApplyDamageReduction(finalDamage, isMagic: false); // 받는 물리 데미지 감소 패시브
         ApplyDamage(finalDamage, physicalDamageColor, isCrit);
+        ReflectThorns(attacker);
     }
 
     // 마법 데미지 (마법저항력으로 경감)
@@ -185,7 +187,16 @@ public class CharacterStat : MonoBehaviour, IDamageable
 
         float reduction   = TotalMagicRes / (TotalMagicRes + 100f);
         float finalDamage = damage * (1f - reduction);
+        finalDamage = myStatus.ApplyDamageReduction(finalDamage, isMagic: true); // 받는 마법 데미지 감소 패시브
         ApplyDamage(finalDamage, magicDamageColor, isCrit);
+        ReflectThorns(attacker);
+    }
+
+    // 가시 반사 버프가 있으면 공격자에게 데미지 — 이번 공격으로 쓰러졌으면(부활 패시브로 살아난 경우 제외) 반사하지 않음
+    private void ReflectThorns(GameObject attacker)
+    {
+        if (shieldHandler == null || myStatus == null || myStatus.currentHp <= 0f) return;
+        shieldHandler.TryReflectThorns(attacker);
     }
 
     private void ApplyDamage(float finalDamage, Color damageColor, bool isCrit = false)

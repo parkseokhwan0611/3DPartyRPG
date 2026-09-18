@@ -128,6 +128,27 @@ public string charName;
     public float hpOnHit = 0f;
     public float mpOnHit = 0f;
 
+    // 받는 데미지 감소 — 패시브 전용, 세이브 대상 아님 (로드 시 패시브 재적용으로 복원)
+    // 퍼센트(0.1 = 10%)는 합산, 고정은 방어력·퍼센트 감소 뒤에 한 대마다 뺀다
+    public float physDmgReductionPct  = 0f;
+    public float magicDmgReductionPct = 0f;
+    public float physDmgReductionFlat  = 0f;
+    public float magicDmgReductionFlat = 0f;
+
+    // 방어력/마법 저항력 경감이 끝난 데미지에 받는 데미지 감소를 적용
+    // 퍼센트 합이 100%를 넘어도 음수가 되지 않게 막고, 고정 감소로는 원래 데미지가 있던 공격을
+    // 완전히 무효화하지 못하게 최소 1은 들어가도록 한다
+    public float ApplyDamageReduction(float damage, bool isMagic)
+    {
+        if (damage <= 0f) return damage;
+
+        float pct  = isMagic ? magicDmgReductionPct  : physDmgReductionPct;
+        float flat = isMagic ? magicDmgReductionFlat : physDmgReductionFlat;
+
+        float reduced = damage * (1f - Mathf.Clamp01(pct)) - flat;
+        return Mathf.Max(1f, reduced);
+    }
+
     // 최종 피해/힐 배율 보너스 — 패시브 스킬 전용 (0.1 = +10%)
     public float physDmgBonus  = 0f;
     public float magicDmgBonus = 0f;
@@ -253,6 +274,15 @@ public string charName;
 
             case PassiveSkillData.PassiveEffectType.OnHitManaRestore:
                 mpOnHit += delta;
+                break;
+
+            case PassiveSkillData.PassiveEffectType.PhysDmgReduction:
+                if (mode == ModifierMode.Percent) physDmgReductionPct  += delta;
+                else                              physDmgReductionFlat += delta;
+                break;
+            case PassiveSkillData.PassiveEffectType.MagicDmgReduction:
+                if (mode == ModifierMode.Percent) magicDmgReductionPct  += delta;
+                else                              magicDmgReductionFlat += delta;
                 break;
 
             // 트리거 패시브 — 수치 없이 등록만

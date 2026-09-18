@@ -155,6 +155,15 @@ public class BuffSkill : SkillBase
                 continue;
             }
 
+            // 가시 반사는 시전자 자신에게만 — 파티 버프로 설정돼 있어도 다른 파티원에게는 걸지 않는다
+            // (반사 데미지를 누구 능력치로 계산할지 모호해지는 것을 막기 위함)
+            if (effect.effectType == BuffSkillData.BuffEffectType.Thorns)
+            {
+                if (targetHandler.gameObject == gameObject)
+                    targetHandler.ApplyThorns(data, effect, level, data.GetDuration(level));
+                continue;
+            }
+
             StatusEffectType? mapped = MapToStatusEffectType(effect.effectType);
             if (mapped == null) continue; // SpeedBonus/ManaRegen/HpRegen/DebuffImmune: 미구현 (기존과 동일)
 

@@ -6,9 +6,9 @@ public class PassiveSkillData : SkillData
     [Header("패시브 효과 타입")]
     public PassiveEffectType effectType;
 
-    [Tooltip("Atk/Ap/Def/MagicRes/MaxHp 타입에서만 사용.\n" +
-             "Flat: 수치 그대로 증가 (20 = +20)\n" +
-             "Percent: 스탯·장비로 얻은 기본 수치 기준 증가 (0.1 = +10%)")]
+    [Tooltip("Atk/Ap/Def/MagicRes/MaxHp, PhysDmgReduction/MagicDmgReduction 타입에서만 사용.\n" +
+             "Flat: 수치 그대로 증가·감소 (20 = 20)\n" +
+             "Percent: 능력치는 스탯·장비 기본 수치 기준 증가, 데미지 감소는 받는 데미지 비율 감소 (0.1 = 10%)")]
     public ModifierMode valueMode = ModifierMode.Flat;
 
     [Header("수치 설정")]
@@ -20,7 +20,7 @@ public class PassiveSkillData : SkillData
     [Header("두 번째 효과 (선택, 수치 증가형만)")]
     public bool hasSecondEffect = false;
     public PassiveEffectType secondEffectType = PassiveEffectType.MagicRes;
-    [Tooltip("Atk/Ap/Def/MagicRes/MaxHp 타입에서만 사용. Flat: 20 = +20 / Percent: 0.1 = +10%")]
+    [Tooltip("Atk/Ap/Def/MagicRes/MaxHp, PhysDmgReduction/MagicDmgReduction 타입에서만 사용. Flat: 20 = 20 / Percent: 0.1 = 10%")]
     public ModifierMode secondValueMode = ModifierMode.Flat;
     public float secondBaseValue     = 0f;
     public float secondValuePerLevel = 0f;
@@ -57,11 +57,19 @@ public class PassiveSkillData : SkillData
             case PassiveEffectType.HealPercent:
             case PassiveEffectType.MaxMpBonus:
             case PassiveEffectType.OnHitManaRestore:
+            case PassiveEffectType.PhysDmgReduction:
+            case PassiveEffectType.MagicDmgReduction:
                 return true;
             default:
                 return false;
         }
     }
+
+    // Value Mode(고정/퍼센트)를 따르는 타입 — 능력치 5종 + 받는 데미지 감소 2종
+    public static bool SupportsValueMode(PassiveEffectType type)
+        => TryGetModifierStat(type, out _)
+        || type == PassiveEffectType.PhysDmgReduction
+        || type == PassiveEffectType.MagicDmgReduction;
 
     // 첫 번째 효과 기준 (기존 호출부 호환용)
     public bool TryGetModifierStat(out ModifierStat stat) => TryGetModifierStat(effectType, out stat);
@@ -107,5 +115,9 @@ public class PassiveSkillData : SkillData
         HealCrit,            // 힐에 치명타 적용
         OnHealAtkSpeedUp,    // 힐 받은 대상 공격속도 증가
         Revive,              // 1회 부활 (쿨타임 10분)
+
+        // 수치 감소형 — valueMode로 고정/퍼센트 선택 (기존 값 보존을 위해 맨 뒤에 추가)
+        PhysDmgReduction,    // 받는 물리 데미지 감소
+        MagicDmgReduction,   // 받는 마법 데미지 감소
     }
 }

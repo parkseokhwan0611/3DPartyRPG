@@ -103,5 +103,77 @@ public class BuffSkillData : SkillData
         HpOnHit,        // 기본 공격 적중 시 체력 회복
         DebuffImmune,
         DispelDebuff,   // 즉시 디버프 전체 제거
+        Thorns,         // 가시 반사 — 지속시간 동안 피격 시 공격자에게 데미지 (시전자 자신에게만 적용)
+    }
+
+    // ─────────────────────────────────────────────────────────────────
+    // 가시 반사 (Thorns 효과 전용)
+    // ─────────────────────────────────────────────────────────────────
+
+    // 반사 데미지 계수에 쓸 수 있는 능력치 — 받은 데미지가 아니라 시전자 능력치로 계산
+    public enum ThornsStat
+    {
+        Def,       // 방어력
+        MagicRes,  // 마법 저항력
+        MaxHp,     // 최대 체력
+        Atk,       // 물리 공격력
+        Ap,        // 마법 공격력
+        Str,       // 힘
+        Vit,       // 체력
+        Int,       // 지능
+        Fth,       // 신앙
+    }
+
+    [System.Serializable]
+    public class ThornsScaling
+    {
+        public ThornsStat stat;
+        [Tooltip("능력치 대비 비율 (0.5 = 능력치의 50%)")]
+        public float coeff         = 0f;
+        public float coeffPerLevel = 0f;
+
+        public float GetCoeff(int level) => coeff + (coeffPerLevel * (level - 1));
+    }
+
+    [Header("가시 반사 (Thorns 효과 전용)")]
+    [Tooltip("체크: 마법 데미지 (몬스터 마법 저항력으로 경감)\n해제: 물리 데미지 (몬스터 방어력으로 경감)")]
+    public bool thornsIsMagic = true;
+    [Tooltip("반사 데미지 = Thorns 효과의 기본 수치 + Σ(능력치 × 계수)\n" +
+             "피격 시점의 능력치로 계산하며, 시전자의 치명타 확률·치명타 데미지가 적용됨.\n" +
+             "Thorns 효과의 '스탯 비례 계수' 칸은 쓰지 않고 이 목록을 사용")]
+    public List<ThornsScaling> thornsScalings = new List<ThornsScaling>();
+    [Tooltip("반사할 때마다 공격한 몬스터에게 쌓을 어그로 (0이면 없음)")]
+    public float thornsAggroPerHit = 15f;
+    [Tooltip("반사 적중 시 공격한 몬스터 위치에 스폰할 이펙트 풀 키 (비우면 없음)")]
+    public string thornsHitEffectPoolKey;
+
+    public static float GetThornsStatValue(ThornsStat stat, CharacterStat owner)
+    {
+        if (owner == null) return 0f;
+        return stat switch
+        {
+            ThornsStat.Def      => owner.TotalDef,
+            ThornsStat.MagicRes => owner.TotalMagicRes,
+            ThornsStat.MaxHp    => owner.MaxHp,
+            ThornsStat.Atk      => owner.TotalAtk,
+            ThornsStat.Ap       => owner.TotalAp,
+            ThornsStat.Str      => owner.TotalStr,
+            ThornsStat.Vit      => owner.TotalVit,
+            ThornsStat.Int      => owner.TotalInt,
+            ThornsStat.Fth      => owner.TotalFth,
+            _                   => 0f,
+        };
+    }
+
+    // 치명타 적용 전 반사 데미지 — owner가 null이면 기본 수치만 (설명문에서 시전자를 모를 때)
+    public float GetThornsDamage(BuffEffect thornsEffect, int level, CharacterStat owner)
+    {
+        float damage = thornsEffect != null ? thornsEffect.GetValue(level) : 0f;
+        foreach (var s in thornsScalings)
+        {
+            if (s == null) continue;
+            damage += GetThornsStatValue(s.stat, owner) * s.GetCoeff(level);
+        }
+        return Mathf.Max(0f, damage);
     }
 }
