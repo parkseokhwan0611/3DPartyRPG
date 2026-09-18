@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 72fc38e46b28c16479c1fcb1332fbc1a, type: 3}
   m_Name: PhysicalDMG
   m_EditorClassIdentifier: 
-  skillId: PhysicalDMG
+  skillId: PhysicalATK
   skillName: "\uAC80\uC220 \uB2E8\uB828"
-  description: "\uBB3C\uB9AC\uD53C\uD574\uAC00 \uC99D\uAC00\uD569\uB2C8\uB2E4."
+  description: "\uBB3C\uB9AC \uACF5\uACA9\uB825\uC774 \uC99D\uAC00\uD569\uB2C8\uB2E4."
   icon: {fileID: 21300000, guid: 4661b6652c421224e8280d42e06d50af, type: 3}
   requiredClass: 0
   skillType: 4
@@ -36,9 +36,10 @@ MonoBehaviour:
   - 0
   - 0
   skillPointCost: 0100000002000000020000000300000004000000
-  effectType: 3
-  baseValue: 0.1
-  valuePerLevel: 0.025
+  effectType: 0
+  valueMode: 0
+  baseValue: 20
+  valuePerLevel: 30
   baseProcChance: 0
   procChancePerLevel: 0
   baseProcValue: 0
