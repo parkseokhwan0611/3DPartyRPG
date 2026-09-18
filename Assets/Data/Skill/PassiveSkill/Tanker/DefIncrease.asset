@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   skillId: DefIncrease
   skillName: "\uAC15\uCCA0 \uD53C\uBD80"
-  description: "\uBC29\uC5B4\uB825\uC774 \uC99D\uAC00\uD569\uB2C8\uB2E4."
+  description: "\uBC29\uC5B4\uB825\uACFC \uB9C8\uBC95 \uC800\uD56D\uB825\uC774 \uC99D\uAC00\uD569\uB2C8\uB2E4."
   icon: {fileID: 21300000, guid: 03b0d95c839f48c43af808e21b70b8ab, type: 3}
   requiredClass: 0
   skillType: 4
@@ -40,6 +40,11 @@ MonoBehaviour:
   valueMode: 0
   baseValue: 15
   valuePerLevel: 20
+  hasSecondEffect: 1
+  secondEffectType: 8
+  secondValueMode: 0
+  secondBaseValue: 10
+  secondValuePerLevel: 15
   baseProcChance: 0
   procChancePerLevel: 0
   baseProcValue: 0

@@ -625,8 +625,8 @@ public class EnhancementUI : MonoBehaviour
         SubOptionType.CritDmg       => "치명타 데미지",
         SubOptionType.SkillCDReduce => "스킬 쿨타임 감소",
         SubOptionType.MpCostReduce  => "마나 소모 감소",
-        SubOptionType.PhysDmgBonus  => "물리 피해 증가",
-        SubOptionType.MagicDmgBonus => "마법 피해 증가",
+        SubOptionType.PhysDmgBonus  => "물리 데미지 증가",
+        SubOptionType.MagicDmgBonus => "마법 데미지 증가",
         _ => t.ToString(),
     };
 

@@ -207,17 +207,30 @@ public string charName;
     private void ApplyPassive(PassiveSkillData passive, int oldLevel, int newLevel)
     {
         float oldValue = oldLevel > 0 ? passive.GetValue(oldLevel) : 0f;
-        float delta    = passive.GetValue(newLevel) - oldValue;
+        ApplyPassiveEffect(passive, passive.effectType, passive.valueMode,
+                           passive.GetValue(newLevel) - oldValue, newLevel);
 
+        // 두 번째 효과 (예: 방어력 + 마법 저항력) — 첫 번째와 같은 방식으로 레벨 차이만큼 더한다
+        if (passive.HasValidSecondEffect)
+        {
+            float oldSecond = oldLevel > 0 ? passive.GetSecondValue(oldLevel) : 0f;
+            ApplyPassiveEffect(passive, passive.secondEffectType, passive.secondValueMode,
+                               passive.GetSecondValue(newLevel) - oldSecond, newLevel);
+        }
+    }
+
+    private void ApplyPassiveEffect(PassiveSkillData passive, PassiveSkillData.PassiveEffectType type,
+                                    ModifierMode mode, float delta, int newLevel)
+    {
         // 공격력/마법 공격력/방어력/마법 저항력/최대 체력 — 고정/퍼센트 증가 공통 처리.
         // 로드 시에도 이 경로로 재적용되므로 현재 체력은 건드리지 않는다 (세이브의 currentHp가 이미 최종값)
-        if (passive.TryGetModifierStat(out ModifierStat modifierStat))
+        if (PassiveSkillData.TryGetModifierStat(type, out ModifierStat modifierStat))
         {
-            AddSkillModifier(modifierStat, passive.valueMode, delta);
+            AddSkillModifier(modifierStat, mode, delta);
             return;
         }
 
-        switch (passive.effectType)
+        switch (type)
         {
             case PassiveSkillData.PassiveEffectType.PhysDmgBonus:
                 physDmgBonus += delta;

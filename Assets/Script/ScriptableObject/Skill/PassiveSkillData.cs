@@ -15,6 +15,16 @@ public class PassiveSkillData : SkillData
     public float baseValue     = 0f;
     public float valuePerLevel = 0f;
 
+    // 두 번째 효과 — 방어력 + 마법 저항력처럼 능력치 두 개를 함께 올리는 패시브용.
+    // 부활·발동형 효과는 첫 번째 효과 타입만 보고 동작하므로 여기엔 수치 증가형만 허용한다
+    [Header("두 번째 효과 (선택, 수치 증가형만)")]
+    public bool hasSecondEffect = false;
+    public PassiveEffectType secondEffectType = PassiveEffectType.MagicRes;
+    [Tooltip("Atk/Ap/Def/MagicRes/MaxHp 타입에서만 사용. Flat: 20 = +20 / Percent: 0.1 = +10%")]
+    public ModifierMode secondValueMode = ModifierMode.Flat;
+    public float secondBaseValue     = 0f;
+    public float secondValuePerLevel = 0f;
+
     [Header("특수 효과 설정 (트리거 기반)")]
     public float baseProcChance     = 0f;
     public float procChancePerLevel = 0f;
@@ -25,11 +35,41 @@ public class PassiveSkillData : SkillData
     public float GetValue(int level)      => baseValue + (valuePerLevel * (level - 1));
     public float GetProcChance(int level) => baseProcChance + (procChancePerLevel * (level - 1));
     public float GetProcValue(int level)  => baseProcValue + (procValuePerLevel * (level - 1));
+    public float GetSecondValue(int level) => secondBaseValue + (secondValuePerLevel * (level - 1));
+
+    // 두 번째 효과가 켜져 있고, 허용된 수치 증가형 타입일 때만 적용한다
+    public bool HasValidSecondEffect => hasSecondEffect && IsValueEffect(secondEffectType);
+
+    // 두 번째 효과로 쓸 수 있는 수치 증가형 타입 (레벨별 수치를 더하기만 하는 효과)
+    public static bool IsValueEffect(PassiveEffectType type)
+    {
+        switch (type)
+        {
+            case PassiveEffectType.Atk:
+            case PassiveEffectType.Ap:
+            case PassiveEffectType.Def:
+            case PassiveEffectType.PhysDmgBonus:
+            case PassiveEffectType.MagicDmgBonus:
+            case PassiveEffectType.CritRate:
+            case PassiveEffectType.CritDamage:
+            case PassiveEffectType.MaxHp:
+            case PassiveEffectType.MagicRes:
+            case PassiveEffectType.HealPercent:
+            case PassiveEffectType.MaxMpBonus:
+            case PassiveEffectType.OnHitManaRestore:
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    // 첫 번째 효과 기준 (기존 호출부 호환용)
+    public bool TryGetModifierStat(out ModifierStat stat) => TryGetModifierStat(effectType, out stat);
 
     // 고정/퍼센트 증가를 지원하는 능력치 타입이면 대응하는 ModifierStat을 돌려준다
-    public bool TryGetModifierStat(out ModifierStat stat)
+    public static bool TryGetModifierStat(PassiveEffectType type, out ModifierStat stat)
     {
-        switch (effectType)
+        switch (type)
         {
             case PassiveEffectType.Atk:      stat = ModifierStat.Atk;      return true;
             case PassiveEffectType.Ap:       stat = ModifierStat.Ap;       return true;

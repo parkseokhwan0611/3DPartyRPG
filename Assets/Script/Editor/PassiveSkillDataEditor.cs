@@ -11,7 +11,8 @@ public class PassiveSkillDataEditor : Editor
         serializedObject.Update();
 
         var data = (PassiveSkillData)target;
-        bool supportsMode = data.TryGetModifierStat(out _);
+        bool supportsMode       = PassiveSkillData.TryGetModifierStat(data.effectType, out _);
+        bool secondSupportsMode = PassiveSkillData.TryGetModifierStat(data.secondEffectType, out _);
 
         SerializedProperty prop = serializedObject.GetIterator();
         bool enterChildren = true;
@@ -21,18 +22,36 @@ public class PassiveSkillDataEditor : Editor
 
             if (prop.name == "valueMode" && !supportsMode) continue;
 
+            // 두 번째 효과 세부 항목은 토글이 켜져 있을 때만
+            bool isSecondDetail = prop.name == "secondEffectType" || prop.name == "secondValueMode"
+                               || prop.name == "secondBaseValue"  || prop.name == "secondValuePerLevel";
+            if (isSecondDetail && !data.hasSecondEffect) continue;
+            if (prop.name == "secondValueMode" && !secondSupportsMode) continue;
+
             using (new EditorGUI.DisabledScope(prop.name == "m_Script"))
                 EditorGUILayout.PropertyField(prop, true);
 
             if (prop.name == "effectType")
+                DrawUnitNote(data.effectType);
+
+            if (prop.name == "secondEffectType")
             {
-                string unitNote = GetUnitNote(data.effectType);
-                if (!string.IsNullOrEmpty(unitNote))
-                    EditorGUILayout.HelpBox(unitNote, MessageType.Info);
+                if (!PassiveSkillData.IsValueEffect(data.secondEffectType))
+                    EditorGUILayout.HelpBox("두 번째 효과에는 수치 증가형 타입만 쓸 수 있습니다. 이 설정은 무시됩니다.",
+                                            MessageType.Warning);
+                else
+                    DrawUnitNote(data.secondEffectType);
             }
         }
 
         serializedObject.ApplyModifiedProperties();
+    }
+
+    private static void DrawUnitNote(PassiveSkillData.PassiveEffectType type)
+    {
+        string unitNote = GetUnitNote(type);
+        if (!string.IsNullOrEmpty(unitNote))
+            EditorGUILayout.HelpBox(unitNote, MessageType.Info);
     }
 
     // Value Mode가 없는 타입의 수치 단위 안내
