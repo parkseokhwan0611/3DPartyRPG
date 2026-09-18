@@ -222,25 +222,38 @@ public static class SkillDescriptionBuilder
             _                             => "",
         };
 
+        // 퍼센트 버프는 스탯 1당 몇 %가 붙는지로 표기 (계수 0.001 = 스탯 1당 0.1%)
+        if (effect.IsPercent)
+        {
+            return caster != null
+                ? $" (기본 {flat * 100f:0.#}% + {statName} 1당 {coeff * 100f:0.##}% = +{scalingAmount * 100f:0.#}%)"
+                : $" + {statName} 1당 {coeff * 100f:0.##}%";
+        }
+
         // 시전자 스탯을 알면 실제 수치 계산 표기, 모르면 계수만 표기
         return caster != null
             ? $" (기본{flat:F0} + {statName}×{coeff * 100f:F0}% = +{scalingAmount:F0})"
             : $" + {statName}×{coeff * 100f:F0}%";
     }
 
+    // 능력치 증가 수치 표기 — 퍼센트 버프면 "12.5%", 고정이면 "20"
+    private static string FormatStatAmount(BuffSkillData.BuffEffect effect, float total)
+        => effect.IsPercent ? $"{total * 100f:0.#}%" : $"{total:F0}";
+
     private static string FormatBuffLine(BuffSkillData.BuffEffect effect, int level, float total, float flat, float scalingAmount, CharacterStat caster)
     {
-        string note = GetScalingNote(effect, level, flat, scalingAmount, caster);
+        string note   = GetScalingNote(effect, level, flat, scalingAmount, caster);
+        string amount = FormatStatAmount(effect, total);
 
         return effect.effectType switch
         {
-            BuffSkillData.BuffEffectType.AtkBonus      => $"공격력 +{total:F0}{note}",
-            BuffSkillData.BuffEffectType.ApBonus       => $"주문력 +{total:F0}{note}",
-            BuffSkillData.BuffEffectType.DefBonus      => $"방어력 +{total:F0}{note}",
-            BuffSkillData.BuffEffectType.MagicResBonus => $"마법 저항력 +{total:F0}{note}",
+            BuffSkillData.BuffEffectType.AtkBonus      => $"공격력 +{amount}{note}",
+            BuffSkillData.BuffEffectType.ApBonus       => $"주문력 +{amount}{note}",
+            BuffSkillData.BuffEffectType.DefBonus      => $"방어력 +{amount}{note}",
+            BuffSkillData.BuffEffectType.MagicResBonus => $"마법 저항력 +{amount}{note}",
             BuffSkillData.BuffEffectType.CritRate      => $"치명타 확률 +{total * 100f:F1}%{note}",
             BuffSkillData.BuffEffectType.CritDamage    => $"치명타 배율 +{total * 100f:F1}%{note}",
-            BuffSkillData.BuffEffectType.MaxHpBonus    => $"최대 체력 +{total:F0}{note}",
+            BuffSkillData.BuffEffectType.MaxHpBonus    => $"최대 체력 +{amount}{note}",
             BuffSkillData.BuffEffectType.SpeedBonus    => $"이동속도 +{total:F1}{note}",
             BuffSkillData.BuffEffectType.Shield        => $"쉴드 +{total:F0}{note}",
             BuffSkillData.BuffEffectType.ManaRegen     => $"마나 재생 +{total:F1}/초{note}",
@@ -271,15 +284,17 @@ public static class SkillDescriptionBuilder
 
     private static string FormatBuffLineFinal(BuffSkillData.BuffEffect effect, float total)
     {
+        string amount = FormatStatAmount(effect, total);
+
         return effect.effectType switch
         {
-            BuffSkillData.BuffEffectType.AtkBonus      => $"공격력 +{total:F0}",
-            BuffSkillData.BuffEffectType.ApBonus       => $"주문력 +{total:F0}",
-            BuffSkillData.BuffEffectType.DefBonus      => $"방어력 +{total:F0}",
-            BuffSkillData.BuffEffectType.MagicResBonus => $"마법 저항력 +{total:F0}",
+            BuffSkillData.BuffEffectType.AtkBonus      => $"공격력 +{amount}",
+            BuffSkillData.BuffEffectType.ApBonus       => $"주문력 +{amount}",
+            BuffSkillData.BuffEffectType.DefBonus      => $"방어력 +{amount}",
+            BuffSkillData.BuffEffectType.MagicResBonus => $"마법 저항력 +{amount}",
             BuffSkillData.BuffEffectType.CritRate      => $"치명타 확률 +{total * 100f:F1}%",
             BuffSkillData.BuffEffectType.CritDamage    => $"치명타 배율 +{total * 100f:F1}%",
-            BuffSkillData.BuffEffectType.MaxHpBonus    => $"최대 체력 +{total:F0}",
+            BuffSkillData.BuffEffectType.MaxHpBonus    => $"최대 체력 +{amount}",
             BuffSkillData.BuffEffectType.SpeedBonus    => $"이동속도 +{total:F1}",
             BuffSkillData.BuffEffectType.Shield        => $"쉴드 +{total:F0}",
             BuffSkillData.BuffEffectType.ManaRegen     => $"마나 재생 +{total:F1}/초",
@@ -325,26 +340,34 @@ public static class SkillDescriptionBuilder
 
     public static string GetPassiveDescription(PassiveSkillData passive, int level)
     {
+        // 공격력/마법 공격력/방어력/마법 저항력/최대 체력 — 고정이면 "+20", 퍼센트면 "10% 증가"
+        if (passive.TryGetModifierStat(out ModifierStat modifierStat))
+        {
+            string label = modifierStat switch
+            {
+                ModifierStat.Atk      => "물리 공격력",
+                ModifierStat.Ap       => "마법 공격력",
+                ModifierStat.Def      => "방어력",
+                ModifierStat.MagicRes => "마법 저항력",
+                ModifierStat.MaxHp    => "최대 체력",
+                _                     => "",
+            };
+            float value = passive.GetValue(level);
+            return passive.valueMode == ModifierMode.Percent
+                ? $"{label} {value * 100f:F1}% 증가 (스탯·장비 기준)"
+                : $"{label} +{value:F0}";
+        }
+
         switch (passive.effectType)
         {
             case PassiveSkillData.PassiveEffectType.PhysDmgBonus:
                 return $"물리 피해 {passive.GetValue(level) * 100f:F1}% 증가 (최종 데미지 적용)";
             case PassiveSkillData.PassiveEffectType.MagicDmgBonus:
                 return $"마법 피해 {passive.GetValue(level) * 100f:F1}% 증가 (최종 데미지 적용)";
-            case PassiveSkillData.PassiveEffectType.AtkPercent:
-                return $"물리 공격력 {passive.GetValue(level) * 100f:F1}% 증가";
-            case PassiveSkillData.PassiveEffectType.ApPercent:
-                return $"마법 공격력 {passive.GetValue(level) * 100f:F1}% 증가";
-            case PassiveSkillData.PassiveEffectType.DefPercent:
-                return $"방어력 {passive.GetValue(level) * 100f:F1}% 증가";
             case PassiveSkillData.PassiveEffectType.CritRate:
                 return $"치명타 확률 +{passive.GetValue(level) * 100f:F1}%";
             case PassiveSkillData.PassiveEffectType.CritDamage:
                 return $"치명타 배율 +{passive.GetValue(level) * 100f:F1}%";
-            case PassiveSkillData.PassiveEffectType.MaxHpPercent:
-                return $"최대 체력 {passive.GetValue(level) * 100f:F1}% 증가";
-            case PassiveSkillData.PassiveEffectType.MagicResPercent:
-                return $"마법 저항력 {passive.GetValue(level) * 100f:F1}% 증가";
             case PassiveSkillData.PassiveEffectType.HealPercent:
                 return $"힐량 {passive.GetValue(level) * 100f:F1}% 증가";
             case PassiveSkillData.PassiveEffectType.FaithToHp:

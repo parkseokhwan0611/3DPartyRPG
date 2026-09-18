@@ -162,7 +162,9 @@ public class BuffSkill : SkillBase
             float scaling = GetScalingValue(effect, level, caster);
             float value   = flat + scaling;
 
-            targetHandler.ApplyBuff(new StatusEffect(mapped.Value, value, data.GetDuration(level), gameObject));
+            // 퍼센트 버프의 기준 수치는 시전자가 아니라 버프를 받는 대상의 기본 수치
+            ModifierMode mode = effect.IsPercent ? ModifierMode.Percent : ModifierMode.Flat;
+            targetHandler.ApplyBuff(new StatusEffect(mapped.Value, value, data.GetDuration(level), gameObject, mode));
         }
     }
 

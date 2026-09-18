@@ -50,13 +50,30 @@ public string charName;
 
     public float addedMp = 0f;
 
-    // 최대 체력/방어력 % 패시브 보너스 (0.1 = +10%) — VIT을 직접 건드리지 않고 최종 계산식에만 곱연산으로 반영
-    public float maxHpPercentBonus = 0f;
-    public float defPercentBonus   = 0f;
+    // ── 스킬(버프/패시브)로 오른 능력치 — 세이브 대상 아님 ──
+    // 스탯 포인트 필드(addedStr 등)와 분리해서, 버프가 걸린 채로 저장해도 세이브에 섞여 들어가지 않게 한다.
+    // 패시브는 로드 시 LevelUpSkill로 재적용되고, 버프는 지속시간이 끝나면 사라진다.
+    private static readonly int ModifierStatCount = Enum.GetValues(typeof(ModifierStat)).Length;
+    private readonly float[] skillFlat    = new float[ModifierStatCount];
+    private readonly float[] skillPercent = new float[ModifierStatCount]; // 0.1 = +10%, 겹치면 합산
 
-    public float MaxHp => (classData.hp
-                        + ((classData.baseVit + addedVit + equipVit) * classData.hpPerVit)
-                        + equipMaxHp) * (1f + maxHpPercentBonus);
+    // value가 음수면 해제 (버프 만료 시 -value로 호출)
+    public void AddSkillModifier(ModifierStat stat, ModifierMode mode, float value)
+    {
+        if (mode == ModifierMode.Percent) skillPercent[(int)stat] += value;
+        else                              skillFlat[(int)stat]    += value;
+    }
+
+    // 퍼센트 증가는 기본 수치(스탯 + 장비)에만 곱하고, 고정 증가는 그 뒤에 더한다
+    private float ApplySkillModifiers(ModifierStat stat, float baseValue)
+        => baseValue * (1f + skillPercent[(int)stat]) + skillFlat[(int)stat];
+
+    // 기본 수치 = 스탯 + 장비. 스킬 퍼센트 증가의 기준이자 스탯창의 "(+N)" 표기 기준
+    public float BaseMaxHp => classData.hp
+                            + ((classData.baseVit + addedVit + equipVit) * classData.hpPerVit)
+                            + equipMaxHp;
+    public float MaxHp => ApplySkillModifiers(ModifierStat.MaxHp, BaseMaxHp);
+    // 최대 마나는 퍼센트 증가 없이 고정 증가(addedMp)만 지원
     public float MaxMp => classData.mp + addedMp;
 
     public float TotalHpRegen => classData.baseHpRegen
@@ -69,11 +86,15 @@ public string charName;
     public float atkDebuffMultiplier = 1f;
     public float defDebuffMultiplier = 1f;
 
-    public float TotalAtk => ((classData.baseStr + addedStr + equipStr) * classData.atkPerStr
-                           + bonusAtk + equipAtk) * atkDebuffMultiplier;
-    public float TotalAp  => ((classData.baseInt + addedInt + equipInt) * classData.apPerInt)
-                           + ((classData.baseFht + addedFht + equipFht) * classData.apPerFth)
-                           + bonusAp + equipAp;
+    public float BaseAtk => (classData.baseStr + addedStr + equipStr) * classData.atkPerStr
+                          + bonusAtk + equipAtk;
+    // 감소 디버프는 스킬 증가분까지 반영된 최종 수치에 곱한다
+    public float TotalAtk => ApplySkillModifiers(ModifierStat.Atk, BaseAtk) * atkDebuffMultiplier;
+
+    public float BaseAp => ((classData.baseInt + addedInt + equipInt) * classData.apPerInt)
+                         + ((classData.baseFht + addedFht + equipFht) * classData.apPerFth)
+                         + bonusAp + equipAp;
+    public float TotalAp => ApplySkillModifiers(ModifierStat.Ap, BaseAp);
 
     // ── 아이템/패시브로 쌓이는 추가 수치 ──
     public float addedCritRate   = 0f;
@@ -82,14 +103,14 @@ public string charName;
     public float TotalCritRate   => classData.baseCritRate   + addedCritRate  + equipCritRate;
     public float TotalCritDamage => classData.baseCritDamage + addedCritDamage + equipCritDmg;
 
-    // 방어력 (VIT 비례 + 패시브 + 장비)
-    public float addedDef = 0f;
-    public float TotalDef => (((classData.baseVit + addedVit + equipVit) * classData.defPerVit)
-                           + addedDef + bonusDef + equipDef) * (1f + defPercentBonus) * defDebuffMultiplier;
+    // 방어력 (VIT 비례 + 장비 → 스킬 증가 → 감소 디버프)
+    public float BaseDef => ((classData.baseVit + addedVit + equipVit) * classData.defPerVit)
+                          + bonusDef + equipDef;
+    public float TotalDef => ApplySkillModifiers(ModifierStat.Def, BaseDef) * defDebuffMultiplier;
 
     // 마법 저항력
-    public float addedMagicRes = 0f;
-    public float TotalMagicRes => classData.baseMagicRes + addedMagicRes + equipMagicRes;
+    public float BaseMagicRes  => classData.baseMagicRes + equipMagicRes;
+    public float TotalMagicRes => ApplySkillModifiers(ModifierStat.MagicRes, BaseMagicRes);
 
     // 피해 증가 합산 (패시브 + 장비)
     public float TotalPhysDmgBonus  => physDmgBonus  + equipPhysDmg;
@@ -188,6 +209,14 @@ public string charName;
         float oldValue = oldLevel > 0 ? passive.GetValue(oldLevel) : 0f;
         float delta    = passive.GetValue(newLevel) - oldValue;
 
+        // 공격력/마법 공격력/방어력/마법 저항력/최대 체력 — 고정/퍼센트 증가 공통 처리.
+        // 로드 시에도 이 경로로 재적용되므로 현재 체력은 건드리지 않는다 (세이브의 currentHp가 이미 최종값)
+        if (passive.TryGetModifierStat(out ModifierStat modifierStat))
+        {
+            AddSkillModifier(modifierStat, passive.valueMode, delta);
+            return;
+        }
+
         switch (passive.effectType)
         {
             case PassiveSkillData.PassiveEffectType.PhysDmgBonus:
@@ -205,16 +234,6 @@ public string charName;
             case PassiveSkillData.PassiveEffectType.CritDamage:
                 addedCritDamage += delta;
                 break;
-            case PassiveSkillData.PassiveEffectType.MagicResPercent:
-                addedMagicRes += classData.baseMagicRes * delta;
-                break;
-            case PassiveSkillData.PassiveEffectType.DefPercent:
-                defPercentBonus += delta;
-                break;
-            case PassiveSkillData.PassiveEffectType.MaxHpPercent:
-                maxHpPercentBonus += delta;
-                break;
-
             case PassiveSkillData.PassiveEffectType.MaxMpBonus:
                 addedMp += delta;
                 break;

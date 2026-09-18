@@ -146,7 +146,7 @@ public abstract class RangedAttackBase : AttackBase
         if (enemyStat == null) return;
 
         if (myStat != null && myStat.HpOnHit > 0f)
-            myStat.HealHp(myStat.HpOnHit);
+            myStat.HealHp(myStat.HpOnHit, showAura: false); // 흡혈은 생명 흡수 버프 아우라만 표시
 
         if (myStat != null && myStat.MpOnHit > 0f)
             myStat.RecoverMp(myStat.MpOnHit, showAura: false, showText: false);

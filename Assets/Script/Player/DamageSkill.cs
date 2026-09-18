@@ -185,7 +185,8 @@ public class DamageSkill : SkillBase
                 buff.effectType,
                 buff.GetValue(skillLevel),
                 buff.GetDuration(skillLevel),
-                gameObject
+                gameObject,
+                buff.valueMode
             ));
         }
     }

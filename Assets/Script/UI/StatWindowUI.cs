@@ -46,8 +46,17 @@ public class StatWindowUI : MonoBehaviour
     public TextMeshProUGUI critText;
     public TextMeshProUGUI cdmgText;
 
+    [Header("# 스킬 증감 표기 색상")]
+    [Tooltip("버프/패시브로 오른 수치 (+N) 색상")]
+    public Color skillBonusColor   = new Color32(0x7C, 0xFC, 0x7C, 0xFF);
+    [Tooltip("감소 디버프로 깎인 수치 (-N) 색상")]
+    public Color skillPenaltyColor = new Color32(0xFF, 0x6B, 0x6B, 0xFF);
+
     private int selectedIndex = 0;
     private Dictionary<int, CharacterStat> statCache = new Dictionary<int, CharacterStat>();
+
+    // 창이 열려 있는 동안 버프가 걸리거나 끝나면 수치를 다시 그리기 위해 구독한 핸들러들
+    private readonly List<PartyStatusEffectHandler> subscribedHandlers = new List<PartyStatusEffectHandler>();
 
     // ─────────────────────────────────────────────────────────────────
     // Unity 생명주기
@@ -73,6 +82,7 @@ public class StatWindowUI : MonoBehaviour
     void OnEnable()
     {
         BuildStatCache();
+        SubscribeBuffEvents();
 
         // 스탯창은 열 때마다 항상 현재 조작 중인 리더 기준으로 시작
         selectedIndex = GetLeaderPartyIndex();
@@ -81,6 +91,34 @@ public class StatWindowUI : MonoBehaviour
 
         Refresh();
     }
+
+    void OnDisable()
+    {
+        UnsubscribeBuffEvents();
+    }
+
+    private void SubscribeBuffEvents()
+    {
+        UnsubscribeBuffEvents();
+        foreach (var cs in statCache.Values)
+        {
+            var handler = cs != null ? cs.GetComponent<PartyStatusEffectHandler>() : null;
+            if (handler == null) continue;
+            handler.OnBuffChanged += HandleBuffChanged;
+            subscribedHandlers.Add(handler);
+        }
+    }
+
+    private void UnsubscribeBuffEvents()
+    {
+        foreach (var handler in subscribedHandlers)
+        {
+            if (handler != null) handler.OnBuffChanged -= HandleBuffChanged;
+        }
+        subscribedHandlers.Clear();
+    }
+
+    private void HandleBuffChanged(StatusEffectType type, bool active) => Refresh();
 
     private int GetLeaderPartyIndex()
     {
@@ -181,11 +219,12 @@ public class StatWindowUI : MonoBehaviour
         // ── 전투 수치 ──
         if (charStat != null)
         {
-            SetText(phyAtkText,  $"물리 공격력: {charStat.TotalAtk:F0}");
-            SetText(apText,      $"마법 공격력: {charStat.TotalAp:F0}");
-            SetText(defText,     $"방어력: {charStat.TotalDef:F0}");
-            SetText(mresText,    $"마법 저항력: {charStat.TotalMagicRes:F0}");
-            SetText(hpText,      $"체력: {charStat.Hp:F0} / {charStat.MaxHp:F0}");
+            // "150 (+30)" — 150이 최종 수치, (+30)이 버프·패시브로 오른 양 (디버프로 깎이면 빨간 -N)
+            SetText(phyAtkText,  $"물리 공격력: {WithSkillBonus(status.TotalAtk,      status.BaseAtk)}");
+            SetText(apText,      $"마법 공격력: {WithSkillBonus(status.TotalAp,       status.BaseAp)}");
+            SetText(defText,     $"방어력: {WithSkillBonus(status.TotalDef,           status.BaseDef)}");
+            SetText(mresText,    $"마법 저항력: {WithSkillBonus(status.TotalMagicRes, status.BaseMagicRes)}");
+            SetText(hpText,      $"체력: {charStat.Hp:F0} / {WithSkillBonus(status.MaxHp, status.BaseMaxHp)}");
             SetText(hpRegenText, $"체력 재생: {status.TotalHpRegen:F1} / 초");
             SetText(mpText,      $"마나: {charStat.Mp:F0} / {charStat.MaxMp:F0}");
             SetText(mpRegenText, $"마나 재생: {status.TotalMpRegen:F1} / 초");
@@ -236,6 +275,18 @@ public class StatWindowUI : MonoBehaviour
 
     private CharacterStat GetCharStat(int partyIndex)
         => statCache.TryGetValue(partyIndex, out var cs) ? cs : null;
+
+    // 최종 수치와 기본 수치(스탯 + 장비)를 각각 반올림한 뒤 차이를 표기 — 화면에 보이는 두 숫자의
+    // 합이 항상 맞아떨어지게 (150.4와 120.6을 그대로 빼면 "150 (+30)"인데 기본이 121로 보이는 문제 방지)
+    private string WithSkillBonus(float total, float baseValue)
+    {
+        int shownTotal = Mathf.RoundToInt(total);
+        int diff       = shownTotal - Mathf.RoundToInt(baseValue);
+        if (diff == 0) return shownTotal.ToString();
+
+        string color = ColorUtility.ToHtmlStringRGB(diff > 0 ? skillBonusColor : skillPenaltyColor);
+        return $"{shownTotal} <color=#{color}>({diff:+0;-0})</color>";
+    }
 
     private void SetText(TextMeshProUGUI tmp, string text)
     {

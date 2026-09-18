@@ -63,7 +63,7 @@ public class MeleeAttack : AttackBase
             SpawnHitEffect(effectPos);
 
             if (myStat.HpOnHit > 0f)
-                myStat.HealHp(myStat.HpOnHit);
+                myStat.HealHp(myStat.HpOnHit, showAura: false); // 흡혈은 생명 흡수 버프 아우라만 표시
 
             if (myStat.MpOnHit > 0f)
                 myStat.RecoverMp(myStat.MpOnHit, showAura: false, showText: false);

@@ -51,6 +51,11 @@ public class BuffSkillData : SkillData
     {
         public BuffEffectType effectType;
 
+        [Tooltip("AtkBonus/ApBonus/DefBonus/MagicResBonus/MaxHpBonus에서만 사용.\n" +
+                 "Flat: 수치 그대로 증가 (20 = +20)\n" +
+                 "Percent: 대상의 스탯·장비 기본 수치 기준 증가 (0.1 = +10%). 스탯 비례 계수도 같은 단위로 더해짐")]
+        public ModifierMode valueMode = ModifierMode.Flat;
+
         [Header("기본 수치")]
         public float baseValue     = 0f;
         public float valuePerLevel = 0f;
@@ -62,6 +67,24 @@ public class BuffSkillData : SkillData
 
         public float GetValue(int level)   => baseValue + (valuePerLevel * (level - 1));
         public float GetScaling(int level) => scalingCoeff + (scalingPerLevel * (level - 1));
+
+        // 퍼센트 증가가 실제로 적용되는 효과인지 (그 외 타입은 valueMode와 무관하게 고정 증가)
+        public bool IsPercent => valueMode == ModifierMode.Percent && SupportsPercent(effectType);
+    }
+
+    public static bool SupportsPercent(BuffEffectType type)
+    {
+        switch (type)
+        {
+            case BuffEffectType.AtkBonus:
+            case BuffEffectType.ApBonus:
+            case BuffEffectType.DefBonus:
+            case BuffEffectType.MagicResBonus:
+            case BuffEffectType.MaxHpBonus:
+                return true;
+            default:
+                return false;
+        }
     }
 
     public enum BuffEffectType

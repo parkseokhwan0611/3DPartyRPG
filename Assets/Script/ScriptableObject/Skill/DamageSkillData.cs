@@ -49,6 +49,8 @@ public class DamageSkillData : SkillData
     public class CastBuffEffect
     {
         public StatusEffectType effectType;
+        [Tooltip("AtkUp/ApUp/DefUp/MagicResUp/MaxHpUp에서만 사용. Percent는 0.1 = 기본 수치의 +10%")]
+        public ModifierMode valueMode = ModifierMode.Flat;
         public float baseValue     = 0f;
         public float valuePerLevel = 0f;
         public float baseDuration     = 3f;

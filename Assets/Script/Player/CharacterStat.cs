@@ -204,14 +204,16 @@ public class CharacterStat : MonoBehaviour, IDamageable
         if (myStatus.currentHp <= 0) Die();
     }
 
-    public void HealHp(float amount)
+    // showAura: false — 흡혈(HpOnHit)처럼 자체 버프 아우라가 이미 켜져 있고 매 타격마다 터지는
+    // 회복에는 힐 아우라를 겹쳐 띄우지 않기 위한 옵션 (RecoverMp의 showAura와 같은 용도)
+    public void HealHp(float amount, bool showAura = true)
     {
         if (myStatus == null || amount <= 0f) return;
         myStatus.currentHp = Mathf.Clamp(myStatus.currentHp + amount, 0, myStatus.MaxHp);
         myStatus.RaiseHpChanged();
         OnHpChanged?.Invoke();
         SpawnHealText(amount);
-        ShowHealAura();
+        if (showAura) ShowHealAura();
     }
 
     public void ShowHealAura()

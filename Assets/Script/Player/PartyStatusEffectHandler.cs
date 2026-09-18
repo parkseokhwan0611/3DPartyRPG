@@ -276,17 +276,20 @@ public class PartyStatusEffectHandler : MonoBehaviour
 
         float multiplier = apply ? 1f : -1f;
 
+        // 능력치 증가 버프 — 스탯 포인트(addedStr 등)가 아니라 스킬 전용 증가분으로 반영.
+        // 스탯 포인트 필드는 세이브 대상이라, 예전처럼 거기에 더하면 버프 중 저장 시 영구 스탯이 돼버렸음
+        if (TryMapModifierStat(effect.effectType, out ModifierStat modifierStat))
+        {
+            float oldMaxHp = status.MaxHp;
+            status.AddSkillModifier(modifierStat, effect.mode, effect.value * multiplier);
+
+            if (modifierStat == ModifierStat.MaxHp)
+                AdjustCurrentHpAfterMaxHpChange(status, oldMaxHp);
+            return;
+        }
+
         switch (effect.effectType)
         {
-            case StatusEffectType.AtkUp:
-                status.addedStr += effect.value * multiplier;
-                break;
-            case StatusEffectType.DefUp:
-                status.addedDef += effect.value * multiplier;
-                break;
-            case StatusEffectType.MagicResUp:
-                status.addedMagicRes += effect.value * multiplier;
-                break;
             case StatusEffectType.AtkSpeedUp:
                 if (attackBase != null)
                     attackBase.attackSpeed += effect.value * multiplier;
@@ -306,17 +309,11 @@ public class PartyStatusEffectHandler : MonoBehaviour
                     status.moveSpeedMultiplier /= (1f - safeValue);
                 break;
 
-            case StatusEffectType.ApUp:
-                status.addedInt += effect.value * multiplier;
-                break;
             case StatusEffectType.CritRateUp:
                 status.addedCritRate += effect.value * multiplier;
                 break;
             case StatusEffectType.CritDamageUp:
                 status.addedCritDamage += effect.value * multiplier;
-                break;
-            case StatusEffectType.MaxHpUp:
-                status.addedVit += effect.value * multiplier;
                 break;
             case StatusEffectType.HpOnHitUp:
                 status.hpOnHit += effect.value * multiplier;
@@ -339,6 +336,33 @@ public class PartyStatusEffectHandler : MonoBehaviour
                 }
                 break;
         }
+    }
+
+    private static bool TryMapModifierStat(StatusEffectType type, out ModifierStat stat)
+    {
+        switch (type)
+        {
+            case StatusEffectType.AtkUp:      stat = ModifierStat.Atk;      return true;
+            case StatusEffectType.ApUp:       stat = ModifierStat.Ap;       return true;
+            case StatusEffectType.DefUp:      stat = ModifierStat.Def;      return true;
+            case StatusEffectType.MagicResUp: stat = ModifierStat.MagicRes; return true;
+            case StatusEffectType.MaxHpUp:    stat = ModifierStat.MaxHp;    return true;
+            default:                          stat = default;               return false;
+        }
+    }
+
+    // 최대 체력이 오르면 현재 체력도 같은 양만큼 채워주고, 내려가면 넘치는 부분만 잘라낸다
+    // (버프가 끝날 때 현재 체력을 깎지 않아서 만료만으로 사망하는 일이 없게)
+    private void AdjustCurrentHpAfterMaxHpChange(CharacterStatus status, float oldMaxHp)
+    {
+        float delta = status.MaxHp - oldMaxHp;
+        if (delta > 0f && status.currentHp > 0f)
+            status.currentHp += delta;
+        status.currentHp = Mathf.Min(status.currentHp, status.MaxHp);
+
+        // 사망 처리 중(ClearAllOnDeath)에 버프가 해제되는 경우 Die가 다시 호출되지 않도록 살아있을 때만 통지
+        if (status.currentHp > 0f)
+            myStat.RaiseHpChanged();
     }
 
     private bool IsDebuff(StatusEffectType type)
