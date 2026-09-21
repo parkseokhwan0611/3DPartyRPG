@@ -50,6 +50,23 @@ public class SkillManager : MonoBehaviour
             attackBase.OnAttackExecuted += HandleAttackCount;
     }
 
+    void Start()
+    {
+        if (DataManager.instance != null)
+            DataManager.instance.OnPartyClassChanged += HandlePartyClassChanged;
+    }
+
+    // 무기(클래스)를 바꾸면 배운 스킬이 초기화되므로, 이전 클래스 스킬이 남지 않게 퀵슬롯을 전부 비운다
+    private void HandlePartyClassChanged(int partyIndex)
+    {
+        if (myStat == null || partyIndex != myStat.partyIndex) return;
+
+        for (int i = 0; i < slots.Length; i++)
+            SetSlot(i, null);
+
+        CombatQuickSlotUI.instance?.RefreshSlots();
+    }
+
     // PartyManager/SkillManager는 씬 로컬이라 포탈 등으로 씬이 바뀌면 파괴 후 재생성됨.
     // DataManager(DontDestroyOnLoad)에 이전에 배정한 퀵슬롯이 남아있으면 그걸로 덮어써서
     // 씬 전환 후에도 유지되도록 한다. 아직 한 번도 등록한 적 없으면(null) 프리팹 기본값 유지
@@ -88,6 +105,8 @@ public class SkillManager : MonoBehaviour
     {
         if (attackBase != null)
             attackBase.OnAttackExecuted -= HandleAttackCount;
+        if (DataManager.instance != null)
+            DataManager.instance.OnPartyClassChanged -= HandlePartyClassChanged;
 
         foreach (var slot in slots)
         {

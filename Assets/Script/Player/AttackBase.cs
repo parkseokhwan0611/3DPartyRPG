@@ -59,7 +59,48 @@ public abstract class AttackBase : MonoBehaviour
         statusHandler      = GetComponent<StatusEffectHandler>();
         partyStatusHandler = GetComponent<PartyStatusEffectHandler>();
         _ownerStat         = GetComponent<CharacterStat>();
+
+        // 파티원: 무기(클래스)별 평타 설정 적용 — 이미 바인딩됐으면 바로, 이후 클래스가 바뀌면 이벤트로
+        _prefabAttackRange = attackRange;
+        _prefabAttackSpeed = attackSpeed;
+        if (_ownerStat != null)
+        {
+            _ownerStat.OnClassApplied += ApplyClassSettings;
+            if (_ownerStat.CurrentClass != null) ApplyClassSettings(_ownerStat.CurrentClass);
+        }
     }
+
+    // ─────────────────────────────────────────────────────────────────
+    // 무기(클래스)별 평타 설정 — 클래스 SO 값이 비어 있거나 0이면 프리팹 값을 사용
+    // ─────────────────────────────────────────────────────────────────
+
+    private float _prefabAttackRange;
+    private float _prefabAttackSpeed;
+
+    protected ClassData CurrentClass => _ownerStat != null ? _ownerStat.CurrentClass : null;
+
+    protected virtual void ApplyClassSettings(ClassData cls)
+    {
+        attackRange = cls != null && cls.attackRange > 0f ? cls.attackRange : _prefabAttackRange;
+        attackSpeed = cls != null && cls.attackSpeed > 0f ? cls.attackSpeed : _prefabAttackSpeed;
+    }
+
+    // 평타를 마법(마법 공격력·마법 데미지)으로 칠지 — 클래스가 PrefabDefault면 컴포넌트 기본값
+    protected bool IsMagicBasicAttack(bool componentDefault)
+    {
+        ClassData cls = CurrentClass;
+        if (cls == null) return componentDefault;
+        return cls.basicAttackDamage switch
+        {
+            ClassData.BasicAttackDamage.Physical => false,
+            ClassData.BasicAttackDamage.Magic    => true,
+            _                                    => componentDefault,
+        };
+    }
+
+    // 클래스에 지정된 문자열(효과음·이펙트 키)이 있으면 그것, 없으면 컴포넌트 기본값
+    protected static string Override(string classValue, string componentDefault)
+        => string.IsNullOrEmpty(classValue) ? componentDefault : classValue;
 
     // 파티원은 패시브·버프의 공격속도 보너스(0.1 = +10%)를 곱해서 공격 간격을 줄인다. 몬스터는 CharacterStat이 없어 그대로
     private CharacterStat _ownerStat;

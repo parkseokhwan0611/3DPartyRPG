@@ -88,7 +88,11 @@ public partial class CharacterStat : MonoBehaviour, IDamageable
     void OnDestroy()
     {
         if (DataManager.instance != null)
-            DataManager.instance.OnDataInitialized -= BindStatus;
+        {
+            DataManager.instance.OnDataInitialized  -= BindStatus;
+            DataManager.instance.OnPartyClassChanged -= HandlePartyClassChanged;
+        }
+        OnClassApplied = null;
 
         // 구독자가 죽은 오브젝트를 참조하지 않도록 이벤트 초기화
         OnHpChanged = null;
@@ -110,13 +114,59 @@ public partial class CharacterStat : MonoBehaviour, IDamageable
         }
 
         myStatus = DataManager.instance.partyStatuses[partyIndex];
+        ApplyClass();
+    }
+
+    // ─────────────────────────────────────────────────────────────────
+    // 무기(클래스) 적용 — 바인딩 시점과 DataManager.SelectClass로 클래스가 바뀔 때 호출
+    // ─────────────────────────────────────────────────────────────────
+
+    public ClassData CurrentClass => myStatus != null ? myStatus.classData : null;
+
+    // 공격 컴포넌트(평타 설정)·ClassWeaponSwitcher(무기 오브젝트)가 구독
+    public event Action<ClassData> OnClassApplied;
+
+    private RuntimeAnimatorController _prefabAnimatorController;
+    private bool _prefabAnimatorCached;
+
+    private void ApplyClass()
+    {
+        ClassData cls = CurrentClass;
+        if (cls == null) return;
+
+        // 애니메이터 교체 — 클래스에 지정이 없으면 프리팹 원래 컨트롤러로 되돌림
+        var animator = GetComponent<Animator>();
+        if (animator != null)
+        {
+            if (!_prefabAnimatorCached)
+            {
+                _prefabAnimatorController = animator.runtimeAnimatorController;
+                _prefabAnimatorCached     = true;
+            }
+            RuntimeAnimatorController target = cls.animatorController != null ? cls.animatorController : _prefabAnimatorController;
+            if (target != null && animator.runtimeAnimatorController != target)
+                animator.runtimeAnimatorController = target;
+        }
+
+        OnClassApplied?.Invoke(cls);
+    }
+
+    private void HandlePartyClassChanged(int changedIndex)
+    {
+        if (changedIndex != partyIndex) return;
+        ApplyClass();
+        OnHpChanged?.Invoke();
+        OnMpChanged?.Invoke();
     }
 
     void Start()
     {
         BindStatus();
         if (DataManager.instance != null)
-            DataManager.instance.OnDataInitialized += BindStatus;
+        {
+            DataManager.instance.OnDataInitialized  += BindStatus;
+            DataManager.instance.OnPartyClassChanged += HandlePartyClassChanged;
+        }
 
         StartCoroutine(RegenRoutine());
     }

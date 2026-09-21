@@ -40,4 +40,32 @@ public class ClassData : ScriptableObject
     public float hpRegenPerVit  = 0f;  // VIT 1당 초당 HP 재생
     public float baseMpRegen    = 0f;  // 초당 기본 MP 재생
     public float mpRegenPerFth  = 0f;  // FTH 1당 초당 MP 재생
+
+    // ─────────────────────────────────────────────────────────────────
+    // 무기(클래스)별 외형·평타 — 비워두거나 0이면 캐릭터 프리팹에 설정된 값을 그대로 사용
+    // ─────────────────────────────────────────────────────────────────
+
+    public enum BasicAttackDamage
+    {
+        PrefabDefault, // 공격 컴포넌트 기본값 (근접 = 물리, 원거리 = 마법)
+        Physical,      // 물리 공격력 기준 물리 데미지 (예: 건슬링어)
+        Magic,         // 마법 공격력 기준 마법 데미지
+    }
+
+    [Header("외형 (비우면 프리팹 그대로)")]
+    [Tooltip("이 클래스를 고르면 캐릭터 Animator에 적용할 컨트롤러. 무기 오브젝트는 캐릭터 프리팹의 ClassWeaponSwitcher에서 지정")]
+    public RuntimeAnimatorController animatorController;
+
+    [Header("기본 공격 (비우거나 0이면 프리팹 값)")]
+    public BasicAttackDamage basicAttackDamage = BasicAttackDamage.PrefabDefault;
+    [Tooltip("평타 효과음 키 (AudioManager)")]
+    public string normalAttackSfxKey;
+    [Tooltip("근접 평타 히트 이펙트 풀 키 (MeleeAttack 전용)")]
+    public string meleeHitEffectKey;
+    [Tooltip("원거리 평타 투사체 풀 키 (RangedAttack/HealerAttack 전용)")]
+    public string projectilePoolKey;
+    [Tooltip("평타 사거리")]
+    public float attackRange = 0f;
+    [Tooltip("공격속도 (공격 간격 = attackDuration ÷ 공격속도)")]
+    public float attackSpeed = 0f;
 }

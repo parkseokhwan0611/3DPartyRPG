@@ -77,7 +77,7 @@ public abstract class RangedAttackBase : AttackBase
             yield return null;
             yield return null;
         }
-        AudioManager.instance?.PlaySFX(NormalAttackSfxKey);
+        AudioManager.instance?.PlaySFX(Override(CurrentClass?.normalAttackSfxKey, NormalAttackSfxKey));
 
         yield return new WaitForSeconds(damageDelay / speed);
 
@@ -101,7 +101,7 @@ public abstract class RangedAttackBase : AttackBase
             yield break;
         }
 
-        var effect = ObjectPoolManager.instance.GetGo(projectileName);
+        var effect = ObjectPoolManager.instance.GetGo(Override(CurrentClass?.projectilePoolKey, projectileName));
         if (effect == null)
         {
             IsAttackAnimPlaying = false;
@@ -113,8 +113,11 @@ public abstract class RangedAttackBase : AttackBase
         effect.transform.position = spawnPos;
         effect.transform.rotation = preciseRot;
 
-        float damage = myStat.TotalAp * (1f + myStat.MagicDmgBonus);
-        bool  isCrit = Random.value < myStat.TotalCritRate;
+        // 원거리 기본은 마법 — 클래스 SO에서 물리로 바꿀 수 있음 (건슬링어)
+        bool  isMagic = IsMagicBasicAttack(componentDefault: true);
+        float damage  = isMagic ? myStat.TotalAp * (1f + myStat.MagicDmgBonus)
+                                : myStat.TotalAtk * (1f + myStat.PhysDmgBonus);
+        bool  isCrit  = Random.value < myStat.TotalCritRate;
 
         if (isCrit)
         {
@@ -125,7 +128,7 @@ public abstract class RangedAttackBase : AttackBase
 
         ProjectileScript proj = effect.GetComponent<ProjectileScript>();
         if (proj != null)
-            proj.SetProjectileData(damage, gameObject, enemy => OnProjectileHit(enemy, isCrit), isMagic: true, crit: isCrit);
+            proj.SetProjectileData(damage, gameObject, enemy => OnProjectileHit(enemy, isCrit, isMagic), isMagic: isMagic, crit: isCrit);
 
         Rigidbody rb = effect.GetComponent<Rigidbody>();
         if (rb != null)
@@ -145,7 +148,7 @@ public abstract class RangedAttackBase : AttackBase
         attackCoroutine = null;
     }
 
-    private void OnProjectileHit(EnemyHp enemyStat, bool isCrit)
+    private void OnProjectileHit(EnemyHp enemyStat, bool isCrit, bool isMagic)
     {
         if (enemyStat == null || myStat == null) return;
 
@@ -156,7 +159,7 @@ public abstract class RangedAttackBase : AttackBase
             myStat.RecoverMp(myStat.MpOnHit, showAura: false, showText: false);
 
         // 발동형 패시브 (공격속도 증가·독·치명타 번개·쿨 초기화)
-        myStat.NotifyBasicAttackHit(enemyStat, isCrit, isMagic: true);
+        myStat.NotifyBasicAttackHit(enemyStat, isCrit, isMagic);
     }
 
     public override void OnHit() { }

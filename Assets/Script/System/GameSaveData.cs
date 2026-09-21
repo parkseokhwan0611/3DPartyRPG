@@ -58,6 +58,11 @@ public class CharacterSaveData
     public int   statPoint, skillPoint;
     public float addedStr, addedVit, addedInt, addedFht;
     public List<SkillLevelEntry> skillLevels = new List<SkillLevelEntry>();
+
+    // 선택한 클래스(무기) — ClassData.ClassType 정수값. -1이면 구버전 세이브 → 첫 번째 무기로 로드
+    public int  classType = -1;
+    // 무기를 이미 골랐는지 (게임 초반 1회 선택용)
+    public bool classChosen;
 }
 
 [System.Serializable]

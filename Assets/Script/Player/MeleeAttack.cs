@@ -39,7 +39,7 @@ public class MeleeAttack : AttackBase
         float speed = AttackAnimSpeed;
         ApplyAttackAnimSpeed();
         anim.SetTrigger("doNormalAttack");
-        AudioManager.instance?.PlaySFX("Tanker_NormalAtk");
+        AudioManager.instance?.PlaySFX(Override(CurrentClass?.normalAttackSfxKey, "Tanker_NormalAtk"));
 
         yield return new WaitForSeconds(damageDelay / speed);
         OnHit();
@@ -72,8 +72,11 @@ public class MeleeAttack : AttackBase
                 myStat.RecoverMp(myStat.MpOnHit, showAura: false, showText: false);
         }
 
-        float damage = myStat.TotalAtk * (1f + myStat.PhysDmgBonus);
-        bool  isCrit = Random.value < myStat.TotalCritRate;
+        // 근접 기본은 물리 — 클래스 SO에서 마법으로 바꿀 수 있음
+        bool  isMagic = IsMagicBasicAttack(componentDefault: false);
+        float damage  = isMagic ? myStat.TotalAp * (1f + myStat.MagicDmgBonus)
+                                : myStat.TotalAtk * (1f + myStat.PhysDmgBonus);
+        bool  isCrit  = Random.value < myStat.TotalCritRate;
 
         if (isCrit)
         {
@@ -90,19 +93,20 @@ public class MeleeAttack : AttackBase
             var enemyStat = _hitBuffer[i].GetComponent<EnemyHp>();
             if (enemyStat == null) continue;
 
-            enemyStat.TakeDamage(damage, gameObject, isCrit); // 근접 = 물리 피해
+            if (isMagic) enemyStat.TakeMagicDamage(damage, gameObject, isCrit);
+            else         enemyStat.TakeDamage(damage, gameObject, isCrit);
             if (primary == null || enemyStat == targetHealth) primary = enemyStat;
         }
 
         // 4. 발동형 패시브 (공격속도 증가·독·치명타 번개·쿨 초기화) — 한 번 휘두를 때 한 번만
         if (primary != null)
-            myStat.NotifyBasicAttackHit(primary, isCrit, isMagic: false);
+            myStat.NotifyBasicAttackHit(primary, isCrit, isMagic);
     }
     private void SpawnHitEffect(Vector3 pos)
     {
         if (ObjectPoolManager.instance != null)
         {
-            var effect = ObjectPoolManager.instance.GetGo(hitEffectName);
+            var effect = ObjectPoolManager.instance.GetGo(Override(CurrentClass?.meleeHitEffectKey, hitEffectName));
             if (effect != null)
             {
                 // 1. 위치 설정

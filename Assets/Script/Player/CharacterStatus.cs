@@ -233,6 +233,39 @@ public string charName;
         return true;
     }
 
+    // 무기(클래스)를 이미 골랐는지 — 게임 초반 1회 선택용, 세이브 대상
+    public bool classChosen = false;
+
+    // 배운 스킬을 전부 되돌리고 쓴 스킬 포인트를 돌려준다 (클래스 변경 시).
+    // 패시브 효과는 배운 레벨만큼 빼서 원상복구. 반환값: 돌려받은 포인트
+    public int ResetAllSkills()
+    {
+        int refund = 0;
+        foreach (var kvp in skillLevels)
+        {
+            SkillData skill = kvp.Key;
+            int level = kvp.Value;
+            if (skill == null || level <= 0) continue;
+
+            if (skill.skillPointCost != null && skill.skillPointCost.Length > 0)
+                for (int lv = 0; lv < level; lv++)
+                    refund += skill.skillPointCost[Mathf.Clamp(lv, 0, skill.skillPointCost.Length - 1)];
+
+            if (skill is PassiveSkillData passive)
+            {
+                ApplyPassiveEffect(passive, passive.effectType, passive.valueMode, -passive.GetValue(level), 0);
+                if (passive.HasValidSecondEffect)
+                    ApplyPassiveEffect(passive, passive.secondEffectType, passive.secondValueMode,
+                                       -passive.GetSecondValue(level), 0);
+            }
+        }
+
+        skillLevels.Clear();
+        activeTriggerPassives.Clear();
+        skillPoint += refund;
+        return refund;
+    }
+
     // oldLevel: 적용 전 레벨 (0 = 미습득), newLevel: 적용 후 레벨
     // 델타만 더해서 레벨업할수록 중복 누적되지 않음
     private void ApplyPassive(PassiveSkillData passive, int oldLevel, int newLevel)

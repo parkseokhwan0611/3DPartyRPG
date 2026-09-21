@@ -33,8 +33,18 @@ public class DataManager : MonoBehaviour
     public List<CharacterStatus>    partyStatuses   = new List<CharacterStatus>();
     public List<CharacterEquipment> partyEquipments = new List<CharacterEquipment>();
     public Inventory                sharedInventory = new Inventory();
+    [Tooltip("파티원별 첫 번째 무기(클래스) — 인덱스 = 파티 인덱스. 무기를 고르기 전 기본 클래스")]
     public List<ClassData>          baseDataList;
+    [Tooltip("파티원별 두 번째 무기(클래스) — 인덱스 = 파티 인덱스. 비워두면 그 캐릭터는 무기 선택 불가")]
+    public List<ClassData>          secondClassList = new List<ClassData>();
     public List<ClassSkillTree>     skillTrees;
+
+    [Header("테스트 설정 — 무기")]
+    [Tooltip("새 게임 시작 시 두 번째 무기로 시작할 파티원 (인덱스 = 파티 인덱스, 체크하면 두 번째 무기)")]
+    public List<bool> startWithSecondClass = new List<bool>();
+
+    // 파티원의 클래스(무기)가 바뀌었을 때 — 인자: 파티 인덱스. CharacterStat/SkillManager가 외형·평타·퀵슬롯을 다시 적용
+    public event System.Action<int> OnPartyClassChanged;
 
     public int partyLevel = 1;
     public int partyExp   = 0;
@@ -146,11 +156,12 @@ public class DataManager : MonoBehaviour
                     sharedInventory.TryAddItem(new ItemInstance(entry.item, Mathf.Max(1, entry.count)));
 
         // 파티원 초기화
-        foreach (var baseData in baseDataList)
+        for (int i = 0; i < baseDataList.Count; i++)
         {
+            ClassData baseData = GetStartClass(i);
             var newStatus = new CharacterStatus();
             newStatus.classData  = baseData;
-            newStatus.charName   = string.IsNullOrEmpty(baseData.displayName) ? baseData.name : baseData.displayName;
+            newStatus.charName   = GetCharName(baseData);
             newStatus.currentHp  = newStatus.MaxHp;
             newStatus.currentMp  = newStatus.MaxMp;
             newStatus.skillPoint = startSkillPoint;
@@ -202,6 +213,8 @@ public class DataManager : MonoBehaviour
                 addedVit   = status.addedVit,
                 addedInt   = status.addedInt,
                 addedFht   = status.addedFht,
+                classType   = status.classData != null ? (int)status.classData.classType : -1,
+                classChosen = status.classChosen,
             };
 
             foreach (var kvp in status.skillLevels)
@@ -275,8 +288,13 @@ public class DataManager : MonoBehaviour
         {
             var saved  = save.characters[i];
             var status = new CharacterStatus();
-            status.classData  = baseDataList[i];
-            status.charName   = string.IsNullOrEmpty(baseDataList[i].displayName) ? baseDataList[i].name : baseDataList[i].displayName;
+            // 저장된 클래스가 이 캐릭터의 무기 목록에 있으면 그걸로, 없으면(구버전 세이브 등) 첫 번째 무기
+            ClassData savedClass = saved.classType >= 0
+                ? FindClassOption(i, (ClassData.ClassType)saved.classType)
+                : null;
+            status.classData   = savedClass != null ? savedClass : baseDataList[i];
+            status.charName    = GetCharName(status.classData);
+            status.classChosen = saved.classChosen;
             status.currentHp  = saved.currentHp;
             status.currentMp  = saved.currentMp;
             status.statPoint  = saved.statPoint;
@@ -392,6 +410,74 @@ public class DataManager : MonoBehaviour
 
     public ClassSkillTree GetSkillTree(ClassData.ClassType classType)
         => skillTrees.Find(t => t.classType == classType);
+
+    // ─────────────────────────────────────────────────────────────────
+    // 무기(클래스) 선택 — 캐릭터마다 첫 번째/두 번째 무기 중 하나. 게임 초반 1회 선택 용도
+    // ─────────────────────────────────────────────────────────────────
+
+    private static string GetCharName(ClassData data)
+        => data == null ? "" : (string.IsNullOrEmpty(data.displayName) ? data.name : data.displayName);
+
+    // 파티원이 고를 수 있는 클래스 목록 (첫 번째 무기, 두 번째 무기 순 / 비어 있는 칸은 제외)
+    public List<ClassData> GetClassOptions(int partyIndex)
+    {
+        var options = new List<ClassData>();
+        if (baseDataList != null && partyIndex >= 0 && partyIndex < baseDataList.Count && baseDataList[partyIndex] != null)
+            options.Add(baseDataList[partyIndex]);
+        if (secondClassList != null && partyIndex >= 0 && partyIndex < secondClassList.Count && secondClassList[partyIndex] != null)
+            options.Add(secondClassList[partyIndex]);
+        return options;
+    }
+
+    public ClassData FindClassOption(int partyIndex, ClassData.ClassType type)
+        => GetClassOptions(partyIndex).Find(c => c.classType == type);
+
+    // 새 게임 시작 클래스 — 테스트 설정에서 두 번째 무기를 체크했고 실제로 있으면 두 번째, 아니면 첫 번째
+    private ClassData GetStartClass(int partyIndex)
+    {
+        bool useSecond = startWithSecondClass != null && partyIndex < startWithSecondClass.Count && startWithSecondClass[partyIndex];
+        if (useSecond && secondClassList != null && partyIndex < secondClassList.Count && secondClassList[partyIndex] != null)
+            return secondClassList[partyIndex];
+        return baseDataList[partyIndex];
+    }
+
+    public bool IsClassChosen(int partyIndex)
+        => partyIndex >= 0 && partyIndex < partyStatuses.Count && partyStatuses[partyIndex].classChosen;
+
+    // 파티원의 무기(클래스)를 바꾼다. 이 캐릭터의 무기 목록에 없는 클래스면 false.
+    // 바꾸면: 배운 스킬 초기화 + 쓴 스킬 포인트 반환, 체력·마나 가득, 퀵슬롯 비움.
+    // 배분한 스탯과 장비는 그대로 (게임 초반에만 고르는 전제)
+    // 같은 클래스를 다시 고르면 초기화 없이 선택 완료만 기록
+    public bool SelectClass(int partyIndex, ClassData.ClassType type)
+    {
+        if (partyIndex < 0 || partyIndex >= partyStatuses.Count) return false;
+
+        ClassData newClass = FindClassOption(partyIndex, type);
+        if (newClass == null)
+        {
+            Debug.LogWarning($"[DataManager] 파티원 {partyIndex}은(는) {type} 클래스를 고를 수 없습니다. baseDataList/secondClassList를 확인하세요.");
+            return false;
+        }
+
+        var status = partyStatuses[partyIndex];
+        status.classChosen = true;
+        if (status.classData == newClass) return true;
+
+        status.ResetAllSkills();
+        status.classData = newClass;
+        status.charName  = GetCharName(newClass);
+        status.currentHp = status.MaxHp;
+        status.currentMp = status.MaxMp;
+
+        // 이전 클래스 스킬이 퀵슬롯에 남지 않도록 비움 (씬에 캐릭터가 있으면 SkillManager가 이벤트로 슬롯을 비우며 다시 기록)
+        for (int slot = 0; slot < 4; slot++)
+            SetQuickSlotSkillId(partyIndex, slot, "");
+
+        status.RaiseHpChanged();
+        status.RaiseMpChanged();
+        OnPartyClassChanged?.Invoke(partyIndex);
+        return true;
+    }
 
     // ─────────────────────────────────────────────────────────────────
     // 스킬 퀵슬롯 배정 (씬 전환 후에도 유지되도록 실시간 보관)
