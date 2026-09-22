@@ -17,17 +17,29 @@ public class ClassData : ScriptableObject
     public float mp;
     public List<int> learnedSkillIds; // 배운 스킬 ID 리스트
     public List<int> inventoryItemIds; // 소지 아이템 ID 리스트
-    public float baseStr;    // 기본 힘
-    public float baseVit;    // 기본 체력
-    public float baseInt;    // 기본 체력
-    public float baseFht;    // 기본 체력
-    public float atkPerStr;  // 힘 1당 증가할 ATK 계수
-    public float hpPerVit;  // 체력 1당 증가할 HP 계수
-    public float defPerVit;  // 체력 1당 증가할 HP 계수
-    public float apPerInt;  // 지능 1당 증가할 AP 계수
-    public float apPerFth;  // 신앙 1당 증가할 AP 계수
+    // 필드 순서는 인스펙터 표시 순서일 뿐 — 에셋은 이름으로 저장되므로 순서를 바꿔도 값이 유지된다
+    [Header("스탯 — 기본 수치")]
+    [Tooltip("기본 힘")]   public float baseStr;
+    [Tooltip("기본 민첩")] public float baseDex;
+    [Tooltip("기본 체력")] public float baseVit;
+    [Tooltip("기본 지능")] public float baseInt;
+    [Tooltip("기본 신앙")] public float baseFht;
+
+    [Header("스탯 — 1당 증가량")]
+    [Tooltip("힘 1당 물리 공격력")]                    public float atkPerStr;
+    [Tooltip("민첩 1당 물리 공격력")]                  public float atkPerDex;
+    [Tooltip("민첩 1당 치명타 확률 (0.001 = 0.1%)")]   public float critRatePerDex;
+    [Tooltip("체력 1당 최대 체력")]                    public float hpPerVit;
+    [Tooltip("체력 1당 방어력")]                       public float defPerVit;
+    [Tooltip("체력 1당 초당 체력 재생")]               public float hpRegenPerVit = 0f;
+    [Tooltip("지능 1당 마법 공격력")]                  public float apPerInt;
+    [Tooltip("신앙 1당 마법 공격력")]                  public float apPerFth;
+    [Tooltip("신앙 1당 초당 마나 재생")]               public float mpRegenPerFth = 0f;
+
     [Header("치명타")]
+    [Tooltip("기본 치명타 확률 (0.05 = 5%). 최종 치명타 확률은 100%를 넘지 않음")]
     public float baseCritRate   = 0.05f;
+    [Tooltip("치명타 데미지 배율 (1.5 = 150%)")]
     public float baseCritDamage = 1.5f;
     [Header("마법 저항력")]
     public float baseMagicRes = 0f;
@@ -37,35 +49,48 @@ public class ClassData : ScriptableObject
 
     [Header("HP / MP 재생")]
     public float baseHpRegen    = 0f;  // 초당 기본 HP 재생
-    public float hpRegenPerVit  = 0f;  // VIT 1당 초당 HP 재생
     public float baseMpRegen    = 0f;  // 초당 기본 MP 재생
-    public float mpRegenPerFth  = 0f;  // FTH 1당 초당 MP 재생
 
     // ─────────────────────────────────────────────────────────────────
-    // 무기(클래스)별 외형·평타 — 비워두거나 0이면 캐릭터 프리팹에 설정된 값을 그대로 사용
+    // 무기(클래스)별 외형·평타 — 파티원 평타 설정은 전부 여기서 관리 (씬의 공격 컴포넌트에는 없음)
     // ─────────────────────────────────────────────────────────────────
 
+    // 에셋에 정수로 저장되므로 값 고정 (0은 예전 "프리팹 기본값" 자리라 비워둠)
     public enum BasicAttackDamage
     {
-        PrefabDefault, // 공격 컴포넌트 기본값 (근접 = 물리, 원거리 = 마법)
-        Physical,      // 물리 공격력 기준 물리 데미지 (예: 건슬링어)
-        Magic,         // 마법 공격력 기준 마법 데미지
+        Physical = 1,  // 물리 공격력 기준 물리 데미지 (탱커, 워리어, 건슬링어)
+        Magic    = 2,  // 마법 공격력 기준 마법 데미지
     }
 
-    [Header("외형 (비우면 프리팹 그대로)")]
-    [Tooltip("이 클래스를 고르면 캐릭터 Animator에 적용할 컨트롤러. 무기 오브젝트는 캐릭터 프리팹의 ClassWeaponSwitcher에서 지정")]
+    [Header("외형")]
+    [Tooltip("이 클래스를 고르면 캐릭터 Animator에 적용할 컨트롤러 (비우면 씬에 배치된 그대로).\n" +
+             "무기 오브젝트는 캐릭터의 ClassWeaponSwitcher에서 지정")]
     public RuntimeAnimatorController animatorController;
 
-    [Header("기본 공격 (비우거나 0이면 프리팹 값)")]
-    public BasicAttackDamage basicAttackDamage = BasicAttackDamage.PrefabDefault;
-    [Tooltip("평타 효과음 키 (AudioManager)")]
+    [Header("기본 공격")]
+    public BasicAttackDamage basicAttackDamage = BasicAttackDamage.Physical;
+    [Tooltip("평타 효과음 키 (AudioManager, 비우면 소리 없음)")]
     public string normalAttackSfxKey;
-    [Tooltip("근접 평타 히트 이펙트 풀 키 (MeleeAttack 전용)")]
+    [Tooltip("근접 평타 히트 이펙트 풀 키 (MeleeAttack 전용, 비우면 없음)")]
     public string meleeHitEffectKey;
-    [Tooltip("원거리 평타 투사체 풀 키 (RangedAttack/HealerAttack 전용)")]
+    [Tooltip("원거리 평타 투사체 풀 키 (RangedAttack 전용)")]
     public string projectilePoolKey;
     [Tooltip("평타 사거리")]
-    public float attackRange = 0f;
-    [Tooltip("공격속도 (공격 간격 = attackDuration ÷ 공격속도)")]
-    public float attackSpeed = 0f;
+    public float attackRange = 2f;
+    [Tooltip("공격속도 배율. 공격 간격 = Attack Duration ÷ Attack Speed (1이면 Attack Duration 그대로)")]
+    public float attackSpeed = 1f;
+
+    [Header("기본 공격 타이밍 (애니메이터 모션 길이에 맞춤)")]
+    [Tooltip("공격 간격 (초) — 보통 평타 모션 길이")]
+    public float attackDuration = 1f;
+    [Tooltip("모션 시작 후 타격(근접)·발사(원거리)까지 걸리는 시간 (초)")]
+    public float damageDelay = 0.33f;
+    [Tooltip("타격·발사 뒤 후딜레이 (초) — 끝나야 이동을 재개. 보통 모션 길이 - Damage Delay")]
+    public float recoveryDuration = 0.3f;
+
+    [Header("근접 판정 (MeleeAttack 전용)")]
+    [Tooltip("판정 구 반지름")]
+    public float meleeHitRadius = 1.5f;
+    [Tooltip("캐릭터 앞쪽으로 판정 구를 얼마나 떨어뜨릴지")]
+    public float meleeHitOffset = 1f;
 }

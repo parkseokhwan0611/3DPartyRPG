@@ -76,7 +76,7 @@ public class HealSkill : SkillBase
             if (member == null) continue;
             if (member.CurrentState == PartyMemberScript.MemberState.Dead) continue;
 
-            CharacterStat stat = member.GetComponent<CharacterStat>();
+            CharacterStat stat = member.StatComp;
             if (stat == null) continue;
 
             ApplyHeal(stat, healAmount, data);
@@ -107,13 +107,16 @@ public class HealSkill : SkillBase
 
     private IEnumerator DotHealRoutine(CharacterStat stat, float amountPerTick, float interval, float duration)
     {
+        if (stat == null || interval <= 0f) yield break; // 간격 0이면 한 프레임에 무한 반복되므로 차단
+        var member = stat.GetComponent<PartyMemberScript>();
+        var wait   = new WaitForSeconds(interval);
+
         float elapsed = 0f;
         while (elapsed < duration)
         {
-            yield return new WaitForSeconds(interval);
+            yield return wait;
             elapsed += interval;
             if (stat == null) yield break;
-            var member = stat.GetComponent<PartyMemberScript>();
             if (member != null && member.CurrentState == PartyMemberScript.MemberState.Dead) yield break;
             HealTarget(stat, amountPerTick);
         }

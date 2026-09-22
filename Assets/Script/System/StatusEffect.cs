@@ -71,6 +71,11 @@ public class StatusEffect
     [System.NonSerialized]
     public object refreshKey;
 
+    // 이 효과의 수치를 실제로 더한 CharacterStatus — 해제할 때 조회 시점의 상태가 아니라
+    // 적용했던 그 객체에서 되돌려야 데이터가 교체된 뒤(새 게임·불러오기)에도 새 상태가 오염되지 않는다
+    [System.NonSerialized]
+    public CharacterStatus appliedStatus;
+
     public StatusEffect(StatusEffectType type, float value, float duration, GameObject source,
                         ModifierMode mode = ModifierMode.Flat)
     {

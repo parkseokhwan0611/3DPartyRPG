@@ -168,12 +168,9 @@ public class PartyStatusEffectHandler : MonoBehaviour
             return;
         }
 
-        // 갱신형(refreshKey 지정) — 같은 키로 걸린 기존 효과를 지우고 새로 건다 (누적 방지)
-        if (effect.refreshKey != null)
-        {
-            var old = activeBuffs.Find(e => e.refreshKey == effect.refreshKey);
-            if (old != null) RemoveBuffInstance(old);
-        }
+        // 갱신형(refreshKey 지정) — 같은 키로 걸린 기존 효과가 있으면 그 자리에서 수치·지속시간만 갱신한다.
+        // 매 타격마다 발동하는 효과라 지우고 새로 걸면 버프 UI·이펙트 이벤트가 타격마다 두 번씩 나가서 조용히 처리
+        if (effect.refreshKey != null && TryRefreshBuff(effect)) return;
 
         // 같은 타입이라도 교체하지 않고 독립적으로 누적 — 각자 자기 지속시간에 따라 개별 종료
         activeBuffs.Add(effect);
@@ -181,6 +178,31 @@ public class PartyStatusEffectHandler : MonoBehaviour
         ApplyBuffValue(effect, true);
 
         OnBuffChanged?.Invoke(effect.effectType, true);
+    }
+
+    // 같은 refreshKey·타입의 기존 효과를 찾아 수치와 지속시간을 새 값으로 바꾼다. 없으면 false
+    private bool TryRefreshBuff(StatusEffect effect)
+    {
+        for (int i = 0; i < activeBuffs.Count; i++)
+        {
+            StatusEffect old = activeBuffs[i];
+            if (old.refreshKey != effect.refreshKey || old.effectType != effect.effectType) continue;
+
+            if (!Mathf.Approximately(old.value, effect.value) || old.mode != effect.mode)
+            {
+                ApplyBuffValue(old, false);
+                old.value = effect.value;
+                old.mode  = effect.mode;
+                ApplyBuffValue(old, true);
+            }
+
+            old.duration = effect.duration;
+            old.source   = effect.source;
+            if (old.routine != null) StopCoroutine(old.routine);
+            old.routine = StartCoroutine(BuffRoutine(old));
+            return true;
+        }
+        return false;
     }
 
     // ─────────────────────────────────────────────────────────────────
@@ -373,9 +395,15 @@ public class PartyStatusEffectHandler : MonoBehaviour
     {
         if (myStat == null) return;
 
-        if (DataManager.instance == null) return;
-        if (myStat.partyIndex < 0 || myStat.partyIndex >= DataManager.instance.partyStatuses.Count) return;
-        var status = DataManager.instance.partyStatuses[myStat.partyIndex];
+        // 해제는 적용했던 그 상태 객체에서 되돌린다 (그 사이 DataManager의 상태가 새로 만들어졌어도 안전)
+        CharacterStatus status = apply ? null : effect.appliedStatus;
+        if (status == null)
+        {
+            if (DataManager.instance == null) return;
+            if (myStat.partyIndex < 0 || myStat.partyIndex >= DataManager.instance.partyStatuses.Count) return;
+            status = DataManager.instance.partyStatuses[myStat.partyIndex];
+        }
+        effect.appliedStatus = apply ? status : null;
 
         float multiplier = apply ? 1f : -1f;
 

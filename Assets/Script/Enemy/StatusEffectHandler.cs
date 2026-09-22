@@ -80,8 +80,23 @@ public class StatusEffectHandler : MonoBehaviour
             return;
         }
 
+        // 독이 이미 걸려 있으면 틱 주기는 그대로 두고 수치·남은 시간만 갱신 — 지우고 새로 걸면
+        // 1초 틱 타이머도 처음부터 다시 돌아서, 1초보다 자주 재발동되면 독 데미지가 한 번도 안 들어갔음
+        if (effect.effectType == StatusEffectType.Poison && _poison != null && activeEffects.Contains(_poison))
+        {
+            _poison.value   = effect.value;
+            _poison.source  = effect.source;
+            _poisonRemaining = Mathf.Max(_poisonRemaining, effect.duration);
+            return;
+        }
+
         CancelEffect(effect.effectType);
         activeEffects.Add(effect);
+        if (effect.effectType == StatusEffectType.Poison)
+        {
+            _poison          = effect;
+            _poisonRemaining = effect.duration;
+        }
 
         if (IsDebuff(effect.effectType))
         {
@@ -96,19 +111,22 @@ public class StatusEffectHandler : MonoBehaviour
     }
 
     // 독 — 1초마다 value만큼 마법 데미지. 건 사람을 공격자로 넘겨서 처치 판정·데미지 보너스가 그 파티원 기준으로 적용됨.
-    // 다시 걸면 CancelEffect로 기존 독이 지워지고 새 수치·지속시간으로 갱신 (중첩 없음)
+    // 다시 걸면 ApplyEffect가 수치와 남은 시간만 갱신 (중첩 없음, 틱 주기 유지)
+    private StatusEffect _poison;
+    private float        _poisonRemaining;
+    private static readonly WaitForSeconds PoisonTick = new WaitForSeconds(1f);
+
     private IEnumerator PoisonRoutine(StatusEffect effect)
     {
-        var tick      = new WaitForSeconds(1f);
-        float elapsed = 0f;
-        while (elapsed < effect.duration)
+        while (_poisonRemaining > 0f)
         {
-            yield return tick;
-            elapsed += 1f;
+            yield return PoisonTick;
+            _poisonRemaining -= 1f;
             if (enemyHp == null || enemyHp.isDead) break;
             enemyHp.TakeMagicDamage(effect.value, effect.source);
         }
 
+        if (_poison == effect) _poison = null;
         if (!activeEffects.Contains(effect)) yield break;
 
         activeEffects.Remove(effect);
@@ -183,7 +201,15 @@ public class StatusEffectHandler : MonoBehaviour
     public bool HasDebuff(StatusEffectType type)
     {
         if (type == StatusEffectType.Stun) return isStunned;
-        return activeEffects.Exists(e => e.effectType == type);
+        return FindEffect(type) != null;
+    }
+
+    // 람다(클로저) 할당 없이 타입으로 활성 효과 검색 — HasDebuff는 몬스터 Update에서 자주 불림
+    private StatusEffect FindEffect(StatusEffectType type)
+    {
+        for (int i = 0; i < activeEffects.Count; i++)
+            if (activeEffects[i].effectType == type) return activeEffects[i];
+        return null;
     }
 
     // ─────────────────────────────────────────────────────────────────
@@ -202,7 +228,7 @@ public class StatusEffectHandler : MonoBehaviour
             return;
         }
 
-        StatusEffect existing = activeEffects.Find(e => e.effectType == type);
+        StatusEffect existing = FindEffect(type);
         if (existing == null) return;
 
         if (existing.routine != null)
@@ -220,7 +246,7 @@ public class StatusEffectHandler : MonoBehaviour
 
     private void CancelEffect(StatusEffectType type)
     {
-        StatusEffect existing = activeEffects.Find(e => e.effectType == type);
+        StatusEffect existing = FindEffect(type);
         if (existing == null) return;
 
         if (existing.routine != null)

@@ -12,7 +12,7 @@ public partial class CharacterStat
     private SkillManager SkillManagerComp => _skillManager != null ? _skillManager : (_skillManager = GetComponent<SkillManager>());
 
     // ─────────────────────────────────────────────────────────────────
-    // 평타 적중 (MeleeAttack / RangedAttackBase가 한 번 공격할 때 한 번 호출)
+    // 평타 적중 (MeleeAttack / RangedAttack이 한 번 공격할 때 한 번 호출)
     // ─────────────────────────────────────────────────────────────────
 
     public void NotifyBasicAttackHit(EnemyHp target, bool isCrit, bool isMagic)
@@ -134,8 +134,7 @@ public partial class CharacterStat
         float duration = passive.GetProcDuration(level);
         if (value <= 0f || duration <= 0f) return;
 
-        var handler = target.GetComponent<PartyStatusEffectHandler>();
-        if (handler == null) return;
+        if (!target.TryGetComponent(out PartyStatusEffectHandler handler)) return;
 
         handler.ApplyBuff(new StatusEffect(StatusEffectType.AtkSpeedUp, value, duration, gameObject)
         {

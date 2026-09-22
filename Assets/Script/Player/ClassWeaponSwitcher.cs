@@ -43,16 +43,21 @@ public class ClassWeaponSwitcher : MonoBehaviour
         // 현재 클래스 항목이 없으면 설정 전으로 보고 아무것도 건드리지 않음 (전부 꺼지는 사고 방지)
         if (!entries.Exists(e => e.classType == cls.classType)) return;
 
-        // 같은 오브젝트가 여러 클래스에 등록돼 있을 수 있으므로 먼저 전부 끄고 해당 클래스 것만 켠다
+        // 같은 오브젝트가 여러 클래스에 등록돼 있을 수 있으므로 "현재 클래스 항목에 있으면 켬"으로 판단하고,
+        // 상태가 달라질 때만 SetActive — 전부 껐다 켜면 이미 켜져 있던 무기 이펙트가 처음부터 다시 재생됨
         foreach (var e in entries)
             foreach (var go in e.objects)
-                if (go != null) go.SetActive(false);
+            {
+                if (go == null) continue;
+                bool on = IsInClass(go, cls.classType);
+                if (go.activeSelf != on) go.SetActive(on);
+            }
+    }
 
+    private bool IsInClass(GameObject go, ClassData.ClassType type)
+    {
         foreach (var e in entries)
-        {
-            if (e.classType != cls.classType) continue;
-            foreach (var go in e.objects)
-                if (go != null) go.SetActive(true);
-        }
+            if (e.classType == type && e.objects.Contains(go)) return true;
+        return false;
     }
 }

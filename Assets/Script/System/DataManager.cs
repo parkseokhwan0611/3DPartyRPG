@@ -158,14 +158,7 @@ public class DataManager : MonoBehaviour
         // 파티원 초기화
         for (int i = 0; i < baseDataList.Count; i++)
         {
-            ClassData baseData = GetStartClass(i);
-            var newStatus = new CharacterStatus();
-            newStatus.classData  = baseData;
-            newStatus.charName   = GetCharName(baseData);
-            newStatus.currentHp  = newStatus.MaxHp;
-            newStatus.currentMp  = newStatus.MaxMp;
-            newStatus.skillPoint = startSkillPoint;
-            partyStatuses.Add(newStatus);
+            partyStatuses.Add(CreateNewStatus(i));
             partyEquipments.Add(new CharacterEquipment());
         }
 
@@ -213,6 +206,7 @@ public class DataManager : MonoBehaviour
                 addedVit   = status.addedVit,
                 addedInt   = status.addedInt,
                 addedFht   = status.addedFht,
+                addedDex   = status.addedDex,
                 classType   = status.classData != null ? (int)status.classData.classType : -1,
                 classChosen = status.classChosen,
             };
@@ -303,6 +297,7 @@ public class DataManager : MonoBehaviour
             status.addedVit   = saved.addedVit;
             status.addedInt   = saved.addedInt;
             status.addedFht   = saved.addedFht;
+            status.addedDex   = saved.addedDex;
 
             // 스킬 레벨 복원 — LevelUpSkill로 패시브 효과 재적용
             foreach (var entry in saved.skillLevels)
@@ -314,6 +309,14 @@ public class DataManager : MonoBehaviour
             }
 
             partyStatuses.Add(status);
+            partyEquipments.Add(new CharacterEquipment());
+        }
+
+        // 세이브보다 파티원이 늘어난 경우(파티원 추가 전 세이브 등) 나머지는 새 게임 상태로 채움 —
+        // 안 채우면 partyStatuses가 짧아져서 해당 캐릭터가 씬에서 바인딩되지 못함
+        for (int i = partyStatuses.Count; i < baseDataList.Count; i++)
+        {
+            partyStatuses.Add(CreateNewStatus(i));
             partyEquipments.Add(new CharacterEquipment());
         }
 
@@ -431,6 +434,22 @@ public class DataManager : MonoBehaviour
 
     public ClassData FindClassOption(int partyIndex, ClassData.ClassType type)
         => GetClassOptions(partyIndex).Find(c => c.classType == type);
+
+    // 새 게임 상태의 파티원 하나 (시작 클래스, 체력·마나 가득, 시작 스킬 포인트)
+    private CharacterStatus CreateNewStatus(int partyIndex)
+    {
+        ClassData baseData = GetStartClass(partyIndex);
+        if (baseData == null)
+            Debug.LogError($"[DataManager] 파티원 {partyIndex}의 클래스가 비어 있습니다. baseDataList를 확인하세요.");
+
+        var status = new CharacterStatus();
+        status.classData  = baseData;
+        status.charName   = GetCharName(baseData);
+        status.currentHp  = baseData != null ? status.MaxHp : 0f;
+        status.currentMp  = baseData != null ? status.MaxMp : 0f;
+        status.skillPoint = startSkillPoint;
+        return status;
+    }
 
     // 새 게임 시작 클래스 — 테스트 설정에서 두 번째 무기를 체크했고 실제로 있으면 두 번째, 아니면 첫 번째
     private ClassData GetStartClass(int partyIndex)

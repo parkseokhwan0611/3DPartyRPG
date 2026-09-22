@@ -85,7 +85,7 @@ public class CharacterEquipment
         float oldMaxHp = status.MaxHp;
 
         // 1. 장비 보너스 전부 초기화
-        status.equipStr = status.equipVit = status.equipInt = status.equipFht = 0f;
+        status.equipStr = status.equipVit = status.equipInt = status.equipFht = status.equipDex = 0f;
         status.equipAtk = status.equipAp  = status.equipMaxHp = 0f;
         status.equipDef = status.equipMagicRes  = 0f;
         status.equipCritRate = status.equipCritDmg  = 0f;
@@ -148,6 +148,7 @@ public class CharacterEquipment
             case SubOptionType.VIT:           status.equipVit      += sub.value; break;
             case SubOptionType.INT:           status.equipInt      += sub.value; break;
             case SubOptionType.FTH:           status.equipFht      += sub.value; break;
+            case SubOptionType.DEX:           status.equipDex      += sub.value; break;
             case SubOptionType.PhysDef:       status.equipDef      += sub.value; break;
             case SubOptionType.MagicRes:      status.equipMagicRes += sub.value; break;
             case SubOptionType.CritRate:      status.equipCritRate += sub.value; break;

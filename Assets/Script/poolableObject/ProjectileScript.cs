@@ -85,7 +85,7 @@ public class ProjectileScript : PoolAble
         onHitTargetCallback = null;
     }
 
-    // 콜백 받는 버전 (HealerAttack, RangedAttack에서 사용)
+    // 콜백 받는 버전 (파티원 원거리 평타 RangedAttack에서 사용)
     public void SetProjectileData(float dmg, GameObject attacker, Action<EnemyHp> hitCallback, bool isMagic, bool crit = false)
     {
         damage        = dmg;
@@ -155,9 +155,9 @@ public class ProjectileScript : PoolAble
             projectilePS.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
 
         // 3. 히트 이펙트 스폰
-        if (hit != null && ObjectPoolManager.instance != null)
+        if (hit != null && ObjectPoolManager.instance != null && collision.contactCount > 0)
         {
-            ContactPoint contact = collision.contacts[0];
+            ContactPoint contact = collision.GetContact(0); // contacts는 호출마다 배열을 새로 만들어서 GetContact 사용
             Vector3 hitPos       = contact.point + contact.normal * hitOffset;
 
             var hitEffect = ObjectPoolManager.instance.GetGo(hit.name);

@@ -1,21 +1,12 @@
 using UnityEngine;
 using System.Collections;
 
+// 파티원 근접 평타 — 판정 범위·타이밍·이펙트·효과음·물리/마법은 현재 클래스 SO(ClassData)에서 읽는다
 public class MeleeAttack : AttackBase
 {
     private static readonly Collider[] _hitBuffer = new Collider[16];
 
     private CharacterStat myStat;
-    [Header("근접 공격 판정 설정")]
-    public float hitRadius = 1.5f;
-    public float hitOffset = 1.0f;
-
-    [Header("타이밍 설정 (초 단위)")]
-    public float damageDelay = 0.33f;
-    [Tooltip("타격 판정 이후 애니메이션 후딜레이 — 이 시간이 끝나야 걷는 모션으로 전환되며 이동을 재개함. " +
-             "공격 애니메이션 클립 길이에서 damageDelay를 뺀 만큼으로 맞추면 됨")]
-    public float recoveryDuration = 0.3f;
-    public string hitEffectName = "Yellow Sword Slash 1";
     private Coroutine attackCoroutine;
     private bool _isAttacking = false;
 
@@ -26,44 +17,50 @@ public class MeleeAttack : AttackBase
 
     private IEnumerator AttackRoutine()
     {
+        ClassData cls = CurrentClass;
+        if (cls == null) yield break;
+
         _isAttacking = true;
         IsAttackAnimPlaying = true;
 
         LookAtTarget();
-        anim.ResetTrigger("doNormalAttack");
+        if (anim != null) anim.ResetTrigger("doNormalAttack");
 
         yield return null;
         yield return null;
 
         // 공격속도 보너스만큼 모션과 타격·후딜 타이밍을 같이 빠르게
         float speed = AttackAnimSpeed;
-        ApplyAttackAnimSpeed();
-        anim.SetTrigger("doNormalAttack");
-        AudioManager.instance?.PlaySFX(Override(CurrentClass?.normalAttackSfxKey, "Tanker_NormalAtk"));
+        if (anim != null)
+        {
+            ApplyAttackAnimSpeed();
+            anim.SetTrigger("doNormalAttack");
+        }
+        PlaySfx(cls.normalAttackSfxKey);
 
-        yield return new WaitForSeconds(damageDelay / speed);
+        yield return new WaitForSeconds(cls.damageDelay / speed);
         OnHit();
 
-        yield return new WaitForSeconds(recoveryDuration / speed);
+        yield return new WaitForSeconds(cls.recoveryDuration / speed);
 
         IsAttackAnimPlaying = false;
         _isAttacking = false;
         attackCoroutine = null;
     }
+
     public override void OnHit()
     {
-        // 0. 스탯 참조 확인
-        if (myStat == null) return;
+        ClassData cls = CurrentClass;
+        if (myStat == null || cls == null) return;
 
-        // 1. 판정 위치 계산
-        Vector3 hitPos = transform.position + (transform.forward * hitOffset);
-        int hitCount = Physics.OverlapSphereNonAlloc(hitPos, hitRadius, _hitBuffer, enemyLayer);
+        // 1. 판정
+        Vector3 hitPos = transform.position + (transform.forward * cls.meleeHitOffset);
+        int hitCount = Physics.OverlapSphereNonAlloc(hitPos, cls.meleeHitRadius, _hitBuffer, enemyLayer);
 
         // 2. 이펙트 생성 + 적중 시 체력 회복 (적을 한 명이라도 맞췄을 때)
         if (hitCount > 0)
         {
-            Vector3 effectPos = transform.position + (transform.forward * 0.3f) + Vector3.up;
-            SpawnHitEffect(effectPos);
+            SpawnHitEffect(cls.meleeHitEffectKey, transform.position + (transform.forward * 0.3f) + Vector3.up);
 
             if (myStat.HpOnHit > 0f)
                 myStat.HealHp(myStat.HpOnHit, showAura: false); // 흡혈은 생명 흡수 버프 아우라만 표시
@@ -72,8 +69,7 @@ public class MeleeAttack : AttackBase
                 myStat.RecoverMp(myStat.MpOnHit, showAura: false, showText: false);
         }
 
-        // 근접 기본은 물리 — 클래스 SO에서 마법으로 바꿀 수 있음
-        bool  isMagic = IsMagicBasicAttack(componentDefault: false);
+        bool  isMagic = IsMagicBasicAttack;
         float damage  = isMagic ? myStat.TotalAp * (1f + myStat.MagicDmgBonus)
                                 : myStat.TotalAtk * (1f + myStat.PhysDmgBonus);
         bool  isCrit  = Random.value < myStat.TotalCritRate;
@@ -89,7 +85,6 @@ public class MeleeAttack : AttackBase
         EnemyHp primary = null; // 발동형 패시브를 적용할 대표 대상 — 지금 노리던 적이 맞았으면 그 적, 아니면 처음 맞은 적
         for (int i = 0; i < hitCount; i++)
         {
-            // 최적화: 한 번만 가져와서 사용
             var enemyStat = _hitBuffer[i].GetComponent<EnemyHp>();
             if (enemyStat == null) continue;
 
@@ -102,28 +97,26 @@ public class MeleeAttack : AttackBase
         if (primary != null)
             myStat.NotifyBasicAttackHit(primary, isCrit, isMagic);
     }
-    private void SpawnHitEffect(Vector3 pos)
-    {
-        if (ObjectPoolManager.instance != null)
-        {
-            var effect = ObjectPoolManager.instance.GetGo(Override(CurrentClass?.meleeHitEffectKey, hitEffectName));
-            if (effect != null)
-            {
-                // 1. 위치 설정
-                effect.transform.position = pos;
 
-                // 2. 방향 설정 (캐릭터가 바라보는 정면 방향으로 회전)
-                // 만약 적을 향해 더 정확히 날리고 싶다면 currentTarget.position - transform.position을 사용하세요.
-                effect.transform.rotation = transform.rotation; 
-            }
-        }
+    // 캐릭터 정면 방향으로 히트 이펙트 스폰
+    private void SpawnHitEffect(string poolKey, Vector3 pos)
+    {
+        if (string.IsNullOrEmpty(poolKey) || ObjectPoolManager.instance == null) return;
+
+        var effect = ObjectPoolManager.instance.GetGo(poolKey);
+        if (effect != null)
+            effect.transform.SetPositionAndRotation(pos, transform.rotation);
     }
+
+    // 플레이 중에만 판정 범위 표시 (범위 값이 클래스 SO에 있어서 편집 모드에서는 알 수 없음)
     private void OnDrawGizmosSelected()
     {
+        ClassData cls = CurrentClass;
+        if (cls == null) return;
         Gizmos.color = Color.red;
-        Vector3 hitPos = transform.position + (transform.forward * hitOffset);
-        Gizmos.DrawWireSphere(hitPos, hitRadius);
+        Gizmos.DrawWireSphere(transform.position + (transform.forward * cls.meleeHitOffset), cls.meleeHitRadius);
     }
+
     protected override void ExecuteAttack()
     {
         if (_isAttacking) return;

@@ -79,7 +79,7 @@ public class BuffSkill : SkillBase
             if (member == null) continue;
             if (member.CurrentState == PartyMemberScript.MemberState.Dead) continue;
 
-            CharacterStat stat = member.GetComponent<CharacterStat>();
+            CharacterStat stat = member.StatComp;
             if (stat != null)
                 PartyManager.instance.StartCoroutine(BuffPresentationRoutine(stat, data));
         }
@@ -92,6 +92,15 @@ public class BuffSkill : SkillBase
 
         var handler = stat.GetComponent<PartyStatusEffectHandler>();
         ApplyBuffEffects(data, skillLevel, myStat, handler);
+
+        // 디버프 해제·쿨 초기화만 있는 즉시 발동 스킬은 시전 이펙트만 내고, 버프 타이머 UI·아우라는 띄우지 않는다
+        if (!data.HasDurationEffect)
+        {
+            if (data.effectStyle == BuffSkillData.EffectStyle.OneShot && !data.isPartyBuff)
+                SpawnTargetEffect(data, stat.transform);
+            yield break;
+        }
+
         ShowBuffEffect(data, stat);
 
         float duration = data.GetDuration(skillLevel);
@@ -223,6 +232,7 @@ public class BuffSkill : SkillBase
             BuffSkillData.ScalingStat.Vit => caster.TotalVit,
             BuffSkillData.ScalingStat.Int => caster.TotalInt,
             BuffSkillData.ScalingStat.Fth => caster.TotalFth,
+            BuffSkillData.ScalingStat.Dex => caster.TotalDex,
             _                             => 0f,
         };
 

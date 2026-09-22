@@ -44,6 +44,7 @@ public class BuffSkillData : SkillData
         Vit,  // 체력
         Int,  // 지능
         Fth,  // 신앙
+        Dex,  // 민첩 (에셋에 정수로 저장되므로 항상 맨 끝에 추가)
     }
 
     [System.Serializable]
@@ -127,6 +128,20 @@ public class BuffSkillData : SkillData
         }
     }
 
+    // 지속시간이 의미 있는 효과가 하나라도 있는지 — 디버프 해제·쿨 초기화처럼 즉시 발동만 있으면
+    // 지속시간 표시·버프 타이머 UI·아우라를 띄우지 않는다
+    public bool HasDurationEffect
+    {
+        get
+        {
+            foreach (var effect in buffEffects)
+                if (effect != null
+                    && effect.effectType != BuffEffectType.DispelDebuff
+                    && effect.effectType != BuffEffectType.CooldownReset) return true;
+            return false;
+        }
+    }
+
     // ─────────────────────────────────────────────────────────────────
     // 가시 반사 (Thorns 효과 전용)
     // ─────────────────────────────────────────────────────────────────
@@ -143,6 +158,7 @@ public class BuffSkillData : SkillData
         Vit,       // 체력
         Int,       // 지능
         Fth,       // 신앙
+        Dex,       // 민첩 (에셋에 정수로 저장되므로 항상 맨 끝에 추가)
     }
 
     [System.Serializable]
@@ -182,6 +198,7 @@ public class BuffSkillData : SkillData
             ThornsStat.Vit      => owner.TotalVit,
             ThornsStat.Int      => owner.TotalInt,
             ThornsStat.Fth      => owner.TotalFth,
+            ThornsStat.Dex      => owner.TotalDex,
             _                   => 0f,
         };
     }

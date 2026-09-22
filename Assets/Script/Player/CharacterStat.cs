@@ -11,7 +11,6 @@ public partial class CharacterStat : MonoBehaviour, IDamageable
     [Tooltip("ObjectPoolManager에 등록된 플레이어 피격 텍스트 풀 키")]
     public string playerDamageTextPoolKey = "PlayerDamageText";
     public Transform hudPos;
-    public ClassData classData;
     [Header("# 스킬 연계 버프 VFX")]
     public GameObject nextSkillBuffAura;
     [Header("# 버프 아우라 슬롯 (인덱스 0~N)")]
@@ -70,11 +69,13 @@ public partial class CharacterStat : MonoBehaviour, IDamageable
     public float BonusAp  { get => myStatus?.bonusAp  ?? 0f; set { if (myStatus != null) myStatus.bonusAp  = value; } }
     public float BonusDef { get => myStatus?.bonusDef ?? 0f; set { if (myStatus != null) myStatus.bonusDef = value; } }
 
-    // 원시 스탯 (base + added)
-    public float TotalStr => myStatus != null ? myStatus.classData.baseStr + myStatus.addedStr : 0f;
-    public float TotalVit => myStatus != null ? myStatus.classData.baseVit + myStatus.addedVit : 0f;
-    public float TotalInt => myStatus != null ? myStatus.classData.baseInt + myStatus.addedInt : 0f;
-    public float TotalFth => myStatus != null ? myStatus.classData.baseFht + myStatus.addedFht : 0f;
+    // 원시 스탯 (클래스 기본 + 분배 포인트 + 장비) — 최대 체력·공격력 계산과 같은 기준으로 스킬 계수·버프·가시 반사에 사용
+    private bool HasStatus => myStatus != null && myStatus.classData != null;
+    public float TotalStr => HasStatus ? myStatus.classData.baseStr + myStatus.addedStr + myStatus.equipStr : 0f;
+    public float TotalVit => HasStatus ? myStatus.classData.baseVit + myStatus.addedVit + myStatus.equipVit : 0f;
+    public float TotalInt => HasStatus ? myStatus.classData.baseInt + myStatus.addedInt + myStatus.equipInt : 0f;
+    public float TotalFth => HasStatus ? myStatus.classData.baseFht + myStatus.addedFht + myStatus.equipFht : 0f;
+    public float TotalDex => HasStatus ? myStatus.TotalDex : 0f;
 
     void Awake()
     {

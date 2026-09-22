@@ -57,6 +57,7 @@ public class CharacterSaveData
     public float currentHp, currentMp;
     public int   statPoint, skillPoint;
     public float addedStr, addedVit, addedInt, addedFht;
+    public float addedDex; // 민첩 추가 전 세이브는 0으로 읽힘
     public List<SkillLevelEntry> skillLevels = new List<SkillLevelEntry>();
 
     // 선택한 클래스(무기) — ClassData.ClassType 정수값. -1이면 구버전 세이브 → 첫 번째 무기로 로드

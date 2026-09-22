@@ -12,6 +12,7 @@ public class DamageSkillData : SkillData
         Vit,  // 체력
         Int,  // 지능
         Fth,  // 신앙
+        Dex,  // 민첩 (에셋에 정수로 저장되므로 항상 맨 끝에 추가)
     }
 
     [Header("데미지 설정")]
@@ -128,6 +129,7 @@ public class DamageSkillData : SkillData
             ScalingStat.Vit => caster.TotalVit,
             ScalingStat.Int => caster.TotalInt,
             ScalingStat.Fth => caster.TotalFth,
+            ScalingStat.Dex => caster.TotalDex,
             _               => 0f,
         };
     }

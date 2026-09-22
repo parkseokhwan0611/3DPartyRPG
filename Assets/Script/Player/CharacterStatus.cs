@@ -19,6 +19,7 @@ public string charName;
     public float addedVit = 0;
     public float addedInt = 0;
     public float addedFht = 0;
+    public float addedDex = 0;
 
     // ── 아이템/장비/깡수치 보너스 (스탯과 별개) ──
     public float bonusAtk = 0f;
@@ -30,6 +31,7 @@ public string charName;
     public float equipVit      = 0f;
     public float equipInt      = 0f;
     public float equipFht      = 0f;
+    public float equipDex      = 0f;
     public float equipAtk      = 0f;   // 무기 메인: 물리 공격력
     public float equipAp       = 0f;   // 무기 메인: 마법 공격력
     public float equipMaxHp    = 0f;   // 방어구 메인: 최대 체력 고정 보너스
@@ -94,7 +96,11 @@ public string charName;
     public float atkDebuffMultiplier = 1f;
     public float defDebuffMultiplier = 1f;
 
+    // 민첩 합계 (클래스 기본 + 분배 포인트 + 장비) — 물리 공격력과 치명타 확률을 소량 올린다
+    public float TotalDex => classData.baseDex + addedDex + equipDex;
+
     public float BaseAtk => (classData.baseStr + addedStr + equipStr) * classData.atkPerStr
+                          + TotalDex * classData.atkPerDex
                           + bonusAtk + equipAtk;
     // 감소 디버프는 스킬 증가분까지 반영된 최종 수치에 곱한다
     public float TotalAtk => ApplySkillModifiers(ModifierStat.Atk, BaseAtk) * atkDebuffMultiplier;
@@ -108,7 +114,9 @@ public string charName;
     public float addedCritRate   = 0f;
     public float addedCritDamage = 0f;
 
-    public float TotalCritRate   => classData.baseCritRate   + addedCritRate  + equipCritRate;
+    // 치명타 확률 상한 100% — 민첩·장비·버프를 많이 쌓아도 1을 넘지 않게 (스탯창 표기도 이 값)
+    public float TotalCritRate   => Mathf.Min(1f, classData.baseCritRate + addedCritRate + equipCritRate
+                                                + TotalDex * classData.critRatePerDex);
     public float TotalCritDamage => classData.baseCritDamage + addedCritDamage + equipCritDmg;
 
     // 방어력 (VIT 비례 + 장비 → 스킬 증가 → 감소 디버프)

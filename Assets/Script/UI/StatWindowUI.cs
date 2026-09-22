@@ -27,12 +27,14 @@ public class StatWindowUI : MonoBehaviour
     public TextMeshProUGUI vitText;
     public TextMeshProUGUI intText;
     public TextMeshProUGUI fthText;
+    public TextMeshProUGUI dexText;
 
     [Header("# 스탯 올리기 버튼")]
     public Button strButton;
     public Button vitButton;
     public Button intButton;
     public Button fthButton;
+    public Button dexButton;
 
     [Header("# 전투 수치 텍스트")]
     public TextMeshProUGUI phyAtkText;
@@ -77,6 +79,7 @@ public class StatWindowUI : MonoBehaviour
         if (vitButton != null) vitButton.onClick.AddListener(() => AddStat(StatType.Vit));
         if (intButton != null) intButton.onClick.AddListener(() => AddStat(StatType.Int));
         if (fthButton != null) fthButton.onClick.AddListener(() => AddStat(StatType.Fth));
+        if (dexButton != null) dexButton.onClick.AddListener(() => AddStat(StatType.Dex));
     }
 
     void OnEnable()
@@ -155,7 +158,7 @@ public class StatWindowUI : MonoBehaviour
     // 스탯 포인트 사용
     // ─────────────────────────────────────────────────────────────────
 
-    private enum StatType { Str, Vit, Int, Fth }
+    private enum StatType { Str, Vit, Int, Fth, Dex }
 
     private void AddStat(StatType type)
     {
@@ -171,6 +174,7 @@ public class StatWindowUI : MonoBehaviour
             case StatType.Vit: status.addedVit++; break;
             case StatType.Int: status.addedInt++; break;
             case StatType.Fth: status.addedFht++; break;
+            case StatType.Dex: status.addedDex++; break;
         }
 
         // VIT로 최대체력이 오른 만큼 현재체력도 같은 폭으로 조정
@@ -208,6 +212,7 @@ public class StatWindowUI : MonoBehaviour
         SetText(vitText, $"체력: {status.classData.baseVit + status.addedVit + status.equipVit:F0}");
         SetText(intText, $"지능: {status.classData.baseInt + status.addedInt + status.equipInt:F0}");
         SetText(fthText, $"신앙: {status.classData.baseFht + status.addedFht + status.equipFht:F0}");
+        SetText(dexText, $"민첩: {status.TotalDex:F0}");
 
         // ── + 버튼 활성/비활성 ──
         bool canSpend = status.statPoint > 0;
@@ -215,6 +220,7 @@ public class StatWindowUI : MonoBehaviour
         SetButtonInteractable(vitButton, canSpend);
         SetButtonInteractable(intButton, canSpend);
         SetButtonInteractable(fthButton, canSpend);
+        SetButtonInteractable(dexButton, canSpend);
 
         // ── 전투 수치 ──
         if (charStat != null)

@@ -56,12 +56,15 @@ public class ClassDisplayModel : MonoBehaviour
         Entry current = entries.Find(e => e.classType == cls.classType);
         if (current == null) return; // 설정 전인 클래스는 건드리지 않음 (전부 꺼지는 사고 방지)
 
-        // 같은 오브젝트가 여러 클래스에 등록돼 있을 수 있으므로 먼저 전부 끄고 해당 클래스 것만 켠다
+        // 같은 오브젝트가 여러 클래스에 등록돼 있을 수 있으므로 "현재 클래스 항목에 있으면 켬"으로 판단하고,
+        // 상태가 달라질 때만 SetActive — 탭을 열 때마다 모델을 껐다 켜서 애니메이션이 처음으로 돌아가는 것 방지
         foreach (var e in entries)
             foreach (var go in e.objects)
-                if (go != null) go.SetActive(false);
-        foreach (var go in current.objects)
-            if (go != null) go.SetActive(true);
+            {
+                if (go == null) continue;
+                bool on = current.objects.Contains(go);
+                if (go.activeSelf != on) go.SetActive(on);
+            }
 
         if (current.animatorController != null)
         {

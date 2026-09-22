@@ -925,6 +925,7 @@ public class ShopUI : MonoBehaviour
         SubOptionType.VIT           => "체력",
         SubOptionType.INT           => "지능",
         SubOptionType.FTH           => "신앙",
+        SubOptionType.DEX           => "민첩",
         SubOptionType.PhysDef       => "방어력",
         SubOptionType.MagicRes      => "마법 저항력",
         SubOptionType.CritRate      => "치명타 확률",

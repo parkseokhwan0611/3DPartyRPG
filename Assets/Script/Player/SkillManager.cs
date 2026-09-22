@@ -14,6 +14,7 @@ public class SkillManager : MonoBehaviour
     public SkillData slotR;
 
     private SkillBase[] slots = new SkillBase[4];
+    private readonly List<SkillBase> _tempSkills = new List<SkillBase>(4); // 자동 스킬 후보·쿨 초기화 대상 계산용 (매번 할당 방지)
 
     [Header("자동 스킬 설정 (팔로워 전용)")]
     public int attackPerSkill = 2;
@@ -322,7 +323,8 @@ public class SkillManager : MonoBehaviour
         Transform target = attackBase.currentTarget;
 
         // 준비된 비힐·비패시브 스킬 수집
-        List<SkillBase> readySlots = new List<SkillBase>();
+        List<SkillBase> readySlots = _tempSkills;
+        readySlots.Clear();
         foreach (var slot in slots)
         {
             if (slot == null || !slot.IsReady) continue;
@@ -345,14 +347,13 @@ public class SkillManager : MonoBehaviour
         readySlots.Sort((a, b) => a.skillData.skillPriority.CompareTo(b.skillData.skillPriority));
         int topPriority = readySlots[0].skillData.skillPriority;
 
-        List<SkillBase> topGroup = new List<SkillBase>();
-        foreach (var slot in readySlots)
-        {
-            if (slot.skillData.skillPriority != topPriority) break;
-            topGroup.Add(slot);
-        }
+        // 정렬돼 있으므로 앞에서부터 최고 우선순위 그룹 개수만 세서 그 안에서 고른다
+        int topCount = 0;
+        while (topCount < readySlots.Count && readySlots[topCount].skillData.skillPriority == topPriority)
+            topCount++;
 
-        SkillBase chosen = topGroup[Random.Range(0, topGroup.Count)];
+        SkillBase chosen = readySlots[Random.Range(0, topCount)];
+        readySlots.Clear();
 
         if (chosen.skillData.skillType == SkillData.SkillType.Buff)
             chosen.TryUseSkill(null);
@@ -473,9 +474,16 @@ public class SkillManager : MonoBehaviour
             // 계속 참조하지 않도록 먼저 정리
             if (currentSkill == slots[index])
             {
-                currentSkill.ForceStop();
-                currentSkill = null;
+                // 컴포넌트가 파괴되면 SkillRoutine 끝의 정리(발동 플래그 해제·이동 재개)가 실행되지 않으므로 여기서 대신 처리
+                ForceStopCurrentSkill();
+                var agent = GetComponent<UnityEngine.AI.NavMeshAgent>();
+                var status = GetComponent<PartyStatusEffectHandler>();
+                bool stunned = status != null && status.HasDebuff(StatusEffectType.Stun);
+                if (!stunned && agent != null && agent.enabled && agent.isOnNavMesh)
+                    agent.isStopped = false;
+                OnAnySkillFinished();
             }
+            if (_pendingSkill == slots[index]) { _pendingSkill = null; _pendingTarget = null; }
             Destroy(slots[index]);
         }
 
@@ -528,7 +536,8 @@ public class SkillManager : MonoBehaviour
     // 반환값: 실제로 초기화한 스킬 개수
     public int ResetCooldowns(int maxCount)
     {
-        var candidates = new List<SkillBase>();
+        var candidates = _tempSkills; // 평타 발동형 패시브로 자주 불리므로 리스트 재사용
+        candidates.Clear();
         foreach (var slot in slots)
         {
             if (slot == null || slot.skillData == null || slot.IsReady) continue;
@@ -546,6 +555,7 @@ public class SkillManager : MonoBehaviour
         for (int i = 0; i < count; i++)
             candidates[i].SetCooldown(0f);
 
+        candidates.Clear();
         return count;
     }
 

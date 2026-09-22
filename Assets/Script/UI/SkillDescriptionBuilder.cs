@@ -160,7 +160,11 @@ public static class SkillDescriptionBuilder
                 expr.Append($" + {StatName(s.stat)}({statVal:F0})×{coeff * 100f:F0}%");
             }
             expr.Append($") × {mult * 100f:F1}%");
-            sb.AppendLine($"치유량: {expr} = {(baseStat + statBonus) * mult:F0}");
+            // 실제 힐(HealSkill.CalculateHeal)과 같이 힐량 증가 패시브까지 반영
+            float healBonus = caster.HealBonus;
+            if (healBonus != 0f)
+                expr.Append($" × (1 + 힐량 증가 {healBonus * 100f:0.#}%)");
+            sb.AppendLine($"치유량: {expr} = {(baseStat + statBonus) * mult * (1f + healBonus):F0}");
         }
         else
         {
@@ -194,7 +198,7 @@ public static class SkillDescriptionBuilder
             statBonus += GetStatValue(caster, s.stat) * s.GetScaling(level);
         }
 
-        string result = $"치유량: {(baseStat + statBonus) * mult:F0}";
+        string result = $"치유량: {(baseStat + statBonus) * mult * (1f + caster.HealBonus):F0}";
         if (heal.isDotHeal)
             result += $"\n지속시간: {heal.GetDotDuration(level)}초";
         return result;
@@ -209,7 +213,7 @@ public static class SkillDescriptionBuilder
         if (buff.buffEffects == null || buff.buffEffects.Count == 0) return "";
 
         string result = buff.isPartyBuff ? "[파티 버프]\n" : "[개인 버프]\n";
-        if (HasDurationEffect(buff)) result += $"지속시간: {buff.GetDuration(level)}초\n";
+        if (buff.HasDurationEffect) result += $"지속시간: {buff.GetDuration(level)}초\n";
 
         foreach (var effect in buff.buffEffects)
         {
@@ -240,6 +244,7 @@ public static class SkillDescriptionBuilder
             BuffSkillData.ScalingStat.Vit => caster.TotalVit,
             BuffSkillData.ScalingStat.Int => caster.TotalInt,
             BuffSkillData.ScalingStat.Fth => caster.TotalFth,
+            BuffSkillData.ScalingStat.Dex => caster.TotalDex,
             _                             => 0f,
         };
         return stat * coeff;
@@ -257,6 +262,7 @@ public static class SkillDescriptionBuilder
             BuffSkillData.ScalingStat.Vit => "VIT",
             BuffSkillData.ScalingStat.Int => "INT",
             BuffSkillData.ScalingStat.Fth => "FTH",
+            BuffSkillData.ScalingStat.Dex => "DEX",
             _                             => "",
         };
 
@@ -316,6 +322,7 @@ public static class SkillDescriptionBuilder
         BuffSkillData.ThornsStat.Vit      => "체력",
         BuffSkillData.ThornsStat.Int      => "지능",
         BuffSkillData.ThornsStat.Fth      => "신앙",
+        BuffSkillData.ThornsStat.Dex      => "민첩",
         _                                 => "",
     };
 
@@ -343,25 +350,13 @@ public static class SkillDescriptionBuilder
         };
     }
 
-    // 버프 효과 중 즉시 발동형(디버프 제거·쿨 초기화)만 있으면 지속시간 줄을 생략
-    private static bool HasDurationEffect(BuffSkillData buff)
-    {
-        foreach (var e in buff.buffEffects)
-        {
-            if (e.effectType != BuffSkillData.BuffEffectType.DispelDebuff &&
-                e.effectType != BuffSkillData.BuffEffectType.CooldownReset)
-                return true;
-        }
-        return false;
-    }
-
     // 전투 퀵슬롯 호버 팝업 전용 — 스탯 비례 계산식(괄호 안 내역) 없이 최종 수치만
     public static string GetBuffDescriptionFinal(BuffSkillData buff, int level, CharacterStat caster)
     {
         if (buff.buffEffects == null || buff.buffEffects.Count == 0) return "";
 
         string result = buff.isPartyBuff ? "[파티 버프]\n" : "[개인 버프]\n";
-        if (HasDurationEffect(buff)) result += $"지속시간: {buff.GetDuration(level)}초\n";
+        if (buff.HasDurationEffect) result += $"지속시간: {buff.GetDuration(level)}초\n";
 
         foreach (var effect in buff.buffEffects)
         {
@@ -550,6 +545,7 @@ public static class SkillDescriptionBuilder
             DamageSkillData.ScalingStat.Vit => caster.TotalVit,
             DamageSkillData.ScalingStat.Int => caster.TotalInt,
             DamageSkillData.ScalingStat.Fth => caster.TotalFth,
+            DamageSkillData.ScalingStat.Dex => caster.TotalDex,
             _                               => 0f,
         };
     }
@@ -562,6 +558,7 @@ public static class SkillDescriptionBuilder
             DamageSkillData.ScalingStat.Vit => "체력",
             DamageSkillData.ScalingStat.Int => "지능",
             DamageSkillData.ScalingStat.Fth => "신앙",
+            DamageSkillData.ScalingStat.Dex => "민첩",
             _                               => "",
         };
     }

@@ -93,10 +93,11 @@ public class EnemyHp : MonoBehaviour, IDamageable
     {
         if (isDead) return;
 
-        damage = ApplyAttackerBonus(damage, attacker, isMagic: false);
+        CharacterStat partyAttacker = GetPartyAttacker(attacker);
+        damage = ApplyAttackerBonus(damage, partyAttacker, isMagic: false);
         float reduction   = def / (def + 100f);
         float finalDamage = damage * (1f - reduction);
-        ApplyDamage(finalDamage, damageColor, isCrit, attacker);
+        ApplyDamage(finalDamage, damageColor, isCrit, partyAttacker);
     }
 
     // 마법 피해 (마법저항력으로 경감)
@@ -106,24 +107,25 @@ public class EnemyHp : MonoBehaviour, IDamageable
     {
         if (isDead) return;
 
-        damage = ApplyAttackerBonus(damage, attacker, isMagic: true);
+        CharacterStat partyAttacker = GetPartyAttacker(attacker);
+        damage = ApplyAttackerBonus(damage, partyAttacker, isMagic: true);
         float reduction   = magicRes / (magicRes + 100f);
         float finalDamage = damage * (1f - reduction);
-        ApplyDamage(finalDamage, damageColor, isCrit, attacker);
+        ApplyDamage(finalDamage, damageColor, isCrit, partyAttacker);
     }
 
     // 걸려 있는 디버프 (독·슬로우 등) — 파티원의 "디버프 걸린 적 추가 데미지" 패시브가 확인
     public StatusEffectHandler StatusHandler => statusHandler;
 
-    // 공격자가 파티원이면 대상 상태에 따른 데미지 보너스를 적용 (평타·스킬·장판·투사체·반사·독 공통 경로)
-    private float ApplyAttackerBonus(float damage, GameObject attacker, bool isMagic)
-    {
-        if (attacker == null) return damage;
-        CharacterStat stat = attacker.GetComponent<CharacterStat>();
-        return stat != null ? stat.ModifyOutgoingDamage(this, damage, isMagic) : damage;
-    }
+    // 공격자가 파티원이면 그 CharacterStat — 한 번 맞을 때 한 번만 찾아서 데미지 보너스·처치 알림에 같이 쓴다
+    private static CharacterStat GetPartyAttacker(GameObject attacker)
+        => attacker != null && attacker.TryGetComponent(out CharacterStat stat) ? stat : null;
 
-    private void ApplyDamage(float finalDamage, Color damageColor, bool isCrit, GameObject attacker)
+    // 공격자가 파티원이면 대상 상태에 따른 데미지 보너스를 적용 (평타·스킬·장판·투사체·반사·독 공통 경로)
+    private float ApplyAttackerBonus(float damage, CharacterStat partyAttacker, bool isMagic)
+        => partyAttacker != null ? partyAttacker.ModifyOutgoingDamage(this, damage, isMagic) : damage;
+
+    private void ApplyDamage(float finalDamage, Color damageColor, bool isCrit, CharacterStat partyAttacker)
     {
         if (statusHandler != null)
             finalDamage = statusHandler.AbsorbDamage(finalDamage);
@@ -137,8 +139,7 @@ public class EnemyHp : MonoBehaviour, IDamageable
         {
             Die();
             // 처치한 파티원에게 알림 (적 처치 시 회복 패시브)
-            CharacterStat killer = attacker != null ? attacker.GetComponent<CharacterStat>() : null;
-            if (killer != null) killer.NotifyEnemyKilled(this);
+            if (partyAttacker != null) partyAttacker.NotifyEnemyKilled(this);
         }
     }
 

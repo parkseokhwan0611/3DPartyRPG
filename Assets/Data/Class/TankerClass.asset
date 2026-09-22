@@ -20,22 +20,25 @@ MonoBehaviour:
   learnedSkillIds: 
   inventoryItemIds: 
   baseStr: 10
+  baseDex: 8
   baseVit: 12
   baseInt: 8
   baseFht: 5
   atkPerStr: 1
+  atkPerDex: 0.4
+  critRatePerDex: 0.001
   hpPerVit: 80
   defPerVit: 1
+  hpRegenPerVit: 0.2
   apPerInt: 1.2
   apPerFth: 1
+  mpRegenPerFth: 0.1
   baseCritRate: 0.05
   baseCritDamage: 1.5
   baseMagicRes: 0
   baseMoveSpeed: 4
   baseHpRegen: 1
-  hpRegenPerVit: 0.2
   baseMpRegen: 1
-  mpRegenPerFth: 0.1
   animatorController: {fileID: 9100000, guid: 4f90f404db88da745808311093e58a43, type: 2}
   basicAttackDamage: 1
   normalAttackSfxKey: Tanker_NormalAtk
@@ -43,8 +46,8 @@ MonoBehaviour:
   projectilePoolKey: 
   attackRange: 2
   attackSpeed: 1
-  defaultQuickSlots:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
+  attackDuration: 1
+  damageDelay: 0.33
+  recoveryDuration: 0.3
+  meleeHitRadius: 1.5
+  meleeHitOffset: 1
