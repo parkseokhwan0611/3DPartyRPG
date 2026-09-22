@@ -1,6 +1,8 @@
 using UnityEngine;
 using UnityEngine.AI;
 using System;
+using System.Collections;
+using System.Collections.Generic;
 
 public abstract class AttackBase : MonoBehaviour
 {
@@ -95,9 +97,37 @@ public abstract class AttackBase : MonoBehaviour
     protected bool IsMagicBasicAttack
         => CurrentClass != null && CurrentClass.basicAttackDamage == ClassData.BasicAttackDamage.Magic;
 
-    protected static void PlaySfx(string key)
+    // 평타 효과음 — 스킬 SFX처럼 모션 시작 기준 Delay 뒤에 재생. speed는 모션 배율(AttackAnimSpeed)이라
+    // 공격속도가 오르면 효과음 타이밍도 모션과 같이 앞당겨진다
+    private readonly List<Coroutine> _attackSfxRoutines = new List<Coroutine>();
+
+    protected void PlayAttackSfx(ClassData cls, float speed)
     {
-        if (!string.IsNullOrEmpty(key)) AudioManager.instance?.PlaySFX(key);
+        StopAttackSfx();
+        if (cls == null || cls.normalAttackSfx == null) return;
+
+        foreach (var entry in cls.normalAttackSfx)
+        {
+            if (entry == null || string.IsNullOrEmpty(entry.sfxKey)) continue;
+
+            float delay = entry.delay / Mathf.Max(0.1f, speed);
+            if (delay <= 0f) AudioManager.instance?.PlaySFX(entry.sfxKey);
+            else             _attackSfxRoutines.Add(StartCoroutine(DelayedAttackSfx(entry.sfxKey, delay)));
+        }
+    }
+
+    // 공격이 중간에 끊기면(스턴·타겟 변경·발사 전 대상 소실) 아직 안 나간 효과음도 취소
+    protected void StopAttackSfx()
+    {
+        foreach (var r in _attackSfxRoutines)
+            if (r != null) StopCoroutine(r);
+        _attackSfxRoutines.Clear();
+    }
+
+    private static IEnumerator DelayedAttackSfx(string key, float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        AudioManager.instance?.PlaySFX(key);
     }
 
     // 파티원은 패시브·버프의 공격속도 보너스(0.1 = +10%)를 곱해서 공격 간격을 줄인다. 몬스터는 CharacterStat이 없어 그대로

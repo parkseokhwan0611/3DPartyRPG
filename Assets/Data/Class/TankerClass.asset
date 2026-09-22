@@ -41,7 +41,6 @@ MonoBehaviour:
   baseMpRegen: 1
   animatorController: {fileID: 9100000, guid: 0181442cecbb78f468575a05e937603d, type: 2}
   basicAttackDamage: 1
-  normalAttackSfxKey: Tanker_NormalAtk
   meleeHitEffectKey: Yellow Sword Slash 1
   projectilePoolKey: 
   attackRange: 2
@@ -49,5 +48,8 @@ MonoBehaviour:
   attackDuration: 1
   damageDelay: 0.33
   recoveryDuration: 0.3
+  normalAttackSfx:
+  - sfxKey: Tanker_NormalAtk
+    delay: 0
   meleeHitRadius: 1.5
   meleeHitOffset: 1

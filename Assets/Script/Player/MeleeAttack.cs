@@ -36,7 +36,7 @@ public class MeleeAttack : AttackBase
             ApplyAttackAnimSpeed();
             anim.SetTrigger("doNormalAttack");
         }
-        PlaySfx(cls.normalAttackSfxKey);
+        PlayAttackSfx(cls, speed);
 
         yield return new WaitForSeconds(cls.damageDelay / speed);
         OnHit();
@@ -130,6 +130,7 @@ public class MeleeAttack : AttackBase
             StopCoroutine(attackCoroutine);
             attackCoroutine = null;
         }
+        StopAttackSfx();
         IsAttackAnimPlaying = false;
         _isAttacking = false;
     }

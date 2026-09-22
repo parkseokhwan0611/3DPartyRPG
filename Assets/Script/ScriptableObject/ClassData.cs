@@ -70,8 +70,6 @@ public class ClassData : ScriptableObject
 
     [Header("기본 공격")]
     public BasicAttackDamage basicAttackDamage = BasicAttackDamage.Physical;
-    [Tooltip("평타 효과음 키 (AudioManager, 비우면 소리 없음)")]
-    public string normalAttackSfxKey;
     [Tooltip("근접 평타 히트 이펙트 풀 키 (MeleeAttack 전용, 비우면 없음)")]
     public string meleeHitEffectKey;
     [Tooltip("원거리 평타 투사체 풀 키 (RangedAttack 전용)")]
@@ -88,6 +86,12 @@ public class ClassData : ScriptableObject
     public float damageDelay = 0.33f;
     [Tooltip("타격·발사 뒤 후딜레이 (초) — 끝나야 이동을 재개. 보통 모션 길이 - Damage Delay")]
     public float recoveryDuration = 0.3f;
+
+    [Header("기본 공격 사운드")]
+    [Tooltip("스킬 사운드와 같은 방식 — 평타 모션 시작 기준으로 각 사운드를 몇 초 뒤에 재생할지.\n" +
+             "Delay를 Damage Delay와 같게 넣으면 타격(근접)·투사체 발사(원거리) 순간에 재생.\n" +
+             "공격속도가 올라 모션이 빨라지면 Delay도 같은 비율로 줄어든다")]
+    public List<SkillSfxEntry> normalAttackSfx = new List<SkillSfxEntry>();
 
     [Header("근접 판정 (MeleeAttack 전용)")]
     [Tooltip("판정 구 반지름")]

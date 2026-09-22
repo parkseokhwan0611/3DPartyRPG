@@ -62,6 +62,7 @@ public class RangedAttack : AttackBase
             StopCoroutine(attackCoroutine);
             attackCoroutine = null;
         }
+        StopAttackSfx();
         IsAttackAnimPlaying = false;
         _isAttacking = false;
     }
@@ -98,14 +99,16 @@ public class RangedAttack : AttackBase
             ApplyAttackAnimSpeed();
             anim.SetTrigger("doNormalAttack");
         }
-        PlaySfx(cls.normalAttackSfxKey);
+        // 효과음은 클래스 SO의 Delay대로 — Damage Delay와 같게 두면 투사체가 나가는 순간에 재생
+        PlayAttackSfx(cls, speed);
 
         yield return new WaitForSeconds(cls.damageDelay / speed);
 
-        if (currentTarget == null || ObjectPoolManager.instance == null) { EndAttack(); yield break; }
+        // 발사 직전에 대상이 사라지면 쏘지 않으므로 아직 안 나간 효과음도 취소
+        if (currentTarget == null || ObjectPoolManager.instance == null) { StopAttackSfx(); EndAttack(); yield break; }
 
         var effect = ObjectPoolManager.instance.GetGo(cls.projectilePoolKey);
-        if (effect == null) { EndAttack(); yield break; }
+        if (effect == null) { StopAttackSfx(); EndAttack(); yield break; }
 
         Transform  fp         = CurrentFirePoint;
         Vector3    spawnPos   = fp != null ? fp.position : transform.position;

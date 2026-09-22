@@ -41,13 +41,15 @@ MonoBehaviour:
   baseMpRegen: 1
   animatorController: {fileID: 9100000, guid: 719122b095dddbe4a84eb8a7a93bed5b, type: 2}
   basicAttackDamage: 2
-  normalAttackSfxKey: Mage_NormalAtk
   meleeHitEffectKey: 
   projectilePoolKey: MageNormalAtk
   attackRange: 6
   attackSpeed: 1
-  attackDuration: 1.017
-  damageDelay: 0.5
+  attackDuration: 1.1
+  damageDelay: 0.7
   recoveryDuration: 0.2
+  normalAttackSfx:
+  - sfxKey: Mage_NormalAtk
+    delay: 0.5
   meleeHitRadius: 1.5
   meleeHitOffset: 1
