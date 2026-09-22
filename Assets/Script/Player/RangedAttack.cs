@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 // 파티원 원거리 평타 (마법사·건슬링어·힐러·유틸 메이지 공용).
 // 투사체·타이밍·효과음·물리/마법은 현재 클래스 SO(ClassData)에서 읽고, 씬에는 발사 위치(firePoint)만 둔다.
@@ -9,7 +10,32 @@ public class RangedAttack : AttackBase
     private CharacterStat myStat;
 
     [Header("발사 위치 (비우면 캐릭터 위치)")]
+    [Tooltip("기본 발사 위치 — 아래 목록에 현재 클래스가 없으면 이걸 사용")]
     public Transform firePoint;
+
+    [System.Serializable]
+    public class ClassFirePoint
+    {
+        public ClassData.ClassType classType;
+        [Tooltip("이 클래스일 때 투사체가 나갈 위치 (예: 총구, 지팡이 끝). 무기 오브젝트의 자식으로 두면 무기와 함께 움직임")]
+        public Transform firePoint;
+    }
+
+    [Tooltip("무기(클래스)별 발사 위치. 무기마다 총구·지팡이 끝 위치가 다를 때만 등록")]
+    public List<ClassFirePoint> classFirePoints = new List<ClassFirePoint>();
+
+    // 현재 클래스의 발사 위치 → 없으면 기본 발사 위치 → 그것도 없으면 null(캐릭터 위치)
+    private Transform CurrentFirePoint
+    {
+        get
+        {
+            ClassData cls = CurrentClass;
+            if (cls != null)
+                foreach (var e in classFirePoints)
+                    if (e != null && e.classType == cls.classType && e.firePoint != null) return e.firePoint;
+            return firePoint;
+        }
+    }
 
     private Coroutine attackCoroutine;
     private bool _isAttacking = false;
@@ -81,7 +107,8 @@ public class RangedAttack : AttackBase
         var effect = ObjectPoolManager.instance.GetGo(cls.projectilePoolKey);
         if (effect == null) { EndAttack(); yield break; }
 
-        Vector3    spawnPos   = firePoint != null ? firePoint.position : transform.position;
+        Transform  fp         = CurrentFirePoint;
+        Vector3    spawnPos   = fp != null ? fp.position : transform.position;
         Quaternion preciseRot = Quaternion.LookRotation((TargetPosition - spawnPos).normalized);
         effect.transform.SetPositionAndRotation(spawnPos, preciseRot);
 
