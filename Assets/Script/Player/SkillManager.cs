@@ -171,6 +171,9 @@ public class SkillManager : MonoBehaviour
             case SkillData.SkillType.Debuff:
                 skill = gameObject.AddComponent<DebuffSkill>();
                 break;
+            case SkillData.SkillType.Summon:
+                skill = gameObject.AddComponent<SummonSkill>();
+                break;
             case SkillData.SkillType.Passive:
                 Debug.LogWarning("[SkillManager] 패시브 스킬은 슬롯에 등록하지 않습니다.");
                 break;
@@ -330,6 +333,7 @@ public class SkillManager : MonoBehaviour
             if (slot == null || !slot.IsReady) continue;
             if (slot.skillData.skillType == SkillData.SkillType.Heal)    continue;
             if (slot.skillData.skillType == SkillData.SkillType.Passive) continue;
+            if (!slot.CanUseNow || !slot.IsWorthAutoUsing)               continue; // 소환수 없는 도발, 멀쩡한 소환수 재소환 등
 
             // DispelDebuff 효과가 있는 스킬은 파티원에 디버프가 있을 때만 후보에 포함
             if (IsDispelSkill(slot.skillData) && !AnyMemberHasDebuff()) continue;

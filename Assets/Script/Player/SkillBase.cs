@@ -37,6 +37,12 @@ public abstract class SkillBase : MonoBehaviour
 
     public void SetCooldown(float remaining) => cooldownTimer = remaining;
 
+    // 지금 시전 조건을 만족하는지 (예: 소환수 도발은 소환수가 있어야 함). false면 마나·쿨타임을 쓰지 않고 거절
+    public virtual bool CanUseNow => true;
+
+    // 팔로워 자동 사용 시 지금 쓸 가치가 있는지 (예: 소환수가 멀쩡하면 재소환하지 않음)
+    public virtual bool IsWorthAutoUsing => true;
+
     protected virtual void Awake()
     {
         myStat       = GetComponent<CharacterStat>();
@@ -61,6 +67,7 @@ public abstract class SkillBase : MonoBehaviour
     {
         if (skillData == null) return false;
         if (!IsReady) return false;
+        if (!CanUseNow) return false;
 
         // 발동 중인 스킬이 있으면 캔슬 불가
         if (skillManager != null && skillManager.IsActivatingSkill) return false;

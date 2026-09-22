@@ -143,6 +143,8 @@ public string charName;
     // 기본 공격 적중 시 체력/마나 회복
     public float hpOnHit = 0f;
     public float mpOnHit = 0f;
+    // 소환수 공격 적중 시 주인 마나 회복 — 패시브 전용, 세이브 대상 아님
+    public float summonHitMp = 0f;
 
     // 받는 데미지 감소 — 패시브 전용, 세이브 대상 아님 (로드 시 패시브 재적용으로 복원)
     // 퍼센트(0.1 = 10%)는 합산, 고정은 방어력·퍼센트 감소 뒤에 한 대마다 뺀다
@@ -341,6 +343,9 @@ public string charName;
                 break;
             case PassiveSkillData.PassiveEffectType.FaithToHp:
                 faithToHpCoeff += delta;
+                break;
+            case PassiveSkillData.PassiveEffectType.SummonHitManaRestore:
+                summonHitMp += delta;
                 break;
 
             // 발동형 패시브 — 등록만 해두고 실제 발동은 CharacterStat(PassiveTriggers)이 공격·힐·처치 시점에 확인

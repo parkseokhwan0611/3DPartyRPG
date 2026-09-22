@@ -78,6 +78,8 @@ public class PassiveSkillDataEditor : Editor
                 return "기본 수치 칸: 0.1 = 공격속도 +10%";
             case PassiveSkillData.PassiveEffectType.FaithToHp:
                 return "기본 수치 칸: 신앙 1당 최대 체력 (2 = 신앙 30이면 +60)";
+            case PassiveSkillData.PassiveEffectType.SummonHitManaRestore:
+                return "기본 수치 칸: 소환수가 한 번 적중할 때마다 마나 고정 회복 (2 = +2)";
             case PassiveSkillData.PassiveEffectType.OnDebuffExtraDamage:
                 return "기본 수치 칸: 0.1 = 디버프가 1개 이상 걸린 적에게 데미지 +10% (확률 없음)";
 

@@ -83,6 +83,33 @@ public class BuffSkill : SkillBase
             if (stat != null)
                 PartyManager.instance.StartCoroutine(BuffPresentationRoutine(stat, data));
         }
+
+        // 아군 전체 버프는 소환수에게도 — 소환수가 지원하는 효과(피해 감소·쉴드·무적·공격력·치명타·이동속도)만 적용
+        for (int i = SummonUnit.All.Count - 1; i >= 0; i--)
+        {
+            var summon = SummonUnit.All[i];
+            if (summon != null && summon.IsAlive) ApplyBuffEffectsToSummon(data, skillLevel, myStat, summon);
+        }
+    }
+
+    private void ApplyBuffEffectsToSummon(BuffSkillData data, int level, CharacterStat caster, SummonUnit summon)
+    {
+        float duration = data.GetDuration(level);
+        foreach (var effect in data.buffEffects)
+        {
+            if (effect.effectType == BuffSkillData.BuffEffectType.Shield)
+            {
+                summon.ApplyShield(effect.GetValue(level) + GetScalingValue(effect, level, caster), duration);
+                continue;
+            }
+
+            StatusEffectType? mapped = MapToStatusEffectType(effect.effectType);
+            if (mapped == null || !SummonUnit.SupportsBuff(mapped.Value)) continue;
+
+            float value = effect.GetValue(level) + GetScalingValue(effect, level, caster);
+            ModifierMode mode = effect.IsPercent ? ModifierMode.Percent : ModifierMode.Flat;
+            summon.ApplyBuff(new StatusEffect(mapped.Value, value, duration, gameObject, mode));
+        }
     }
 
     // 수치 적용/지속시간/원복은 PartyStatusEffectHandler가 전담. 여기서는 연출(아우라/VFX)과 UI 타이머만 관리.

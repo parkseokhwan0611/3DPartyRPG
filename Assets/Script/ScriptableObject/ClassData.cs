@@ -9,8 +9,9 @@ public class ClassData : ScriptableObject
     public string displayName;
 
     // 캐릭터 3명 × 무기 2종. 에셋에는 정수로 저장되므로 순서를 바꾸지 말 것
-    // 아그니우스: Tanker(검방) / Warrior(딜러), 솔라리스: Mage / GunSlinger, 루나리스: Healer / UtilMage
-    public enum ClassType { Tanker, Warrior, Mage, GunSlinger, Healer, UtilMage }
+    // 아그니우스: Tanker(검방) / Warrior(딜러), 솔라리스: Mage / GunSlinger, 루나리스: Healer / Summoner
+    // (Summoner는 예전 UtilMage 자리 — 값 5 그대로라 기존 에셋은 자동으로 Summoner가 됨)
+    public enum ClassType { Tanker, Warrior, Mage, GunSlinger, Healer, Summoner }
     public ClassType classType;
     public int level;
     public float hp;

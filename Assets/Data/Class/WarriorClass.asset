@@ -1,0 +1,53 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 177ae3ceeddc5384a8c743a54db9a4a7, type: 3}
+  m_Name: WarriorClass
+  m_EditorClassIdentifier: 
+  displayName: "\uC544\uADF8\uB2C8\uC6B0\uC2A4"
+  classType: 1
+  level: 1
+  hp: 800
+  mp: 200
+  learnedSkillIds: 
+  inventoryItemIds: 
+  baseStr: 10
+  baseDex: 8
+  baseVit: 12
+  baseInt: 8
+  baseFht: 5
+  atkPerStr: 1
+  atkPerDex: 0.4
+  critRatePerDex: 0.001
+  hpPerVit: 80
+  defPerVit: 1
+  hpRegenPerVit: 0.2
+  apPerInt: 1.2
+  apPerFth: 1
+  mpRegenPerFth: 0.1
+  baseCritRate: 0.05
+  baseCritDamage: 1.5
+  baseMagicRes: 0
+  baseMoveSpeed: 4
+  baseHpRegen: 1
+  baseMpRegen: 1
+  animatorController: {fileID: 9100000, guid: 4f90f404db88da745808311093e58a43, type: 2}
+  basicAttackDamage: 1
+  normalAttackSfxKey: Tanker_NormalAtk
+  meleeHitEffectKey: Yellow Sword Slash 1
+  projectilePoolKey: 
+  attackRange: 2
+  attackSpeed: 1
+  attackDuration: 1
+  damageDelay: 0.33
+  recoveryDuration: 0.3
+  meleeHitRadius: 1.5
+  meleeHitOffset: 1

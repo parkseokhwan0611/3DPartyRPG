@@ -70,6 +70,7 @@ public class PassiveSkillData : SkillData
             case PassiveEffectType.MagicDmgReduction:
             case PassiveEffectType.AtkSpeed:
             case PassiveEffectType.FaithToHp:
+            case PassiveEffectType.SummonHitManaRestore:
                 return true;
             default:
                 return false;
@@ -152,5 +153,6 @@ public class PassiveSkillData : SkillData
 
         AtkSpeed,            // 공격속도 증가 (0.1 = +10%)
         OnHitCooldownReset,  // 평타 적중 시 확률로 퀵슬롯 스킬 쿨타임 초기화 (쿨 초기화 스킬은 제외)
+        SummonHitManaRestore, // 소환수가 공격을 적중시킬 때마다 주인 마나 고정 회복
     }
 }

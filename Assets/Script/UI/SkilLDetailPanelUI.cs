@@ -161,6 +161,11 @@ public class SkillDetailPanelUI : MonoBehaviour
             SetTextSafe(damageText,  "");
             SetTextSafe(specialText, SkillDescriptionBuilder.GetPassiveDescription(passiveSkill, level));
         }
+        else if (skill is SummonSkillData summonSkill)
+        {
+            SetTextSafe(damageText,  "");
+            SetTextSafe(specialText, SkillDescriptionBuilder.GetSummonDescription(summonSkill, level, currentCaster));
+        }
         else
         {
             SetTextSafe(damageText,  "");
@@ -194,6 +199,11 @@ public class SkillDetailPanelUI : MonoBehaviour
         {
             SetTextSafe(nextDamageText,  "");
             SetTextSafe(nextSpecialText, SkillDescriptionBuilder.GetPassiveDescription(passiveSkill, nextLevel));
+        }
+        else if (skill is SummonSkillData summonSkill)
+        {
+            SetTextSafe(nextDamageText,  "");
+            SetTextSafe(nextSpecialText, SkillDescriptionBuilder.GetSummonDescription(summonSkill, nextLevel, currentCaster));
         }
         else
         {

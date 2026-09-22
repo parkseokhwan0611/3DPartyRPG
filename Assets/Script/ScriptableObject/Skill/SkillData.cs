@@ -46,6 +46,7 @@ public class SkillData : ScriptableObject
     // 쿨타임 초기화 효과를 가진 스킬인지 — 쿨 초기화 스킬끼리는 서로 초기화하지 않는다 (무한 연쇄 방지)
     public virtual bool IsCooldownResetSkill => false;
 
-    public enum SkillType { Damage, Buff, Heal, Debuff, Passive }
+    // 에셋에 정수로 저장되므로 새 타입은 항상 맨 끝에 추가
+    public enum SkillType { Damage, Buff, Heal, Debuff, Passive, Summon }
     public enum SkillCategory { Main, Sub, Passive }
 }

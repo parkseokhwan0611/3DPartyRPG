@@ -493,6 +493,8 @@ public static class SkillDescriptionBuilder
                 return $"최대 마나 +{value:F0}";
             case PassiveSkillData.PassiveEffectType.OnHitManaRestore:
                 return $"평타 적중 시 마나 {value} 회복";
+            case PassiveSkillData.PassiveEffectType.SummonHitManaRestore:
+                return $"소환수 공격 적중 시 마나 {value:0.#} 회복";
             case PassiveSkillData.PassiveEffectType.PhysDmgReduction:
                 return mode == ModifierMode.Percent
                     ? $"받는 물리 데미지 {value * 100f:F1}% 감소"
@@ -577,7 +579,48 @@ public static class SkillDescriptionBuilder
         if (skill is BuffSkillData buff)   return GetBuffDescription(buff, level, caster);
         if (skill is DebuffSkillData deb)  return GetDebuffDescription(deb, level);
         if (skill is PassiveSkillData pas) return GetPassiveDescription(pas, level);
+        if (skill is SummonSkillData sum)  return GetSummonDescription(sum, level, caster);
         return "";
+    }
+
+    // ─────────────────────────────────────────────────────────────────
+    // 소환 스킬
+    // ─────────────────────────────────────────────────────────────────
+
+    // 시전자를 알면 실제 수치까지, 모르면 비율만 표기
+    public static string GetSummonDescription(SummonSkillData s, int level, CharacterStat caster)
+    {
+        var sb = new StringBuilder();
+
+        if (s.action == SummonSkillData.SummonAction.Taunt)
+        {
+            string kindName = s.tauntKind == SummonUnit.Kind.Melee ? "근접" : "원거리";
+            sb.AppendLine($"[도발] {kindName} 소환수 주변 {s.tauntRadius:0.#}m 몬스터의 공격 대상을 소환수로 끌어옴");
+            sb.AppendLine($"어그로 +{s.GetTauntAggro(level):F0}");
+            sb.Append($"{kindName} 소환수가 1기 이상 있어야 사용 가능");
+            return sb.ToString();
+        }
+
+        string kind   = s.SummonKind == SummonUnit.Kind.Melee ? "근접" : "원거리";
+        string dmgStr = s.useAp ? "마법 공격력" : "물리 공격력";
+        float  hpR    = s.GetHpRatio(level);
+        float  atkR   = s.GetAtkRatio(level);
+        float  defR   = s.GetDefRatio(level);
+
+        sb.AppendLine($"[{kind} 소환] {s.GetSummonCount(level)}마리, {s.GetDuration(level):0.#}초 (다시 쓰면 교체)");
+        if (caster != null)
+        {
+            float atkBase = s.useAp ? caster.TotalAp : caster.TotalAtk;
+            sb.AppendLine($"체력: 최대 체력({caster.MaxHp:F0}) × {hpR * 100f:0.#}% = {caster.MaxHp * hpR:F0}");
+            sb.AppendLine($"공격력: {dmgStr}({atkBase:F0}) × {atkR * 100f:0.#}% = {atkBase * atkR:F0}");
+        }
+        else
+        {
+            sb.AppendLine($"체력: 최대 체력 × {hpR * 100f:0.#}%");
+            sb.AppendLine($"공격력: {dmgStr} × {atkR * 100f:0.#}%");
+        }
+        sb.Append($"방어력·마법 저항력: 시전자의 {defR * 100f:0.#}%");
+        return sb.ToString();
     }
 
     // 전투 퀵슬롯 호버 팝업 전용 — 계산식/[단일]·[광역] 태그 없이 최종 수치만 (데미지/치유/버프),
@@ -594,6 +637,7 @@ public static class SkillDescriptionBuilder
         if (skill is BuffSkillData buff)   return GetBuffDescriptionFinal(buff, level, caster);
         if (skill is DebuffSkillData deb)  return GetDebuffDescription(deb, level);
         if (skill is PassiveSkillData pas) return GetPassiveDescription(pas, level);
+        if (skill is SummonSkillData sum)  return GetSummonDescription(sum, level, caster);
         return "";
     }
 }

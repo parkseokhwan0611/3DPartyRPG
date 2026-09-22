@@ -112,6 +112,17 @@ public partial class CharacterStat
     }
 
     // ─────────────────────────────────────────────────────────────────
+    // 소환수 (SummonUnit이 공격을 적중시킬 때)
+    // ─────────────────────────────────────────────────────────────────
+
+    // 소환수 적중 시 마나 회복 패시브
+    public void NotifySummonHit()
+    {
+        if (myStatus == null || myStatus.currentHp <= 0f || myStatus.summonHitMp <= 0f) return;
+        RecoverMp(myStatus.summonHitMp, showAura: false, showText: false);
+    }
+
+    // ─────────────────────────────────────────────────────────────────
     // 발동 효과 구현
     // ─────────────────────────────────────────────────────────────────
 
