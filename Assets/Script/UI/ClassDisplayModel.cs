@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -25,36 +26,74 @@ public class ClassDisplayModel : MonoBehaviour
     [SerializeField] private Animator targetAnimator;
     [SerializeField] private List<Entry> entries = new List<Entry>();
 
-    // InventoryUI가 탭을 바꿀 때 SetActive(true)로 켜므로 켜질 때마다 최신 클래스로 맞춘다
+    private bool _subscribed;
+
+    // InventoryUI가 탭을 바꿀 때 SetActive(true)로 켜므로 켜질 때마다 최신 클래스로 맞춘다.
+    // 전시 스테이지가 씬 시작부터 켜져 있으면 이 OnEnable이 DataManager.Awake보다 먼저 실행될 수 있어
+    // (오브젝트 간 실행 순서 미보장) 그때는 파티 데이터가 아직 없다 — 준비될 때까지 다시 시도한다
     void OnEnable()
     {
-        if (DataManager.instance != null)
-            DataManager.instance.OnPartyClassChanged += HandleClassChanged;
-        Apply();
+        TrySubscribe();
+        if (!Apply()) StartCoroutine(ApplyWhenReady());
     }
 
     void OnDisable()
     {
-        if (DataManager.instance != null)
+        if (_subscribed && DataManager.instance != null)
+        {
             DataManager.instance.OnPartyClassChanged -= HandleClassChanged;
+            DataManager.instance.OnDataInitialized   -= ApplyFromEvent;
+        }
+        _subscribed = false;
     }
+
+    // 새 게임·불러오기로 파티 데이터가 새로 만들어질 때도 다시 맞춘다
+    private void TrySubscribe()
+    {
+        if (_subscribed || DataManager.instance == null) return;
+        DataManager.instance.OnPartyClassChanged += HandleClassChanged;
+        DataManager.instance.OnDataInitialized   += ApplyFromEvent;
+        _subscribed = true;
+    }
+
+    private IEnumerator ApplyWhenReady()
+    {
+        // DataManager가 살아나고 파티 데이터가 채워질 때까지 매 프레임 재시도 (최대 5초)
+        float timeout = 5f;
+        while (timeout > 0f)
+        {
+            yield return null;
+            timeout -= Time.unscaledDeltaTime;
+            TrySubscribe();
+            if (Apply()) yield break;
+        }
+        Debug.LogWarning($"[ClassDisplayModel] {gameObject.name}: 파티 인덱스 {partyIndex}의 클래스를 찾지 못해 전시 모델을 맞추지 못했습니다.");
+    }
+
+    private void ApplyFromEvent() => Apply();
 
     private void HandleClassChanged(int changedIndex)
     {
         if (changedIndex == partyIndex) Apply();
     }
 
-    private void Apply()
+    // 반환값: 실제로 적용했는지 (false면 아직 데이터가 준비되지 않음)
+    private bool Apply()
     {
-        if (DataManager.instance == null) return;
+        if (DataManager.instance == null) return false;
         var statuses = DataManager.instance.partyStatuses;
-        if (partyIndex < 0 || partyIndex >= statuses.Count) return;
+        if (partyIndex < 0 || partyIndex >= statuses.Count) return false;
 
         ClassData cls = statuses[partyIndex].classData;
-        if (cls == null) return;
+        if (cls == null) return false;
 
         Entry current = entries.Find(e => e.classType == cls.classType);
-        if (current == null) return; // 설정 전인 클래스는 건드리지 않음 (전부 꺼지는 사고 방지)
+        if (current == null)
+        {
+            // 현재 클래스 항목이 등록돼 있지 않음 — 전부 꺼지는 사고를 막기 위해 아무것도 건드리지 않는다
+            Debug.LogWarning($"[ClassDisplayModel] {gameObject.name}: {cls.classType} 항목이 Entries에 없어 전시 무기를 바꾸지 못했습니다.");
+            return true;
+        }
 
         // 같은 오브젝트가 여러 클래스에 등록돼 있을 수 있으므로 "현재 클래스 항목에 있으면 켬"으로 판단하고,
         // 상태가 달라질 때만 SetActive — 탭을 열 때마다 모델을 껐다 켜서 애니메이션이 처음으로 돌아가는 것 방지
@@ -73,5 +112,7 @@ public class ClassDisplayModel : MonoBehaviour
             if (anim != null && anim.runtimeAnimatorController != current.animatorController)
                 anim.runtimeAnimatorController = current.animatorController;
         }
+
+        return true;
     }
 }
