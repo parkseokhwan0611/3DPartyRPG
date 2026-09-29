@@ -169,7 +169,30 @@ public class PartyMemberScript : MonoBehaviour
         {
             agent.stoppingDistance = stopDistance;
             HandleFollowLogic();
+            TryRejoinLeaderTarget();
         }
+    }
+
+    // 팔로워가 비상 추격(emergencyFollowMultiplier)이나 스턴 후 거리 초과로 공격 대상을 잃고 따라붙은 뒤,
+    // 리더는 여전히 싸우고 있으면 그 대상에 다시 합류한다 — 공격 대상은 적 클릭으로만 들어오므로
+    // 이게 없으면 다시 클릭할 때까지 리더 옆에 가만히 서 있게 된다.
+    // 다 따라붙어 멈춘 뒤(Idle + 재추격 쿨다운 경과)에만 합류해서, 추격 중에 다시 끌려가 왕복하는 것을 막는다.
+    // 이동 명령을 내리면 리더의 대상도 비워지므로(DispatchMoveCommand) 그때는 합류하지 않는다
+    private void TryRejoinLeaderTarget()
+    {
+        if (CurrentState != MemberState.Idle || _followCooldownTimer > 0f) return;
+        if (attackComp == null || attackComp.currentTarget != null) return;
+
+        var leader = PartyManager.instance != null ? PartyManager.instance.currentLeader : null;
+        if (leader == null || leader == this || leader.CurrentState == MemberState.Dead) return;
+
+        Transform leaderTarget = leader.AttackComp != null ? leader.AttackComp.currentTarget : null;
+        if (leaderTarget == null) return;
+
+        var enemy = leaderTarget.GetComponent<EnemyHp>();
+        if (enemy != null && enemy.isDead) return;
+
+        attackComp.SetTarget(leaderTarget);
     }
 
     // ─────────────────────────────────────────────────────────────────
