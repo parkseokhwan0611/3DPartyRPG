@@ -57,8 +57,21 @@ public class DamageSkillData : SkillData
         public float baseDuration     = 3f;
         public float durationPerLevel = 0.5f;
 
+        [Tooltip("스탯 비례 계수 (시전자 기준, 선택). 최종 수치 = 기본 수치 + 스탯 × 계수\n" +
+                 "예: Shield에 Vit·0.5 = 쉴드량 + 체력 스탯의 50%. Percent 모드면 같은 단위(0.001 = 스탯 1당 +0.1%)로 더해짐")]
+        public ScalingStat scalingStat     = ScalingStat.None;
+        public float       scalingCoeff    = 0f; // 기본 계수 (예: 0.3 = 스탯의 30%)
+        public float       scalingPerLevel = 0f; // 레벨당 계수 증가
+
         public float GetValue(int level)    => baseValue + (valuePerLevel * (level - 1));
         public float GetDuration(int level) => baseDuration + (durationPerLevel * (level - 1));
+        public float GetScaling(int level)  => scalingCoeff + (scalingPerLevel * (level - 1));
+
+        // 스탯 비례분 — 시전자를 모르면(설명문 등) 0
+        public float GetScalingAmount(int level, CharacterStat caster)
+            => scalingStat == ScalingStat.None ? 0f : GetCasterStat(caster, scalingStat) * GetScaling(level);
+
+        public float GetTotalValue(int level, CharacterStat caster) => GetValue(level) + GetScalingAmount(level, caster);
     }
 
     [Header("다음 스킬 연계 버프 (선택)")]

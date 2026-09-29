@@ -139,7 +139,7 @@ public class SkillDetailPanelUI : MonoBehaviour
         if (skill is DamageSkillData dmgSkill)
         {
             SetTextSafe(damageText,  SkillDescriptionBuilder.BuildDamageDescription(dmgSkill, level, currentCaster));
-            SetTextSafe(specialText, SkillDescriptionBuilder.GetDamageSkillSpecial(dmgSkill, level));
+            SetTextSafe(specialText, SkillDescriptionBuilder.GetDamageSkillSpecial(dmgSkill, level, currentCaster));
         }
         else if (skill is HealSkillData healSkill)
         {
@@ -178,7 +178,7 @@ public class SkillDetailPanelUI : MonoBehaviour
         if (skill is DamageSkillData dmgSkill)
         {
             SetTextSafe(nextDamageText,  SkillDescriptionBuilder.BuildDamageDescription(dmgSkill, nextLevel, currentCaster));
-            SetTextSafe(nextSpecialText, SkillDescriptionBuilder.GetDamageSkillSpecial(dmgSkill, nextLevel));
+            SetTextSafe(nextSpecialText, SkillDescriptionBuilder.GetDamageSkillSpecial(dmgSkill, nextLevel, currentCaster));
         }
         else if (skill is HealSkillData healSkill)
         {

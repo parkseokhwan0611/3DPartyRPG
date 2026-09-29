@@ -53,7 +53,8 @@ public static class SkillDescriptionBuilder
         return sb.ToString().TrimEnd('\n', '\r');
     }
 
-    public static string GetDamageSkillSpecial(DamageSkillData dmg, int level)
+    // caster를 넘기면 시전 시 버프의 스탯 비례분을 실제 수치로, 없으면 계수만 표기
+    public static string GetDamageSkillSpecial(DamageSkillData dmg, int level, CharacterStat caster = null)
     {
         var lines = new StringBuilder();
 
@@ -84,7 +85,7 @@ public static class SkillDescriptionBuilder
             lines.AppendLine("[시전 시 자신에게]");
             foreach (var b in dmg.onCastBuffs)
             {
-                string line = FormatCastBuffLine(b, level);
+                string line = FormatCastBuffLine(b, level, caster);
                 if (!string.IsNullOrEmpty(line)) lines.AppendLine($"  {line}");
             }
         }
@@ -99,30 +100,57 @@ public static class SkillDescriptionBuilder
     }
 
     // 데미지 스킬의 시전 시 자기 버프 한 줄 (쉴드, 공격속도 등)
-    private static string FormatCastBuffLine(DamageSkillData.CastBuffEffect b, int level)
+    private static string FormatCastBuffLine(DamageSkillData.CastBuffEffect b, int level, CharacterStat caster)
     {
-        float val = b.GetValue(level);
-        float dur = b.GetDuration(level);
-        bool  pct = b.valueMode == ModifierMode.Percent;
+        float flat    = b.GetValue(level);
+        float scaling = b.GetScalingAmount(level, caster);
+        float val     = flat + scaling;
+        float dur     = b.GetDuration(level);
+        bool  pct     = b.valueMode == ModifierMode.Percent;
         string amount = pct ? $"{val * 100f:0.#}%" : $"{val:F0}";
+        // 공격속도·치명타처럼 원래 비율(0.2 = 20%)인 효과는 스탯 비례분도 % 단위로 표기
+        bool ratio = pct || b.effectType is StatusEffectType.AtkSpeedUp or StatusEffectType.CritRateUp
+                                         or StatusEffectType.CritDamageUp or StatusEffectType.DmgReductionUp
+                                         or StatusEffectType.MoveSpeedUp;
+        string note   = GetCastBuffScalingNote(b, level, flat, scaling, ratio, caster);
 
         return b.effectType switch
         {
-            StatusEffectType.Shield         => $"쉴드 {val:F0} ({dur}초)",
-            StatusEffectType.AtkUp          => $"물리 공격력 +{amount} ({dur}초)",
-            StatusEffectType.ApUp           => $"마법 공격력 +{amount} ({dur}초)",
-            StatusEffectType.DefUp          => $"방어력 +{amount} ({dur}초)",
-            StatusEffectType.MagicResUp     => $"마법 저항력 +{amount} ({dur}초)",
-            StatusEffectType.MaxHpUp        => $"최대 체력 +{amount} ({dur}초)",
-            StatusEffectType.AtkSpeedUp     => $"공격속도 +{val * 100f:0.#}% ({dur}초)",
-            StatusEffectType.CritRateUp     => $"치명타 확률 +{val * 100f:0.#}% ({dur}초)",
-            StatusEffectType.CritDamageUp   => $"치명타 데미지 +{val * 100f:0.#}% ({dur}초)",
-            StatusEffectType.DmgReductionUp => $"받는 데미지 {val * 100f:0.#}% 감소 ({dur}초)",
-            StatusEffectType.MoveSpeedUp    => $"이동속도 +{val * 100f:0.#}% ({dur}초)",
+            StatusEffectType.Shield         => $"쉴드 {val:F0}{note} ({dur}초)",
+            StatusEffectType.AtkUp          => $"물리 공격력 +{amount}{note} ({dur}초)",
+            StatusEffectType.ApUp           => $"마법 공격력 +{amount}{note} ({dur}초)",
+            StatusEffectType.DefUp          => $"방어력 +{amount}{note} ({dur}초)",
+            StatusEffectType.MagicResUp     => $"마법 저항력 +{amount}{note} ({dur}초)",
+            StatusEffectType.MaxHpUp        => $"최대 체력 +{amount}{note} ({dur}초)",
+            StatusEffectType.AtkSpeedUp     => $"공격속도 +{val * 100f:0.#}%{note} ({dur}초)",
+            StatusEffectType.CritRateUp     => $"치명타 확률 +{val * 100f:0.#}%{note} ({dur}초)",
+            StatusEffectType.CritDamageUp   => $"치명타 데미지 +{val * 100f:0.#}%{note} ({dur}초)",
+            StatusEffectType.DmgReductionUp => $"받는 데미지 {val * 100f:0.#}% 감소{note} ({dur}초)",
+            StatusEffectType.MoveSpeedUp    => $"이동속도 +{val * 100f:0.#}%{note} ({dur}초)",
             StatusEffectType.Invulnerable   => $"무적 ({dur}초)",
             StatusEffectType.DebuffImmune   => $"디버프 면역 ({dur}초)",
             _                               => "",
         };
+    }
+
+    // 시전 시 버프의 스탯 비례 표기 — 버프 스킬(GetScalingNote)과 같은 형식
+    private static string GetCastBuffScalingNote(DamageSkillData.CastBuffEffect b, int level, float flat, float scaling,
+                                                 bool pct, CharacterStat caster)
+    {
+        if (b.scalingStat == DamageSkillData.ScalingStat.None) return "";
+        float coeff = b.GetScaling(level);
+        if (coeff == 0f) return "";
+
+        string statName = StatName(b.scalingStat);
+        if (pct)
+        {
+            return caster != null
+                ? $" (기본 {flat * 100f:0.#}% + {statName} 1당 {coeff * 100f:0.##}% = +{scaling * 100f:0.#}%)"
+                : $" + {statName} 1당 {coeff * 100f:0.##}%";
+        }
+        return caster != null
+            ? $" (기본 {flat:F0} + {statName}({GetStatValue(caster, b.scalingStat):F0})×{coeff * 100f:0.#}%)"
+            : $" + {statName}×{coeff * 100f:0.#}%";
     }
 
     // 전투 퀵슬롯 호버 팝업 전용 — 계산식 없이 최종 데미지 수치만, [단일]/[광역] 태그도 생략
@@ -570,7 +598,7 @@ public static class SkillDescriptionBuilder
     {
         if (skill is DamageSkillData dmg)
         {
-            string special = GetDamageSkillSpecial(dmg, level);
+            string special = GetDamageSkillSpecial(dmg, level, caster);
             return string.IsNullOrEmpty(special)
                 ? BuildDamageDescription(dmg, level, caster)
                 : BuildDamageDescription(dmg, level, caster) + "\n" + special;
@@ -630,7 +658,7 @@ public static class SkillDescriptionBuilder
         if (skill is DamageSkillData dmg)
         {
             string dmgLine = BuildDamageFinal(dmg, level, caster);
-            string special = GetDamageSkillSpecial(dmg, level);
+            string special = GetDamageSkillSpecial(dmg, level, caster);
             return string.IsNullOrEmpty(special) ? dmgLine : dmgLine + "\n" + special;
         }
         if (skill is HealSkillData heal)   return BuildHealFinal(heal, level, caster);

@@ -180,7 +180,7 @@ public class DamageSkill : SkillBase
         {
             statusHandler.ApplyBuff(new StatusEffect(
                 buff.effectType,
-                buff.GetValue(skillLevel),
+                buff.GetTotalValue(skillLevel, myStat),
                 buff.GetDuration(skillLevel),
                 gameObject,
                 buff.valueMode
