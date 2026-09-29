@@ -158,6 +158,9 @@ public class PartyMemberScript : MonoBehaviour
 
         if (skillManager != null && skillManager.IsActivatingSkill) return;
         if (attackComp  != null && attackComp.IsCastingSkill) return;
+        // 공격 모션 도중 대상이 죽어 Attacking에서 빠졌어도 모션이 끝날 때까지는 따라가기 등 이동을 시작하지 않는다.
+        // 이동 명령·스턴은 공격 코루틴을 먼저 끊어 이 플래그를 내리므로 즉시 움직인다
+        if (attackComp  != null && attackComp.IsAttackAnimPlaying) return;
         if (holdActive) return;
 
         if (isLeader)

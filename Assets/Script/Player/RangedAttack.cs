@@ -104,11 +104,18 @@ public class RangedAttack : AttackBase
 
         yield return new WaitForSeconds(cls.damageDelay / speed);
 
-        // 발사 직전에 대상이 사라지면 쏘지 않으므로 아직 안 나간 효과음도 취소
-        if (currentTarget == null || ObjectPoolManager.instance == null) { StopAttackSfx(); EndAttack(); yield break; }
-
-        var effect = ObjectPoolManager.instance.GetGo(cls.projectilePoolKey);
-        if (effect == null) { StopAttackSfx(); EndAttack(); yield break; }
+        // 발사 직전에 대상이 사라지면(죽음 등) 쏘지 않고 아직 안 나간 효과음도 취소하되,
+        // 모션은 끝까지 재생한다 — 여기서 바로 끝내면 모션 도중에 이동이 시작돼 미끄러지듯 걸어감
+        var effect = currentTarget != null && ObjectPoolManager.instance != null
+            ? ObjectPoolManager.instance.GetGo(cls.projectilePoolKey)
+            : null;
+        if (effect == null)
+        {
+            StopAttackSfx();
+            yield return new WaitForSeconds(cls.recoveryDuration / speed);
+            EndAttack();
+            yield break;
+        }
 
         Transform  fp         = CurrentFirePoint;
         Vector3    spawnPos   = fp != null ? fp.position : transform.position;

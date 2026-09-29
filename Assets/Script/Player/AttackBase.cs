@@ -272,7 +272,10 @@ public abstract class AttackBase : MonoBehaviour
     {
         if (currentTarget == target) return;
 
-        StopAttackCoroutine();
+        // 이동 명령(target == null)은 공격 모션을 즉시 끊는다.
+        // 다른 적을 클릭한 경우는 지금 모션을 끝까지 재생한 뒤(IsAttackAnimPlaying이 풀린 뒤) 새 대상으로 넘어간다
+        if (target == null || !IsAttackAnimPlaying)
+            StopAttackCoroutine();
         attackCooldown = 0f;
 
         if (anim != null)
