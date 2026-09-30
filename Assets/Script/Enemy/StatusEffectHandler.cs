@@ -32,7 +32,7 @@ public class StatusEffectHandler : MonoBehaviour
     private float stunTimer = 0f;
     private bool  isStunned = false;
 
-    // 쉴드 수치 풀 — PartyStatusEffectHandler와 공용 로직인 ShieldPool에 위임 (스택 시 수치는
+    // 보호막 수치 풀 — PartyStatusEffectHandler와 공용 로직인 ShieldPool에 위임 (스택 시 수치는
     // 합연산, 지속시간은 최근에 건 스킬 기준으로 갱신되는 단일 풀 + 단일 만료 타이머)
     private ShieldPool _shield;
     public float CurrentShield => _shield.Current;
@@ -186,12 +186,12 @@ public class StatusEffectHandler : MonoBehaviour
     }
 
     // ─────────────────────────────────────────────────────────────────
-    // 쉴드
+    // 보호막
     // ─────────────────────────────────────────────────────────────────
 
     public void ApplyShield(float amount, float duration, GameObject source) => _shield.Apply(amount, duration);
 
-    // 데미지 적용 전 쉴드로 먼저 흡수 — EnemyHp.ApplyDamage에서 방어력 경감 이후 호출
+    // 데미지 적용 전 보호막으로 먼저 흡수 — EnemyHp.ApplyDamage에서 방어력 경감 이후 호출
     public float AbsorbDamage(float damage) => _shield.Absorb(damage);
 
     // ─────────────────────────────────────────────────────────────────

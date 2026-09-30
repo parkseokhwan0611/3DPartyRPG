@@ -23,8 +23,11 @@ public class CombatDetailPopupUI : MonoBehaviour
     [SerializeField] ScrollRect       statsScroll;
 
     [Header("배치")]
-    [Tooltip("호버한 슬롯 기준 팝업 오프셋 (기본: 슬롯 위쪽)")]
-    [SerializeField] Vector2 offset = new Vector2(0f, 90f);
+    [Tooltip("팝업 아랫변 중앙을 호버한 슬롯 윗변 중앙에 붙인 뒤 더할 오프셋 (y = 슬롯과의 간격).\n" +
+             "간격이 너무 크면 슬롯→팝업으로 마우스를 옮기는 사이 숨겨져 휠 스크롤을 못 하니 작게 유지")]
+    [SerializeField] Vector2 offset = new Vector2(0f, 8f);
+
+    private readonly Vector3[] _corners = new Vector3[4];
 
     [Tooltip("슬롯에서 벗어난 뒤 실제로 숨기기까지 대기 시간 — 그 사이 팝업(스크롤 영역 포함)으로 " +
              "마우스를 옮기면 숨김이 취소됨. panel 오브젝트에 CombatDetailPopupHoverGuard를 붙여야 동작")]
@@ -159,18 +162,41 @@ public class CombatDetailPopupUI : MonoBehaviour
         if (statsScroll != null) statsScroll.verticalNormalizedPosition = 1f;
     }
 
-    // 팝업이 슬롯과 다른 부모/캔버스 아래 있어도 안전하게 위치시키기 위해
-    // 월드 좌표 → 스크린 좌표 → 팝업 부모 기준 로컬 좌표로 변환
+    // 호버한 슬롯 바로 위에 팝업을 붙이고, 화면(캔버스) 밖으로 나가지 않게 안쪽으로 밀어 넣는다.
+    // 팝업이 슬롯과 다른 부모/캔버스 아래 있어도 되도록 월드 → 스크린 → 팝업 부모 로컬 좌표로 변환
     private void Reposition(RectTransform anchor)
     {
         if (panel == null || anchor == null) return;
         if (panel.parent is not RectTransform parentRect) return;
 
-        Camera cam = panel.GetComponentInParent<Canvas>()?.worldCamera;
-        Vector2 screenPoint = RectTransformUtility.WorldToScreenPoint(cam, anchor.position);
+        // Overlay 캔버스는 카메라 없이 변환해야 한다 — 캔버스에 worldCamera가 지정돼 있어도 넘기면
+        // 좌표가 엉뚱한 한 점으로 모여 어느 슬롯에서든 같은 자리에 뜬다
+        Canvas canvas = panel.GetComponentInParent<Canvas>();
+        Camera cam = canvas != null && canvas.renderMode != RenderMode.ScreenSpaceOverlay ? canvas.worldCamera : null;
 
-        if (RectTransformUtility.ScreenPointToLocalPointInRectangle(parentRect, screenPoint, cam, out Vector2 localPoint))
-            panel.anchoredPosition = localPoint + offset;
+        // 슬롯 윗변 중앙 (GetWorldCorners: 0 좌하, 1 좌상, 2 우상, 3 우하)
+        anchor.GetWorldCorners(_corners);
+        Vector2 screenPoint = RectTransformUtility.WorldToScreenPoint(cam, (_corners[1] + _corners[2]) * 0.5f);
+        if (!RectTransformUtility.ScreenPointToLocalPointInRectangle(parentRect, screenPoint, cam, out Vector2 slotTop))
+            return;
+
+        // 피벗이 어디든 팝업 아랫변 중앙이 슬롯 윗변 중앙 + offset에 오도록
+        Vector2 size  = panel.rect.size;
+        Vector2 pivot = panel.pivot;
+        Vector2 pos   = slotTop + offset + new Vector2((pivot.x - 0.5f) * size.x, pivot.y * size.y);
+
+        // 캔버스 영역 안으로 클램프 (부모 로컬 좌표 기준)
+        if (canvas != null && canvas.rootCanvas.transform is RectTransform rootRect)
+        {
+            rootRect.GetWorldCorners(_corners);
+            Vector2 min = parentRect.InverseTransformPoint(_corners[0]);
+            Vector2 max = parentRect.InverseTransformPoint(_corners[2]);
+            pos.x = Mathf.Clamp(pos.x, min.x + pivot.x * size.x, max.x - (1f - pivot.x) * size.x);
+            pos.y = Mathf.Clamp(pos.y, min.y + pivot.y * size.y, max.y - (1f - pivot.y) * size.y);
+        }
+
+        // localPosition은 부모 피벗 기준이라 팝업의 앵커 설정과 무관하게 정확히 맞는다
+        panel.localPosition = new Vector3(pos.x, pos.y, panel.localPosition.z);
     }
 
     private static float GetArrayValue(float[] arr, int level)

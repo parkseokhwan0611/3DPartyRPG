@@ -58,7 +58,7 @@ public class DamageSkillData : SkillData
         public float durationPerLevel = 0.5f;
 
         [Tooltip("스탯 비례 계수 (시전자 기준, 선택). 최종 수치 = 기본 수치 + 스탯 × 계수\n" +
-                 "예: Shield에 Vit·0.5 = 쉴드량 + 체력 스탯의 50%. Percent 모드면 같은 단위(0.001 = 스탯 1당 +0.1%)로 더해짐")]
+                 "예: Shield에 Vit·0.5 = 보호막 수치 + 체력 스탯의 50%. Percent 모드면 같은 단위(0.001 = 스탯 1당 +0.1%)로 더해짐")]
         public ScalingStat scalingStat     = ScalingStat.None;
         public float       scalingCoeff    = 0f; // 기본 계수 (예: 0.3 = 스탯의 30%)
         public float       scalingPerLevel = 0f; // 레벨당 계수 증가

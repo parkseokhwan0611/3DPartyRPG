@@ -1,7 +1,7 @@
 using System.Collections;
 using UnityEngine;
 
-// 쉴드 수치 풀 — 중첩 시 수치는 합연산, 지속시간은 가장 최근에 건 스킬 기준으로 갱신되는
+// 보호막 수치 풀 — 중첩 시 수치는 합연산, 지속시간은 가장 최근에 건 스킬 기준으로 갱신되는
 // 단일 풀 + 단일 만료 타이머 방식. PartyStatusEffectHandler/StatusEffectHandler(Enemy)가 공용으로 사용.
 // MonoBehaviour가 아니므로 코루틴 실행을 위해 호스트 컴포넌트를 필요로 한다.
 public class ShieldPool

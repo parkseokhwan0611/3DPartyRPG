@@ -130,7 +130,7 @@ public class EnemyHp : MonoBehaviour, IDamageable
         if (statusHandler != null)
             finalDamage = statusHandler.AbsorbDamage(finalDamage);
 
-        if (finalDamage <= 0f) return; // 쉴드가 전부 흡수한 경우 — 데미지 텍스트/HP 변화 없음
+        if (finalDamage <= 0f) return; // 보호막이 전부 흡수한 경우 — 데미지 텍스트/HP 변화 없음
 
         hp = Mathf.Clamp(hp - finalDamage, 0, maxHp);
         SpawnDamageText(finalDamage, damageColor, isCrit);

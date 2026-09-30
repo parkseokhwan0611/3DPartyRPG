@@ -8,8 +8,8 @@ public class HpMpBarUI : MonoBehaviour
     public CharacterStat stat;
     public Image hpBar;
     public Image mpBar;
-    [Tooltip("선택 — 비워두면 쉴드 바 없음. HP 바와 반대 방향으로 깎이도록 Image의 Fill Origin을 " +
-             "Right로 설정할 것 (HP는 Left 피벗, 쉴드는 Right 피벗)")]
+    [Tooltip("선택 — 비워두면 보호막 바 없음. HP 바와 반대 방향으로 깎이도록 Image의 Fill Origin을 " +
+             "Right로 설정할 것 (HP는 Left 피벗, 보호막은 Right 피벗)")]
     public Image shieldBar;
 
     private Coroutine hpCoroutine;
@@ -30,7 +30,7 @@ public class HpMpBarUI : MonoBehaviour
         if (shieldHandler == null) shieldHandler = stat.GetComponent<PartyStatusEffectHandler>();
 
         // hp/mpBar와 마찬가지로 초기값은 코루틴 애니메이션 없이 즉시 세팅 — 그렇지 않으면 Image의
-        // 기본 Fill Amount(1)에서 시작해 SmoothBar로 서서히 줄어드는 동안 쉴드가 꽉 찬 것처럼 보인다
+        // 기본 Fill Amount(1)에서 시작해 SmoothBar로 서서히 줄어드는 동안 보호막이 꽉 찬 것처럼 보인다
         if (shieldBar != null)
             shieldBar.fillAmount = (shieldHandler != null && stat.MaxHp > 0f)
                 ? Mathf.Clamp01(shieldHandler.CurrentShield / stat.MaxHp) : 0f;
@@ -73,7 +73,7 @@ public class HpMpBarUI : MonoBehaviour
         mpCoroutine = StartCoroutine(SmoothBar(mpBar, target));
     }
 
-    // 쉴드 수치는 MaxHp 대비 비율로 표시 (HP/MP 바와 같은 스케일) — 수치 텍스트는 아직 없음
+    // 보호막 수치는 MaxHp 대비 비율로 표시 (HP/MP 바와 같은 스케일) — 수치 텍스트는 아직 없음
     void UpdateShieldUI()
     {
         if (shieldBar == null || stat == null || stat.MaxHp <= 0f) return;

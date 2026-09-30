@@ -10,8 +10,8 @@ public class TargetHpScript : MonoBehaviour
     public TMPro.TextMeshProUGUI nameText;
     public TMPro.TextMeshProUGUI hpText;
     public UnityEngine.UI.Image hpBarFill;
-    [Tooltip("선택 — 비워두면 쉴드 바 없음. HP 바와 반대 방향으로 깎이도록 Image의 Fill Origin을 " +
-             "Right로 설정할 것 (HP는 Left 피벗, 쉴드는 Right 피벗)")]
+    [Tooltip("선택 — 비워두면 보호막 바 없음. HP 바와 반대 방향으로 깎이도록 Image의 Fill Origin을 " +
+             "Right로 설정할 것 (HP는 Left 피벗, 보호막은 Right 피벗)")]
     public UnityEngine.UI.Image shieldBarFill;
 
     [Header("# 등급 표시 (정예/보스 전용)")]
@@ -94,7 +94,7 @@ public class TargetHpScript : MonoBehaviour
         if (currentHp <= 0 && rootVisual != null) rootVisual.SetActive(false);
     }
 
-    // 쉴드 수치는 MaxHp 대비 비율로 표시 (HP 바와 같은 스케일) — 수치 텍스트는 아직 없음
+    // 보호막 수치는 MaxHp 대비 비율로 표시 (HP 바와 같은 스케일) — 수치 텍스트는 아직 없음
     void UpdateShieldBar()
     {
         if (shieldBarFill == null || currentTarget == null) return;

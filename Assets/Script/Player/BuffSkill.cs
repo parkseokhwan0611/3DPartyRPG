@@ -84,7 +84,7 @@ public class BuffSkill : SkillBase
                 PartyManager.instance.StartCoroutine(BuffPresentationRoutine(stat, data));
         }
 
-        // 아군 전체 버프는 소환수에게도 — 소환수가 지원하는 효과(피해 감소·쉴드·무적·공격력·치명타·이동속도)만 적용
+        // 아군 전체 버프는 소환수에게도 — 소환수가 지원하는 효과(피해 감소·보호막·무적·공격력·치명타·이동속도)만 적용
         for (int i = SummonUnit.All.Count - 1; i >= 0; i--)
         {
             var summon = SummonUnit.All[i];

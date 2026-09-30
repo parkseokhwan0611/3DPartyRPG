@@ -23,20 +23,20 @@ MonoBehaviour:
   sfxEntries: []
   skillPriority: 0
   maxLevel: 5
-  requiredCharLevel: 50
+  requiredCharLevel: 10
   mpCost:
-  - 0
-  - 0
-  - 0
-  - 0
-  - 0
+  - 30
+  - 32
+  - 34
+  - 37
+  - 40
   cooldown:
-  - 0
-  - 0
-  - 0
-  - 0
-  - 0
-  skillPointCost: 0000000000000000000000000000000000000000
+  - 20
+  - 19
+  - 18
+  - 17
+  - 15
+  skillPointCost: 0200000002000000020000000300000003000000
   isPartyBuff: 1
   effectStyle: 1
   effectPoolKey: DefBuff
@@ -50,8 +50,13 @@ MonoBehaviour:
   durationPerLevel: 1
   buffEffects:
   - effectType: 8
-    baseValue: 500
+    valueMode: 0
+    baseValue: 150
     valuePerLevel: 100
     scalingStat: 2
-    scalingCoeff: 1
-    scalingPerLevel: 0.1
+    scalingCoeff: 3.5
+    scalingPerLevel: 0.5
+  thornsIsMagic: 1
+  thornsScalings: []
+  thornsAggroPerHit: 15
+  thornsHitEffectPoolKey: 

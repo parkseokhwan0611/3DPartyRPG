@@ -13,7 +13,7 @@ public class PartyStatusEffectHandler : MonoBehaviour
     private SkillManager skillManager;
     private PartyMemberScript partyMember;
 
-    // 쉴드 수치 풀 — Enemy StatusEffectHandler와 공용 로직인 ShieldPool에 위임 (중첩 시 수치는
+    // 보호막 수치 풀 — Enemy StatusEffectHandler와 공용 로직인 ShieldPool에 위임 (중첩 시 수치는
     // 합연산, 지속시간은 가장 최근에 건 스킬 기준으로 갱신)
     private ShieldPool _shield;
     public float CurrentShield => _shield.Current;
@@ -110,7 +110,7 @@ public class PartyStatusEffectHandler : MonoBehaviour
         OnBuffChanged?.Invoke(StatusEffectType.Thorns, false);
     }
 
-    // CharacterStat이 피격 처리 직후 호출 — 쉴드로 전부 막은 공격이어도 맞은 것으로 보고 반사한다.
+    // CharacterStat이 피격 처리 직후 호출 — 보호막으로 전부 막은 공격이어도 맞은 것으로 보고 반사한다.
     // 몬스터의 근접·투사체·수류탄·광역 스킬 모두 attacker로 몬스터 자신을 넘겨주므로 공격 종류와 무관하게 동작
     public void TryReflectThorns(GameObject attacker)
     {
@@ -270,13 +270,13 @@ public class PartyStatusEffectHandler : MonoBehaviour
         OnStunEnded?.Invoke();
     }
 
-    // 쉴드 적용 — 수치는 기존 쉴드에 합산하고, 만료 타이머는 이번 지속시간으로 새로 갱신한다
-    // (예: 5초짜리 쉴드가 걸린 지 3초 지난 상태에서 8초짜리 쉴드를 또 걸면, 수치는 합쳐지고
+    // 보호막 적용 — 수치는 기존 보호막에 합산하고, 만료 타이머는 이번 지속시간으로 새로 갱신한다
+    // (예: 5초짜리 보호막이 걸린 지 3초 지난 상태에서 8초짜리 보호막을 또 걸면, 수치는 합쳐지고
     // 전체가 지금부터 8초 뒤에 함께 만료된다)
     public void ApplyShield(float amount, float duration, GameObject source) => _shield.Apply(amount, duration);
 
     // ─────────────────────────────────────────────────────────────────
-    // 데미지 시 쉴드 먼저 소모
+    // 데미지 시 보호막 먼저 소모
     // ─────────────────────────────────────────────────────────────────
 
     public float AbsorbDamage(float damage) => _shield.Absorb(damage);
@@ -361,7 +361,7 @@ public class PartyStatusEffectHandler : MonoBehaviour
         EndThorns();
 
         // 코루틴 자체는 GameObject 비활성화로 이미 죽지만, 핸들만 정리 (재활성화 후 스킬로 새로
-        // 건 쉴드를 옛 핸들의 StopCoroutine이 건드리지 않도록)
+        // 건 보호막을 옛 핸들의 StopCoroutine이 건드리지 않도록)
         _shield.Clear();
     }
 

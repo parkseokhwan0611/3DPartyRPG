@@ -99,14 +99,17 @@ public static class SkillDescriptionBuilder
         return lines.ToString().TrimEnd('\n', '\r');
     }
 
-    // 데미지 스킬의 시전 시 자기 버프 한 줄 (쉴드, 공격속도 등)
+    // 데미지 스킬의 시전 시 자기 버프 한 줄 (보호막, 공격속도 등)
     private static string FormatCastBuffLine(DamageSkillData.CastBuffEffect b, int level, CharacterStat caster)
     {
         float flat    = b.GetValue(level);
         float scaling = b.GetScalingAmount(level, caster);
         float val     = flat + scaling;
         float dur     = b.GetDuration(level);
-        bool  pct     = b.valueMode == ModifierMode.Percent;
+        // Percent 모드는 능력치 증가 5종에서만 실제로 적용됨 — 보호막 등은 모드와 무관하게 고정 수치
+        bool  pct     = b.valueMode == ModifierMode.Percent
+                        && b.effectType is StatusEffectType.AtkUp or StatusEffectType.ApUp or StatusEffectType.DefUp
+                                        or StatusEffectType.MagicResUp or StatusEffectType.MaxHpUp;
         string amount = pct ? $"{val * 100f:0.#}%" : $"{val:F0}";
         // 공격속도·치명타처럼 원래 비율(0.2 = 20%)인 효과는 스탯 비례분도 % 단위로 표기
         bool ratio = pct || b.effectType is StatusEffectType.AtkSpeedUp or StatusEffectType.CritRateUp
@@ -116,7 +119,7 @@ public static class SkillDescriptionBuilder
 
         return b.effectType switch
         {
-            StatusEffectType.Shield         => $"쉴드 {val:F0}{note} ({dur}초)",
+            StatusEffectType.Shield         => $"보호막 +{val:F0}{note} ({dur}초)",
             StatusEffectType.AtkUp          => $"물리 공격력 +{amount}{note} ({dur}초)",
             StatusEffectType.ApUp           => $"마법 공격력 +{amount}{note} ({dur}초)",
             StatusEffectType.DefUp          => $"방어력 +{amount}{note} ({dur}초)",
@@ -134,6 +137,7 @@ public static class SkillDescriptionBuilder
     }
 
     // 시전 시 버프의 스탯 비례 표기 — 버프 스킬(GetScalingNote)과 같은 형식
+    // 예: "보호막 +174 (기본150 + VIT×200% = +24)"
     private static string GetCastBuffScalingNote(DamageSkillData.CastBuffEffect b, int level, float flat, float scaling,
                                                  bool pct, CharacterStat caster)
     {
@@ -141,7 +145,16 @@ public static class SkillDescriptionBuilder
         float coeff = b.GetScaling(level);
         if (coeff == 0f) return "";
 
-        string statName = StatName(b.scalingStat);
+        string statName = b.scalingStat switch
+        {
+            DamageSkillData.ScalingStat.Str => "STR",
+            DamageSkillData.ScalingStat.Vit => "VIT",
+            DamageSkillData.ScalingStat.Int => "INT",
+            DamageSkillData.ScalingStat.Fth => "FTH",
+            DamageSkillData.ScalingStat.Dex => "DEX",
+            _                               => "",
+        };
+
         if (pct)
         {
             return caster != null
@@ -149,8 +162,8 @@ public static class SkillDescriptionBuilder
                 : $" + {statName} 1당 {coeff * 100f:0.##}%";
         }
         return caster != null
-            ? $" (기본 {flat:F0} + {statName}({GetStatValue(caster, b.scalingStat):F0})×{coeff * 100f:0.#}%)"
-            : $" + {statName}×{coeff * 100f:0.#}%";
+            ? $" (기본{flat:F0} + {statName}×{coeff * 100f:F0}% = +{scaling:F0})"
+            : $" + {statName}×{coeff * 100f:F0}%";
     }
 
     // 전투 퀵슬롯 호버 팝업 전용 — 계산식 없이 최종 데미지 수치만, [단일]/[광역] 태그도 생략
@@ -372,7 +385,7 @@ public static class SkillDescriptionBuilder
             BuffSkillData.BuffEffectType.CritRate      => $"치명타 확률 +{total * 100f:F1}%{note}",
             BuffSkillData.BuffEffectType.CritDamage    => $"치명타 데미지 +{total * 100f:F1}%{note}",
             BuffSkillData.BuffEffectType.MaxHpBonus    => $"최대 체력 +{amount}{note}",
-            BuffSkillData.BuffEffectType.Shield        => $"쉴드 +{total:F0}{note}",
+            BuffSkillData.BuffEffectType.Shield        => $"보호막 +{total:F0}{note}",
             BuffSkillData.BuffEffectType.HpOnHit       => $"공격 적중 시 체력 +{total:F0}{note}",
             _                                          => FormatBuffLineFinal(effect, total) + note,
         };
@@ -415,7 +428,7 @@ public static class SkillDescriptionBuilder
             BuffSkillData.BuffEffectType.CritDamage    => $"치명타 데미지 +{total * 100f:F1}%",
             BuffSkillData.BuffEffectType.MaxHpBonus    => $"최대 체력 +{amount}",
             BuffSkillData.BuffEffectType.SpeedBonus    => $"이동속도 +{total * 100f:0.#}%",
-            BuffSkillData.BuffEffectType.Shield        => $"쉴드 +{total:F0}",
+            BuffSkillData.BuffEffectType.Shield        => $"보호막 +{total:F0}",
             BuffSkillData.BuffEffectType.ManaRegen     => $"마나 재생 +{total:0.#}/초",
             BuffSkillData.BuffEffectType.HpRegen       => $"체력 재생 +{total:0.#}/초",
             BuffSkillData.BuffEffectType.HpOnHit       => $"공격 적중 시 체력 +{total:F0}",

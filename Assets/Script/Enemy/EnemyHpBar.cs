@@ -8,8 +8,8 @@ public class EnemyHpBar : MonoBehaviour
     public EnemyHp enemyHp;
     public Image hpBar;
     public Image mask;
-    [Tooltip("선택 — 비워두면 쉴드 바 없음. HP 바와 반대 방향으로 깎이도록 Image의 Fill Origin을 " +
-             "Right로 설정할 것 (HP는 Left 피벗, 쉴드는 Right 피벗)")]
+    [Tooltip("선택 — 비워두면 보호막 바 없음. HP 바와 반대 방향으로 깎이도록 Image의 Fill Origin을 " +
+             "Right로 설정할 것 (HP는 Left 피벗, 보호막은 Right 피벗)")]
     public Image shieldBar;
     public float hpAmount;
     private float currentHpFill; // 현재 HP 바의 채우기 정도를 추적하기 위한 변수
@@ -71,7 +71,7 @@ public class EnemyHpBar : MonoBehaviour
         if (mask != null) mask.fillAmount = Mathf.MoveTowards(mask.fillAmount, currentHpFill, 0.8f * Time.deltaTime);
     }
 
-    // 쉴드 수치는 MaxHp 대비 비율로 표시 (HP 바와 같은 스케일) — 수치 텍스트는 아직 없음
+    // 보호막 수치는 MaxHp 대비 비율로 표시 (HP 바와 같은 스케일) — 수치 텍스트는 아직 없음
     void ShieldChange()
     {
         if (shieldBar == null || enemyHp == null || enemyHp.maxHp <= 0f) return;
