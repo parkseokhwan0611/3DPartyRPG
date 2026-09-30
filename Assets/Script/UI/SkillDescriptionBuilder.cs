@@ -72,9 +72,9 @@ public static class SkillDescriptionBuilder
                 {
                     case StatusEffectType.Stun:          lines.AppendLine($"  스턴 {duration}초");                         break;
                     case StatusEffectType.Slow:          lines.AppendLine($"  슬로우 {val * 100f:F0}% {duration}초");      break;
-                    case StatusEffectType.AtkDown:       lines.AppendLine($"  공격력 감소 {val * 100f:F0}% {duration}초"); break;
+                    case StatusEffectType.AtkDown:       lines.AppendLine($"  공격력 감소 {FormatDebuffValue(d, val)} {duration}초"); break;
                     case StatusEffectType.MoveSpeedDown: lines.AppendLine($"  이속 감소 {val * 100f:F0}% {duration}초");   break;
-                    case StatusEffectType.DefDown:       lines.AppendLine($"  방어력 감소 {val * 100f:F0}% {duration}초"); break;
+                    case StatusEffectType.DefDown:       lines.AppendLine($"  방어력 감소 {FormatDebuffValue(d, val)} {duration}초"); break;
                     case StatusEffectType.Poison:        lines.AppendLine($"  독 초당 {val:F0} {duration}초");             break;
                 }
             }
@@ -106,15 +106,12 @@ public static class SkillDescriptionBuilder
         float scaling = b.GetScalingAmount(level, caster);
         float val     = flat + scaling;
         float dur     = b.GetDuration(level);
-        // Percent 모드는 능력치 증가 5종에서만 실제로 적용됨 — 보호막 등은 모드와 무관하게 고정 수치
-        bool  pct     = b.valueMode == ModifierMode.Percent
-                        && b.effectType is StatusEffectType.AtkUp or StatusEffectType.ApUp or StatusEffectType.DefUp
-                                        or StatusEffectType.MagicResUp or StatusEffectType.MaxHpUp;
+        // Percent 모드는 능력치 증가 5종 + 받는 데미지 감소에서만 실제로 적용됨 — 보호막 등은 모드와 무관하게 고정 수치
+        bool  pct     = b.IsPercent;
         string amount = pct ? $"{val * 100f:0.#}%" : $"{val:F0}";
         // 공격속도·치명타처럼 원래 비율(0.2 = 20%)인 효과는 스탯 비례분도 % 단위로 표기
         bool ratio = pct || b.effectType is StatusEffectType.AtkSpeedUp or StatusEffectType.CritRateUp
-                                         or StatusEffectType.CritDamageUp or StatusEffectType.DmgReductionUp
-                                         or StatusEffectType.MoveSpeedUp;
+                                         or StatusEffectType.CritDamageUp or StatusEffectType.MoveSpeedUp;
         string note   = GetCastBuffScalingNote(b, level, flat, scaling, ratio, caster);
 
         return b.effectType switch
@@ -128,7 +125,7 @@ public static class SkillDescriptionBuilder
             StatusEffectType.AtkSpeedUp     => $"공격속도 +{val * 100f:0.#}%{note} ({dur}초)",
             StatusEffectType.CritRateUp     => $"치명타 확률 +{val * 100f:0.#}%{note} ({dur}초)",
             StatusEffectType.CritDamageUp   => $"치명타 데미지 +{val * 100f:0.#}%{note} ({dur}초)",
-            StatusEffectType.DmgReductionUp => $"받는 데미지 {val * 100f:0.#}% 감소{note} ({dur}초)",
+            StatusEffectType.DmgReductionUp => $"받는 데미지 {amount} 감소{note} ({dur}초)",
             StatusEffectType.MoveSpeedUp    => $"이동속도 +{val * 100f:0.#}%{note} ({dur}초)",
             StatusEffectType.Invulnerable   => $"무적 ({dur}초)",
             StatusEffectType.DebuffImmune   => $"디버프 면역 ({dur}초)",
@@ -435,7 +432,7 @@ public static class SkillDescriptionBuilder
             BuffSkillData.BuffEffectType.DebuffImmune  => "디버프 면역",
             BuffSkillData.BuffEffectType.DispelDebuff  => "디버프 즉시 제거",
             BuffSkillData.BuffEffectType.AtkSpeedBonus => $"공격속도 +{total * 100f:0.#}%",
-            BuffSkillData.BuffEffectType.DmgReduction  => $"받는 데미지 {total * 100f:0.#}% 감소",
+            BuffSkillData.BuffEffectType.DmgReduction  => $"받는 데미지 {amount} 감소",
             BuffSkillData.BuffEffectType.Invulnerable  => "무적 (데미지·디버프 무시)",
             BuffSkillData.BuffEffectType.CooldownReset => Mathf.RoundToInt(total) > 0
                 ? $"스킬 {Mathf.RoundToInt(total)}개 쿨타임 즉시 초기화 (남은 쿨타임이 긴 순, 쿨 초기화 스킬 제외)"
@@ -463,15 +460,19 @@ public static class SkillDescriptionBuilder
             {
                 case StatusEffectType.Stun:          result += $"스턴 {duration}초\n";                          break;
                 case StatusEffectType.Slow:          result += $"슬로우 {value * 100f:F0}% {duration}초\n";     break;
-                case StatusEffectType.AtkDown:       result += $"공격력 감소 {value * 100f:F0}% {duration}초\n"; break;
+                case StatusEffectType.AtkDown:       result += $"공격력 감소 {FormatDebuffValue(effect, value)} {duration}초\n"; break;
                 case StatusEffectType.MoveSpeedDown: result += $"이속 감소 {value * 100f:F0}% {duration}초\n";  break;
-                case StatusEffectType.DefDown:       result += $"방어력 감소 {value * 100f:F0}% {duration}초\n"; break;
+                case StatusEffectType.DefDown:       result += $"방어력 감소 {FormatDebuffValue(effect, value)} {duration}초\n"; break;
                 case StatusEffectType.Poison:        result += $"독 초당 {value:F0} {duration}초\n";              break;
             }
         }
 
         return result.TrimEnd('\n');
     }
+
+    // 감소 수치 표기 — Flat이면 "20", Percent면 "20%"
+    private static string FormatDebuffValue(DebuffSkillData.DebuffEffect d, float value)
+        => d.IsFlat ? $"{value:F0}" : $"{value * 100f:F0}%";
 
     // ─────────────────────────────────────────────────────────────────
     // 패시브 스킬

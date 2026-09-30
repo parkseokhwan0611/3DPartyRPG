@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e5e45a76e89a01947a92e73bf3f3bb4e, type: 3}
-  m_Name: DefDcrease
+  m_Name: ArmorBreak
   m_EditorClassIdentifier: 
-  skillId: DefDecrease
+  skillId: ArmorBreak
   skillName: "\uAC11\uC637 \uD30C\uAD34"
   description: "\uC801\uC758 \uAC11\uC637\uC744 \uD30C\uAD34\uC2DC\uCF1C \uC77C\uC815
     \uC2DC\uAC04 \uBC29\uC5B4\uB825\uC744 \uAC10\uC18C\uC2DC\uD0B5\uB2C8\uB2E4."
@@ -20,22 +20,46 @@ MonoBehaviour:
   requiredClass: 1
   skillType: 0
   skillCategory: 0
-  sfxEntries: []
+  sfxEntries:
+  - sfxKey: Warrior_Main3
+    delay: 0.5
   skillPriority: 0
   maxLevel: 5
-  requiredCharLevel: 0
-  mpCost: []
-  cooldown: []
-  skillPointCost: 
-  baseDamageMultiplier: 1
-  damageMultiplierPerLevel: 0.1
+  requiredCharLevel: 20
+  mpCost:
+  - 30
+  - 30
+  - 30
+  - 30
+  - 30
+  cooldown:
+  - 12
+  - 11.5
+  - 11
+  - 10.5
+  - 10
+  skillPointCost: 0200000002000000020000000200000004000000
+  baseDamageMultiplier: 3
+  damageMultiplierPerLevel: 0.5
   useAp: 0
-  statScalings: []
-  castRange: 3
-  baseRange: 3
+  statScalings:
+  - stat: 1
+    coeff: 0.5
+    coeffPerLevel: 0.2
+  - stat: 5
+    coeff: 0.5
+    coeffPerLevel: 0.2
+  castRange: 2.5
+  baseRange: 2
   rangePerLevel: 0
   isAoe: 0
-  onHitDebuffs: []
+  onHitDebuffs:
+  - effectType: 4
+    valueMode: 1
+    baseValue: 0.2
+    valuePerLevel: 0.05
+    baseDuration: 5
+    durationPerLevel: 0
   onCastBuffs: []
   hasNextSkillBuff: 0
   nextSkillDamageBonus: 0.2
@@ -48,9 +72,9 @@ MonoBehaviour:
   zoneActivationDelay: 0
   zoneDamageInterval: 0.5
   zoneDuration: 5
-  animTriggerName: 
-  animDuration: 0
-  effectSpawnDelay: 0
-  effectPoolKey: 
+  animTriggerName: doGiantSlash
+  animDuration: 1.2
+  effectSpawnDelay: 0.75
+  effectPoolKey: ArmorBreak
   effectSpawnOffset: {x: 0, y: 0, z: 0}
   effectSpawnRotation: {x: 0, y: 0, z: 0}

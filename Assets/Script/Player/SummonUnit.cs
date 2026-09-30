@@ -111,7 +111,7 @@ public class SummonUnit : MonoBehaviour, IDamageable
     // 버프 (파티 버프가 소환수에게도 걸림)
     private class Buff { public StatusEffectType type; public float value; public ModifierMode mode; public float remaining; }
     private readonly List<Buff> _buffs = new List<Buff>();
-    private float _buffAtkPct, _buffAtkFlat, _buffCritRate, _buffCritDmg, _buffDmgReduction, _buffMoveSpeed;
+    private float _buffAtkPct, _buffAtkFlat, _buffCritRate, _buffCritDmg, _buffDmgReduction, _buffDmgReductionFlat, _buffMoveSpeed;
     private int   _invulnerableCount;
 
     private static readonly int NoHash = 0;
@@ -468,6 +468,8 @@ public class SummonUnit : MonoBehaviour, IDamageable
         if (_dead || _invulnerableCount > 0) return;
 
         damage *= 1f - Mathf.Clamp01(_buffDmgReduction);
+        if (_buffDmgReductionFlat > 0f && damage > 0f)
+            damage = Mathf.Max(1f, damage - _buffDmgReductionFlat); // 파티원과 같이 고정 감소로는 최소 1은 들어감
         damage  = _shield.Absorb(damage);
         if (damage <= 0f) return;
 
@@ -534,7 +536,7 @@ public class SummonUnit : MonoBehaviour, IDamageable
 
     private void RecalcBuffs()
     {
-        _buffAtkPct = _buffAtkFlat = _buffCritRate = _buffCritDmg = _buffDmgReduction = _buffMoveSpeed = 0f;
+        _buffAtkPct = _buffAtkFlat = _buffCritRate = _buffCritDmg = _buffDmgReduction = _buffDmgReductionFlat = _buffMoveSpeed = 0f;
         _invulnerableCount = 0;
         foreach (var b in _buffs)
         {
@@ -547,7 +549,10 @@ public class SummonUnit : MonoBehaviour, IDamageable
                     break;
                 case StatusEffectType.CritRateUp:     _buffCritRate     += b.value; break;
                 case StatusEffectType.CritDamageUp:   _buffCritDmg      += b.value; break;
-                case StatusEffectType.DmgReductionUp: _buffDmgReduction += b.value; break;
+                case StatusEffectType.DmgReductionUp:
+                    if (b.mode == ModifierMode.Percent) _buffDmgReduction     += b.value;
+                    else                                _buffDmgReductionFlat += b.value;
+                    break;
                 case StatusEffectType.MoveSpeedUp:    _buffMoveSpeed    += Mathf.Max(0f, b.value); break;
                 case StatusEffectType.Invulnerable:   _invulnerableCount++;         break;
             }

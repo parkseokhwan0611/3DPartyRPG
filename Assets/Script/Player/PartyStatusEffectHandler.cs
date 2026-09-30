@@ -439,8 +439,10 @@ public class PartyStatusEffectHandler : MonoBehaviour
             case StatusEffectType.ManaRegen:
                 status.buffMpRegen += effect.value * multiplier;
                 break;
+            // Percent = 받는 데미지 비율 감소 (0.2 = 20%), Flat = 한 대마다 고정 감소
             case StatusEffectType.DmgReductionUp:
-                status.buffDmgReductionPct += effect.value * multiplier;
+                if (effect.mode == ModifierMode.Percent) status.buffDmgReductionPct  += effect.value * multiplier;
+                else                                     status.buffDmgReductionFlat += effect.value * multiplier;
                 break;
             case StatusEffectType.MoveSpeedUp:
                 if (apply) status.moveSpeedMultiplier *= (1f + Mathf.Max(0f, effect.value));

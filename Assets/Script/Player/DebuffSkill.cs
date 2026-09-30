@@ -94,7 +94,8 @@ public class DebuffSkill : SkillBase
                 effect.effectType,
                 effect.GetValue(skillLevel),
                 effect.GetDuration(skillLevel),
-                gameObject
+                gameObject,
+                effect.EffectiveMode
             ));
         }
     }

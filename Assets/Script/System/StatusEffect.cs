@@ -28,7 +28,7 @@ public enum StatusEffectType
     HpOnHitUp,
     Thorns,         // 가시 반사 — 수치 없이 시작/종료 알림용 (PartyBuffVfx 등에서 연출 매핑 가능)
     Poison,         // 독 (몬스터 전용 디버프) — value = 1초마다 입히는 마법 데미지
-    DmgReductionUp, // 받는 데미지 감소 (물리·마법 공통, 0.2 = 20%)
+    DmgReductionUp, // 받는 데미지 감소 (물리·마법 공통, mode Percent 0.2 = 20% / Flat 20 = 한 대당 -20)
     Invulnerable,   // 무적 — 데미지와 디버프를 모두 무시
     MoveSpeedUp,    // 이동속도 증가 (0.2 = +20%)
 }
@@ -60,7 +60,7 @@ public class StatusEffect
     public float value;
     public float duration;
     public GameObject source;
-    // 능력치 증가 버프(AtkUp/ApUp/DefUp/MagicResUp/MaxHpUp)에서만 의미 있음
+    // 능력치 증가 버프(AtkUp/ApUp/DefUp/MagicResUp/MaxHpUp), DmgReductionUp, 몬스터 AtkDown/DefDown에서만 의미 있음
     public ModifierMode mode;
 
     [System.NonSerialized]

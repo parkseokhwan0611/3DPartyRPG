@@ -152,8 +152,9 @@ public string charName;
     public float magicDmgReductionPct = 0f;
     public float physDmgReductionFlat  = 0f;
     public float magicDmgReductionFlat = 0f;
-    // 받는 데미지 감소 버프 — 물리·마법 공통, 패시브 퍼센트와 합산
+    // 받는 데미지 감소 버프 — 물리·마법 공통, 패시브 퍼센트/고정 감소와 각각 합산
     public float buffDmgReductionPct   = 0f;
+    public float buffDmgReductionFlat  = 0f;
 
     // 방어력/마법 저항력 경감이 끝난 데미지에 받는 데미지 감소를 적용
     // 퍼센트 합이 100%를 넘어도 음수가 되지 않게 막고, 고정 감소로는 원래 데미지가 있던 공격을
@@ -163,7 +164,7 @@ public string charName;
         if (damage <= 0f) return damage;
 
         float pct  = (isMagic ? magicDmgReductionPct : physDmgReductionPct) + buffDmgReductionPct;
-        float flat = isMagic ? magicDmgReductionFlat : physDmgReductionFlat;
+        float flat = (isMagic ? magicDmgReductionFlat : physDmgReductionFlat) + buffDmgReductionFlat;
 
         float reduced = damage * (1f - Mathf.Clamp01(pct)) - flat;
         return Mathf.Max(1f, reduced);

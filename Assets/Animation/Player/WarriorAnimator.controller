@@ -187,7 +187,7 @@ AnimatorStateTransition:
   m_Name: 
   m_Conditions:
   - m_ConditionMode: 1
-    m_ConditionEvent: doHolyPierce
+    m_ConditionEvent: doDarkSlash
     m_EventTreshold: 0
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: 4590816023116789695}
@@ -323,10 +323,10 @@ AnimatorStateMachine:
     m_Position: {x: 350, y: 190, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -3517456133102534522}
-    m_Position: {x: 500, y: 0, z: 0}
+    m_Position: {x: 240, y: -10, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 4590816023116789695}
-    m_Position: {x: 260, y: 0, z: 0}
+    m_Position: {x: 480, y: -10, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 1312680343189387933}
     m_Position: {x: 750, y: 10, z: 0}
@@ -413,7 +413,7 @@ AnimatorController:
     m_DefaultInt: 0
     m_DefaultBool: 0
     m_Controller: {fileID: 9100000}
-  - m_Name: doHolyPierce
+  - m_Name: doDarkSlash
     m_Type: 9
     m_DefaultFloat: 0
     m_DefaultInt: 0
@@ -700,7 +700,7 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: HolyPierce
+  m_Name: DarkSlash
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions:
@@ -715,7 +715,7 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: 7400000, guid: 08c0d59660469b049acceccba97f8868, type: 3}
+  m_Motion: {fileID: 7400000, guid: 33c684e8316cee640a4e43e2bbccf193, type: 3}
   m_Tag: 
   m_SpeedParameter: attackSpeed
   m_MirrorParameter: 

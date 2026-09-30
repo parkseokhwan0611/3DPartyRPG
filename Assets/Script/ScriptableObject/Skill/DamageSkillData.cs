@@ -50,7 +50,9 @@ public class DamageSkillData : SkillData
     public class CastBuffEffect
     {
         public StatusEffectType effectType;
-        [Tooltip("AtkUp/ApUp/DefUp/MagicResUp/MaxHpUp에서만 사용. Percent는 0.1 = 기본 수치의 +10%")]
+        [Tooltip("AtkUp/ApUp/DefUp/MagicResUp/MaxHpUp, DmgReductionUp에서만 사용.\n" +
+                 "Percent: 0.1 = 기본 수치의 +10% / DmgReductionUp은 받는 데미지 10% 감소\n" +
+                 "Flat: 20 = +20 / DmgReductionUp은 한 대마다 20 감소 (최소 1은 들어감)")]
         public ModifierMode valueMode = ModifierMode.Flat;
         public float baseValue     = 0f;
         public float valuePerLevel = 0f;
@@ -72,6 +74,12 @@ public class DamageSkillData : SkillData
             => scalingStat == ScalingStat.None ? 0f : GetCasterStat(caster, scalingStat) * GetScaling(level);
 
         public float GetTotalValue(int level, CharacterStat caster) => GetValue(level) + GetScalingAmount(level, caster);
+
+        // 퍼센트가 실제로 적용되는 효과인지 (그 외 타입은 valueMode와 무관)
+        public bool IsPercent => valueMode == ModifierMode.Percent
+                              && effectType is StatusEffectType.AtkUp or StatusEffectType.ApUp or StatusEffectType.DefUp
+                                            or StatusEffectType.MagicResUp or StatusEffectType.MaxHpUp
+                                            or StatusEffectType.DmgReductionUp;
     }
 
     [Header("다음 스킬 연계 버프 (선택)")]

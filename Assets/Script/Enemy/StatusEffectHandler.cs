@@ -328,13 +328,13 @@ public class StatusEffectHandler : MonoBehaviour
 
             // ── 공격력 감소 ──
             // 100% 감소 시 공격력이 음수로 뒤집히지 않도록 0.99로 클램프 (Slow/MoveSpeedDown과 동일한 이유)
+            // Flat이면 수치 그대로 빼되 0 아래로는 내리지 않음
             case StatusEffectType.AtkDown:
                 if (attackBase == null) break;
                 if (apply)
                 {
                     originalAtkDamage       = attackBase.attackDamage; // 원본값 저장
-                    float safeAtkValue      = Mathf.Clamp(effect.value, 0f, 0.99f);
-                    attackBase.attackDamage = originalAtkDamage * (1f - safeAtkValue);
+                    attackBase.attackDamage = ReduceValue(originalAtkDamage, effect);
                 }
                 else
                 {
@@ -348,9 +348,8 @@ public class StatusEffectHandler : MonoBehaviour
                 if (enemyHp == null) break;
                 if (apply)
                 {
-                    originalDef      = enemyHp.def; // 원본값 저장
-                    float safeDefValue = Mathf.Clamp(effect.value, 0f, 0.99f);
-                    enemyHp.def      = originalDef * (1f - safeDefValue);
+                    originalDef = enemyHp.def; // 원본값 저장
+                    enemyHp.def = ReduceValue(originalDef, effect);
                 }
                 else
                 {
@@ -359,6 +358,14 @@ public class StatusEffectHandler : MonoBehaviour
                 }
                 break;
         }
+    }
+
+    // 감소형 디버프 공통 — Percent: 원본 × (1 - 값, 최대 99%) / Flat: 원본 - 값 (0 미만 방지)
+    private static float ReduceValue(float original, StatusEffect effect)
+    {
+        if (effect.mode == ModifierMode.Flat)
+            return Mathf.Max(0f, original - Mathf.Max(0f, effect.value));
+        return original * (1f - Mathf.Clamp(effect.value, 0f, 0.99f));
     }
 
     private bool IsDebuff(StatusEffectType type)

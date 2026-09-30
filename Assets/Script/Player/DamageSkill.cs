@@ -162,7 +162,8 @@ public class DamageSkill : SkillBase
                 debuff.effectType,
                 debuff.GetValue(skillLevel),
                 debuff.GetDuration(skillLevel),
-                gameObject
+                gameObject,
+                debuff.EffectiveMode
             ));
         }
     }

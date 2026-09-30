@@ -10,19 +10,19 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 72fc38e46b28c16479c1fcb1332fbc1a, type: 3}
-  m_Name: PhysicalDMG
+  m_Name: DefIncrease_Warrior
   m_EditorClassIdentifier: 
-  skillId: PhysicalATK
-  skillName: "\uAC80\uC220 \uB2E8\uB828"
-  description: "\uBB3C\uB9AC \uACF5\uACA9\uB825\uC774 \uC99D\uAC00\uD569\uB2C8\uB2E4."
-  icon: {fileID: 21300000, guid: 4661b6652c421224e8280d42e06d50af, type: 3}
-  requiredClass: 0
+  skillId: DefIncreaseWarrior
+  skillName: "\uAC15\uCCA0 \uD53C\uBD80"
+  description: "\uBC29\uC5B4\uB825\uACFC \uB9C8\uBC95 \uC800\uD56D\uB825\uC774 \uC99D\uAC00\uD569\uB2C8\uB2E4."
+  icon: {fileID: 21300000, guid: 03b0d95c839f48c43af808e21b70b8ab, type: 3}
+  requiredClass: 1
   skillType: 4
   skillCategory: 2
   sfxEntries: []
   skillPriority: 0
   maxLevel: 5
-  requiredCharLevel: 1
+  requiredCharLevel: 10
   mpCost:
   - 0
   - 0
@@ -35,13 +35,21 @@ MonoBehaviour:
   - 0
   - 0
   - 0
-  skillPointCost: 0100000002000000020000000300000004000000
-  effectType: 0
+  skillPointCost: 0200000002000000020000000200000004000000
+  effectType: 2
   valueMode: 0
-  baseValue: 20
-  valuePerLevel: 30
+  baseValue: 15
+  valuePerLevel: 20
+  hasSecondEffect: 1
+  secondEffectType: 8
+  secondValueMode: 0
+  secondBaseValue: 10
+  secondValuePerLevel: 15
   baseProcChance: 0
   procChancePerLevel: 0
   baseProcValue: 0
   procValuePerLevel: 0
+  baseProcDuration: 0
+  procDurationPerLevel: 0
   procEffectPoolKey: 
+  procSkill: {fileID: 0}
