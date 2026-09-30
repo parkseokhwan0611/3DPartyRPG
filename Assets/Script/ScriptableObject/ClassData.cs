@@ -63,6 +63,11 @@ public class ClassData : ScriptableObject
         Magic    = 2,  // 마법 공격력 기준 마법 데미지
     }
 
+    [Header("시작 장비")]
+    [Tooltip("이 클래스로 시작하거나(새 게임) 이 클래스로 무기를 바꿀 때 바로 장착시킬 장비.\n" +
+             "무기 변경 시 같은 슬롯에 끼고 있던 장비는 인벤토리로 돌아감. 포션 등 공용 지급품은 DataManager의 시작 아이템에서 설정")]
+    public List<EquipItemData> startEquips = new List<EquipItemData>();
+
     [Header("외형")]
     [Tooltip("이 클래스를 고르면 캐릭터 Animator에 적용할 컨트롤러 (비우면 씬에 배치된 그대로).\n" +
              "무기 오브젝트는 캐릭터의 ClassWeaponSwitcher에서 지정")]

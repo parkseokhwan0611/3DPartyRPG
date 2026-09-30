@@ -137,6 +137,17 @@ public class PartyMemberScript : MonoBehaviour
 
         if (CurrentState == MemberState.Attacking)
         {
+            // 공격 대상이 없는데 Attacking에 남아 있으면 복구 — ForceCancelAttack(스턴 등)은 대상을 지우면서
+            // 종료 이벤트를 보내지 않아서, 스턴 도중 대상이 사라지면 이 상태로 남아 따라가지도 합류하지도 않고
+            // 제자리에 멈춰 있었음. 모션·스킬이 끝난 뒤에만 정리해서 "모션은 끝까지" 원칙은 유지
+            if (attackComp != null && attackComp.currentTarget == null
+                && !attackComp.IsAttackAnimPlaying && !attackComp.IsCastingSkill
+                && (skillManager == null || !skillManager.IsActivatingSkill))
+            {
+                HandleAttackEnded();
+                return;
+            }
+
             // 평소 전투 중에는 공격을 끝까지 재생하지만, 리더가 스킬 회피 등으로 갑자기 멀리
             // 벗어나면(resumeDistance의 emergencyFollowMultiplier배 이상) 공격을 즉시 끊고 따라붙는다.
             // 그러지 않으면 공격 애니메이션(윈드업+후딜)이 끝날 때까지 팔로워가 위험 지역에 그대로

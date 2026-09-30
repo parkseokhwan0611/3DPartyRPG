@@ -17,6 +17,7 @@ public abstract class SkillBase : MonoBehaviour
 
     private float cooldownTimer = 0f;
     private Coroutine skillCoroutine;
+    private Coroutine executeCoroutine; // SkillRoutine 안에서 돌리는 ExecuteSkill — ForceStop 때 같이 멈춤
 
     // 스킬 종료 시 이동/타겟팅 재개를 알리는 이벤트
     public event Action OnSkillFinished;
@@ -109,9 +110,21 @@ public abstract class SkillBase : MonoBehaviour
             StopCoroutine(skillCoroutine);
             skillCoroutine = null;
         }
+        // 바깥 SkillRoutine만 멈추면 안쪽 ExecuteSkill은 계속 돌아서 끊긴 스킬의 이펙트·데미지가 뒤늦게 나감
+        if (executeCoroutine != null)
+        {
+            StopCoroutine(executeCoroutine);
+            executeCoroutine = null;
+        }
 
         // IsCastingSkill 즉시 해제
         if (attackBase != null) attackBase.IsCastingSkill = false;
+
+        // SkillRoutine 끝의 이동 재개가 건너뛰어지므로 여기서 대신 푼다 — 안 그러면 다음 스킬이 발동에
+        // 실패했을 때(쿨타임·사거리 밖 등) 이동 잠금이 남아 제자리에 멈춘다. 스턴 중이면 EndStun이 푼다
+        bool isStunned = statusHandler != null && statusHandler.HasDebuff(StatusEffectType.Stun);
+        if (!isStunned && agent != null && agent.enabled && agent.isOnNavMesh)
+            agent.isStopped = false;
     }
 
     // ─────────────────────────────────────────────────────────────────
@@ -119,6 +132,10 @@ public abstract class SkillBase : MonoBehaviour
     // ─────────────────────────────────────────────────────────────────
     private IEnumerator SkillRoutine(Transform target)
     {
+        // 이전 스킬(후딜 중)을 먼저 끊는다 — 아래에서 시전 플래그·이동 잠금을 건 뒤에 끊으면
+        // 이전 스킬의 ForceStop이 방금 건 플래그들을 도로 풀어버림
+        skillManager?.RegisterCurrentSkill(this);
+
         if (attackBase != null)
         {
             attackBase.CancelCurrentAttack();
@@ -140,9 +157,10 @@ public abstract class SkillBase : MonoBehaviour
             anim.SetBool("isWalking", false);
 
         if (skillManager != null) skillManager.IsActivatingSkill = true;
-        skillManager?.RegisterCurrentSkill(this);
 
-        yield return StartCoroutine(ExecuteSkill(target));
+        executeCoroutine = StartCoroutine(ExecuteSkill(target));
+        yield return executeCoroutine;
+        executeCoroutine = null;
 
         if (skillManager != null && skillManager.IsActivatingSkill)
             ReleaseActivating();

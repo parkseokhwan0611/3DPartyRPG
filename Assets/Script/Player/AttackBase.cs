@@ -224,6 +224,10 @@ public abstract class AttackBase : MonoBehaviour
         }
         else
         {
+            // 위에서 스턴·스킬 시전이 아님을 이미 확인했으므로, 이전 스킬이 중간에 끊기며 남긴 이동 잠금이
+            // 있으면 풀어준다 — 남아 있으면 SetDestination을 해도 제자리에 서서 대상에게 다가가지 못함
+            if (agent.isOnNavMesh && agent.isStopped) agent.isStopped = false;
+
             Vector3 dest = currentTarget.position;
             bool destMoved = (_lastChaseDestination - dest).sqrMagnitude > ChaseDestThreshold * ChaseDestThreshold;
 

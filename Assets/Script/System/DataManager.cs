@@ -9,14 +9,6 @@ public class StartItemEntry
     public int count = 1;
 }
 
-[System.Serializable]
-public class StartEquipEntry
-{
-    [Tooltip("장착시킬 파티원 인덱스 (0=첫번째, 1=두번째, 2=세번째)")]
-    public int characterIndex;
-    public EquipItemData item;
-}
-
 // 씬 파일 이름(영문) → 화면에 표시할 이름. 미니맵/포탈/퀘스트 등 씬 이름을 플레이어에게 보여주는
 // 모든 곳이 이 하나의 목록을 공유한다 (DontDestroyOnLoad라 씬이 바뀌어도 유지됨)
 [System.Serializable]
@@ -91,10 +83,9 @@ public class DataManager : MonoBehaviour
     public int startSkillPoint = 1;
 
     [Header("시작 아이템")]
-    [Tooltip("게임 시작 시 인벤토리에 지급할 아이템 목록 (count로 수량 설정)")]
+    [Tooltip("게임 시작 시 인벤토리에 지급할 공용 아이템 목록 (count로 수량 설정).\n" +
+             "캐릭터가 미리 장착할 장비는 클래스마다 다르므로 각 ClassData의 시작 장비에서 설정")]
     public List<StartItemEntry> startItems;
-    [Tooltip("게임 시작 시 캐릭터에게 미리 장착시킬 아이템 목록")]
-    public List<StartEquipEntry> startEquips;
 
     [Header("아이템 레지스트리")]
     [Tooltip("세이브/로드에 사용할 모든 아이템 SO 목록 (itemId 기준 조회)")]
@@ -162,18 +153,9 @@ public class DataManager : MonoBehaviour
             partyEquipments.Add(new CharacterEquipment());
         }
 
-        // 시작 장착 아이템 적용
-        if (startEquips != null)
-        {
-            foreach (var entry in startEquips)
-            {
-                if (entry.item == null) continue;
-                if (entry.characterIndex < 0 || entry.characterIndex >= partyEquipments.Count) continue;
-                var inst = new ItemInstance(entry.item);
-                partyEquipments[entry.characterIndex].Equip(inst);
-                partyEquipments[entry.characterIndex].RecalculateStats(partyStatuses[entry.characterIndex]);
-            }
-        }
+        // 시작 클래스의 시작 장비 장착
+        for (int i = 0; i < partyStatuses.Count; i++)
+            EquipClassStartItems(i, partyStatuses[i].classData);
 
         pendingAutoRegisterPotions = true;
         OnDataInitialized?.Invoke();
@@ -460,6 +442,24 @@ public class DataManager : MonoBehaviour
         return baseDataList[partyIndex];
     }
 
+    // 클래스의 시작 장비를 장착 — 같은 슬롯에 끼고 있던 장비는 버리지 않고 공용 인벤토리로 돌려보낸다
+    // (새 게임에서는 슬롯이 비어 있어 돌려보낼 게 없음)
+    private void EquipClassStartItems(int partyIndex, ClassData cls)
+    {
+        if (cls == null || cls.startEquips == null || cls.startEquips.Count == 0) return;
+        if (partyIndex < 0 || partyIndex >= partyEquipments.Count || partyIndex >= partyStatuses.Count) return;
+
+        var equipment = partyEquipments[partyIndex];
+        foreach (var item in cls.startEquips)
+        {
+            if (item == null) continue;
+            ItemInstance prev = equipment.Equip(new ItemInstance(item));
+            if (prev != null && !sharedInventory.TryAddItem(prev))
+                Debug.LogWarning($"[DataManager] 인벤토리가 가득 차서 {prev.data?.itemName}을(를) 돌려놓지 못했습니다.");
+        }
+        equipment.RecalculateStats(partyStatuses[partyIndex]);
+    }
+
     public bool IsClassChosen(int partyIndex)
         => partyIndex >= 0 && partyIndex < partyStatuses.Count && partyStatuses[partyIndex].classChosen;
 
@@ -485,6 +485,7 @@ public class DataManager : MonoBehaviour
         status.ResetAllSkills();
         status.classData = newClass;
         status.charName  = GetCharName(newClass);
+        EquipClassStartItems(partyIndex, newClass); // 체력을 채우기 전에 — 장비로 늘어난 최대 체력까지 가득 채우도록
         status.currentHp = status.MaxHp;
         status.currentMp = status.MaxMp;
 

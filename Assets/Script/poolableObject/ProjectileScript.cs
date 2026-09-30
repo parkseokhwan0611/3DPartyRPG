@@ -18,6 +18,13 @@ public class ProjectileScript : PoolAble
     [SerializeField] protected GameObject[] Detached;
     [SerializeField] protected ParticleSystem projectilePS;
 
+    [Header("총구 섬광 (선택)")]
+    [Tooltip("발사 순간 발사 위치(총구)에 띄울 이펙트 프리팹 — 건슬링어 평타 등.\n" +
+             "hit과 같은 방식으로 ObjectPoolManager에 프리팹 이름과 같은 키로 등록해야 하고,\n" +
+             "프리팹 루트에 PoolableObject(destroyTime = 섬광 길이)를 붙여야 풀로 돌아감.\n" +
+             "위의 flash는 에셋 원본 투사체의 자식 오브젝트용이라 이것과 별개")]
+    [SerializeField] protected GameObject muzzleFlash;
+
     public float damage;
     public GameObject owner;
 
@@ -106,6 +113,26 @@ public class ProjectileScript : PoolAble
         isCrit        = crit;
         onHitCallback = null;
         onHitTargetCallback = onAnyHit;
+    }
+
+    // 발사하는 쪽이 투사체 위치·방향을 잡은 뒤 호출 — OnEnable은 풀에서 꺼내는 순간(위치 지정 전)이라
+    // 거기서 띄우면 이전 위치에 섬광이 뜬다
+    public void SpawnMuzzleFlash(Vector3 position, Quaternion rotation)
+    {
+        if (muzzleFlash == null || ObjectPoolManager.instance == null) return;
+
+        var flashGo = ObjectPoolManager.instance.GetGo(muzzleFlash.name);
+        if (flashGo == null) return;
+
+        flashGo.transform.SetPositionAndRotation(position, rotation);
+
+        // 풀에서 꺼내며 켜질 때 이전 위치에서 이미 재생을 시작했으므로, 옮긴 뒤 처음부터 다시 재생
+        var ps = flashGo.GetComponent<ParticleSystem>();
+        if (ps != null)
+        {
+            ps.Clear(true);
+            ps.Play(true);
+        }
     }
 
     // ─────────────────────────────────────────────────────────────────

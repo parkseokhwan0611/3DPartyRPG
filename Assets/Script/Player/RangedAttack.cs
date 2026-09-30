@@ -122,6 +122,10 @@ public class RangedAttack : AttackBase
         Quaternion preciseRot = Quaternion.LookRotation((TargetPosition - spawnPos).normalized);
         effect.transform.SetPositionAndRotation(spawnPos, preciseRot);
 
+        ProjectileScript proj = effect.GetComponent<ProjectileScript>();
+        // 총구 섬광 — 투사체 프리팹에 지정돼 있을 때만 (건슬링어 등)
+        if (proj != null) proj.SpawnMuzzleFlash(spawnPos, preciseRot);
+
         bool  isMagic = IsMagicBasicAttack;
         float damage  = isMagic ? myStat.TotalAp * (1f + myStat.MagicDmgBonus)
                                 : myStat.TotalAtk * (1f + myStat.PhysDmgBonus);
@@ -134,7 +138,6 @@ public class RangedAttack : AttackBase
                 CinemachineShake.Instance.ShakeCamera(10f, .2f);
         }
 
-        ProjectileScript proj = effect.GetComponent<ProjectileScript>();
         if (proj != null)
             proj.SetProjectileData(damage, gameObject, enemy => OnProjectileHit(enemy, isCrit, isMagic), isMagic: isMagic, crit: isCrit);
 
