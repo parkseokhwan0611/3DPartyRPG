@@ -13,7 +13,7 @@ public static class SkillDescriptionBuilder
     {
         var sb = new StringBuilder();
 
-        sb.AppendLine(dmg.isAoe ? "[광역]" : "[단일]");
+        sb.AppendLine(dmg.IsAreaDamage ? "[광역]" : "[단일]");
 
         string baseLabel = dmg.useAp ? "마법 공격력" : "물리 공격력";
         float  mult      = dmg.GetDamageMultiplier(level);
@@ -58,7 +58,9 @@ public static class SkillDescriptionBuilder
     {
         var lines = new StringBuilder();
 
-        if (dmg.isAoe)
+        if (dmg.throwGrenade)
+            lines.AppendLine($"[투척] 폭발 범위: {dmg.GetRange(level):F1}m");
+        else if (dmg.isAoe)
             lines.AppendLine($"[광역] 범위: {dmg.GetRange(level):F1}m");
 
         if (dmg.onHitDebuffs != null && dmg.onHitDebuffs.Count > 0)

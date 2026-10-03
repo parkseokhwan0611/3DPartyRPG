@@ -52,7 +52,12 @@ public class DamageSkill : SkillBase
             yield return new WaitForSeconds(data.effectSpawnDelay);
 
         // 4. 이펙트 스폰 + 데미지 판정
-        if (data.spawnAtTarget)
+        if (data.throwGrenade)
+        {
+            // 수류탄형: 포물선으로 던지고, 착지 시 GrenadeProjectile이 직접 범위 판정
+            ThrowGrenade(data, target);
+        }
+        else if (data.spawnAtTarget)
         {
             // 장판형: 타겟 위치에 스폰, SkillZone이 직접 판정
             SpawnZone(data, target);
@@ -255,6 +260,38 @@ public class DamageSkill : SkillBase
         {
             Debug.LogWarning($"[DamageSkill] '{data.effectPoolKey}' 오브젝트에 SkillZone 컴포넌트가 없습니다.");
         }
+    }
+
+    // 수류탄형 — 몬스터 수류탄(MonsterGrenadeSkill)과 같은 GrenadeProjectile로 던진다.
+    // 착지 지점은 지금 대상의 발밑으로 고정, 폭발 반경은 스킬 범위(GetRange)
+    private void ThrowGrenade(DamageSkillData data, Transform target)
+    {
+        if (string.IsNullOrEmpty(data.effectPoolKey)) return;
+        if (ObjectPoolManager.instance == null) return;
+
+        var go = ObjectPoolManager.instance.GetGo(data.effectPoolKey);
+        if (go == null) return;
+
+        var grenade = go.GetComponent<GrenadeProjectile>();
+        if (grenade == null)
+        {
+            Debug.LogWarning($"[DamageSkill] '{data.effectPoolKey}' 오브젝트에 GrenadeProjectile 컴포넌트가 없습니다.");
+            go.GetComponent<PoolAble>()?.ReleaseObject();
+            return;
+        }
+
+        Vector3 start   = transform.position + transform.rotation * data.effectSpawnOffset;
+        Vector3 landing = target.position;
+        go.transform.rotation = transform.rotation * Quaternion.Euler(data.effectSpawnRotation);
+
+        // 치명타는 폭발에 맞은 대상마다 GrenadeProjectile이 굴리므로 여기서는 치명타 전 데미지만 넘긴다
+        float comboBonus = myStat.ConsumeNextSkillBonus();
+        float damage     = data.GetRawDamage(skillLevel, myStat) * (1f + comboBonus);
+
+        grenade.Launch(start, landing, data.grenadeFlightDuration, data.grenadeArcHeight,
+                       damage, data.GetRange(skillLevel), enemyLayer, gameObject, data.useAp,
+                       hit => ApplyOnHitDebuffs(data, hit.transform),
+                       myStat.TotalCritRate, myStat.TotalCritDamage);
     }
 
     private void OnDrawGizmosSelected()

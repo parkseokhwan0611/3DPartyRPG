@@ -103,6 +103,22 @@ public class DamageSkillData : SkillData
     [Tooltip("장판 최대 지속시간 (초). zoneHitOnce = false일 때, 이 시간이 지나면 SkillZone이 스스로 데미지 판정을 멈춤 (PoolableObject 설정 누락 시 무한 루프 방지용 안전장치)")]
     public float zoneDuration = 5f;
 
+    [Header("수류탄형 설정")]
+    [Tooltip("true = 포물선으로 던져 대상의 발밑에 떨어진 뒤 범위 폭발 (몬스터 수류탄과 같은 GrenadeProjectile 사용). 장판형보다 우선\n" +
+             "· Effect Pool Key = 던질 투척물 프리팹의 풀 키 (GrenadeProjectile 컴포넌트 필요)\n" +
+             "· 폭발 이펙트·효과음 = 그 프리팹의 GrenadeProjectile에 있는 Explosion Pool Key / Explosion Sfx Key\n" +
+             "· Effect Spawn Offset = 던지는 위치 (시전자 기준, 예: 손 높이 y = 1)\n" +
+             "· 폭발 반경 = 사거리 설정의 Base Range (+ Range Per Level)\n" +
+             "· 착지 지점은 던지는 순간의 대상 위치로 고정 — 날아가는 동안 대상이 움직이면 빗나갈 수 있음")]
+    public bool  throwGrenade          = false;
+    [Tooltip("목표 지점까지 날아가는 시간 (초)")]
+    public float grenadeFlightDuration = 0.8f;
+    [Tooltip("포물선 최고 높이 (m)")]
+    public float grenadeArcHeight      = 3f;
+
+    // 범위 판정 스킬인지 (설명문 [광역] 표기용) — 수류탄형은 항상 범위 폭발
+    public bool IsAreaDamage => isAoe || throwGrenade;
+
     [Header("애니메이션 / 이펙트")]
     public string animTriggerName;    // 애니메이터 트리거 이름
     public float animDuration;        // 애니메이션 전체 길이
