@@ -72,12 +72,12 @@ public static class SkillDescriptionBuilder
                 float duration = d.GetDuration(level);
                 switch (d.effectType)
                 {
-                    case StatusEffectType.Stun:          lines.AppendLine($"  스턴 {duration}초");                         break;
-                    case StatusEffectType.Slow:          lines.AppendLine($"  슬로우 {val * 100f:F0}% {duration}초");      break;
-                    case StatusEffectType.AtkDown:       lines.AppendLine($"  공격력 감소 {FormatDebuffValue(d, val)} {duration}초"); break;
-                    case StatusEffectType.MoveSpeedDown: lines.AppendLine($"  이속 감소 {val * 100f:F0}% {duration}초");   break;
-                    case StatusEffectType.DefDown:       lines.AppendLine($"  방어력 감소 {FormatDebuffValue(d, val)} {duration}초"); break;
-                    case StatusEffectType.Poison:        lines.AppendLine($"  독 초당 {val:F0} {duration}초");             break;
+                    case StatusEffectType.Stun:          lines.AppendLine($"스턴 {duration}초");                         break;
+                    case StatusEffectType.Slow:          lines.AppendLine($"슬로우 {val * 100f:F0}% {duration}초");      break;
+                    case StatusEffectType.AtkDown:       lines.AppendLine($"공격력 감소 {FormatDebuffValue(d, val)} {duration}초"); break;
+                    case StatusEffectType.MoveSpeedDown: lines.AppendLine($"이속 감소 {val * 100f:F0}% {duration}초");   break;
+                    case StatusEffectType.DefDown:       lines.AppendLine($"방어력 감소 {FormatDebuffValue(d, val)} {duration}초"); break;
+                    case StatusEffectType.Poison:        lines.AppendLine($"독 초당 {val:F0} {duration}초");             break;
                 }
             }
         }
@@ -88,7 +88,7 @@ public static class SkillDescriptionBuilder
             foreach (var b in dmg.onCastBuffs)
             {
                 string line = FormatCastBuffLine(b, level, caster);
-                if (!string.IsNullOrEmpty(line)) lines.AppendLine($"  {line}");
+                if (!string.IsNullOrEmpty(line)) lines.AppendLine(line);
             }
         }
 
