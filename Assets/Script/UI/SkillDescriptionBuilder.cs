@@ -60,6 +60,8 @@ public static class SkillDescriptionBuilder
 
         if (dmg.throwGrenade)
             lines.AppendLine($"[투척] 폭발 범위: {dmg.GetRange(level):F1}m");
+        else if (dmg.fireProjectile && dmg.projectileCount > 1)
+            lines.AppendLine($"[투사체] {dmg.projectileCount}발 발사 (한 발마다 위 데미지)");
         else if (dmg.isAoe)
             lines.AppendLine($"[광역] 범위: {dmg.GetRange(level):F1}m");
 

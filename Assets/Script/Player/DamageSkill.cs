@@ -57,6 +57,12 @@ public class DamageSkill : SkillBase
             // 수류탄형: 포물선으로 던지고, 착지 시 GrenadeProjectile이 직접 범위 판정
             ThrowGrenade(data, target);
         }
+        else if (data.fireProjectile)
+        {
+            // 투사체형: 개수·간격·퍼짐 각도대로 발사, 맞는 순간 ProjectileScript가 데미지 적용.
+            // 연사면 마지막 발까지 쏜 뒤에 후딜 캔슬을 허용한다
+            yield return FireProjectiles(data, target);
+        }
         else if (data.spawnAtTarget)
         {
             // 장판형: 타겟 위치에 스폰, SkillZone이 직접 판정
@@ -83,8 +89,8 @@ public class DamageSkill : SkillBase
         // ★ 판정 완료 → 후딜 캔슬 허용
         ReleaseActivating();
 
-        // 8. 후딜 대기
-        float remaining = data.animDuration - data.effectSpawnDelay;
+        // 8. 후딜 대기 — 연사에 쓴 시간만큼은 이미 지났으므로 뺀다
+        float remaining = data.animDuration - data.effectSpawnDelay - FiringTime(data);
         if (remaining > 0f)
             yield return new WaitForSeconds(remaining);
     }
@@ -259,6 +265,83 @@ public class DamageSkill : SkillBase
         else
         {
             Debug.LogWarning($"[DamageSkill] '{data.effectPoolKey}' 오브젝트에 SkillZone 컴포넌트가 없습니다.");
+        }
+    }
+
+    // 투사체형 연사에 걸리는 시간 (첫 발은 즉시, 이후 간격마다 한 발)
+    private static float FiringTime(DamageSkillData data)
+        => data.fireProjectile && !data.throwGrenade
+            ? data.projectileInterval * (Mathf.Max(1, data.projectileCount) - 1)
+            : 0f;
+
+    // 투사체형 — 평타 총구에서 대상의 조준점을 향해 발사. 퍼짐 각도는 첫 발~마지막 발에 고르게 나눈다
+    // (동시 발사면 부채꼴, 연사면 좌→우로 훑으며 쏘는 모양). 연계 보너스는 스킬 한 번에 한 번만 소모해서
+    // 모든 발에 같이 적용하고, 치명타는 발마다 따로 굴린다
+    private IEnumerator FireProjectiles(DamageSkillData data, Transform target)
+    {
+        if (string.IsNullOrEmpty(data.effectPoolKey) || ObjectPoolManager.instance == null) yield break;
+
+        int   count      = Mathf.Max(1, data.projectileCount);
+        float comboBonus = myStat.ConsumeNextSkillBonus();
+        var   ranged     = GetComponent<RangedAttack>();
+        Transform aim    = target != null ? target.Find("AimTarget") : null;
+        EnemyHp targetHp = target != null ? target.GetComponent<EnemyHp>() : null;
+        Vector3 lastDir  = transform.forward;
+        var wait         = data.projectileInterval > 0f ? new WaitForSeconds(data.projectileInterval) : null;
+
+        for (int i = 0; i < count; i++)
+        {
+            if (i > 0 && wait != null) yield return wait;
+
+            Transform fp     = ranged != null ? ranged.CurrentFirePoint : null;
+            Vector3 spawnPos = fp != null ? fp.position : transform.position + transform.rotation * data.effectSpawnOffset;
+
+            // 연사 도중 대상이 죽거나 사라지면 마지막 방향 그대로 마저 쏜다
+            if (target != null && target.gameObject.activeInHierarchy && (targetHp == null || !targetHp.isDead))
+            {
+                Vector3 aimPos = aim != null ? aim.position : target.position;
+                Vector3 dir    = aimPos - spawnPos;
+                if (dir.sqrMagnitude > 0.0001f) lastDir = dir.normalized;
+
+                Vector3 flat = lastDir; flat.y = 0f;
+                if (flat.sqrMagnitude > 0.0001f) transform.rotation = Quaternion.LookRotation(flat);
+            }
+
+            float angle = count > 1 ? Mathf.Lerp(-data.projectileSpreadAngle * 0.5f, data.projectileSpreadAngle * 0.5f, i / (float)(count - 1)) : 0f;
+            Quaternion rot = Quaternion.AngleAxis(angle, Vector3.up) * Quaternion.LookRotation(lastDir);
+
+            SpawnProjectile(data, spawnPos, rot, comboBonus);
+        }
+    }
+
+    private void SpawnProjectile(DamageSkillData data, Vector3 spawnPos, Quaternion rot, float comboBonus)
+    {
+        var go = ObjectPoolManager.instance.GetGo(data.effectPoolKey);
+        if (go == null) return;
+
+        go.transform.SetPositionAndRotation(spawnPos, rot);
+
+        var proj = go.GetComponent<ProjectileScript>();
+        if (proj == null)
+        {
+            Debug.LogWarning($"[DamageSkill] '{data.effectPoolKey}' 오브젝트에 ProjectileScript 컴포넌트가 없습니다.");
+            go.GetComponent<PoolAble>()?.ReleaseObject();
+            return;
+        }
+
+        proj.SpawnMuzzleFlash(spawnPos, rot);
+
+        float damage = CalculateDamage(data, comboBonus, out bool isCrit);
+        proj.SetProjectileData(damage, gameObject, enemy => ApplyOnHitDebuffs(data, enemy.transform), data.useAp, isCrit);
+
+        // 풀에서 꺼낸 직후 Rigidbody가 이전 위치·속도를 들고 있으면 첫 물리 프레임에 엉뚱한 곳으로 튐 (RangedAttack과 동일)
+        var rb = go.GetComponent<Rigidbody>();
+        if (rb != null)
+        {
+            rb.position        = spawnPos;
+            rb.rotation        = rot;
+            rb.velocity        = Vector3.zero;
+            rb.angularVelocity = Vector3.zero;
         }
     }
 

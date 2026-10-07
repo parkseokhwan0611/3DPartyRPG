@@ -25,7 +25,8 @@ public class RangedAttack : AttackBase
     public List<ClassFirePoint> classFirePoints = new List<ClassFirePoint>();
 
     // 현재 클래스의 발사 위치 → 없으면 기본 발사 위치 → 그것도 없으면 null(캐릭터 위치)
-    private Transform CurrentFirePoint
+    // 투사체형 데미지 스킬(DamageSkill)도 같은 총구에서 쏘도록 공개
+    public Transform CurrentFirePoint
     {
         get
         {

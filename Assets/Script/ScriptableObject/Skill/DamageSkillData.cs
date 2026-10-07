@@ -116,6 +116,20 @@ public class DamageSkillData : SkillData
     [Tooltip("포물선 최고 높이 (m)")]
     public float grenadeArcHeight      = 3f;
 
+    [Header("투사체형 설정")]
+    [Tooltip("true = 투사체를 날려서 맞는 순간 데미지 (수류탄형 다음, 장판형보다 우선)\n" +
+             "· Effect Pool Key = 투사체 프리팹의 풀 키 (ProjectileScript + Rigidbody + Collider 필요 — 평타 총알 프리팹 그대로 써도 됨)\n" +
+             "· 발사 위치 = 평타 총구(RangedAttack의 클래스별 발사 위치), 없으면 Effect Spawn Offset\n" +
+             "· 한 발마다 데미지 공식 전체가 들어가고 치명타도 발마다 따로 굴림 (3발 다 맞으면 3배)\n" +
+             "· 총구 섬광은 투사체 프리팹의 Muzzle Flash가 있으면 발마다 재생")]
+    public bool  fireProjectile        = false;
+    [Tooltip("발사할 투사체 개수")]
+    [Min(1)] public int projectileCount = 1;
+    [Tooltip("발사 간격 (초). 0 = 전부 동시에 발사, 0.1 = 0.1초마다 한 발씩 연사")]
+    [Min(0f)] public float projectileInterval    = 0f;
+    [Tooltip("퍼짐 각도 (도). 첫 발~마지막 발 사이의 전체 각도 — 0 = 전부 같은 방향, 30 = 좌우 15도씩 부채꼴")]
+    [Min(0f)] public float projectileSpreadAngle = 0f;
+
     // 범위 판정 스킬인지 (설명문 [광역] 표기용) — 수류탄형은 항상 범위 폭발
     public bool IsAreaDamage => isAoe || throwGrenade;
 
