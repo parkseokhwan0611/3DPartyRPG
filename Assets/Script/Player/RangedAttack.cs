@@ -132,12 +132,9 @@ public class RangedAttack : AttackBase
                                 : myStat.TotalAtk * (1f + myStat.PhysDmgBonus);
         bool  isCrit  = Random.value < myStat.TotalCritRate;
 
+        // 치명타 여부는 쏘는 순간 굴리지만, 카메라 흔들림은 맞는 순간(OnProjectileHit)에 — 빗나가면 흔들지 않음
         if (isCrit)
-        {
             damage *= myStat.TotalCritDamage;
-            if (CinemachineShake.Instance != null)
-                CinemachineShake.Instance.ShakeCamera(10f, .2f);
-        }
 
         if (proj != null)
             proj.SetProjectileData(damage, gameObject, enemy => OnProjectileHit(enemy, isCrit, isMagic), isMagic: isMagic, crit: isCrit);
@@ -160,6 +157,8 @@ public class RangedAttack : AttackBase
     private void OnProjectileHit(EnemyHp enemyStat, bool isCrit, bool isMagic)
     {
         if (enemyStat == null || myStat == null) return;
+
+        if (isCrit) CinemachineShake.ShakeCrit();
 
         if (myStat.HpOnHit > 0f)
             myStat.HealHp(myStat.HpOnHit, showAura: false); // 흡혈은 생명 흡수 버프 아우라만 표시
