@@ -34,6 +34,11 @@ public class CinemachineShake : MonoBehaviour
         shakeTimer = time;
     }
 
+    // 파티원 스킬 치명타 공용 흔들림 — 평타 치명타(MeleeAttack/RangedAttack)와 같은 세기·시간
+    public const float CritShakeIntensity = 10f;
+    public const float CritShakeTime      = 0.2f;
+    public static void ShakeCrit() => Instance?.ShakeCamera(CritShakeIntensity, CritShakeTime);
+
     private void Update() {
         if (perlin == null) return;
 

@@ -76,8 +76,9 @@ public class SkillZone : MonoBehaviour
 
         if (hitOnce)
         {
-            // 단발: 한 번 판정 후 종료
-            ApplyDamage();
+            // 단발: 한 번 판정 후 종료. 치명타면 맞은 적이 있을 때 한 번 흔든다
+            // (반복 틱 장판은 매 틱 같은 치명타 결과를 재사용하므로 흔들지 않음 — 틱마다 흔들리면 산만함)
+            if (ApplyDamage() > 0 && isCrit) CinemachineShake.ShakeCrit();
             tickCoroutine = null;
             yield break;
         }
@@ -96,16 +97,20 @@ public class SkillZone : MonoBehaviour
         tickCoroutine = null;
     }
 
-    private void ApplyDamage()
+    // 반환값: 데미지를 준 적의 수
+    private int ApplyDamage()
     {
+        int hits = 0;
         int hitCount = Physics.OverlapSphereNonAlloc(transform.position, range, _hitBuffer, enemyLayer);
         for (int i = 0; i < hitCount; i++)
         {
             EnemyHp enemyHp = _hitBuffer[i].GetComponent<EnemyHp>();
-            if (enemyHp == null) continue;
+            if (enemyHp == null || enemyHp.isDead) continue;
             if (isMagicDamage) enemyHp.TakeMagicDamage(damage, attacker, isCrit);
             else                enemyHp.TakeDamage(damage, attacker, isCrit);
+            hits++;
         }
+        return hits;
     }
 
     // ─────────────────────────────────────────────────────────────────

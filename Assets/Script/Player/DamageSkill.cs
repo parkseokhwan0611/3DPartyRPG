@@ -130,6 +130,7 @@ public class DamageSkill : SkillBase
         if (data.useAp) enemyHp.TakeMagicDamage(damage, gameObject, isCrit);
         else             enemyHp.TakeDamage(damage, gameObject, isCrit);
         ApplyOnHitDebuffs(data, target);
+        if (isCrit) CinemachineShake.ShakeCrit();
     }
 
     // ─────────────────────────────────────────────────────────────────
@@ -143,6 +144,7 @@ public class DamageSkill : SkillBase
 
         int hitCount = Physics.OverlapSphereNonAlloc(hitPos, range, _hitBuffer, enemyLayer);
         float comboBonus = myStat.ConsumeNextSkillBonus();
+        bool  anyCrit    = false;
 
         for (int i = 0; i < hitCount; i++)
         {
@@ -153,7 +155,11 @@ public class DamageSkill : SkillBase
             if (data.useAp) enemyHp.TakeMagicDamage(damage, gameObject, isCrit);
             else             enemyHp.TakeDamage(damage, gameObject, isCrit);
             ApplyOnHitDebuffs(data, _hitBuffer[i].transform);
+            anyCrit |= isCrit;
         }
+
+        // 치명타는 대상마다 따로 굴리지만 흔들림은 한 번만
+        if (anyCrit) CinemachineShake.ShakeCrit();
     }
 
     // ─────────────────────────────────────────────────────────────────
@@ -336,7 +342,11 @@ public class DamageSkill : SkillBase
         proj.SpawnMuzzleFlash(spawnPos, rot);
 
         float damage = CalculateDamage(data, comboBonus, out bool isCrit);
-        proj.SetProjectileData(damage, gameObject, enemy => ApplyOnHitDebuffs(data, enemy.transform), data.useAp, isCrit);
+        proj.SetProjectileData(damage, gameObject, enemy =>
+        {
+            ApplyOnHitDebuffs(data, enemy.transform);
+            if (isCrit) CinemachineShake.ShakeCrit(); // 쏠 때가 아니라 맞는 순간에 흔든다
+        }, data.useAp, isCrit);
 
         // 풀에서 꺼낸 직후 Rigidbody가 이전 위치·속도를 들고 있으면 첫 물리 프레임에 엉뚱한 곳으로 튐 (RangedAttack과 동일)
         var rb = go.GetComponent<Rigidbody>();
@@ -378,7 +388,7 @@ public class DamageSkill : SkillBase
         grenade.Launch(start, landing, data.grenadeFlightDuration, data.grenadeArcHeight,
                        damage, data.GetRange(skillLevel), enemyLayer, gameObject, data.useAp,
                        hit => ApplyOnHitDebuffs(data, hit.transform),
-                       myStat.TotalCritRate, myStat.TotalCritDamage);
+                       myStat.TotalCritRate, myStat.TotalCritDamage, shakeOnCrit: true);
     }
 
     private void OnDrawGizmosSelected()

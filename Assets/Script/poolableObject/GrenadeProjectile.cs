@@ -27,13 +27,16 @@ public class GrenadeProjectile : PoolAble
     private System.Action<GameObject> _onHitTarget; // 폭발 판정에 맞은 대상마다 호출 (몬스터 스킬 디버프용)
     private float _critChance;
     private float _critDamageMultiplier;
+    private bool  _shakeOnCrit; // 파티원 스킬이 던진 경우만 — 몬스터 수류탄 치명타에는 흔들지 않음
 
     private static readonly Collider[] _hitBuffer = new Collider[16];
 
     public void Launch(Vector3 start, Vector3 landingPos, float duration, float arcHeight,
         float damage, float explosionRadius, LayerMask targetLayer, GameObject owner, bool isMagicDamage = false,
-        System.Action<GameObject> onHitTarget = null, float critChance = 0f, float critDamageMultiplier = 1.5f)
+        System.Action<GameObject> onHitTarget = null, float critChance = 0f, float critDamageMultiplier = 1.5f,
+        bool shakeOnCrit = false)
     {
+        _shakeOnCrit     = shakeOnCrit;
         _start           = start;
         _landing         = landingPos;
         _duration        = Mathf.Max(0.01f, duration);
@@ -85,6 +88,7 @@ public class GrenadeProjectile : PoolAble
             AudioManager.instance?.PlaySFX(explosionSfxKey);
 
         int hitCount = Physics.OverlapSphereNonAlloc(_landing, _explosionRadius, _hitBuffer, _targetLayer);
+        bool anyCrit = false;
         for (int i = 0; i < hitCount; i++)
         {
             IDamageable damageable = _hitBuffer[i].GetComponent<IDamageable>();
@@ -97,7 +101,11 @@ public class GrenadeProjectile : PoolAble
             else                 damageable.TakeDamage(finalDamage, _owner, isCrit);
 
             _onHitTarget?.Invoke(_hitBuffer[i].gameObject);
+            anyCrit |= isCrit;
         }
+
+        // 맞은 대상 중 하나라도 치명타면 한 번만 흔든다
+        if (_shakeOnCrit && anyCrit) CinemachineShake.ShakeCrit();
 
         ReleaseObject();
     }
