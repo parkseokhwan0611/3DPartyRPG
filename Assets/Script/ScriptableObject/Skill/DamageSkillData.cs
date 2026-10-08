@@ -129,6 +129,9 @@ public class DamageSkillData : SkillData
     [Min(0f)] public float projectileInterval    = 0f;
     [Tooltip("퍼짐 각도 (도). 첫 발~마지막 발 사이의 전체 각도 — 0 = 전부 같은 방향, 30 = 좌우 15도씩 부채꼴")]
     [Min(0f)] public float projectileSpreadAngle = 0f;
+    [Tooltip("발사할 때마다 재생할 AudioManager SFX 키 (비우면 없음). 연사면 한 발마다, 동시 발사면 한 번만 재생.\n" +
+             "위의 사운드(Sfx Entries)는 모션 시작 기준으로 한 번만 나므로, 총소리는 여기에 넣고 Sfx Entries에서는 빼기")]
+    public string projectileShotSfxKey;
 
     // 범위 판정 스킬인지 (설명문 [광역] 표기용) — 수류탄형은 항상 범위 폭발
     public bool IsAreaDamage => isAoe || throwGrenade;

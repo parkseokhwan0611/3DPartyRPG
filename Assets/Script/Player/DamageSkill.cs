@@ -311,6 +311,10 @@ public class DamageSkill : SkillBase
             Quaternion rot = Quaternion.AngleAxis(angle, Vector3.up) * Quaternion.LookRotation(lastDir);
 
             SpawnProjectile(data, spawnPos, rot, comboBonus);
+
+            // 발사음 — 연사면 발마다, 동시 발사면 같은 소리가 한 프레임에 겹치지 않게 첫 발에서 한 번만
+            if ((i == 0 || wait != null) && !string.IsNullOrEmpty(data.projectileShotSfxKey))
+                AudioManager.instance?.PlaySFX(data.projectileShotSfxKey);
         }
     }
 
