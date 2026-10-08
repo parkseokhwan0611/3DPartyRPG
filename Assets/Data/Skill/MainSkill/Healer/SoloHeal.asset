@@ -41,14 +41,14 @@ MonoBehaviour:
   targetType: 0
   useApRatio: 1
   baseHealMultiplier: 6
-  healMultiplierPerLevel: 1
+  healMultiplierPerLevel: 0.5
   statScalings:
   - stat: 3
-    coeff: 0.3
-    coeffPerLevel: 0
+    coeff: 1
+    coeffPerLevel: 0.1
   - stat: 4
     coeff: 1.2
-    coeffPerLevel: 0
+    coeffPerLevel: 0.2
   isDotHeal: 0
   dotInterval: 1
   baseDotDuration: 5

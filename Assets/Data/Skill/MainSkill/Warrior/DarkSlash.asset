@@ -39,14 +39,14 @@ MonoBehaviour:
   - 6
   skillPointCost: 0100000002000000020000000300000004000000
   baseDamageMultiplier: 4.5
-  damageMultiplierPerLevel: 0.6
+  damageMultiplierPerLevel: 0.5
   useAp: 0
   statScalings:
   - stat: 1
     coeff: 1.2
-    coeffPerLevel: 0.3
+    coeffPerLevel: 0.2
   - stat: 5
-    coeff: 0.5
+    coeff: 1
     coeffPerLevel: 0.1
   castRange: 2.5
   baseRange: 2
@@ -65,6 +65,13 @@ MonoBehaviour:
   zoneActivationDelay: 0
   zoneDamageInterval: 0.5
   zoneDuration: 5
+  throwGrenade: 0
+  grenadeFlightDuration: 0.8
+  grenadeArcHeight: 3
+  fireProjectile: 0
+  projectileCount: 1
+  projectileInterval: 0
+  projectileSpreadAngle: 0
   animTriggerName: doDarkSlash
   animDuration: 0.75
   effectSpawnDelay: 0.3

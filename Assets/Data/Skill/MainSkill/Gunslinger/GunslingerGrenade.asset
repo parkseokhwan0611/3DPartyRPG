@@ -39,7 +39,7 @@ MonoBehaviour:
   - 12
   - 10
   skillPointCost: 0200000002000000020000000200000004000000
-  baseDamageMultiplier: 4
+  baseDamageMultiplier: 3
   damageMultiplierPerLevel: 0.5
   useAp: 0
   statScalings:
@@ -47,7 +47,7 @@ MonoBehaviour:
     coeff: 1.2
     coeffPerLevel: 0.2
   - stat: 1
-    coeff: 0.5
+    coeff: 1
     coeffPerLevel: 0.1
   castRange: 6
   baseRange: 3
@@ -75,6 +75,10 @@ MonoBehaviour:
   throwGrenade: 1
   grenadeFlightDuration: 0.8
   grenadeArcHeight: 2
+  fireProjectile: 0
+  projectileCount: 1
+  projectileInterval: 0
+  projectileSpreadAngle: 0
   animTriggerName: doGrenadeSkill
   animDuration: 1.5
   effectSpawnDelay: 0.8

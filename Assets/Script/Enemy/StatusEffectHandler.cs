@@ -74,6 +74,10 @@ public class StatusEffectHandler : MonoBehaviour
 
     public void ApplyEffect(StatusEffect effect)
     {
+        // 죽은 뒤엔 무시 — 스킬은 데미지 → 적중 디버프 순서라, 막타에 스턴이 붙어 있으면 죽는 모션 도중
+        // 스턴 트리거가 걸려 스턴 모션 → Idle로 돌아간 채 사라졌었음
+        if (enemyHp != null && enemyHp.isDead) return;
+
         if (effect.effectType == StatusEffectType.Stun)
         {
             ApplyStun(effect);

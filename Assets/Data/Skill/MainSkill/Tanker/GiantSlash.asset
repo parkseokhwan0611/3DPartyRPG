@@ -44,11 +44,11 @@ MonoBehaviour:
   useAp: 0
   statScalings:
   - stat: 1
-    coeff: 0.2
-    coeffPerLevel: 0
+    coeff: 1
+    coeffPerLevel: 0.1
   - stat: 2
-    coeff: 0.2
-    coeffPerLevel: 0
+    coeff: 1
+    coeffPerLevel: 0.1
   castRange: 2.5
   baseRange: 3
   rangePerLevel: 0
@@ -72,6 +72,13 @@ MonoBehaviour:
   zoneActivationDelay: 0
   zoneDamageInterval: 0.5
   zoneDuration: 5
+  throwGrenade: 0
+  grenadeFlightDuration: 0.8
+  grenadeArcHeight: 3
+  fireProjectile: 0
+  projectileCount: 1
+  projectileInterval: 0
+  projectileSpreadAngle: 0
   animTriggerName: doGiantSlash
   animDuration: 1.2
   effectSpawnDelay: 0.75

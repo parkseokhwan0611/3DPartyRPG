@@ -39,16 +39,16 @@ MonoBehaviour:
   - 8
   - 8
   skillPointCost: 0200000002000000020000000200000004000000
-  baseDamageMultiplier: 4
+  baseDamageMultiplier: 3.5
   damageMultiplierPerLevel: 0.5
   useAp: 0
   statScalings:
   - stat: 1
-    coeff: 0.7
-    coeffPerLevel: 0.2
+    coeff: 1
+    coeffPerLevel: 0.1
   - stat: 5
-    coeff: 0.7
-    coeffPerLevel: 0.2
+    coeff: 1
+    coeffPerLevel: 0.1
   castRange: 2.5
   baseRange: 2
   rangePerLevel: 0
@@ -72,6 +72,13 @@ MonoBehaviour:
   zoneActivationDelay: 0
   zoneDamageInterval: 0.5
   zoneDuration: 5
+  throwGrenade: 0
+  grenadeFlightDuration: 0.8
+  grenadeArcHeight: 3
+  fireProjectile: 0
+  projectileCount: 1
+  projectileInterval: 0
+  projectileSpreadAngle: 0
   animTriggerName: doThunderSlash
   animDuration: 1.2
   effectSpawnDelay: 0.9

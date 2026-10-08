@@ -40,15 +40,15 @@ MonoBehaviour:
   skillPointCost: 0200000002000000020000000200000004000000
   targetType: 1
   useApRatio: 1
-  baseHealMultiplier: 3
+  baseHealMultiplier: 4
   healMultiplierPerLevel: 0.5
   statScalings:
   - stat: 3
-    coeff: 0.2
-    coeffPerLevel: 0
+    coeff: 0.7
+    coeffPerLevel: 0.1
   - stat: 4
     coeff: 1
-    coeffPerLevel: 0
+    coeffPerLevel: 0.1
   isDotHeal: 0
   dotInterval: 1
   baseDotDuration: 5

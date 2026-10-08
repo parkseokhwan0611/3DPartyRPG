@@ -187,8 +187,26 @@ public class EnemyHp : MonoBehaviour, IDamageable
         if (!string.IsNullOrEmpty(deathSfxKey))
             AudioManager.instance?.PlaySFX(deathSfxKey);
 
-        // 애니메이션
-        if (animator != null) animator.SetTrigger("isDead");
+        // 공격·스킬을 멈추고 공격 컴포넌트를 끈다 — 애니메이터의 공격/스턴/스킬 전이가 전부 Any State에서
+        // 출발해서 죽는 모션 도중에도 끼어들 수 있는데, 공격 컴포넌트는 사망 후에도 Update가 돌아 사거리 안의
+        // 파티원에게 공격 트리거를 걸었음 → 공격 모션이 끝나면 Idle로 돌아간 채 사라지는 원인
+        var attack = GetComponent<AttackBase>();
+        if (attack != null)
+        {
+            attack.ForceCancelAttack();
+            attack.enabled = false;
+        }
+        GetComponent<ISkillCaster>()?.ForceCancelSkill();
+
+        // 애니메이션 — 같은 프레임에 먼저 걸려 아직 소비되지 않은 다른 트리거(공격·스턴·스킬)가
+        // 사망 전이를 이기지 않도록 지우고 사망 트리거만 남긴다
+        if (animator != null)
+        {
+            foreach (var p in animator.parameters)
+                if (p.type == AnimatorControllerParameterType.Trigger && p.name != "isDead")
+                    animator.ResetTrigger(p.nameHash);
+            animator.SetTrigger("isDead");
+        }
 
         // 콜라이더 비활성화
         if (col != null) col.enabled = false;

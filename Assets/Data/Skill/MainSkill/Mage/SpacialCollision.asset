@@ -38,16 +38,16 @@ MonoBehaviour:
   - 10
   - 10
   skillPointCost: 0200000002000000020000000200000004000000
-  baseDamageMultiplier: 4
+  baseDamageMultiplier: 3.5
   damageMultiplierPerLevel: 0.5
   useAp: 1
   statScalings:
   - stat: 3
-    coeff: 0.5
-    coeffPerLevel: 0
+    coeff: 1
+    coeffPerLevel: 0.1
   - stat: 4
-    coeff: 0.5
-    coeffPerLevel: 0
+    coeff: 1
+    coeffPerLevel: 0.1
   castRange: 6
   baseRange: 2
   rangePerLevel: 0
@@ -65,6 +65,13 @@ MonoBehaviour:
   zoneActivationDelay: 1
   zoneDamageInterval: 0
   zoneDuration: 5
+  throwGrenade: 0
+  grenadeFlightDuration: 0.8
+  grenadeArcHeight: 3
+  fireProjectile: 0
+  projectileCount: 1
+  projectileInterval: 0
+  projectileSpreadAngle: 0
   animTriggerName: doZoneSkill
   animDuration: 1.3
   effectSpawnDelay: 0.3
