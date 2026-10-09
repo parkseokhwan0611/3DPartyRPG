@@ -23,7 +23,8 @@ public class SkillZone : MonoBehaviour
     private GameObject attacker;
     private bool   isMagicDamage;
     private float  duration;
-    private bool   isCrit; // DamageSkill이 스폰 시점에 굴린 크리티컬 결과 — 틱마다 재사용
+    private float  critRate;       // 시전 시점 치명타 확률 — 판정마다(적마다) 새로 굴린다
+    private float  critMultiplier; // 시전 시점 치명타 배율
 
     private int    enemyLayer;
     private Coroutine tickCoroutine;
@@ -33,7 +34,8 @@ public class SkillZone : MonoBehaviour
     // ─────────────────────────────────────────────────────────────────
 
     public void Setup(float damage, float range, float interval, float activationDelay,
-                      bool hitOnce, GameObject attacker, bool isMagicDamage, float duration, bool isCrit = false)
+                      bool hitOnce, GameObject attacker, bool isMagicDamage, float duration,
+                      float critRate = 0f, float critMultiplier = 1f)
     {
         this.damage          = damage;
         this.range           = range;
@@ -43,7 +45,8 @@ public class SkillZone : MonoBehaviour
         this.attacker        = attacker;
         this.isMagicDamage   = isMagicDamage;
         this.duration        = duration;
-        this.isCrit          = isCrit;
+        this.critRate        = critRate;
+        this.critMultiplier  = critMultiplier;
         this.enemyLayer      = LayerMask.GetMask("Enemy");
 
         // OnEnable이 Setup보다 먼저 호출될 수 있으므로 여기서도 시작
@@ -76,9 +79,9 @@ public class SkillZone : MonoBehaviour
 
         if (hitOnce)
         {
-            // 단발: 한 번 판정 후 종료. 치명타면 맞은 적이 있을 때 한 번 흔든다
-            // (반복 틱 장판은 매 틱 같은 치명타 결과를 재사용하므로 흔들지 않음 — 틱마다 흔들리면 산만함)
-            if (ApplyDamage() > 0 && isCrit) CinemachineShake.ShakeCrit();
+            // 단발: 한 번 판정 후 종료. 맞은 적 중 하나라도 치명타면 한 번 흔든다
+            // (반복 틱 장판은 틱마다 치명타가 터질 수 있지만 흔들지 않음 — 틱마다 흔들리면 산만함)
+            if (ApplyDamage()) CinemachineShake.ShakeCrit();
             tickCoroutine = null;
             yield break;
         }
@@ -97,20 +100,23 @@ public class SkillZone : MonoBehaviour
         tickCoroutine = null;
     }
 
-    // 반환값: 데미지를 준 적의 수
-    private int ApplyDamage()
+    // 판정마다 적마다 치명타를 새로 굴린다. 반환값: 치명타가 하나라도 들어갔는지
+    private bool ApplyDamage()
     {
-        int hits = 0;
+        bool anyCrit = false;
         int hitCount = Physics.OverlapSphereNonAlloc(transform.position, range, _hitBuffer, enemyLayer);
         for (int i = 0; i < hitCount; i++)
         {
             EnemyHp enemyHp = _hitBuffer[i].GetComponent<EnemyHp>();
             if (enemyHp == null || enemyHp.isDead) continue;
-            if (isMagicDamage) enemyHp.TakeMagicDamage(damage, attacker, isCrit);
-            else                enemyHp.TakeDamage(damage, attacker, isCrit);
-            hits++;
+
+            bool  isCrit      = Random.value < critRate;
+            float finalDamage = isCrit ? damage * critMultiplier : damage;
+            if (isMagicDamage) enemyHp.TakeMagicDamage(finalDamage, attacker, isCrit);
+            else                enemyHp.TakeDamage(finalDamage, attacker, isCrit);
+            anyCrit |= isCrit;
         }
-        return hits;
+        return anyCrit;
     }
 
     // ─────────────────────────────────────────────────────────────────

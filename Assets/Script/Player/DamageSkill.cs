@@ -262,11 +262,13 @@ public class DamageSkill : SkillBase
         var zone = effect.GetComponent<SkillZone>();
         if (zone != null)
         {
+            // 치명타는 여기서 굴리지 않고 확률·배율만 넘긴다 — SkillZone이 틱마다(적마다) 굴림
             float comboBonus = myStat.ConsumeNextSkillBonus();
-            float damage = CalculateDamage(data, comboBonus, out bool isCrit);
+            float damage = data.GetRawDamage(skillLevel, myStat) * (1f + comboBonus);
             float range  = data.GetRange(skillLevel);
             zone.Setup(damage, range, data.zoneDamageInterval, data.zoneActivationDelay,
-                       data.zoneHitOnce, gameObject, data.useAp, data.zoneDuration, isCrit);
+                       data.zoneHitOnce, gameObject, data.useAp, data.zoneDuration,
+                       myStat.TotalCritRate, myStat.TotalCritDamage);
         }
         else
         {
