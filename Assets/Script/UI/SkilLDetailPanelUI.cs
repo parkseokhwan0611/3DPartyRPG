@@ -61,7 +61,7 @@ public class SkillDetailPanelUI : MonoBehaviour
         bool isPassive   = skill.skillType == SkillData.SkillType.Passive;
 
         SetTextSafe(skillNameText, skill.skillName);
-        SetTextSafe(skillLvText,   currentLevel > 0 ? $"LV {currentLevel}" : "미습득");
+        SetTextSafe(skillLvText,   currentLevel > 0 ? $"현재 레벨: LV {currentLevel}" : "현재 레벨: 미습득");
         SetTextSafe(skillDescText, skill.description);
 
         // ── 현재 레벨 수치 ──
@@ -94,7 +94,7 @@ public class SkillDetailPanelUI : MonoBehaviour
         {
             int nextIdx = nextLevel - 1;
 
-            SetTextSafe(nextSkillLvText, $"LV {nextLevel}");
+            SetTextSafe(nextSkillLvText, $"다음 레벨: LV {nextLevel}");
 
             if (!isPassive && nextIdx < skill.mpCost.Length)
                 SetTextSafe(nextMpCostText, $"마나 소모량: {skill.mpCost[nextIdx]}");
