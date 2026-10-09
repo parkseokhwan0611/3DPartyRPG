@@ -110,9 +110,11 @@ public abstract class AttackBase : MonoBehaviour
         {
             if (entry == null || string.IsNullOrEmpty(entry.sfxKey)) continue;
 
-            float delay = entry.delay / Mathf.Max(0.1f, speed);
-            if (delay <= 0f) AudioManager.instance?.PlaySFX(entry.sfxKey);
-            else             _attackSfxRoutines.Add(StartCoroutine(DelayedAttackSfx(entry.sfxKey, delay)));
+            float s        = Mathf.Max(0.1f, speed);
+            float delay    = entry.delay / s;
+            float interval = entry.repeatInterval / s;
+            if (delay <= 0f && entry.PlayCount == 1) AudioManager.instance?.PlaySFX(entry.sfxKey);
+            else _attackSfxRoutines.Add(StartCoroutine(DelayedAttackSfx(entry.sfxKey, delay, entry.PlayCount, interval)));
         }
     }
 
@@ -124,10 +126,14 @@ public abstract class AttackBase : MonoBehaviour
         _attackSfxRoutines.Clear();
     }
 
-    private static IEnumerator DelayedAttackSfx(string key, float delay)
+    private static IEnumerator DelayedAttackSfx(string key, float delay, int count, float interval)
     {
-        yield return new WaitForSeconds(delay);
-        AudioManager.instance?.PlaySFX(key);
+        if (delay > 0f) yield return new WaitForSeconds(delay);
+        for (int i = 0; i < count; i++)
+        {
+            if (i > 0 && interval > 0f) yield return new WaitForSeconds(interval);
+            AudioManager.instance?.PlaySFX(key);
+        }
     }
 
     // 파티원은 패시브·버프의 공격 속도 보너스(0.1 = +10%)를 곱해서 공격 간격을 줄인다. 몬스터는 CharacterStat이 없어 그대로

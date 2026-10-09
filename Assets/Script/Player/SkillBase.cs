@@ -116,6 +116,8 @@ public abstract class SkillBase : MonoBehaviour
             StopCoroutine(executeCoroutine);
             executeCoroutine = null;
         }
+        // 아직 안 나간 지연·반복 효과음도 취소 — 끊긴 스킬의 소리가 뒤늦게 나지 않게
+        StopSkillSfx();
 
         // IsCastingSkill 즉시 해제
         if (attackBase != null) attackBase.IsCastingSkill = false;
@@ -192,25 +194,42 @@ public abstract class SkillBase : MonoBehaviour
     // 스킬 SFX 재생 (애니메이션 시작 시점 기준, 항목별 delay 뒤에 재생)
     // ─────────────────────────────────────────────────────────────────
 
+    // 예약된 지연·반복 효과음 — ForceStop(스턴·다음 스킬로 후딜 캔슬 등) 때 같이 멈춤
+    private readonly System.Collections.Generic.List<Coroutine> _sfxRoutines = new System.Collections.Generic.List<Coroutine>();
+
     protected void PlaySkillSfx(SkillData data)
     {
+        // 이전 시전에서 이미 끝난 코루틴 참조는 버린다 (정상 종료된 스킬의 남은 소리는 끊지 않음)
+        _sfxRoutines.Clear();
         if (data.sfxEntries == null) return;
 
         foreach (var entry in data.sfxEntries)
         {
             if (entry == null || string.IsNullOrEmpty(entry.sfxKey)) continue;
 
-            if (entry.delay <= 0f)
+            if (entry.delay <= 0f && entry.PlayCount == 1)
                 AudioManager.instance?.PlaySFX(entry.sfxKey);
             else
-                StartCoroutine(PlayDelayedSfx(entry.sfxKey, entry.delay));
+                _sfxRoutines.Add(StartCoroutine(PlayDelayedSfx(entry.sfxKey, entry.delay, entry.PlayCount, entry.repeatInterval)));
         }
     }
 
-    private IEnumerator PlayDelayedSfx(string key, float delay)
+    private void StopSkillSfx()
     {
-        yield return new WaitForSeconds(delay);
-        AudioManager.instance?.PlaySFX(key);
+        foreach (var r in _sfxRoutines)
+            if (r != null) StopCoroutine(r);
+        _sfxRoutines.Clear();
+    }
+
+    // delay 뒤 첫 재생, 이후 interval마다 count번까지 반복
+    private IEnumerator PlayDelayedSfx(string key, float delay, int count, float interval)
+    {
+        if (delay > 0f) yield return new WaitForSeconds(delay);
+        for (int i = 0; i < count; i++)
+        {
+            if (i > 0 && interval > 0f) yield return new WaitForSeconds(interval);
+            AudioManager.instance?.PlaySFX(key);
+        }
     }
 
     // DamageSkill/HealSkill이 공통으로 사용하는 스탯 스케일링 조회

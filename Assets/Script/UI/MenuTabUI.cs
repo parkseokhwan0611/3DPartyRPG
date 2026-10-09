@@ -110,6 +110,7 @@ public class MenuTabUI : MonoBehaviour
     private void OpenMenu()
     {
         IsOpen = true;
+        SelectLeader();
         menuWindow.SetActive(true);
         ShowPanel(statWindow);
         AudioManager.instance?.PlaySFX("UIOpen");
@@ -118,9 +119,20 @@ public class MenuTabUI : MonoBehaviour
     private void OpenMenuToSettings()
     {
         IsOpen = true;
+        SelectLeader();
         menuWindow.SetActive(true);
         ShowPanel(settingWindow);
         AudioManager.instance?.PlaySFX("UIOpen");
+    }
+
+    // 메뉴를 새로 열 때만 선택 캐릭터를 현재 리더로 초기화 — 열린 뒤 탭(스탯/아이템/스킬)을 옮겨 다닐 때는
+    // 각 창이 DataManager.selectedPartyIndex를 그대로 이어받아, 직전 창에서 고른 캐릭터가 유지된다
+    private static void SelectLeader()
+    {
+        if (DataManager.instance == null) return;
+        var leader = PartyManager.instance?.currentLeader;
+        var stat   = leader != null ? leader.GetComponent<CharacterStat>() : null;
+        DataManager.instance.selectedPartyIndex = stat != null ? stat.partyIndex : 0;
     }
 
     private void CloseMenu()

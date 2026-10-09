@@ -7,8 +7,15 @@ public class SkillSfxEntry
 {
     [Tooltip("AudioManager에 등록한 SFX 키 (예: Tanker_Main1)")]
     public string sfxKey;
-    [Tooltip("애니메이션 시작 후 몇 초 뒤에 재생할지")]
+    [Tooltip("애니메이션 시작 후 몇 초 뒤에 재생할지 (반복 재생이면 첫 번째 재생 시점)")]
     public float delay = 0f;
+    [Tooltip("재생 횟수 (1이면 한 번만). 예: 3이면 Delay 시점부터 Repeat Interval 간격으로 3번 재생")]
+    [Min(1)] public int repeatCount = 1;
+    [Tooltip("반복 재생 간격 (초). Repeat Count가 2 이상일 때만 사용")]
+    [Min(0f)] public float repeatInterval = 0.5f;
+
+    // 기존 에셋·새로 추가한 항목에서 0으로 들어와도 최소 1번은 재생
+    public int PlayCount => Mathf.Max(1, repeatCount);
 }
 
 [CreateAssetMenu(fileName = "Skill", menuName = "Scriptable Object/SkillData")]

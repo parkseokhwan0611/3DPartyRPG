@@ -88,10 +88,8 @@ public class StatWindowUI : MonoBehaviour
         BuildStatCache();
         SubscribeBuffEvents();
 
-        // 스탯창은 열 때마다 항상 현재 조작 중인 리더 기준으로 시작
-        selectedIndex = GetLeaderPartyIndex();
-        if (DataManager.instance != null)
-            DataManager.instance.selectedPartyIndex = selectedIndex;
+        // 메뉴에서 선택 중인 캐릭터를 이어받는다 (메뉴를 새로 열 때 MenuTabUI가 리더로 초기화)
+        selectedIndex = DataManager.instance != null ? DataManager.instance.selectedPartyIndex : GetLeaderPartyIndex();
 
         Refresh();
     }

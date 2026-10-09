@@ -205,10 +205,8 @@ public class InventoryUI : MonoBehaviour
 
     void OnEnable()
     {
-        // 인벤토리는 열 때마다 항상 현재 조작 중인 리더 기준으로 시작
-        selectedCharIndex = GetLeaderPartyIndex();
-        if (DataManager.instance != null)
-            DataManager.instance.selectedPartyIndex = selectedCharIndex;
+        // 메뉴에서 선택 중인 캐릭터를 이어받는다 (메뉴를 새로 열 때 MenuTabUI가 리더로 초기화)
+        selectedCharIndex = DataManager.instance != null ? DataManager.instance.selectedPartyIndex : GetLeaderPartyIndex();
 
         SelectCharacter(selectedCharIndex);
         RefreshInventory();
