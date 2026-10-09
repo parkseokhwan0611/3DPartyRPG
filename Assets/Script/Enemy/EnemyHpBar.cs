@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public class EnemyHpBar : MonoBehaviour
 {
@@ -11,10 +12,12 @@ public class EnemyHpBar : MonoBehaviour
     [Tooltip("선택 — 비워두면 보호막 바 없음. HP 바와 반대 방향으로 깎이도록 Image의 Fill Origin을 " +
              "Right로 설정할 것 (HP는 Left 피벗, 보호막은 Right 피벗)")]
     public Image shieldBar;
+    [Tooltip("머리 위 상태이상 텍스트 (기절/둔화). 비워두면 캔버스 자식 중 'StatusText' 이름의 TMP를 자동으로 찾음")]
+    public TMP_Text statusText;
     public float hpAmount;
     private float currentHpFill; // 현재 HP 바의 채우기 정도를 추적하기 위한 변수
     private float currentShieldFill;
-    private StatusEffectHandler shieldHandler;
+    private StatusEffectHandler statusHandler;
     private Quaternion fixedRotation;
     private Transform camTransform;
 
@@ -32,8 +35,17 @@ public class EnemyHpBar : MonoBehaviour
         if (enemyHp != null)
         {
             enemyHp.OnDied += HandleDied;
-            shieldHandler = enemyHp.GetComponent<StatusEffectHandler>();
+            statusHandler = enemyHp.GetComponent<StatusEffectHandler>();
         }
+
+        if (statusText == null)
+        {
+            foreach (var tmp in GetComponentsInChildren<TMP_Text>(true))
+                if (tmp.name == "StatusText") { statusText = tmp; break; }
+        }
+        // 프리팹에 미리보기용 글자가 들어 있어도 시작은 빈 칸
+        shownStatus = null;
+        StatusTextChange();
     }
 
     void OnDestroy()
@@ -57,6 +69,33 @@ public class EnemyHpBar : MonoBehaviour
     {
         HpChange();
         ShieldChange();
+        StatusTextChange();
+    }
+
+    // ─────────────────────────────────────────────────────────────────
+    // 상태이상 텍스트 — 기절 > 둔화 우선순위로 하나만 표시 (파티원 CombatHpUi와 같은 규칙).
+    // 공격력·방어력 감소는 표시하지 않음. 몬스터 핸들러엔 변경 이벤트가 없어 매 프레임 확인하되,
+    // 글자가 바뀔 때만 text를 갱신해 TMP 메시 재생성을 피한다
+    // ─────────────────────────────────────────────────────────────────
+
+    private string shownStatus;
+
+    void StatusTextChange()
+    {
+        if (statusText == null) return;
+
+        string status = "";
+        if (statusHandler != null)
+        {
+            if (statusHandler.HasDebuff(StatusEffectType.Stun))
+                status = "기절";
+            else if (statusHandler.HasDebuff(StatusEffectType.Slow) || statusHandler.HasDebuff(StatusEffectType.MoveSpeedDown))
+                status = "둔화";
+        }
+
+        if (status == shownStatus) return;
+        shownStatus     = status;
+        statusText.text = status;
     }
 
     void HpChange()
@@ -76,7 +115,7 @@ public class EnemyHpBar : MonoBehaviour
     {
         if (shieldBar == null || enemyHp == null || enemyHp.maxHp <= 0f) return;
 
-        float targetFill = shieldHandler != null ? Mathf.Clamp01(shieldHandler.CurrentShield / enemyHp.maxHp) : 0f;
+        float targetFill = statusHandler != null ? Mathf.Clamp01(statusHandler.CurrentShield / enemyHp.maxHp) : 0f;
         currentShieldFill = Mathf.MoveTowards(currentShieldFill, targetFill, changeSpeed * Time.deltaTime);
         shieldBar.fillAmount = currentShieldFill;
     }

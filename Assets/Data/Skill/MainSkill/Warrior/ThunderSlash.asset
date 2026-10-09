@@ -23,6 +23,8 @@ MonoBehaviour:
   sfxEntries:
   - sfxKey: Tanker_Main2
     delay: 0.5
+    repeatCount: 1
+    repeatInterval: 0.5
   skillPriority: 2
   maxLevel: 5
   requiredCharLevel: 10
@@ -79,9 +81,10 @@ MonoBehaviour:
   projectileCount: 1
   projectileInterval: 0
   projectileSpreadAngle: 0
+  projectileShotSfxKey: 
   animTriggerName: doThunderSlash
   animDuration: 1.2
   effectSpawnDelay: 0.9
   effectPoolKey: ThunderSlash
-  effectSpawnOffset: {x: 0, y: 0, z: 0}
+  effectSpawnOffset: {x: 0, y: 0, z: 0.7}
   effectSpawnRotation: {x: 0, y: 0, z: 0}
