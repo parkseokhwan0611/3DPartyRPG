@@ -34,10 +34,10 @@ MonoBehaviour:
   - 30
   cooldown:
   - 30
-  - 30
-  - 30
-  - 30
-  - 30
+  - 28
+  - 26
+  - 23
+  - 20
   skillPointCost: 0200000002000000020000000200000004000000
   isPartyBuff: 1
   effectStyle: 1
@@ -48,12 +48,17 @@ MonoBehaviour:
   effectSpawnDelay: 0.3
   effectSpawnOffset: {x: 0, y: 0, z: 0}
   effectSpawnRotation: {x: 0, y: 0, z: 0}
-  baseDuration: 10
+  baseDuration: 7
   durationPerLevel: 1.25
   buffEffects:
   - effectType: 1
+    valueMode: 0
     baseValue: 10
     valuePerLevel: 10
     scalingStat: 3
     scalingCoeff: 0.2
     scalingPerLevel: 0.25
+  thornsIsMagic: 1
+  thornsScalings: []
+  thornsAggroPerHit: 15
+  thornsHitEffectPoolKey: 

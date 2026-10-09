@@ -90,7 +90,7 @@ public string charName;
     // ── 버프·패시브로 붙는 수치 — 세이브 대상 아님 ──
     public float buffHpRegen    = 0f;  // 체력 재생 버프 (초당)
     public float buffMpRegen    = 0f;  // 마나 재생 버프 (초당)
-    public float atkSpeedBonus  = 0f;  // 공격속도 증가 (0.1 = +10%, 패시브·버프·발동 효과 합산)
+    public float atkSpeedBonus  = 0f;  // 공격 속도 증가 (0.1 = +10%, 패시브·버프·발동 효과 합산)
     public float faithToHpCoeff = 0f;  // 신앙 1당 최대 체력
     // 공격력/방어력 감소 디버프 배율 (스킬로 조정, 1.0 = 기본) — Slow의 moveSpeedMultiplier와 동일한 패턴
     public float atkDebuffMultiplier = 1f;
@@ -136,7 +136,7 @@ public string charName;
     public float TotalCDReduce => equipCDReduce;
     public float TotalMpReduce => equipMpReduce;
 
-    // 이동속도
+    // 이동 속도
     public float moveSpeedMultiplier = 1f; // 버프/디버프로 조정 (1.0 = 기본)
     public float TotalMoveSpeed => classData.baseMoveSpeed * moveSpeedMultiplier;
 

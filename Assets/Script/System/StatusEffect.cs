@@ -30,7 +30,7 @@ public enum StatusEffectType
     Poison,         // 독 (몬스터 전용 디버프) — value = 1초마다 입히는 마법 데미지
     DmgReductionUp, // 받는 데미지 감소 (물리·마법 공통, mode Percent 0.2 = 20% / Flat 20 = 한 대당 -20)
     Invulnerable,   // 무적 — 데미지와 디버프를 모두 무시
-    MoveSpeedUp,    // 이동속도 증가 (0.2 = +20%)
+    MoveSpeedUp,    // 이동 속도 증가 (0.2 = +20%)
 }
 
 // 버프/패시브 능력치 증가 방식
@@ -66,7 +66,7 @@ public class StatusEffect
     [System.NonSerialized]
     public Coroutine routine;
 
-    // 같은 키로 다시 걸면 누적하지 않고 기존 것을 지우고 새로 건다 (발동형 패시브의 공격속도 증가처럼
+    // 같은 키로 다시 걸면 누적하지 않고 기존 것을 지우고 새로 건다 (발동형 패시브의 공격 속도 증가처럼
     // 매 타격마다 갱신되는 효과용). null이면 기존처럼 독립적으로 누적
     [System.NonSerialized]
     public object refreshKey;

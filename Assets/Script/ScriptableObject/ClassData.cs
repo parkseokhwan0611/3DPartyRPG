@@ -45,7 +45,7 @@ public class ClassData : ScriptableObject
     [Header("마법 저항력")]
     public float baseMagicRes = 0f;
 
-    [Header("이동속도")]
+    [Header("이동 속도")]
     public float baseMoveSpeed = 3f;
 
     [Header("HP / MP 재생")]
@@ -81,7 +81,7 @@ public class ClassData : ScriptableObject
     public string projectilePoolKey;
     [Tooltip("평타 사거리")]
     public float attackRange = 2f;
-    [Tooltip("공격속도 배율. 공격 간격 = Attack Duration ÷ Attack Speed (1이면 Attack Duration 그대로)")]
+    [Tooltip("공격 속도 배율. 공격 간격 = Attack Duration ÷ Attack Speed (1이면 Attack Duration 그대로)")]
     public float attackSpeed = 1f;
 
     [Header("기본 공격 타이밍 (애니메이터 모션 길이에 맞춤)")]
@@ -95,7 +95,7 @@ public class ClassData : ScriptableObject
     [Header("기본 공격 사운드")]
     [Tooltip("스킬 사운드와 같은 방식 — 평타 모션 시작 기준으로 각 사운드를 몇 초 뒤에 재생할지.\n" +
              "Delay를 Damage Delay와 같게 넣으면 타격(근접)·투사체 발사(원거리) 순간에 재생.\n" +
-             "공격속도가 올라 모션이 빨라지면 Delay도 같은 비율로 줄어든다")]
+             "공격 속도가 올라 모션이 빨라지면 Delay도 같은 비율로 줄어든다")]
     public List<SkillSfxEntry> normalAttackSfx = new List<SkillSfxEntry>();
 
     [Header("근접 판정 (MeleeAttack 전용)")]

@@ -31,7 +31,7 @@ public class PassiveSkillData : SkillData
     public float procChancePerLevel = 0f;
     public float baseProcValue      = 0f;
     public float procValuePerLevel  = 0f;
-    [Tooltip("공격속도 증가·독처럼 지속시간이 있는 발동 효과의 지속시간 (초)")]
+    [Tooltip("공격 속도 증가·독처럼 지속시간이 있는 발동 효과의 지속시간 (초)")]
     public float baseProcDuration     = 0f;
     public float procDurationPerLevel = 0f;
     [Tooltip("발동 시 대상 위치에 스폰할 이펙트 풀 키 (비우면 없음)")]
@@ -138,20 +138,20 @@ public class PassiveSkillData : SkillData
 
         // 트리거형
         OnHitManaRestore,    // 평타 적중 시 마나 회복
-        OnHitAtkSpeedUp,     // 평타 적중 시 공격속도 증가
+        OnHitAtkSpeedUp,     // 평타 적중 시 공격 속도 증가
         OnDebuffExtraDamage, // 디버프 걸린 적에게 추가 데미지
         OnCritLightning,     // 치명타 시 번개 발동
         OnKillHeal,          // 적 처치 시 체력 회복
         OnHitPoison,         // 공격 시 독 발동
         HealCrit,            // 힐에 치명타 적용
-        OnHealAtkSpeedUp,    // 힐 받은 대상 공격속도 증가
+        OnHealAtkSpeedUp,    // 힐 받은 대상 공격 속도 증가
         Revive,              // 1회 부활 (쿨타임 10분)
 
         // 수치 감소형 — valueMode로 고정/퍼센트 선택 (기존 값 보존을 위해 맨 뒤에 추가)
         PhysDmgReduction,    // 받는 물리 데미지 감소
         MagicDmgReduction,   // 받는 마법 데미지 감소
 
-        AtkSpeed,            // 공격속도 증가 (0.1 = +10%)
+        AtkSpeed,            // 공격 속도 증가 (0.1 = +10%)
         OnHitCooldownReset,  // 평타 적중 시 확률로 퀵슬롯 스킬 쿨타임 초기화 (쿨 초기화 스킬은 제외)
         SummonHitManaRestore, // 소환수가 공격을 적중시킬 때마다 주인 마나 고정 회복
     }

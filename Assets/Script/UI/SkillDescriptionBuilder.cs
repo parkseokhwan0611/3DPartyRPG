@@ -103,7 +103,7 @@ public static class SkillDescriptionBuilder
         return lines.ToString().TrimEnd('\n', '\r');
     }
 
-    // 데미지 스킬의 시전 시 자기 버프 한 줄 (보호막, 공격속도 등)
+    // 데미지 스킬의 시전 시 자기 버프 한 줄 (보호막, 공격 속도 등)
     private static string FormatCastBuffLine(DamageSkillData.CastBuffEffect b, int level, CharacterStat caster)
     {
         float flat    = b.GetValue(level);
@@ -113,7 +113,7 @@ public static class SkillDescriptionBuilder
         // Percent 모드는 능력치 증가 5종 + 받는 데미지 감소에서만 실제로 적용됨 — 보호막 등은 모드와 무관하게 고정 수치
         bool  pct     = b.IsPercent;
         string amount = pct ? $"{val * 100f:0.#}%" : $"{val:F0}";
-        // 공격속도·치명타처럼 원래 비율(0.2 = 20%)인 효과는 스탯 비례분도 % 단위로 표기
+        // 공격 속도·치명타처럼 원래 비율(0.2 = 20%)인 효과는 스탯 비례분도 % 단위로 표기
         bool ratio = pct || b.effectType is StatusEffectType.AtkSpeedUp or StatusEffectType.CritRateUp
                                          or StatusEffectType.CritDamageUp or StatusEffectType.MoveSpeedUp;
         string note   = GetCastBuffScalingNote(b, level, flat, scaling, ratio, caster);
@@ -126,11 +126,11 @@ public static class SkillDescriptionBuilder
             StatusEffectType.DefUp          => $"방어력 +{amount}{note} ({dur}초)",
             StatusEffectType.MagicResUp     => $"마법 저항력 +{amount}{note} ({dur}초)",
             StatusEffectType.MaxHpUp        => $"최대 체력 +{amount}{note} ({dur}초)",
-            StatusEffectType.AtkSpeedUp     => $"공격속도 +{val * 100f:0.#}%{note} ({dur}초)",
+            StatusEffectType.AtkSpeedUp     => $"공격 속도 +{val * 100f:0.#}%{note} ({dur}초)",
             StatusEffectType.CritRateUp     => $"치명타 확률 +{val * 100f:0.#}%{note} ({dur}초)",
             StatusEffectType.CritDamageUp   => $"치명타 데미지 +{val * 100f:0.#}%{note} ({dur}초)",
             StatusEffectType.DmgReductionUp => $"받는 데미지 {amount} 감소{note} ({dur}초)",
-            StatusEffectType.MoveSpeedUp    => $"이동속도 +{val * 100f:0.#}%{note} ({dur}초)",
+            StatusEffectType.MoveSpeedUp    => $"이동 속도 +{val * 100f:0.#}%{note} ({dur}초)",
             StatusEffectType.Invulnerable   => $"무적 ({dur}초)",
             StatusEffectType.DebuffImmune   => $"디버프 면역 ({dur}초)",
             _                               => "",
@@ -428,14 +428,14 @@ public static class SkillDescriptionBuilder
             BuffSkillData.BuffEffectType.CritRate      => $"치명타 확률 +{total * 100f:F1}%",
             BuffSkillData.BuffEffectType.CritDamage    => $"치명타 데미지 +{total * 100f:F1}%",
             BuffSkillData.BuffEffectType.MaxHpBonus    => $"최대 체력 +{amount}",
-            BuffSkillData.BuffEffectType.SpeedBonus    => $"이동속도 +{total * 100f:0.#}%",
+            BuffSkillData.BuffEffectType.SpeedBonus    => $"이동 속도 +{total * 100f:0.#}%",
             BuffSkillData.BuffEffectType.Shield        => $"보호막 +{total:F0}",
             BuffSkillData.BuffEffectType.ManaRegen     => $"마나 재생 +{total:0.#}/초",
             BuffSkillData.BuffEffectType.HpRegen       => $"체력 재생 +{total:0.#}/초",
             BuffSkillData.BuffEffectType.HpOnHit       => $"공격 적중 시 체력 +{total:F0}",
             BuffSkillData.BuffEffectType.DebuffImmune  => "디버프 면역",
             BuffSkillData.BuffEffectType.DispelDebuff  => "디버프 즉시 제거",
-            BuffSkillData.BuffEffectType.AtkSpeedBonus => $"공격속도 +{total * 100f:0.#}%",
+            BuffSkillData.BuffEffectType.AtkSpeedBonus => $"공격 속도 +{total * 100f:0.#}%",
             BuffSkillData.BuffEffectType.DmgReduction  => $"받는 데미지 {amount} 감소",
             BuffSkillData.BuffEffectType.Invulnerable  => "무적 (데미지·디버프 무시)",
             BuffSkillData.BuffEffectType.CooldownReset => Mathf.RoundToInt(total) > 0
@@ -534,7 +534,7 @@ public static class SkillDescriptionBuilder
             case PassiveSkillData.PassiveEffectType.FaithToHp:
                 return $"신앙 1당 최대 체력 +{value:0.##}";
             case PassiveSkillData.PassiveEffectType.AtkSpeed:
-                return $"공격속도 {value * 100f:0.#}% 증가";
+                return $"공격 속도 {value * 100f:0.#}% 증가";
             case PassiveSkillData.PassiveEffectType.MaxMpBonus:
                 return $"최대 마나 +{value:F0}";
             case PassiveSkillData.PassiveEffectType.OnHitManaRestore:
@@ -550,7 +550,7 @@ public static class SkillDescriptionBuilder
                     ? $"받는 마법 데미지 {value * 100f:F1}% 감소"
                     : $"받는 마법 데미지 {value:F0} 감소";
             case PassiveSkillData.PassiveEffectType.OnHitAtkSpeedUp:
-                return $"평타 적중 시 {ChanceText(passive, level)}공격속도 {passive.GetProcValue(level) * 100f:0.#}% 증가 ({passive.GetProcDuration(level):0.#}초)";
+                return $"평타 적중 시 {ChanceText(passive, level)}공격 속도 {passive.GetProcValue(level) * 100f:0.#}% 증가 ({passive.GetProcDuration(level):0.#}초)";
             case PassiveSkillData.PassiveEffectType.OnDebuffExtraDamage:
                 return $"디버프 걸린 적에게 주는 데미지 {value * 100f:0.#}% 증가";
             case PassiveSkillData.PassiveEffectType.OnCritLightning:
@@ -564,7 +564,7 @@ public static class SkillDescriptionBuilder
             case PassiveSkillData.PassiveEffectType.HealCrit:
                 return "힐에 치명타 적용 (치명타 확률로 발동, 치명타 데미지만큼 힐량 증가)";
             case PassiveSkillData.PassiveEffectType.OnHealAtkSpeedUp:
-                return $"힐 받은 대상 공격속도 {passive.GetProcValue(level) * 100f:0.#}% 증가 ({passive.GetProcDuration(level):0.#}초)";
+                return $"힐 받은 대상 공격 속도 {passive.GetProcValue(level) * 100f:0.#}% 증가 ({passive.GetProcDuration(level):0.#}초)";
             case PassiveSkillData.PassiveEffectType.OnHitCooldownReset:
                 return $"평타 적중 시 {ChanceText(passive, level)}퀵슬롯 스킬 쿨타임 초기화 (쿨 초기화 스킬 제외)";
             case PassiveSkillData.PassiveEffectType.Revive:

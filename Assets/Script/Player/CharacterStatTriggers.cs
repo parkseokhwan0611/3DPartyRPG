@@ -4,8 +4,8 @@ using Effect = PassiveSkillData.PassiveEffectType;
 // 발동형 패시브 처리 — CharacterStatus.activeTriggerPassives에 등록된 패시브를
 // 평타 적중·데미지 계산·적 처치·힐 시점에 확인해서 발동시킨다.
 //
-// 확률(procChance)을 굴리는 효과: 평타 공격속도 증가, 독, 치명타 번개, 쿨 초기화
-// 확률 없이 항상 적용되는 효과: 디버프 걸린 적 추가 데미지, 처치 시 회복, 힐 치명타(치명타 확률로 판정), 힐 대상 공격속도 증가
+// 확률(procChance)을 굴리는 효과: 평타 공격 속도 증가, 독, 치명타 번개, 쿨 초기화
+// 확률 없이 항상 적용되는 효과: 디버프 걸린 적 추가 데미지, 처치 시 회복, 힐 치명타(치명타 확률로 판정), 힐 대상 공격 속도 증가
 public partial class CharacterStat
 {
     private SkillManager _skillManager;
@@ -99,7 +99,7 @@ public partial class CharacterStat
         return Random.value < TotalCritRate ? amount * TotalCritDamage : amount;
     }
 
-    // 힐 받은 대상 공격속도 증가 패시브
+    // 힐 받은 대상 공격 속도 증가 패시브
     public void NotifyHealed(CharacterStat target)
     {
         if (myStatus == null || target == null || target.Hp <= 0f) return;
@@ -138,7 +138,7 @@ public partial class CharacterStat
 
     private static bool IsAlive(EnemyHp enemy) => enemy != null && !enemy.isDead;
 
-    // 공격속도 증가 (발동 수치 0.2 = +20%, 발동 지속시간 동안). 같은 패시브로 다시 발동하면 누적 없이 갱신
+    // 공격 속도 증가 (발동 수치 0.2 = +20%, 발동 지속시간 동안). 같은 패시브로 다시 발동하면 누적 없이 갱신
     private void ApplyProcAtkSpeed(CharacterStat target, PassiveSkillData passive, int level)
     {
         float value    = passive.GetProcValue(level);

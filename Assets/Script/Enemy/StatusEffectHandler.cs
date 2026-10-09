@@ -316,7 +316,7 @@ public class StatusEffectHandler : MonoBehaviour
     {
         switch (effect.effectType)
         {
-            // ── 이동속도 감소 ──
+            // ── 이동 속도 감소 ──
             // Slow/MoveSpeedDown이 중첩돼도 baseSpeed(고정 기준값)는 절대 덮어쓰지 않고,
             // moveSpeedMultiplier에 독립적으로 곱/나누기만 하여 기준값 오염을 방지
             case StatusEffectType.Slow:

@@ -421,7 +421,7 @@ public class PartyStatusEffectHandler : MonoBehaviour
 
         switch (effect.effectType)
         {
-            // 공격속도는 AttackBase의 원본 수치가 아니라 CharacterStatus의 합산 보너스로 관리 —
+            // 공격 속도는 AttackBase의 원본 수치가 아니라 CharacterStatus의 합산 보너스로 관리 —
             // 패시브·버프·발동 효과가 같은 곳에 더해져서 해제 순서와 무관하게 정확히 복구된다
             case StatusEffectType.AtkSpeedUp:
                 status.atkSpeedBonus += effect.value * multiplier;
@@ -449,7 +449,7 @@ public class PartyStatusEffectHandler : MonoBehaviour
                 else       status.moveSpeedMultiplier /= (1f + Mathf.Max(0f, effect.value));
                 break;
 
-            // 이동속도 감소 (value = 0.3 → 30% 감속)
+            // 이동 속도 감소 (value = 0.3 → 30% 감속)
             // value가 1(100% 감속)이면 해제 시 0으로 나누게 되어 버그가 나므로 0.99로 클램프
             case StatusEffectType.Slow:
             case StatusEffectType.MoveSpeedDown:

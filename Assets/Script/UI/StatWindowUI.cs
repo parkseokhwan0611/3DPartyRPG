@@ -39,6 +39,7 @@ public class StatWindowUI : MonoBehaviour
     [Header("# 전투 수치 텍스트")]
     public TextMeshProUGUI phyAtkText;
     public TextMeshProUGUI apText;
+    public TextMeshProUGUI atkSpeedText;
     public TextMeshProUGUI defText;
     public TextMeshProUGUI mresText;
     public TextMeshProUGUI hpText;
@@ -228,6 +229,7 @@ public class StatWindowUI : MonoBehaviour
             // "150 (+30)" — 150이 최종 수치, (+30)이 버프·패시브로 오른 양 (디버프로 깎이면 빨간 -N)
             SetText(phyAtkText,  $"물리 공격력: {WithSkillBonus(status.TotalAtk,      status.BaseAtk)}");
             SetText(apText,      $"마법 공격력: {WithSkillBonus(status.TotalAp,       status.BaseAp)}");
+            SetText(atkSpeedText, $"공격 속도: {AtkSpeedText(status)}");
             SetText(defText,     $"방어력: {WithSkillBonus(status.TotalDef,           status.BaseDef)}");
             SetText(mresText,    $"마법 저항력: {WithSkillBonus(status.TotalMagicRes, status.BaseMagicRes)}");
             SetText(hpText,      $"체력: {charStat.Hp:F0} / {WithSkillBonus(status.MaxHp, status.BaseMaxHp)}");
@@ -292,6 +294,21 @@ public class StatWindowUI : MonoBehaviour
 
         string color = ColorUtility.ToHtmlStringRGB(diff > 0 ? skillBonusColor : skillPenaltyColor);
         return $"{shownTotal} <color=#{color}>({diff:+0;-0})</color>";
+    }
+
+    // "1.20 (+20%)" — 클래스 기본 공격 속도 × (1 + 패시브·버프 보너스), 괄호는 보너스 비율
+    // (AttackBase.EffectiveAttackSpeed와 같은 식. 소수 수치라 WithSkillBonus의 정수 반올림을 쓰지 않음)
+    private string AtkSpeedText(CharacterStatus status)
+    {
+        float baseSpeed = status.classData != null ? status.classData.attackSpeed : 1f;
+        float bonus     = status.atkSpeedBonus;
+        float total     = Mathf.Max(0.1f, baseSpeed * (1f + bonus));
+
+        int bonusPct = Mathf.RoundToInt(bonus * 100f);
+        if (bonusPct == 0) return $"{total:F2}";
+
+        string color = ColorUtility.ToHtmlStringRGB(bonusPct > 0 ? skillBonusColor : skillPenaltyColor);
+        return $"{total:F2} <color=#{color}>({bonusPct:+0;-0}%)</color>";
     }
 
     private void SetText(TextMeshProUGUI tmp, string text)

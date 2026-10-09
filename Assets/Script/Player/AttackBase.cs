@@ -71,7 +71,7 @@ public abstract class AttackBase : MonoBehaviour
     }
 
     // ─────────────────────────────────────────────────────────────────
-    // 무기(클래스)별 평타 설정 — 파티원은 사거리·공격속도·공격 간격을 클래스 SO에서 받는다
+    // 무기(클래스)별 평타 설정 — 파티원은 사거리·공격 속도·공격 간격을 클래스 SO에서 받는다
     // (인스펙터의 attackRange/attackSpeed/attackDuration은 몬스터 전용 값이 됨)
     // ─────────────────────────────────────────────────────────────────
 
@@ -98,7 +98,7 @@ public abstract class AttackBase : MonoBehaviour
         => CurrentClass != null && CurrentClass.basicAttackDamage == ClassData.BasicAttackDamage.Magic;
 
     // 평타 효과음 — 스킬 SFX처럼 모션 시작 기준 Delay 뒤에 재생. speed는 모션 배율(AttackAnimSpeed)이라
-    // 공격속도가 오르면 효과음 타이밍도 모션과 같이 앞당겨진다
+    // 공격 속도가 오르면 효과음 타이밍도 모션과 같이 앞당겨진다
     private readonly List<Coroutine> _attackSfxRoutines = new List<Coroutine>();
 
     protected void PlayAttackSfx(ClassData cls, float speed)
@@ -130,7 +130,7 @@ public abstract class AttackBase : MonoBehaviour
         AudioManager.instance?.PlaySFX(key);
     }
 
-    // 파티원은 패시브·버프의 공격속도 보너스(0.1 = +10%)를 곱해서 공격 간격을 줄인다. 몬스터는 CharacterStat이 없어 그대로
+    // 파티원은 패시브·버프의 공격 속도 보너스(0.1 = +10%)를 곱해서 공격 간격을 줄인다. 몬스터는 CharacterStat이 없어 그대로
     private CharacterStat _ownerStat;
     public float EffectiveAttackSpeed
         => Mathf.Max(0.1f, attackSpeed * (1f + (_ownerStat != null ? _ownerStat.AtkSpeedBonus : 0f)));

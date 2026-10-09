@@ -89,7 +89,7 @@ public class RangedAttack : AttackBase
             agent.velocity = Vector3.zero;
         }
 
-        // 공격속도 보너스만큼 모션과 발사·후딜 타이밍을 같이 빠르게
+        // 공격 속도 보너스만큼 모션과 발사·후딜 타이밍을 같이 빠르게
         float speed = AttackAnimSpeed;
 
         if (anim != null) anim.ResetTrigger("doNormalAttack");
@@ -166,7 +166,7 @@ public class RangedAttack : AttackBase
         if (myStat.MpOnHit > 0f)
             myStat.RecoverMp(myStat.MpOnHit, showAura: false, showText: false);
 
-        // 발동형 패시브 (공격속도 증가·독·치명타 번개·쿨 초기화)
+        // 발동형 패시브 (공격 속도 증가·독·치명타 번개·쿨 초기화)
         myStat.NotifyBasicAttackHit(enemyStat, isCrit, isMagic);
     }
 

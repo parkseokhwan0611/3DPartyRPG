@@ -29,7 +29,7 @@ public class MeleeAttack : AttackBase
         yield return null;
         yield return null;
 
-        // 공격속도 보너스만큼 모션과 타격·후딜 타이밍을 같이 빠르게
+        // 공격 속도 보너스만큼 모션과 타격·후딜 타이밍을 같이 빠르게
         float speed = AttackAnimSpeed;
         if (anim != null)
         {
@@ -93,7 +93,7 @@ public class MeleeAttack : AttackBase
             if (primary == null || enemyStat == targetHealth) primary = enemyStat;
         }
 
-        // 4. 발동형 패시브 (공격속도 증가·독·치명타 번개·쿨 초기화) — 한 번 휘두를 때 한 번만
+        // 4. 발동형 패시브 (공격 속도 증가·독·치명타 번개·쿨 초기화) — 한 번 휘두를 때 한 번만
         if (primary != null)
             myStat.NotifyBasicAttackHit(primary, isCrit, isMagic);
     }

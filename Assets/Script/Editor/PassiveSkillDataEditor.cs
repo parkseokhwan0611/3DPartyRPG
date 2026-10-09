@@ -75,7 +75,7 @@ public class PassiveSkillDataEditor : Editor
                        "Percent: 0.1 = 받는 데미지 10% 감소 (여러 개면 합산)\n" +
                        "Flat: 10 = 한 대마다 10 감소 (최소 1은 들어감)";
             case PassiveSkillData.PassiveEffectType.AtkSpeed:
-                return "기본 수치 칸: 0.1 = 공격속도 +10%";
+                return "기본 수치 칸: 0.1 = 공격 속도 +10%";
             case PassiveSkillData.PassiveEffectType.FaithToHp:
                 return "기본 수치 칸: 신앙 1당 최대 체력 (2 = 신앙 30이면 +60)";
             case PassiveSkillData.PassiveEffectType.SummonHitManaRestore:
@@ -85,7 +85,7 @@ public class PassiveSkillDataEditor : Editor
 
             // 발동형 — 특수 효과 설정 칸 사용
             case PassiveSkillData.PassiveEffectType.OnHitAtkSpeedUp:
-                return "평타 적중 시 발동.\nProc Chance: 1 = 100%\nProc Value: 0.2 = 공격속도 +20%\nProc Duration: 지속시간(초). 다시 발동하면 누적 없이 갱신";
+                return "평타 적중 시 발동.\nProc Chance: 1 = 100%\nProc Value: 0.2 = 공격 속도 +20%\nProc Duration: 지속시간(초). 다시 발동하면 누적 없이 갱신";
             case PassiveSkillData.PassiveEffectType.OnHitPoison:
                 return "평타 적중 시 발동.\nProc Chance: 1 = 100%\nProc Value: 0.1 = 초당 (근접: 물리 공격력 / 원거리: 마법 공격력)의 10% 마법 데미지\nProc Duration: 독 지속시간(초)";
             case PassiveSkillData.PassiveEffectType.OnCritLightning:
@@ -97,7 +97,7 @@ public class PassiveSkillDataEditor : Editor
             case PassiveSkillData.PassiveEffectType.HealCrit:
                 return "수치 칸 없음. 힐할 때 시전자의 치명타 확률로 굴려서 치명타 데미지 배율만큼 힐량 증가";
             case PassiveSkillData.PassiveEffectType.OnHealAtkSpeedUp:
-                return "힐 스킬로 힐할 때 항상 발동.\nProc Value: 0.2 = 대상 공격속도 +20%\nProc Duration: 지속시간(초)";
+                return "힐 스킬로 힐할 때 항상 발동.\nProc Value: 0.2 = 대상 공격 속도 +20%\nProc Duration: 지속시간(초)";
             default:
                 return null;
         }
