@@ -29,8 +29,14 @@ public class SkillWindowUI : MonoBehaviour
 
     void OnEnable()
     {
+        int prevCharIndex = currentCharIndex;
         if (DataManager.instance != null)
             currentCharIndex = DataManager.instance.selectedPartyIndex;
+
+        // 창이 닫힌 사이 캐릭터가 바뀌었으면 이전 캐릭터의 스킬 설명을 지운다 — 남겨두면 설명뿐 아니라
+        // 습득 버튼도 이전 캐릭터 기준이라 엉뚱한 캐릭터의 스킬이 올라갈 수 있음
+        if (prevCharIndex != currentCharIndex)
+            detailPanel?.Clear();
 
         RefreshSkillTree();
         quickSlotPanel?.RefreshByCharIndex(currentCharIndex);
