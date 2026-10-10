@@ -54,6 +54,13 @@ public class HealSkill : SkillBase
 
     private void ApplySingleHeal(HealSkillData data, Transform target)
     {
+        // 대상이 소환수면 소환수에게
+        if (target != null && target.TryGetComponent(out SummonUnit summon))
+        {
+            if (summon.IsAlive) ApplyHeal(summon, CalculateHeal(data), data);
+            return;
+        }
+
         CharacterStat targetStat = target != null
             ? target.GetComponent<CharacterStat>()
             : myStat;
@@ -81,6 +88,46 @@ public class HealSkill : SkillBase
 
             ApplyHeal(stat, healAmount, data);
             SpawnTargetEffect(data, member.transform);
+        }
+
+        // 아군 전체 힐은 소환수에게도 (아군 전체 버프와 같은 기준)
+        for (int i = SummonUnit.All.Count - 1; i >= 0; i--)
+        {
+            var summon = SummonUnit.All[i];
+            if (summon == null || !summon.IsAlive) continue;
+            ApplyHeal(summon, healAmount, data);
+            SpawnTargetEffect(data, summon.transform);
+        }
+    }
+
+    // 소환수 힐 — 힐 치명타 패시브는 똑같이 굴리고, 힐 받은 대상 공격 속도 증가 패시브는 파티원 전용이라 제외
+    private void ApplyHeal(SummonUnit summon, float amount, HealSkillData data)
+    {
+        if (myStat != null) amount = myStat.RollHealCrit(amount);
+
+        if (data.isDotHeal)
+        {
+            if (PartyManager.instance != null)
+                PartyManager.instance.StartCoroutine(SummonDotHealRoutine(summon, amount, data.dotInterval, data.GetDotDuration(skillLevel)));
+        }
+        else
+        {
+            summon.Heal(amount);
+        }
+    }
+
+    private IEnumerator SummonDotHealRoutine(SummonUnit summon, float amountPerTick, float interval, float duration)
+    {
+        if (summon == null || interval <= 0f) yield break;
+        var wait = new WaitForSeconds(interval);
+
+        float elapsed = 0f;
+        while (elapsed < duration)
+        {
+            yield return wait;
+            elapsed += interval;
+            if (summon == null || !summon.IsAlive) yield break; // 사라진 소환수(파괴됨)면 중단
+            summon.Heal(amountPerTick);
         }
     }
 

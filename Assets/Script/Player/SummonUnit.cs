@@ -50,6 +50,14 @@ public class SummonUnit : MonoBehaviour, IDamageable
     [Header("애니메이터 파라미터 (컨트롤러에 없으면 무시)")]
     public string walkBool      = "isWalking";
     public string attackTrigger = "doAttack";
+    public string stunBool      = "isStun";
+    [Tooltip("사망 모션 파라미터 — Trigger와 Bool 모두 지원 (몬스터와 같은 isDead 기본)")]
+    public string deathParam    = "isDead";
+
+    [Header("사망 연출")]
+    [Tooltip("체력이 0이 된 뒤 사라질 때까지의 시간 (초) — 사망 모션 길이에 맞출 것. 0이면 즉시 사라짐. " +
+             "지속시간 종료·주인 사망·재소환 교체 때는 모션 없이 바로 사라진다")]
+    public float deathDuration  = 1.5f;
 
     [Header("연출")]
     [Tooltip("소환될 때 스폰할 이펙트 풀 키")]
@@ -58,10 +66,13 @@ public class SummonUnit : MonoBehaviour, IDamageable
     public string despawnEffectPoolKey;
     [Tooltip("피격 데미지 텍스트 풀 키")]
     public string damageTextPoolKey = "PlayerDamageText";
-    [Tooltip("피격 텍스트 위치 (비우면 머리 위 2m)")]
+    [Tooltip("피격·회복 텍스트 위치 (비우면 머리 위 2m)")]
     public Transform hudPos;
     public Color physicalDamageColor = new Color32(0xFF, 0x6E, 0x01, 0xFF);
     public Color magicDamageColor    = new Color32(0x00, 0xC1, 0xFF, 0xFF);
+    [Tooltip("회복 텍스트 풀 키 (파티원과 같은 HealText 풀, 비우면 표시 안 함)")]
+    public string healTextPoolKey = "HealText";
+    public Color  healTextColor   = new Color(0.2f, 1f, 0.2f);
 
     // ─────────────────────────────────────────────────────────────────
     // 런타임 상태
@@ -112,10 +123,17 @@ public class SummonUnit : MonoBehaviour, IDamageable
     private class Buff { public StatusEffectType type; public float value; public ModifierMode mode; public float remaining; }
     private readonly List<Buff> _buffs = new List<Buff>();
     private float _buffAtkPct, _buffAtkFlat, _buffCritRate, _buffCritDmg, _buffDmgReduction, _buffDmgReductionFlat, _buffMoveSpeed;
+    private float _slowMultiplier = 1f; // 둔화 디버프 (여러 개면 곱연산 — 파티원과 같은 방식)
     private int   _invulnerableCount;
 
+    // 기절 (몬스터 스킬 디버프) — 이동·공격 정지, 지속시간·버프 시간은 계속 흐른다
+    private float _stunTimer;
+    public bool IsStunned => _stunTimer > 0f;
+    public bool IsSlowed  => _slowMultiplier < 1f;
+
     private static readonly int NoHash = 0;
-    private int _walkHash, _attackHash;
+    private int _walkHash, _attackHash, _stunHash, _deathHash;
+    private AnimatorControllerParameterType _deathParamType;
 
     // ─────────────────────────────────────────────────────────────────
     // 생성 / 제거
@@ -130,10 +148,33 @@ public class SummonUnit : MonoBehaviour, IDamageable
 
         _walkHash   = FindParam(walkBool,      AnimatorControllerParameterType.Bool);
         _attackHash = FindParam(attackTrigger, AnimatorControllerParameterType.Trigger);
+        _stunHash   = FindParam(stunBool,      AnimatorControllerParameterType.Bool);
+        _deathHash  = FindParam(deathParam,    AnimatorControllerParameterType.Trigger);
+        _deathParamType = AnimatorControllerParameterType.Trigger;
+        if (_deathHash == NoHash)
+        {
+            _deathHash = FindParam(deathParam, AnimatorControllerParameterType.Bool);
+            _deathParamType = AnimatorControllerParameterType.Bool;
+        }
     }
 
-    void OnEnable()  => All.Add(this);
-    void OnDisable() => All.Remove(this);
+    void OnEnable()
+    {
+        All.Add(this);
+        if (DataManager.instance != null) DataManager.instance.OnPartyClassChanged += HandleClassChanged;
+    }
+
+    void OnDisable()
+    {
+        All.Remove(this);
+        if (DataManager.instance != null) DataManager.instance.OnPartyClassChanged -= HandleClassChanged;
+    }
+
+    // 주인의 클래스(무기)가 바뀌면 소환수도 정리 — 스킬이 초기화되는데 이전 클래스의 소환수가 남아 싸우지 않게
+    private void HandleClassChanged(int partyIndex)
+    {
+        if (Owner != null && Owner.partyIndex == partyIndex) Despawn();
+    }
 
     // SummonSkill이 Instantiate 직후 호출
     public void Initialize(CharacterStat owner, SummonSkillData data, int level, int spawnIndex)
@@ -161,11 +202,51 @@ public class SummonUnit : MonoBehaviour, IDamageable
         OnHpChanged?.Invoke(Hp, MaxHp);
     }
 
-    // 시간 종료·주인 사망·재소환 교체
+    // 시간 종료·주인 사망·재소환 교체 — 모션 없이 바로 사라짐
     public void Despawn()
     {
         if (_dead) return;
         _dead = true;
+        SpawnFx(despawnEffectPoolKey, transform.position);
+        Destroy(gameObject);
+    }
+
+    // 체력 0 — 사망 모션을 재생한 뒤 사라진다. 그 사이엔 이미 죽은 상태(IsAlive=false)라
+    // 대상 선정·버프·힐·도발·재소환 판단에서 빠지고, 콜라이더를 꺼서 공격·투사체도 통과한다
+    private void Die()
+    {
+        if (_dead) return;
+        if (deathDuration <= 0f) { Despawn(); return; }
+
+        _dead = true;
+        _pendingHitTimer = -1f;
+        _stunTimer = 0f;
+
+        if (_agent.enabled && _agent.isOnNavMesh)
+        {
+            _agent.isStopped = true;
+            _agent.ResetPath();
+            _agent.velocity = Vector3.zero;
+        }
+        foreach (var col in GetComponentsInChildren<Collider>()) col.enabled = false;
+
+        if (_anim != null)
+        {
+            if (_walkHash != NoHash) _anim.SetBool(_walkHash, false);
+            if (_stunHash != NoHash) _anim.SetBool(_stunHash, false);
+            if (_deathHash != NoHash)
+            {
+                if (_deathParamType == AnimatorControllerParameterType.Trigger) _anim.SetTrigger(_deathHash);
+                else                                                            _anim.SetBool(_deathHash, true);
+            }
+        }
+
+        StartCoroutine(DestroyAfterDeath());
+    }
+
+    private System.Collections.IEnumerator DestroyAfterDeath()
+    {
+        yield return new WaitForSeconds(deathDuration);
         SpawnFx(despawnEffectPoolKey, transform.position);
         Destroy(gameObject);
     }
@@ -185,6 +266,15 @@ public class SummonUnit : MonoBehaviour, IDamageable
 
         UpdateBuffs(dt);
         if (_attackCooldown > 0f) _attackCooldown -= dt;
+
+        // 기절 중 — 제자리에 멈춰 아무것도 하지 않음
+        if (_stunTimer > 0f)
+        {
+            _stunTimer -= dt;
+            if (_stunTimer <= 0f) EndStun();
+            UpdateWalkAnim();
+            return;
+        }
 
         // 타격 대기 중(공격 모션) — 끝날 때까지 이동·대상 변경 없음
         if (_pendingHitTimer >= 0f)
@@ -423,7 +513,7 @@ public class SummonUnit : MonoBehaviour, IDamageable
     private void UpdateWalkAnim()
     {
         if (_anim == null || _walkHash == NoHash) return;
-        bool walking = _pendingHitTimer < 0f && _agent.enabled && _agent.velocity.sqrMagnitude > 0.01f;
+        bool walking = !IsStunned && _pendingHitTimer < 0f && _agent.enabled && _agent.velocity.sqrMagnitude > 0.01f;
         _anim.SetBool(_walkHash, walking);
     }
 
@@ -477,7 +567,7 @@ public class SummonUnit : MonoBehaviour, IDamageable
         SpawnDamageText(damage, color, isCrit);
         OnHpChanged?.Invoke(Hp, MaxHp);
 
-        if (Hp <= 0f) Despawn();
+        if (Hp <= 0f) Die();
     }
 
     public void Heal(float amount)
@@ -485,6 +575,7 @@ public class SummonUnit : MonoBehaviour, IDamageable
         if (_dead || amount <= 0f) return;
         Hp = Mathf.Min(MaxHp, Hp + amount);
         OnHpChanged?.Invoke(Hp, MaxHp);
+        SpawnHealText(amount);
     }
 
     public void ApplyShield(float amount, float duration) => _shield.Apply(amount, duration);
@@ -522,6 +613,44 @@ public class SummonUnit : MonoBehaviour, IDamageable
         RecalcBuffs();
     }
 
+    // 몬스터 디버프 — 기절·둔화(Slow / MoveSpeedDown)만 지원. 무적 중엔 무시
+    public void ApplyDebuff(StatusEffect effect)
+    {
+        if (_dead || effect == null || effect.duration <= 0f || _invulnerableCount > 0) return;
+
+        switch (effect.effectType)
+        {
+            case StatusEffectType.Stun:
+                bool wasStunned = IsStunned;
+                _stunTimer = Mathf.Max(_stunTimer, effect.duration); // 겹치면 더 긴 쪽 (파티원과 같은 방식)
+                if (!wasStunned) BeginStun();
+                break;
+
+            case StatusEffectType.Slow:
+            case StatusEffectType.MoveSpeedDown:
+                _buffs.Add(new Buff { type = effect.effectType, value = effect.value, mode = effect.mode, remaining = effect.duration });
+                RecalcBuffs();
+                break;
+        }
+    }
+
+    private void BeginStun()
+    {
+        _pendingHitTimer = -1f; // 하던 공격(타격 대기)은 취소
+        StopMoving();
+        if (_anim != null)
+        {
+            if (_walkHash != NoHash) _anim.SetBool(_walkHash, false);
+            if (_stunHash != NoHash) _anim.SetBool(_stunHash, true);
+        }
+    }
+
+    private void EndStun()
+    {
+        _stunTimer = 0f;
+        if (_anim != null && _stunHash != NoHash) _anim.SetBool(_stunHash, false);
+    }
+
     private void UpdateBuffs(float dt)
     {
         if (_buffs.Count == 0) return;
@@ -538,6 +667,7 @@ public class SummonUnit : MonoBehaviour, IDamageable
     {
         _buffAtkPct = _buffAtkFlat = _buffCritRate = _buffCritDmg = _buffDmgReduction = _buffDmgReductionFlat = _buffMoveSpeed = 0f;
         _invulnerableCount = 0;
+        _slowMultiplier    = 1f;
         foreach (var b in _buffs)
         {
             switch (b.type)
@@ -555,9 +685,11 @@ public class SummonUnit : MonoBehaviour, IDamageable
                     break;
                 case StatusEffectType.MoveSpeedUp:    _buffMoveSpeed    += Mathf.Max(0f, b.value); break;
                 case StatusEffectType.Invulnerable:   _invulnerableCount++;         break;
+                case StatusEffectType.Slow:
+                case StatusEffectType.MoveSpeedDown:  _slowMultiplier *= 1f - Mathf.Clamp(b.value, 0f, 0.99f); break;
             }
         }
-        _agent.speed = _baseSpeed * (1f + _buffMoveSpeed);
+        _agent.speed = _baseSpeed * (1f + _buffMoveSpeed) * _slowMultiplier;
     }
 
     // ─────────────────────────────────────────────────────────────────
@@ -598,6 +730,17 @@ public class SummonUnit : MonoBehaviour, IDamageable
         Vector3 pos = hudPos != null ? hudPos.position : transform.position + Vector3.up * 2f;
         go.transform.SetPositionAndRotation(pos, Quaternion.Euler(60f, 0f, 0f));
         go.GetComponent<DamageText>()?.Setup(damage, color, showMinus: true, isCrit: isCrit);
+    }
+
+    private void SpawnHealText(float amount)
+    {
+        if (string.IsNullOrEmpty(healTextPoolKey) || ObjectPoolManager.instance == null || !ObjectPoolManager.instance.IsReady) return;
+        var go = ObjectPoolManager.instance.GetGo(healTextPoolKey);
+        if (go == null) return;
+
+        Vector3 pos = hudPos != null ? hudPos.position : transform.position + Vector3.up * 2f;
+        go.transform.SetPositionAndRotation(pos, Quaternion.Euler(60f, 0f, 0f));
+        go.GetComponent<HealText>()?.Setup(amount, healTextColor);
     }
 
     private static void SpawnFx(string key, Vector3 pos)

@@ -83,11 +83,15 @@ public abstract class MonsterSkillBase : MonoBehaviour
     {
         if (debuff == MonsterSkillDebuff.None || target == null) return;
 
-        var status = target.GetComponent<PartyStatusEffectHandler>();
-        if (status == null) return;
-
         StatusEffectType type = debuff == MonsterSkillDebuff.Stun ? StatusEffectType.Stun : StatusEffectType.Slow;
-        status.ApplyBuff(new StatusEffect(type, debuffValue, debuffDuration, gameObject));
+        var effect = new StatusEffect(type, debuffValue, debuffDuration, gameObject);
+
+        var status = target.GetComponent<PartyStatusEffectHandler>();
+        if (status != null) { status.ApplyBuff(effect); return; }
+
+        // 소환수도 같은 디버프를 받는다 (콜라이더가 자식에 있을 수 있어 부모까지 탐색)
+        var summon = target.GetComponentInParent<SummonUnit>();
+        if (summon != null) summon.ApplyDebuff(effect);
     }
 
     // AttackBase.RollCritDamage와 동일한 공용 헬퍼 — 몬스터 스킬은 AttackBase를 상속하지 않아 따로 둔다

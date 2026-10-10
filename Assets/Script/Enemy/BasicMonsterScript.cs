@@ -188,6 +188,10 @@ public class BasicMonsterScript : MonoBehaviour
             if (member != null && member.CurrentState == PartyMemberScript.MemberState.Dead)
                 continue;
 
+            // 사망 모션 중인 소환수도 제외 — 오브젝트가 사라지기 전까지 시체를 계속 노리지 않게
+            if (member == null && entry.Key.TryGetComponent(out SummonUnit summon) && !summon.IsAlive)
+                continue;
+
             if (entry.Value > maxAggro)
             {
                 maxAggro  = entry.Value;
