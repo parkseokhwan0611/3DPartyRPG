@@ -4564,7 +4564,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 100}
+  m_AnchoredPosition: {x: 0, y: 240}
   m_SizeDelta: {x: 600, y: 200}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1224545698
@@ -7077,6 +7077,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 1919654128}
   - {fileID: 1694030633}
   - {fileID: 502807681}
   - {fileID: 1965787008}
@@ -7224,6 +7225,81 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   selectedLine: {fileID: 1350524291}
+--- !u!1 &1919654127
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1919654128}
+  - component: {fileID: 1919654130}
+  - component: {fileID: 1919654129}
+  m_Layer: 5
+  m_Name: BG
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &1919654128
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1919654127}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1795826542}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1919654129
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1919654127}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 0, g: 0, b: 0, a: 0.78431374}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 0}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!222 &1919654130
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1919654127}
+  m_CullTransparentMesh: 1
 --- !u!1 &1965787007
 GameObject:
   m_ObjectHideFlags: 0
@@ -7894,10 +7970,12 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 7364cb022d14fb149badfc133d4349ed, type: 2}
   - {fileID: 11400000, guid: 9cf2668ef38f4794c96ee30e10d51d69, type: 2}
   - {fileID: 11400000, guid: 5d131dd64cea89a4d8589ee810cb2583, type: 2}
+  secondClassList: []
   skillTrees:
   - {fileID: 11400000, guid: 64f7218b64d5ca948a695aeab713bdf9, type: 2}
   - {fileID: 11400000, guid: 9d32c408ef0268741b90aa32fe2f11fd, type: 2}
   - {fileID: 11400000, guid: fdd707c29e6959b4fbf4691a21ef1e72, type: 2}
+  startWithSecondClass: 
   partyLevel: 1
   partyExp: 0
   gold: 0
@@ -7924,13 +8002,6 @@ MonoBehaviour:
     count: 5
   - item: {fileID: 11400000, guid: 090f952f171e2c04f8363455e384f321, type: 2}
     count: 5
-  startEquips:
-  - characterIndex: 0
-    item: {fileID: 11400000, guid: 360ee5c4417b22a47b5f196268d678de, type: 2}
-  - characterIndex: 1
-    item: {fileID: 11400000, guid: fd23787e5d867214a8000ae17c9bea2d, type: 2}
-  - characterIndex: 2
-    item: {fileID: 11400000, guid: fd23787e5d867214a8000ae17c9bea2d, type: 2}
   itemRegistry:
   - {fileID: 11400000, guid: 9022e3a27e6b96144983138f931fa959, type: 2}
   - {fileID: 11400000, guid: c72b9d38248f14f40a0c7b9a7aedc9ad, type: 2}
@@ -8433,7 +8504,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 4d0a2ef6845ac5247974c5d367af8ab7, type: 3}
+  m_Sprite: {fileID: 21300000, guid: c604c50a531649a4ab3fcd19c2a571cf, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
