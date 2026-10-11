@@ -43,6 +43,13 @@ public class TitleMenuUI : MonoBehaviour
                                        && SaveManager.instance.HasSaveData;
     }
 
+    void Update()
+    {
+        // 설정 창이 열려 있을 때 ESC = 뒤로가기 버튼과 동일
+        if (Input.GetKeyDown(KeyCode.Escape) && settingsPanel != null && settingsPanel.activeSelf)
+            OnSettingsBackClicked();
+    }
+
     private void OnSettingsClicked()
     {
         titlePanel   ?.SetActive(false);
