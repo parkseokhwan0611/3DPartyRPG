@@ -9,6 +9,8 @@ public class SummonHpBar : MonoBehaviour
     [Tooltip("비워두면 부모에서 자동으로 찾음")]
     public SummonUnit summon;
     public Image hpBar;
+    [Tooltip("선택 — HP 바 뒤에서 천천히 따라 줄어드는 잔상 바 (몬스터 체력바의 Mask와 같은 역할)")]
+    public Image mask;
     [Tooltip("선택 — 비워두면 보호막 바 없음. HP 바와 반대 방향으로 깎이도록 Image의 Fill Origin을 " +
              "Right로 설정할 것 (HP는 Left 피벗, 보호막은 Right 피벗)")]
     public Image shieldBar;
@@ -36,6 +38,7 @@ public class SummonHpBar : MonoBehaviour
         // 소환 직후엔 보간 없이 바로 현재 값으로 — 0에서 차오르거나 보호막이 꽉 찬 것처럼 보이지 않게
         currentHpFill     = HpRatio();
         currentShieldFill = ShieldRatio();
+        if (mask != null) mask.fillAmount = currentHpFill;
         Apply();
     }
 
@@ -48,6 +51,11 @@ public class SummonHpBar : MonoBehaviour
 
         currentHpFill     = Mathf.MoveTowards(currentHpFill,     HpRatio(),     changeSpeed * Time.deltaTime);
         currentShieldFill = Mathf.MoveTowards(currentShieldFill, ShieldRatio(), changeSpeed * Time.deltaTime);
+        // 잔상은 HP 바를 더 느리게 따라감 (회복은 바로 맞춰서 잔상이 HP 바보다 낮게 남지 않게)
+        if (mask != null)
+            mask.fillAmount = mask.fillAmount < currentHpFill
+                ? currentHpFill
+                : Mathf.MoveTowards(mask.fillAmount, currentHpFill, 0.8f * Time.deltaTime);
         Apply();
     }
 

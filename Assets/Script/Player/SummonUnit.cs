@@ -34,8 +34,9 @@ public class SummonUnit : MonoBehaviour, IDamageable
     public string projectilePoolKey;
     [Tooltip("원거리 소환수 전용: 발사 위치 (비우면 소환수 위치 + 위로 1m)")]
     public Transform firePoint;
-    [Tooltip("공격 효과음 키 (비우면 없음)")]
-    public string attackSfxKey;
+    [Tooltip("공격 효과음 —스킬·파티원 평타 SFX와 같은 형식. Delay는 공격 모션 시작 기준, 반복 재생도 가능. " +
+             "기절·사망으로 공격이 끊기면 아직 안 나간 소리는 취소")]
+    public List<SkillSfxEntry> attackSfx = new List<SkillSfxEntry>();
     [Tooltip("타격 시 대상 위치 이펙트 풀 키 (즉시 타격일 때만, 비우면 없음)")]
     public string hitEffectPoolKey;
 
@@ -50,13 +51,14 @@ public class SummonUnit : MonoBehaviour, IDamageable
     [Header("애니메이터 파라미터 (컨트롤러에 없으면 무시)")]
     public string walkBool      = "isWalking";
     public string attackTrigger = "doAttack";
+    [Tooltip("기절 모션 파라미터 — Bool이면 기절 동안 true, Trigger면 기절 시작 때 한 번 (몬스터 컨트롤러는 Trigger)")]
     public string stunBool      = "isStun";
     [Tooltip("사망 모션 파라미터 — Trigger와 Bool 모두 지원 (몬스터와 같은 isDead 기본)")]
     public string deathParam    = "isDead";
 
     [Header("사망 연출")]
-    [Tooltip("체력이 0이 된 뒤 사라질 때까지의 시간 (초) — 사망 모션 길이에 맞출 것. 0이면 즉시 사라짐. " +
-             "지속시간 종료·주인 사망·재소환 교체 때는 모션 없이 바로 사라진다")]
+    [Tooltip("사망 모션 시작부터 오브젝트가 사라질 때까지의 시간 (초) — 사망 모션 길이에 맞출 것. 0이면 모션 없이 즉시 사라짐. " +
+             "체력 0·지속시간 종료·주인 사망·재소환 교체·클래스 변경 모두 사망 모션 → 디스폰 이펙트 순서로 사라진다")]
     public float deathDuration  = 1.5f;
 
     [Header("연출")]
@@ -114,6 +116,14 @@ public class SummonUnit : MonoBehaviour, IDamageable
     private const float StuckCheckInterval = 1f;
     private const float StuckMinProgress   = 0.15f;
 
+    // 끼임 탈출 — 소환수는 파티원에게 길을 양보하는데(회피 우선순위 최하), 캐릭터와 벽 사이처럼
+    // 양보할 공간이 없으면 제자리에 멈춘다. 가려는 곳이 있는데 잠깐 못 움직이면 회피를 잠시 꺼서 통과시킨다
+    private ObstacleAvoidanceType _defaultAvoidance;
+    private float _blockedTimer;
+    private float _avoidanceOffUntil = -1f;
+    private const float BlockedTimeToEscape = 0.6f;
+    private const float EscapeDuration      = 1.5f;
+
     // 공격
     private float _attackCooldown;
     private float _pendingHitTimer = -1f;
@@ -133,7 +143,7 @@ public class SummonUnit : MonoBehaviour, IDamageable
 
     private static readonly int NoHash = 0;
     private int _walkHash, _attackHash, _stunHash, _deathHash;
-    private AnimatorControllerParameterType _deathParamType;
+    private AnimatorControllerParameterType _stunParamType, _deathParamType;
 
     // ─────────────────────────────────────────────────────────────────
     // 생성 / 제거
@@ -145,17 +155,30 @@ public class SummonUnit : MonoBehaviour, IDamageable
         _anim   = GetComponentInChildren<Animator>();
         _shield = new ShieldPool(this);
         _baseSpeed = _agent.speed;
+        _defaultAvoidance = _agent.obstacleAvoidanceType;
 
         _walkHash   = FindParam(walkBool,      AnimatorControllerParameterType.Bool);
         _attackHash = FindParam(attackTrigger, AnimatorControllerParameterType.Trigger);
-        _stunHash   = FindParam(stunBool,      AnimatorControllerParameterType.Bool);
-        _deathHash  = FindParam(deathParam,    AnimatorControllerParameterType.Trigger);
-        _deathParamType = AnimatorControllerParameterType.Trigger;
-        if (_deathHash == NoHash)
-        {
-            _deathHash = FindParam(deathParam, AnimatorControllerParameterType.Bool);
-            _deathParamType = AnimatorControllerParameterType.Bool;
-        }
+        _stunHash   = FindBoolOrTrigger(stunBool,   out _stunParamType);
+        _deathHash  = FindBoolOrTrigger(deathParam, out _deathParamType);
+    }
+
+    // Bool·Trigger 어느 쪽으로 만들어 둔 파라미터든 받는다 (파티원 컨트롤러는 Bool, 몬스터 컨트롤러는 Trigger)
+    private int FindBoolOrTrigger(string name, out AnimatorControllerParameterType type)
+    {
+        type = AnimatorControllerParameterType.Trigger;
+        int hash = FindParam(name, type);
+        if (hash != NoHash) return hash;
+        type = AnimatorControllerParameterType.Bool;
+        return FindParam(name, type);
+    }
+
+    private void SetAnimFlag(int hash, AnimatorControllerParameterType type, bool on)
+    {
+        if (_anim == null || hash == NoHash) return;
+        if (type == AnimatorControllerParameterType.Bool) _anim.SetBool(hash, on);
+        else if (on)                                      _anim.SetTrigger(hash);
+        else                                              _anim.ResetTrigger(hash);
     }
 
     void OnEnable()
@@ -202,25 +225,26 @@ public class SummonUnit : MonoBehaviour, IDamageable
         OnHpChanged?.Invoke(Hp, MaxHp);
     }
 
-    // 시간 종료·주인 사망·재소환 교체 — 모션 없이 바로 사라짐
-    public void Despawn()
-    {
-        if (_dead) return;
-        _dead = true;
-        SpawnFx(despawnEffectPoolKey, transform.position);
-        Destroy(gameObject);
-    }
+    // 시간 종료·주인 사망·재소환 교체·클래스 변경 — 체력 0일 때와 똑같이 사망 모션 후 디스폰 이펙트와 함께 사라짐
+    public void Despawn() => Die();
 
-    // 체력 0 — 사망 모션을 재생한 뒤 사라진다. 그 사이엔 이미 죽은 상태(IsAlive=false)라
+    // 사망 모션을 재생한 뒤 디스폰 이펙트와 함께 사라진다. 그 사이엔 이미 죽은 상태(IsAlive=false)라
     // 대상 선정·버프·힐·도발·재소환 판단에서 빠지고, 콜라이더를 꺼서 공격·투사체도 통과한다
     private void Die()
     {
         if (_dead) return;
-        if (deathDuration <= 0f) { Despawn(); return; }
-
         _dead = true;
+
+        if (deathDuration <= 0f)
+        {
+            SpawnFx(despawnEffectPoolKey, transform.position);
+            Destroy(gameObject);
+            return;
+        }
+
         _pendingHitTimer = -1f;
         _stunTimer = 0f;
+        StopAttackSfx(); // 쓰러지는 중에 휘두르는 소리가 나지 않게
 
         if (_agent.enabled && _agent.isOnNavMesh)
         {
@@ -233,12 +257,11 @@ public class SummonUnit : MonoBehaviour, IDamageable
         if (_anim != null)
         {
             if (_walkHash != NoHash) _anim.SetBool(_walkHash, false);
-            if (_stunHash != NoHash) _anim.SetBool(_stunHash, false);
-            if (_deathHash != NoHash)
-            {
-                if (_deathParamType == AnimatorControllerParameterType.Trigger) _anim.SetTrigger(_deathHash);
-                else                                                            _anim.SetBool(_deathHash, true);
-            }
+            // 남아 있는 공격·기절 트리거가 Any State 전이로 사망 모션을 덮어쓰지 않게 먼저 지운다
+            // (몬스터 사망 후 idle로 돌아가던 문제와 같은 원인)
+            if (_attackHash != NoHash) _anim.ResetTrigger(_attackHash);
+            SetAnimFlag(_stunHash, _stunParamType, false);
+            SetAnimFlag(_deathHash, _deathParamType, true);
         }
 
         StartCoroutine(DestroyAfterDeath());
@@ -285,6 +308,8 @@ public class SummonUnit : MonoBehaviour, IDamageable
             UpdateWalkAnim();
             return;
         }
+
+        UpdateBlockedEscape(dt);
 
         // 주인에게서 너무 멀어지면 곁으로 순간이동 (포탈·대시 등)
         if ((transform.position - Owner.transform.position).sqrMagnitude > leashDistance * leashDistance)
@@ -427,6 +452,33 @@ public class SummonUnit : MonoBehaviour, IDamageable
         else if (!_agent.pathPending && _agent.hasPath && _agent.remainingDistance < 0.3f) StopMoving();
     }
 
+    private void UpdateBlockedEscape(float dt)
+    {
+        if (!_agent.enabled || !_agent.isOnNavMesh) return;
+
+        // 탈출 중 — 시간이 지나면 원래 회피 설정으로 복구
+        if (_avoidanceOffUntil >= 0f)
+        {
+            if (Time.time >= _avoidanceOffUntil)
+            {
+                _agent.obstacleAvoidanceType = _defaultAvoidance;
+                _avoidanceOffUntil = -1f;
+            }
+            return;
+        }
+
+        bool wantsToMove = _agent.hasPath && !_agent.pathPending && !_agent.isStopped
+                        && _agent.remainingDistance > _agent.stoppingDistance + 0.3f;
+        bool notMoving   = _agent.velocity.sqrMagnitude < 0.01f;
+
+        _blockedTimer = wantsToMove && notMoving ? _blockedTimer + dt : 0f;
+        if (_blockedTimer < BlockedTimeToEscape) return;
+
+        _blockedTimer = 0f;
+        _agent.obstacleAvoidanceType = ObstacleAvoidanceType.NoObstacleAvoidance;
+        _avoidanceOffUntil = Time.time + EscapeDuration;
+    }
+
     private void MoveTo(Vector3 dest)
     {
         if (!_agent.enabled || !_agent.isOnNavMesh) return;
@@ -461,7 +513,43 @@ public class SummonUnit : MonoBehaviour, IDamageable
         _attackCooldown  = Mathf.Max(0.1f, attackInterval);
         _pendingHitTimer = Mathf.Max(0f, damageDelay);
         if (_anim != null && _attackHash != NoHash) _anim.SetTrigger(_attackHash);
-        if (!string.IsNullOrEmpty(attackSfxKey)) AudioManager.instance?.PlaySFX(attackSfxKey);
+        PlayAttackSfx();
+    }
+
+    // 공격 효과음 — 지연·반복 재생은 코루틴으로 예약해 두고, 기절·사망 때 StopAttackSfx로 취소
+    private readonly List<Coroutine> _attackSfxRoutines = new List<Coroutine>();
+
+    private void PlayAttackSfx()
+    {
+        _attackSfxRoutines.Clear(); // 이전 공격에서 이미 끝난 코루틴 참조는 버림
+        if (attackSfx == null) return;
+
+        foreach (var entry in attackSfx)
+        {
+            if (entry == null || string.IsNullOrEmpty(entry.sfxKey)) continue;
+
+            if (entry.delay <= 0f && entry.PlayCount == 1)
+                AudioManager.instance?.PlaySFX(entry.sfxKey);
+            else
+                _attackSfxRoutines.Add(StartCoroutine(DelayedSfx(entry.sfxKey, entry.delay, entry.PlayCount, entry.repeatInterval)));
+        }
+    }
+
+    private void StopAttackSfx()
+    {
+        foreach (var r in _attackSfxRoutines)
+            if (r != null) StopCoroutine(r);
+        _attackSfxRoutines.Clear();
+    }
+
+    private static System.Collections.IEnumerator DelayedSfx(string key, float delay, int count, float interval)
+    {
+        if (delay > 0f) yield return new WaitForSeconds(delay);
+        for (int i = 0; i < count; i++)
+        {
+            if (i > 0 && interval > 0f) yield return new WaitForSeconds(interval);
+            AudioManager.instance?.PlaySFX(key);
+        }
     }
 
     private void DealHit()
@@ -637,18 +725,20 @@ public class SummonUnit : MonoBehaviour, IDamageable
     private void BeginStun()
     {
         _pendingHitTimer = -1f; // 하던 공격(타격 대기)은 취소
+        StopAttackSfx();
         StopMoving();
         if (_anim != null)
         {
-            if (_walkHash != NoHash) _anim.SetBool(_walkHash, false);
-            if (_stunHash != NoHash) _anim.SetBool(_stunHash, true);
+            if (_walkHash   != NoHash) _anim.SetBool(_walkHash, false);
+            if (_attackHash != NoHash) _anim.ResetTrigger(_attackHash);
         }
+        SetAnimFlag(_stunHash, _stunParamType, true);
     }
 
     private void EndStun()
     {
         _stunTimer = 0f;
-        if (_anim != null && _stunHash != NoHash) _anim.SetBool(_stunHash, false);
+        SetAnimFlag(_stunHash, _stunParamType, false);
     }
 
     private void UpdateBuffs(float dt)
