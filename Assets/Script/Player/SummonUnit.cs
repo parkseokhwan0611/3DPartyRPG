@@ -47,6 +47,8 @@ public class SummonUnit : MonoBehaviour, IDamageable
     public float leashDistance  = 20f;
     [Tooltip("싸울 대상이 없을 때 주인에게서 이 거리 이상 떨어지면 따라감")]
     public float followDistance = 2.5f;
+    [Tooltip("이동 방향으로 도는 속도 — 파티원(PartyMemberScript.rotationSpeed)과 같은 기본값")]
+    public float rotationSpeed  = 8f;
 
     [Header("애니메이터 파라미터 (컨트롤러에 없으면 무시)")]
     public string walkBool      = "isWalking";
@@ -58,14 +60,16 @@ public class SummonUnit : MonoBehaviour, IDamageable
 
     [Header("사망 연출")]
     [Tooltip("사망 모션 시작부터 오브젝트가 사라질 때까지의 시간 (초) — 사망 모션 길이에 맞출 것. 0이면 모션 없이 즉시 사라짐. " +
-             "체력 0·지속시간 종료·주인 사망·재소환 교체·클래스 변경 모두 사망 모션 → 디스폰 이펙트 순서로 사라진다")]
+             "체력 0·지속시간 종료·주인 사망·재소환 교체·클래스 변경 모두 사망 모션(+디스폰 이펙트·효과음) 뒤에 사라진다")]
     public float deathDuration  = 1.5f;
 
     [Header("연출")]
     [Tooltip("소환될 때 스폰할 이펙트 풀 키")]
     public string spawnEffectPoolKey;
-    [Tooltip("사라질 때(사망·시간 종료) 스폰할 이펙트 풀 키")]
+    [Tooltip("사라질 때(사망·시간 종료 등) 스폰할 이펙트 풀 키 — 사망 모션이 시작되는 순간 소환수 발밑에 스폰")]
     public string despawnEffectPoolKey;
+    [Tooltip("사라질 때 효과음 — 사망 모션이 시작되는 순간 기준으로 Delay 뒤 재생 (0이면 이펙트와 동시). 반복 재생도 가능")]
+    public List<SkillSfxEntry> despawnSfx = new List<SkillSfxEntry>();
     [Tooltip("피격 데미지 텍스트 풀 키")]
     public string damageTextPoolKey = "PlayerDamageText";
     [Tooltip("피격·회복 텍스트 위치 (비우면 머리 위 2m)")]
@@ -157,6 +161,10 @@ public class SummonUnit : MonoBehaviour, IDamageable
         _baseSpeed = _agent.speed;
         _defaultAvoidance = _agent.obstacleAvoidanceType;
 
+        // 회전은 파티원처럼 직접 — 에이전트 기본 회전(초당 120도)은 방향 전환이 굼뜨다
+        _agent.updateRotation = false;
+        _agent.angularSpeed   = 1000f;
+
         _walkHash   = FindParam(walkBool,      AnimatorControllerParameterType.Bool);
         _attackHash = FindParam(attackTrigger, AnimatorControllerParameterType.Trigger);
         _stunHash   = FindBoolOrTrigger(stunBool,   out _stunParamType);
@@ -225,19 +233,21 @@ public class SummonUnit : MonoBehaviour, IDamageable
         OnHpChanged?.Invoke(Hp, MaxHp);
     }
 
-    // 시간 종료·주인 사망·재소환 교체·클래스 변경 — 체력 0일 때와 똑같이 사망 모션 후 디스폰 이펙트와 함께 사라짐
+    // 시간 종료·주인 사망·재소환 교체·클래스 변경 — 체력 0일 때와 똑같이 사망 모션 후 사라짐
     public void Despawn() => Die();
 
-    // 사망 모션을 재생한 뒤 디스폰 이펙트와 함께 사라진다. 그 사이엔 이미 죽은 상태(IsAlive=false)라
+    // 사망 모션과 함께 디스폰 이펙트·효과음을 내고, Death Duration 뒤 사라진다. 그 사이엔 이미 죽은 상태(IsAlive=false)라
     // 대상 선정·버프·힐·도발·재소환 판단에서 빠지고, 콜라이더를 꺼서 공격·투사체도 통과한다
     private void Die()
     {
         if (_dead) return;
         _dead = true;
+        // 이펙트와 효과음은 사망 모션이 시작되는 순간에 (사라지는 순간이 아니라)
+        PlayDespawnSfx();
+        SpawnFx(despawnEffectPoolKey, transform.position);
 
         if (deathDuration <= 0f)
         {
-            SpawnFx(despawnEffectPoolKey, transform.position);
             Destroy(gameObject);
             return;
         }
@@ -270,7 +280,6 @@ public class SummonUnit : MonoBehaviour, IDamageable
     private System.Collections.IEnumerator DestroyAfterDeath()
     {
         yield return new WaitForSeconds(deathDuration);
-        SpawnFx(despawnEffectPoolKey, transform.position);
         Destroy(gameObject);
     }
 
@@ -328,7 +337,20 @@ public class SummonUnit : MonoBehaviour, IDamageable
         if (_target != null) CombatMove(dt);
         else                 FollowOwner();
 
+        FaceMovementDirection();
         UpdateWalkAnim();
+    }
+
+    // 이동 중이면 진행 방향을 바라본다 (파티원 PartyMemberScript와 같은 방식).
+    // 사거리 안에서 멈춰 있을 땐 desiredVelocity가 0이라 FaceTarget 회전과 겹치지 않음
+    private void FaceMovementDirection()
+    {
+        if (!_agent.enabled) return;
+        Vector3 moveDir = _agent.desiredVelocity;
+        moveDir.y = 0f;
+        if (moveDir.sqrMagnitude < 0.01f) return;
+
+        transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(moveDir.normalized), Time.deltaTime * rotationSpeed);
     }
 
     // ─────────────────────────────────────────────────────────────────
@@ -540,6 +562,23 @@ public class SummonUnit : MonoBehaviour, IDamageable
         foreach (var r in _attackSfxRoutines)
             if (r != null) StopCoroutine(r);
         _attackSfxRoutines.Clear();
+    }
+
+    // 사라질 때 효과음 — 지연 재생은 AudioManager에서 돌린다. 소환수 오브젝트는 Death Duration 뒤 파괴되므로
+    // 여기서 돌리면 그보다 긴 Delay의 소리가 잘린다 (공격 소리와 달리 취소할 일도 없음)
+    private void PlayDespawnSfx()
+    {
+        if (despawnSfx == null || AudioManager.instance == null) return;
+
+        foreach (var entry in despawnSfx)
+        {
+            if (entry == null || string.IsNullOrEmpty(entry.sfxKey)) continue;
+
+            if (entry.delay <= 0f && entry.PlayCount == 1)
+                AudioManager.instance.PlaySFX(entry.sfxKey);
+            else
+                AudioManager.instance.StartCoroutine(DelayedSfx(entry.sfxKey, entry.delay, entry.PlayCount, entry.repeatInterval));
+        }
     }
 
     private static System.Collections.IEnumerator DelayedSfx(string key, float delay, int count, float interval)

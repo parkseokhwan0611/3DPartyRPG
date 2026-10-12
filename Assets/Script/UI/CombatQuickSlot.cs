@@ -11,6 +11,8 @@ public class CombatQuickSlot : MonoBehaviour, IPointerEnterHandler, IPointerExit
     public TextMeshProUGUI keyText;          // Q/W/E/R 텍스트
     public TextMeshProUGUI cooldownText;     // 쿨다운 남은 시간
     public Image buffDurationBar;            // 버프 지속시간 바
+    [Tooltip("스킬을 지금 쓸 수 없을 때(쿨타임·마나 부족) 아이콘에 곱할 색 — 어둡게")]
+    public Color unusableTint = new Color(0.35f, 0.35f, 0.35f, 1f);
 
     // 호버 디테일 팝업용 — 스킬/물약 중 등록된 쪽만 채워짐
     private SkillBase    _skill;
@@ -88,6 +90,18 @@ public class CombatQuickSlot : MonoBehaviour, IPointerEnterHandler, IPointerExit
             buffDurationBar.gameObject.SetActive(buffRemainingRatio > 0f);
             buffDurationBar.fillAmount = buffRemainingRatio;
         }
+
+        UpdateUsableTint();
+    }
+
+    // 스킬 슬롯만 — 쿨타임이거나 마나가 부족하면 아이콘을 어둡게 (빈 슬롯·물약 슬롯은 건드리지 않음)
+    private void UpdateUsableTint()
+    {
+        if (iconImage == null || _skill?.skillData == null || iconImage.sprite == null) return;
+
+        bool usable = _skill.IsReady && _skill.HasEnoughMp;
+        Color target = usable ? Color.white : unusableTint;
+        if (iconImage.color != target) iconImage.color = target;
     }
 
     // 1 이상: 정수, 1 미만: 소수점 한 자리

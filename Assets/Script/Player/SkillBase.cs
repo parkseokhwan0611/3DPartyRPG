@@ -38,6 +38,23 @@ public abstract class SkillBase : MonoBehaviour
 
     public void SetCooldown(float remaining) => cooldownTimer = remaining;
 
+    // 지금 레벨 기준 마나 소모량 — skillLevel은 스킬을 실제로 쓸 때만 동기화되므로(SkillManager.SyncSkillLevel)
+    // UI 표시용으로는 캐릭터의 실시간 스킬 레벨을 우선 사용. 패시브는 0
+    public float CurrentMpCost
+    {
+        get
+        {
+            if (skillData == null || skillData.skillType == SkillData.SkillType.Passive) return 0f;
+            int level = myStat != null ? Mathf.Max(1, myStat.GetSkillLevel(skillData)) : skillLevel;
+            var arr = skillData.mpCost;
+            if (arr == null || arr.Length == 0) return 0f;
+            return arr[Mathf.Clamp(level - 1, 0, arr.Length - 1)];
+        }
+    }
+
+    // 마나가 충분한지 (UI 표시용 — 실제 사용 판정은 TryUseSkill의 TryUseMp)
+    public bool HasEnoughMp => myStat == null || myStat.Mp >= CurrentMpCost;
+
     // 지금 시전 조건을 만족하는지 (예: 소환수 도발은 소환수가 있어야 함). false면 마나·쿨타임을 쓰지 않고 거절
     public virtual bool CanUseNow => true;
 

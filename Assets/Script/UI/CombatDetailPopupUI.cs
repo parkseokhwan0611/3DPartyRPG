@@ -21,6 +21,10 @@ public class CombatDetailPopupUI : MonoBehaviour
     [SerializeField] TextMeshProUGUI  statsText;
     [Tooltip("statsText가 들어있는 스크롤뷰 — 다른 슬롯 호버 시 맨 위로 리셋됨")]
     [SerializeField] ScrollRect       statsScroll;
+    [Tooltip("쓸 수 없는 스킬·물약 키를 눌렀을 때 이유를 알려주는 텍스트 (재사용 대기·마나 부족). 팝업 패널 밖에 둬도 됨")]
+    [SerializeField] TextMeshProUGUI  skillStateText;
+    [Tooltip("스킬 상태 텍스트 표시 시간 (초). 이 시간이 지나면 조건이 그대로여도 사라짐 (그 전에 조건이 풀리면 바로 사라짐)")]
+    [SerializeField] float skillStateDuration = 3f;
 
     [Header("배치")]
     [Tooltip("팝업 아랫변 중앙을 호버한 슬롯 윗변 중앙에 붙인 뒤 더할 오프셋 (y = 슬롯과의 간격).\n" +
@@ -35,10 +39,33 @@ public class CombatDetailPopupUI : MonoBehaviour
 
     private Coroutine _hideRoutine;
 
+    // 스킬 상태 알림 — 쓸 수 없는 스킬 키를 누른 순간 표시, 시간이 지나거나 그 이유가 풀리면 지움
+    private enum SkillBlockReason { None, Cooldown, Mana, PotionCooldown }
+    private SkillBase        _stateSkill;
+    private ConsumableType   _statePotion;
+    private SkillBlockReason _stateReason;
+    private float            _stateHideTime;
+
+    void Update()
+    {
+        if (_stateReason == SkillBlockReason.None) return;
+
+        bool resolved = _stateReason switch
+        {
+            SkillBlockReason.Cooldown       => _stateSkill == null || _stateSkill.IsReady,
+            SkillBlockReason.Mana           => _stateSkill == null || _stateSkill.HasEnoughMp,
+            SkillBlockReason.PotionCooldown => PotionQuickSlotManager.instance == null
+                                            || PotionQuickSlotManager.instance.GetCooldownRemaining(_statePotion) <= 0f,
+            _                               => true,
+        };
+        if (resolved || Time.time >= _stateHideTime) ClearSkillState();
+    }
+
     void Awake()
     {
         if (instance != null && instance != this) { Destroy(gameObject); return; }
         instance = this;
+        if (skillStateText != null) skillStateText.text = ""; // 에디터 기본 글자("New Text")가 보이지 않게
         Hide();
     }
 
@@ -83,6 +110,47 @@ public class CombatDetailPopupUI : MonoBehaviour
         Reposition(anchor);
         panel.gameObject.SetActive(true);
         IsOpen = true;
+    }
+
+    // ─────────────────────────────────────────────────────────────────
+    // 스킬 상태 알림 (SkillManager가 리더의 스킬 키 입력 시 호출)
+    // ─────────────────────────────────────────────────────────────────
+
+    // 지금 쓸 수 없는 스킬이면 이유를 띄우고 true. 쿨타임이 우선 (둘 다면 쿨타임만).
+    // 누를 때마다 표시 시간을 처음부터 다시 잰다
+    public bool NotifyIfUnusable(SkillBase skill)
+    {
+        if (skill?.skillData == null || skill.skillData.skillType == SkillData.SkillType.Passive) return false;
+
+        SkillBlockReason reason = !skill.IsReady     ? SkillBlockReason.Cooldown
+                                : !skill.HasEnoughMp ? SkillBlockReason.Mana
+                                :                      SkillBlockReason.None;
+        if (reason == SkillBlockReason.None) return false;
+
+        _stateSkill = skill;
+        ShowState(reason, reason == SkillBlockReason.Cooldown ? "스킬이 재사용 대기 중입니다." : "마나가 부족합니다.");
+        return true;
+    }
+
+    // 물약 키를 눌렀는데 재사용 대기 중일 때 (PotionQuickSlotManager가 호출)
+    public void NotifyPotionCooldown(ConsumableType type)
+    {
+        _statePotion = type;
+        ShowState(SkillBlockReason.PotionCooldown, "물약이 재사용 대기 중입니다.");
+    }
+
+    private void ShowState(SkillBlockReason reason, string message)
+    {
+        _stateReason   = reason;
+        _stateHideTime = Time.time + skillStateDuration;
+        if (skillStateText != null) skillStateText.text = message;
+    }
+
+    private void ClearSkillState()
+    {
+        _stateSkill  = null;
+        _stateReason = SkillBlockReason.None;
+        if (skillStateText != null) skillStateText.text = "";
     }
 
     // ─────────────────────────────────────────────────────────────────

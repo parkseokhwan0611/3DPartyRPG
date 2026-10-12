@@ -213,7 +213,11 @@ public class PotionQuickSlotManager : MonoBehaviour
         ItemInstance slot = GetSlot(type);
         if (slot?.data is not ConsumableData cd) return;
         if (slot.stackCount <= 0) return; // 재고 소진 — 등록은 유지하되(쿨다운 표시용) 사용은 불가
-        if (GetCooldownRemaining(type) > 0f) return;
+        if (GetCooldownRemaining(type) > 0f)
+        {
+            CombatDetailPopupUI.instance?.NotifyPotionCooldown(type);
+            return;
+        }
 
         if (PartyManager.instance == null || PartyManager.instance.partyMembers.Count == 0) return;
 
