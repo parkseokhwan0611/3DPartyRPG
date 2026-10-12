@@ -82265,7 +82265,7 @@ Animator:
   m_GameObject: {fileID: 208789291}
   m_Enabled: 1
   m_Avatar: {fileID: 9000000, guid: 1ddbe2b1b3fb00a4a85772da9bde4af9, type: 3}
-  m_Controller: {fileID: 9100000, guid: f04df896986652a4db6dc4260b199eba, type: 2}
+  m_Controller: {fileID: 9100000, guid: ed4be2056f5bf0a4d8aeef147a5af7fc, type: 2}
   m_CullingMode: 1
   m_UpdateMode: 0
   m_ApplyRootMotion: 1
@@ -641593,6 +641593,12 @@ MonoBehaviour:
   - name: Gunslinger_Main2
     clip: {fileID: 8300000, guid: 5aeda51a02081ea49978e78834997c88, type: 3}
     volumeMultiplier: 0.8
+  - name: Summoner_Main1
+    clip: {fileID: 8300000, guid: a0251b1dc027d41478a89786e10db6df, type: 3}
+    volumeMultiplier: 1
+  - name: Summoner_Main2
+    clip: {fileID: 8300000, guid: 2a2f164472089b545a04d8b47030d9bc, type: 3}
+    volumeMultiplier: 0.5
   sfxVolume: 0.5
   sfxSourceCount: 8
   sceneBgmMap:
