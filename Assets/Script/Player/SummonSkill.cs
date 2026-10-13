@@ -148,14 +148,11 @@ public class SummonSkill : SkillBase
 
     private void DoTaunt(SummonSkillData data)
     {
-        float aggro = data.GetTauntAggro(skillLevel);
+        float aggro    = data.GetTauntAggro(skillLevel);
+        float duration = data.GetTauntDuration(skillLevel);
 
-        // 도발 데미지 — 시전자 공격력 × 비율 × (1 + 물리/마법 데미지 증가). 치명타는 몬스터마다 굴림
-        float baseDamage = 0f;
-        float ratio = data.GetTauntDamageRatio(skillLevel);
-        if (ratio > 0f && myStat != null)
-            baseDamage = (data.useAp ? myStat.TotalAp : myStat.TotalAtk) * ratio
-                       * (1f + (data.useAp ? myStat.MagicDmgBonus : myStat.PhysDmgBonus));
+        // 도발 데미지 — (공격력 + 스탯 비례) × 비율 × (1 + 물리/마법 데미지 증가). 치명타는 몬스터마다 굴림
+        float baseDamage = data.GetTauntRawDamage(skillLevel, myStat);
 
         _tauntHit.Clear();
         bool anyCrit = false;
@@ -168,7 +165,8 @@ public class SummonSkill : SkillBase
             for (int i = 0; i < hitCount; i++)
             {
                 var monster = _hitBuffer[i].GetComponentInParent<BasicMonsterScript>();
-                if (monster != null && aggro > 0f) monster.AddAggro(s.transform, aggro);
+                // 도발 범위 안 몬스터는 공격 중이라도 거리와 상관없이 바로 소환수를 노린다
+                if (monster != null && aggro > 0f) monster.Taunt(s.transform, aggro, duration);
 
                 // 소환수 여럿의 범위가 겹쳐도 몬스터당 데미지는 한 번만
                 if (baseDamage <= 0f) continue;

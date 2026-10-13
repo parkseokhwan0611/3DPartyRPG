@@ -641,19 +641,39 @@ public static class SkillDescriptionBuilder
         if (s.action == SummonSkillData.SummonAction.Taunt)
         {
             string kindName = s.tauntKind == SummonUnit.Kind.Melee ? "근접" : "원거리";
-            sb.AppendLine($"[도발] {kindName} 소환수 주변 {s.tauntRadius:0.#}m 몬스터의 공격 대상을 소환수로 끌어옴");
-            sb.AppendLine($"어그로 +{s.GetTauntAggro(level):F0}");
+            sb.AppendLine($"[도발] {kindName} 소환수 주변 {s.tauntRadius:0.#}m 내의 몬스터 도발");
+            sb.AppendLine($"도발 시간: {s.GetTauntDuration(level):0.#}초");
             float ratio = s.GetTauntDamageRatio(level);
             if (ratio > 0f)
             {
-                string statName = s.useAp ? "마법 공격력" : "물리 공격력";
+                // 데미지 스킬 설명과 같은 형식 — (공격력 + 스탯×계수) × 비율 [× (1 + 데미지 증가)] = 최종
+                string baseLabel = s.useAp ? "마법 공격력" : "물리 공격력";
+                var expr = new StringBuilder();
                 if (caster != null)
                 {
-                    float atkBase = s.useAp ? caster.TotalAp : caster.TotalAtk;
-                    sb.AppendLine($"데미지: {statName}({atkBase:F0}) × {ratio * 100f:0.#}% = {atkBase * ratio:F0} (범위 안 몬스터마다)");
+                    expr.Append($"({baseLabel}({(s.useAp ? caster.TotalAp : caster.TotalAtk):F0})");
+                    foreach (var sc in s.tauntStatScalings)
+                    {
+                        if (sc == null || sc.stat == DamageSkillData.ScalingStat.None) continue;
+                        expr.Append($" + {StatName(sc.stat)}({GetStatValue(caster, sc.stat):F0})×{sc.GetScaling(level) * 100f:F0}%");
+                    }
+                    expr.Append($") × {ratio * 100f:0.#}%");
+                    float dmgBonus = s.useAp ? caster.MagicDmgBonus : caster.PhysDmgBonus;
+                    if (dmgBonus != 0f)
+                        expr.Append($" × (1 + {(s.useAp ? "마법" : "물리")} 데미지 증가 {dmgBonus * 100f:0.#}%)");
+                    sb.AppendLine($"데미지: {expr} = {s.GetTauntRawDamage(level, caster):F0}");
                 }
                 else
-                    sb.AppendLine($"데미지: {statName} × {ratio * 100f:0.#}% (범위 안 몬스터마다)");
+                {
+                    expr.Append($"({baseLabel}");
+                    foreach (var sc in s.tauntStatScalings)
+                    {
+                        if (sc == null || sc.stat == DamageSkillData.ScalingStat.None) continue;
+                        expr.Append($" + {StatName(sc.stat)}×{sc.GetScaling(level) * 100f:F0}%");
+                    }
+                    expr.Append($") × {ratio * 100f:0.#}%");
+                    sb.AppendLine($"데미지: {expr}");
+                }
             }
             sb.Append($"{kindName} 소환수가 1기 이상 있어야 사용 가능");
             return sb.ToString();

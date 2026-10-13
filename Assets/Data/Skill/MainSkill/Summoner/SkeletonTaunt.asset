@@ -1,0 +1,72 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d46f198ef63a9594e863be242732c79f, type: 3}
+  m_Name: SkeletonTaunt
+  m_EditorClassIdentifier: 
+  skillId: SkeletonTaunt
+  skillName: "\uB9DD\uC790\uC758 \uC678\uCE68"
+  description: "\uADFC\uC811 \uC18C\uD658\uC218\uAC00 \uC8FC\uBCC0\uC758 \uC801\uC744
+    \uB3C4\uBC1C\uD558\uACE0 \uD53C\uD574\uB97C \uC785\uD799\uB2C8\uB2E4."
+  icon: {fileID: 21300000, guid: 82d30a118bb70e345b05cc8237672b05, type: 3}
+  requiredClass: 5
+  skillType: 5
+  skillCategory: 0
+  sfxEntries:
+  - sfxKey: 
+    delay: 0
+    repeatCount: 0
+    repeatInterval: 0
+  skillPriority: 2
+  maxLevel: 5
+  requiredCharLevel: 20
+  mpCost:
+  - 30
+  - 30
+  - 30
+  - 30
+  - 30
+  cooldown:
+  - 15
+  - 15
+  - 15
+  - 15
+  - 15
+  skillPointCost: 0200000002000000020000000300000003000000
+  action: 1
+  summonPrefab: {fileID: 0}
+  summonCountByLevel: 00000000
+  baseDuration: 0
+  durationPerLevel: 0
+  baseHpRatio: 0
+  hpRatioPerLevel: 0
+  baseAtkRatio: 0
+  atkRatioPerLevel: 0
+  useAp: 1
+  baseDefRatio: 1
+  defRatioPerLevel: 0
+  tauntKind: 0
+  tauntRadius: 3
+  baseTauntAggro: 100
+  tauntAggroPerLevel: 0
+  baseTauntDamageRatio: 2
+  tauntDamageRatioPerLevel: 0.5
+  tauntStatScalings:
+  - stat: 4
+    coeff: 1
+    coeffPerLevel: 0.1
+  tauntEffectPoolKey: SkeletonTaunt
+  animTriggerName: doSummon
+  animDuration: 1
+  effectSpawnDelay: 0.3
+  effectPoolKey: 
+  effectSpawnOffset: {x: 0, y: 0, z: 0}
+  effectSpawnRotation: {x: 0, y: 0, z: 0}

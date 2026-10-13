@@ -48,6 +48,14 @@ public class BasicMonsterScript : MonoBehaviour
     // DecayAggro()가 매 프레임 새 List를 할당하지 않도록 재사용하는 스크래치 버퍼
     private readonly List<Transform> _aggroKeysScratch = new List<Transform>();
     private Transform aggroTarget = null;
+    // 소환수 도발(SummonSkill Taunt)을 건 대상 → 도발이 끝나는 시각. 어그로 1순위가 이 중 하나면 거리와 상관없이
+    // 바로 노리고(소환수 여럿이 같은 몬스터를 도발해도 어느 쪽이 1순위가 되든 적용), 시간이 끝나면 그 어그로를 지운다
+    private readonly Dictionary<Transform, float> _tauntUntil = new Dictionary<Transform, float>();
+    private readonly List<Transform> _tauntKeysScratch = new List<Transform>();
+    private bool _forceRetarget; // 도발이 끝난 직후 — 거리 비교 없이 새 대상으로 바꾸게
+    // 도발을 한 번 받은 뒤로는 소환수도 "가장 가까운 대상" 후보에 넣는다 (전투가 끝나면 = 대상이 없어지면 해제).
+    // 평소엔 파티원만 노리고 소환수는 도발로만 노림
+    private bool _includeSummonsInNearest;
 
     // ─────────────────────────────────────────────────────────────────
     // Unity 생명주기
@@ -103,6 +111,7 @@ public class BasicMonsterScript : MonoBehaviour
             animator.SetBool("isWalking", navAgent.velocity.sqrMagnitude > 0.01f);
 
         DecayAggro();
+        UpdateTauntExpiry();
 
         targetingTimer += Time.deltaTime;
         if (targetingTimer >= TargetingInterval)
@@ -175,6 +184,38 @@ public class BasicMonsterScript : MonoBehaviour
         RefreshAggroTarget();
     }
 
+    // 도발 — 어그로를 더하고, 공격 중(첫 공격 전 추격 포함)이라도 "더 가까울 때만 교체" 규칙을 건너뛰고 바로 노리게 한다.
+    // 다음 프레임에 대상 선정을 다시 돌려 즉시 반영 (지금 공격 모션 중이면 그 모션이 끝난 뒤 교체 — SetTargetImmediate).
+    // duration초 뒤 도발로 준 어그로를 지우고 원래 대상으로 돌아간다 (다시 도발하면 시간 갱신)
+    public void Taunt(Transform target, float amount, float duration)
+    {
+        if (target == null) return;
+        AddAggro(target, amount);
+        _tauntUntil[target] = Time.time + Mathf.Max(0.1f, duration);
+        targetingTimer = TargetingInterval;
+    }
+
+    private void UpdateTauntExpiry()
+    {
+        if (_tauntUntil.Count == 0) return;
+
+        _tauntKeysScratch.Clear();
+        foreach (var kv in _tauntUntil)
+            if (kv.Key == null || Time.time >= kv.Value) _tauntKeysScratch.Add(kv.Key);
+        if (_tauntKeysScratch.Count == 0) return;
+
+        foreach (var key in _tauntKeysScratch)
+        {
+            _tauntUntil.Remove(key);
+            if (key != null) aggroTable.Remove(key);
+            if (key == attackModule.currentTarget) _forceRetarget = true;
+        }
+        // 도발이 끝나면: 남은 어그로(탱커 도발 등)가 있으면 그쪽, 없으면 소환수 포함 가장 가까운 대상
+        _includeSummonsInNearest = true;
+        RefreshAggroTarget();
+        targetingTimer = TargetingInterval; // 바로 다음 대상 판단
+    }
+
     private void RefreshAggroTarget()
     {
         float maxAggro      = aggroThreshold;
@@ -212,7 +253,10 @@ public class BasicMonsterScript : MonoBehaviour
         {
             aggroTable[key] -= aggroDecayRate * Time.deltaTime;
             if (aggroTable[key] <= 0f)
+            {
                 aggroTable.Remove(key);
+                _tauntUntil.Remove(key); // 도발 효과도 어그로와 함께 끝
+            }
         }
 
         RefreshAggroTarget();
@@ -238,15 +282,20 @@ public class BasicMonsterScript : MonoBehaviour
             return;
         }
 
-        Transform target = aggroTarget != null ? aggroTarget : GetNearestPartyMember();
+        Transform target = aggroTarget != null ? aggroTarget : GetNearestTarget(_includeSummonsInNearest);
 
         if (target == null)
         {
             attackModule.SetTargetImmediate(null);
+            _includeSummonsInNearest = false; // 전투 종료
             return;
         }
 
         float distToTarget = Vector3.Distance(transform.position, target.position);
+
+        // 도발 종료 후 한 번만 쓰는 강제 교체 플래그 — 이번 판단에서 소비
+        bool forceRetarget = _forceRetarget;
+        _forceRetarget = false;
 
         if (distToTarget <= chaseDistance)
         {
@@ -272,7 +321,9 @@ public class BasicMonsterScript : MonoBehaviour
                     ? Vector3.Distance(transform.position, attackModule.currentTarget.position)
                     : Mathf.Infinity;
 
-                if (distToTarget < currentTargetDist - targetSwitchThreshold)
+                // 도발한 소환수는 거리 비교 없이 바로 교체 — 도발이 끝난 직후에도 원래 대상으로 바로 돌아감
+                bool taunted = _tauntUntil.ContainsKey(target);
+                if (taunted || forceRetarget || distToTarget < currentTargetDist - targetSwitchThreshold)
                 {
                     attackModule.SetTargetImmediate(target);
                     navAgent.speed = navSpeed; // isStopped는 SetTargetImmediate가 담당 (위와 동일 이유)
@@ -286,10 +337,28 @@ public class BasicMonsterScript : MonoBehaviour
             if (aggroTarget == target)
             {
                 aggroTable.Remove(target);
+                _tauntUntil.Remove(target);
                 RefreshAggroTarget();
             }
             attackModule.SetTargetImmediate(null);
+            _includeSummonsInNearest = false; // 추격 범위 밖 = 전투 종료
         }
+    }
+
+    // 가장 가까운 대상 — 기본은 살아 있는 파티원, includeSummons면 살아 있는 소환수도 후보
+    Transform GetNearestTarget(bool includeSummons)
+    {
+        Transform closest = GetNearestPartyMember();
+        if (!includeSummons) return closest;
+
+        float minSqr = closest != null ? (closest.position - transform.position).sqrMagnitude : Mathf.Infinity;
+        foreach (var s in SummonUnit.All)
+        {
+            if (s == null || !s.IsAlive) continue;
+            float sqr = (s.transform.position - transform.position).sqrMagnitude;
+            if (sqr < minSqr) { minSqr = sqr; closest = s.transform; }
+        }
+        return closest;
     }
 
     Transform GetNearestPartyMember()
@@ -347,7 +416,10 @@ public class BasicMonsterScript : MonoBehaviour
         attackModule?.SetTargetImmediate(null);
         isAttacking = false;
         aggroTable.Clear();
-        aggroTarget = null;
+        aggroTarget  = null;
+        _tauntUntil.Clear();
+        _forceRetarget = false;
+        _includeSummonsInNearest = false;
 
         if (navAgent.enabled)
         {

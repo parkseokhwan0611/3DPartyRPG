@@ -545524,6 +545524,10 @@ MonoBehaviour:
     perfab: {fileID: 3808964353962585286, guid: 5b6f930c358690a4bba28460218058eb,
       type: 3}
     count: 1
+  - objectName: SkeletonTaunt
+    perfab: {fileID: 5993686850658209635, guid: 4e159ff4ba8b98143b76ca99cbd70d75,
+      type: 3}
+    count: 2
 --- !u!4 &1470750948
 Transform:
   m_ObjectHideFlags: 0
@@ -641767,6 +641771,9 @@ MonoBehaviour:
   - name: Summoner_NormalAtk
     clip: {fileID: 8300000, guid: 7babbe78f2a5144428d968893be867ab, type: 3}
     volumeMultiplier: 0.5
+  - name: Summoner_Main3
+    clip: {fileID: 8300000, guid: de8a6cc4d7ef7914b910448d67af9efb, type: 3}
+    volumeMultiplier: 0.7
   sfxVolume: 0.5
   sfxSourceCount: 8
   sceneBgmMap:
