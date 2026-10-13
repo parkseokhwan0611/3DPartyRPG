@@ -94,12 +94,12 @@ public class CombatQuickSlot : MonoBehaviour, IPointerEnterHandler, IPointerExit
         UpdateUsableTint();
     }
 
-    // 스킬 슬롯만 — 쿨타임이거나 마나가 부족하면 아이콘을 어둡게 (빈 슬롯·물약 슬롯은 건드리지 않음)
+    // 스킬 슬롯만 — 쿨타임·마나 부족·사용 조건 미충족이면 아이콘을 어둡게 (빈 슬롯·물약 슬롯은 건드리지 않음)
     private void UpdateUsableTint()
     {
         if (iconImage == null || _skill?.skillData == null || iconImage.sprite == null) return;
 
-        bool usable = _skill.IsReady && _skill.HasEnoughMp;
+        bool usable = _skill.IsReady && _skill.HasEnoughMp && _skill.CanUseNow; // CanUseNow: 도발할 소환수가 없음 등
         Color target = usable ? Color.white : unusableTint;
         if (iconImage.color != target) iconImage.color = target;
     }

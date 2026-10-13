@@ -28,7 +28,7 @@ public class SummonSkillData : SkillData
     [Tooltip("소환수 공격력 = 시전자 마법 공격력(Use Ap 끄면 물리 공격력) × 이 값 (0.3 = 30%). 시전자 능력치가 바뀌면 바로 반영")]
     public float baseAtkRatio     = 0.3f;
     public float atkRatioPerLevel = 0f;
-    [Tooltip("켜면 마법 공격력 기준 마법 피해, 끄면 물리 공격력 기준 물리 피해")]
+    [Tooltip("켜면 마법 공격력 기준 마법 피해, 끄면 물리 공격력 기준 물리 피해 (소환수 공격력·도발 데미지 공통)")]
     public bool useAp = true;
     [Tooltip("소환수 방어력·마법 저항력 = 시전자 방어력·마법 저항력 × 이 값 (1 = 100%)")]
     public float baseDefRatio     = 1f;
@@ -42,6 +42,10 @@ public class SummonSkillData : SkillData
     [Tooltip("몬스터에게 더할 어그로 수치. 몬스터마다 초당 Aggro Decay Rate(기본 5)씩 줄어들어서 100이면 약 20초 유지")]
     public float baseTauntAggro     = 100f;
     public float tauntAggroPerLevel = 0f;
+    [Tooltip("도발 데미지 = 시전자 마법 공격력(Use Ap 끄면 물리 공격력) × 이 값 (0.5 = 50%). 0이면 데미지 없이 어그로만. " +
+             "도발 범위 안의 몬스터마다 한 번 (소환수가 여럿이라 범위가 겹쳐도 몬스터당 한 번만)")]
+    public float baseTauntDamageRatio     = 0f;
+    public float tauntDamageRatioPerLevel = 0f;
     [Tooltip("도발한 소환수 위치에 스폰할 이펙트 풀 키 (비우면 없음)")]
     public string tauntEffectPoolKey;
 
@@ -64,6 +68,7 @@ public class SummonSkillData : SkillData
     public float GetAtkRatio(int level)   => baseAtkRatio  + atkRatioPerLevel   * (level - 1);
     public float GetDefRatio(int level)   => baseDefRatio  + defRatioPerLevel   * (level - 1);
     public float GetTauntAggro(int level) => baseTauntAggro + tauntAggroPerLevel * (level - 1);
+    public float GetTauntDamageRatio(int level) => Mathf.Max(0f, baseTauntDamageRatio + tauntDamageRatioPerLevel * (level - 1));
 
     // SkillManager는 skillType으로 실행 컴포넌트를 고르므로, 이 SO는 항상 Summon 타입으로 고정
     private void OnValidate() => skillType = SkillType.Summon;

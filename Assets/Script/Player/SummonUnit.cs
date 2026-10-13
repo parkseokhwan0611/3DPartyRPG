@@ -97,6 +97,7 @@ public class SummonUnit : MonoBehaviour, IDamageable
     private NavMeshAgent _agent;
     private Animator     _anim;
     private AttackBase   _ownerAttack;
+    private NavMeshAgent _ownerAgent;
     private ShieldPool   _shield;
     private bool _dead;
 
@@ -214,6 +215,7 @@ public class SummonUnit : MonoBehaviour, IDamageable
         SourceSkill  = data;
         _spawnIndex  = spawnIndex;
         _ownerAttack = owner != null ? owner.GetComponent<AttackBase>() : null;
+        _ownerAgent  = owner != null ? owner.GetComponent<NavMeshAgent>() : null;
 
         _useAp    = data.useAp;
         _atkRatio = data.GetAtkRatio(level);
@@ -473,12 +475,25 @@ public class SummonUnit : MonoBehaviour, IDamageable
         return owner.position + owner.rotation * new Vector3(side * FollowSpacing, 0f, -FollowSpacing * (row + 1));
     }
 
-    // 싸울 대상이 없으면 주인 뒤쪽 좌우에 붙어 따라다닌다
+    // 싸울 대상이 없으면 주인 뒤쪽 좌우에 붙어 따라다닌다.
+    // 자리는 주인이 바라보는 방향 기준이라, 주인이 제자리에서 몸만 돌려도(공격하려고 돌아서는 등) 자리가 크게 돈다 —
+    // 주인이 서 있을 땐 자리 대신 주인과의 거리만 보고, 멀어졌을 때만 자리로 간다 (소환 직후 괜히 걸어가지 않게)
     private void FollowOwner()
     {
-        Vector3 spot = FollowSpot(Owner.transform, _spawnIndex);
+        Transform owner = Owner.transform;
+        Vector3 spot = FollowSpot(owner, _spawnIndex);
 
-        if ((transform.position - spot).sqrMagnitude > followDistance * followDistance) MoveTo(spot);
+        bool ownerMoving = _ownerAgent != null && _ownerAgent.enabled && _ownerAgent.velocity.sqrMagnitude > 0.04f;
+        bool needMove;
+        if (ownerMoving)
+            needMove = (transform.position - spot).sqrMagnitude > followDistance * followDistance;
+        else
+        {
+            float slack = (spot - owner.position).magnitude + followDistance; // 자리까지 거리 + 여유
+            needMove = (transform.position - owner.position).sqrMagnitude > slack * slack;
+        }
+
+        if (needMove) MoveTo(spot);
         else if (!_agent.pathPending && _agent.hasPath && _agent.remainingDistance < 0.3f) StopMoving();
     }
 

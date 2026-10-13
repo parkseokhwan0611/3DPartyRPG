@@ -42,6 +42,18 @@ public class SummonSkill : SkillBase
         }
     }
 
+    // 지금 못 쓰는 이유 (스킬 상태 텍스트용) — 도발할 소환수가 없을 때
+    public override string CannotUseMessage
+    {
+        get
+        {
+            var data = GetSummonData();
+            if (data != null && data.action == SummonSkillData.SummonAction.Taunt && !CanUseNow)
+                return "소환수가 존재하지 않습니다.";
+            return null;
+        }
+    }
+
     // 팔로워 자동 사용 판단 — 소환수가 이미 다 있고 시간이 넉넉하면 재소환하지 않고,
     // 도발은 소환수 주변에 몬스터가 있을 때만
     public override bool IsWorthAutoUsing
@@ -132,10 +144,21 @@ public class SummonSkill : SkillBase
     // 도발 — 지정 종류 소환수마다 주변 몬스터의 어그로를 그 소환수에게 몰아준다
     // ─────────────────────────────────────────────────────────────────
 
+    private readonly System.Collections.Generic.HashSet<EnemyHp> _tauntHit = new System.Collections.Generic.HashSet<EnemyHp>();
+
     private void DoTaunt(SummonSkillData data)
     {
         float aggro = data.GetTauntAggro(skillLevel);
-        if (aggro <= 0f) return;
+
+        // 도발 데미지 — 시전자 공격력 × 비율 × (1 + 물리/마법 데미지 증가). 치명타는 몬스터마다 굴림
+        float baseDamage = 0f;
+        float ratio = data.GetTauntDamageRatio(skillLevel);
+        if (ratio > 0f && myStat != null)
+            baseDamage = (data.useAp ? myStat.TotalAp : myStat.TotalAtk) * ratio
+                       * (1f + (data.useAp ? myStat.MagicDmgBonus : myStat.PhysDmgBonus));
+
+        _tauntHit.Clear();
+        bool anyCrit = false;
 
         foreach (var s in SummonUnit.All.ToArray())
         {
@@ -145,11 +168,25 @@ public class SummonSkill : SkillBase
             for (int i = 0; i < hitCount; i++)
             {
                 var monster = _hitBuffer[i].GetComponentInParent<BasicMonsterScript>();
-                if (monster != null) monster.AddAggro(s.transform, aggro);
+                if (monster != null && aggro > 0f) monster.AddAggro(s.transform, aggro);
+
+                // 소환수 여럿의 범위가 겹쳐도 몬스터당 데미지는 한 번만
+                if (baseDamage <= 0f) continue;
+                var enemyHp = _hitBuffer[i].GetComponentInParent<EnemyHp>();
+                if (enemyHp == null || enemyHp.isDead || !_tauntHit.Add(enemyHp)) continue;
+
+                bool  isCrit = Random.value < myStat.TotalCritRate;
+                float damage = isCrit ? baseDamage * myStat.TotalCritDamage : baseDamage;
+                if (data.useAp) enemyHp.TakeMagicDamage(damage, gameObject, isCrit);
+                else            enemyHp.TakeDamage(damage, gameObject, isCrit);
+                anyCrit |= isCrit;
             }
 
             SpawnEffectAt(data.tauntEffectPoolKey, s.transform.position);
         }
+
+        // 다른 스킬과 같이 치명타가 하나라도 있으면 한 번 흔든다
+        if (anyCrit) CinemachineShake.ShakeCrit();
     }
 
     // ─────────────────────────────────────────────────────────────────

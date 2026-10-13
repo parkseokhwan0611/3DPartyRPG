@@ -58,6 +58,9 @@ public abstract class SkillBase : MonoBehaviour
     // 지금 시전 조건을 만족하는지 (예: 소환수 도발은 소환수가 있어야 함). false면 마나·쿨타임을 쓰지 않고 거절
     public virtual bool CanUseNow => true;
 
+    // CanUseNow가 false일 때 스킬 상태 텍스트에 띄울 이유 (null이면 표시 안 함)
+    public virtual string CannotUseMessage => null;
+
     // 팔로워 자동 사용 시 지금 쓸 가치가 있는지 (예: 소환수가 멀쩡하면 재소환하지 않음)
     public virtual bool IsWorthAutoUsing => true;
 

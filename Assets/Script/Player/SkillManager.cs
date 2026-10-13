@@ -216,7 +216,7 @@ public class SkillManager : MonoBehaviour
         // 쿨타임·마나 부족이면 이유를 띄우고 여기서 끝 — 아래 후딜 캔슬까지 가면 못 쓰는 스킬 키를 눌렀을 뿐인데
         // 하던 스킬의 후딜이 끊긴다
         if (CombatDetailPopupUI.instance != null && CombatDetailPopupUI.instance.NotifyIfUnusable(skill)) return;
-        if (!skill.IsReady || !skill.HasEnoughMp) return;
+        if (!skill.IsReady || !skill.HasEnoughMp || !skill.CanUseNow) return;
 
         // 후딜 캔슬 — 현재 스킬 후딜 강제 종료 후 다음 스킬 실행
         if (currentSkill != null && !IsActivatingSkill)

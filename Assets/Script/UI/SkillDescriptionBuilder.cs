@@ -643,6 +643,18 @@ public static class SkillDescriptionBuilder
             string kindName = s.tauntKind == SummonUnit.Kind.Melee ? "근접" : "원거리";
             sb.AppendLine($"[도발] {kindName} 소환수 주변 {s.tauntRadius:0.#}m 몬스터의 공격 대상을 소환수로 끌어옴");
             sb.AppendLine($"어그로 +{s.GetTauntAggro(level):F0}");
+            float ratio = s.GetTauntDamageRatio(level);
+            if (ratio > 0f)
+            {
+                string statName = s.useAp ? "마법 공격력" : "물리 공격력";
+                if (caster != null)
+                {
+                    float atkBase = s.useAp ? caster.TotalAp : caster.TotalAtk;
+                    sb.AppendLine($"데미지: {statName}({atkBase:F0}) × {ratio * 100f:0.#}% = {atkBase * ratio:F0} (범위 안 몬스터마다)");
+                }
+                else
+                    sb.AppendLine($"데미지: {statName} × {ratio * 100f:0.#}% (범위 안 몬스터마다)");
+            }
             sb.Append($"{kindName} 소환수가 1기 이상 있어야 사용 가능");
             return sb.ToString();
         }
@@ -653,7 +665,7 @@ public static class SkillDescriptionBuilder
         float  atkR   = s.GetAtkRatio(level);
         float  defR   = s.GetDefRatio(level);
 
-        sb.AppendLine($"[{kind} 소환] {s.GetSummonCount(level)}마리, {s.GetDuration(level):0.#}초 (다시 쓰면 교체)");
+        sb.AppendLine($"[{kind} 소환수 소환] {s.GetSummonCount(level)}마리, {s.GetDuration(level):0.#}초 (재사용 시 교체)");
         if (caster != null)
         {
             float atkBase = s.useAp ? caster.TotalAp : caster.TotalAtk;

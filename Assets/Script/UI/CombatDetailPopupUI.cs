@@ -40,7 +40,7 @@ public class CombatDetailPopupUI : MonoBehaviour
     private Coroutine _hideRoutine;
 
     // 스킬 상태 알림 — 쓸 수 없는 스킬 키를 누른 순간 표시, 시간이 지나거나 그 이유가 풀리면 지움
-    private enum SkillBlockReason { None, Cooldown, Mana, PotionCooldown }
+    private enum SkillBlockReason { None, Cooldown, Mana, CannotUse, PotionCooldown }
     private SkillBase        _stateSkill;
     private ConsumableType   _statePotion;
     private SkillBlockReason _stateReason;
@@ -54,6 +54,7 @@ public class CombatDetailPopupUI : MonoBehaviour
         {
             SkillBlockReason.Cooldown       => _stateSkill == null || _stateSkill.IsReady,
             SkillBlockReason.Mana           => _stateSkill == null || _stateSkill.HasEnoughMp,
+            SkillBlockReason.CannotUse      => _stateSkill == null || _stateSkill.CanUseNow,
             SkillBlockReason.PotionCooldown => PotionQuickSlotManager.instance == null
                                             || PotionQuickSlotManager.instance.GetCooldownRemaining(_statePotion) <= 0f,
             _                               => true,
@@ -116,19 +117,23 @@ public class CombatDetailPopupUI : MonoBehaviour
     // 스킬 상태 알림 (SkillManager가 리더의 스킬 키 입력 시 호출)
     // ─────────────────────────────────────────────────────────────────
 
-    // 지금 쓸 수 없는 스킬이면 이유를 띄우고 true. 쿨타임이 우선 (둘 다면 쿨타임만).
+    // 지금 쓸 수 없는 스킬이면 이유를 띄우고 true. 우선순위: 재사용 대기 > 사용 조건(소환수 없음 등) > 마나 부족.
     // 누를 때마다 표시 시간을 처음부터 다시 잰다
     public bool NotifyIfUnusable(SkillBase skill)
     {
         if (skill?.skillData == null || skill.skillData.skillType == SkillData.SkillType.Passive) return false;
 
-        SkillBlockReason reason = !skill.IsReady     ? SkillBlockReason.Cooldown
-                                : !skill.HasEnoughMp ? SkillBlockReason.Mana
-                                :                      SkillBlockReason.None;
-        if (reason == SkillBlockReason.None) return false;
+        string cannotUse = skill.CanUseNow ? null : skill.CannotUseMessage;
+
+        SkillBlockReason reason;
+        string message;
+        if (!skill.IsReady)                         { reason = SkillBlockReason.Cooldown;  message = "스킬이 재사용 대기 중입니다."; }
+        else if (!string.IsNullOrEmpty(cannotUse))  { reason = SkillBlockReason.CannotUse; message = cannotUse; }
+        else if (!skill.HasEnoughMp)                { reason = SkillBlockReason.Mana;      message = "마나가 부족합니다."; }
+        else return false;
 
         _stateSkill = skill;
-        ShowState(reason, reason == SkillBlockReason.Cooldown ? "스킬이 재사용 대기 중입니다." : "마나가 부족합니다.");
+        ShowState(reason, message);
         return true;
     }
 
