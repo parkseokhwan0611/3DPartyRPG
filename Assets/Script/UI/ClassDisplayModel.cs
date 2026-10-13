@@ -77,9 +77,25 @@ public class ClassDisplayModel : MonoBehaviour
         if (changedIndex == partyIndex) Apply();
     }
 
+    // 무기 선택 화면용 — 저장 데이터는 그대로 두고 전시 모델만 해당 클래스로 바꾼다.
+    // 한 번 미리보기를 시작하면 이후 데이터 기준 적용(늦게 도는 재시도 등)이 미리보기를 덮어쓰지 않는다
+    private ClassData.ClassType? _previewType;
+
+    public void Preview(ClassData.ClassType type)
+    {
+        _previewType = type;
+        ApplyType(type);
+    }
+
     // 반환값: 실제로 적용했는지 (false면 아직 데이터가 준비되지 않음)
     private bool Apply()
     {
+        if (_previewType.HasValue)
+        {
+            ApplyType(_previewType.Value);
+            return true;
+        }
+
         if (DataManager.instance == null) return false;
         var statuses = DataManager.instance.partyStatuses;
         if (partyIndex < 0 || partyIndex >= statuses.Count) return false;
@@ -87,12 +103,18 @@ public class ClassDisplayModel : MonoBehaviour
         ClassData cls = statuses[partyIndex].classData;
         if (cls == null) return false;
 
-        Entry current = entries.Find(e => e.classType == cls.classType);
+        ApplyType(cls.classType);
+        return true;
+    }
+
+    private void ApplyType(ClassData.ClassType type)
+    {
+        Entry current = entries.Find(e => e.classType == type);
         if (current == null)
         {
             // 현재 클래스 항목이 등록돼 있지 않음 — 전부 꺼지는 사고를 막기 위해 아무것도 건드리지 않는다
-            Debug.LogWarning($"[ClassDisplayModel] {gameObject.name}: {cls.classType} 항목이 Entries에 없어 전시 무기를 바꾸지 못했습니다.");
-            return true;
+            Debug.LogWarning($"[ClassDisplayModel] {gameObject.name}: {type} 항목이 Entries에 없어 전시 무기를 바꾸지 못했습니다.");
+            return;
         }
 
         // 같은 오브젝트가 여러 클래스에 등록돼 있을 수 있으므로 "현재 클래스 항목에 있으면 켬"으로 판단하고,
@@ -112,7 +134,5 @@ public class ClassDisplayModel : MonoBehaviour
             if (anim != null && anim.runtimeAnimatorController != current.animatorController)
                 anim.runtimeAnimatorController = current.animatorController;
         }
-
-        return true;
     }
 }

@@ -116,7 +116,12 @@ public class DataManager : MonoBehaviour
     // 초기화 (새 게임 시작 시에도 호출)
     // ─────────────────────────────────────────────────────────────────
 
-    public void InitData()
+    public void InitData() => InitData(null);
+
+    // 무기 선택 화면에서 확정할 때 — 고른 클래스로 새 게임 데이터를 처음부터 다시 만든다.
+    // SelectClass로 바꾸면 먼저 끼워둔 기본 클래스의 시작 장비가 인벤토리에 남으므로 이쪽을 쓴다.
+    // chosenClasses[i] = 파티원 i가 고른 클래스 (목록에 없는 클래스거나 칸이 모자라면 기본 시작 클래스)
+    public void InitData(IList<ClassData.ClassType> chosenClasses)
     {
         if (baseDataList == null || baseDataList.Count == 0)
         {
@@ -149,7 +154,12 @@ public class DataManager : MonoBehaviour
         // 파티원 초기화
         for (int i = 0; i < baseDataList.Count; i++)
         {
-            partyStatuses.Add(CreateNewStatus(i));
+            ClassData chosen = chosenClasses != null && i < chosenClasses.Count
+                ? FindClassOption(i, chosenClasses[i])
+                : null;
+            var status = CreateNewStatus(i, chosen);
+            status.classChosen = chosen != null;
+            partyStatuses.Add(status);
             partyEquipments.Add(new CharacterEquipment());
         }
 
@@ -418,9 +428,10 @@ public class DataManager : MonoBehaviour
         => GetClassOptions(partyIndex).Find(c => c.classType == type);
 
     // 새 게임 상태의 파티원 하나 (시작 클래스, 체력·마나 가득, 시작 스킬 포인트)
-    private CharacterStatus CreateNewStatus(int partyIndex)
+    // startClass를 주면 그 클래스로, 없으면 기본 시작 클래스로
+    private CharacterStatus CreateNewStatus(int partyIndex, ClassData startClass = null)
     {
-        ClassData baseData = GetStartClass(partyIndex);
+        ClassData baseData = startClass != null ? startClass : GetStartClass(partyIndex);
         if (baseData == null)
             Debug.LogError($"[DataManager] 파티원 {partyIndex}의 클래스가 비어 있습니다. baseDataList를 확인하세요.");
 

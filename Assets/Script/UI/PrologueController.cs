@@ -14,7 +14,7 @@ public class PrologueController : MonoBehaviour
     public string[] pages;
 
     [Header("다음 씬")]
-    public string nextSceneName = "Forest_1_1";
+    public string nextSceneName = "Dungeon_1_1";
 
     [Header("연출")]
     public float fadeDuration = 0.4f;
