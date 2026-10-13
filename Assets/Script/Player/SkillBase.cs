@@ -16,6 +16,7 @@ public abstract class SkillBase : MonoBehaviour
     public int skillLevel = 1;
 
     private float cooldownTimer = 0f;
+    private float cooldownTotal = 0f; // 이번 쿨타임의 전체 길이 (시전 시점 레벨 기준, 쿨타임 비율 표시용)
     private Coroutine skillCoroutine;
     private Coroutine executeCoroutine; // SkillRoutine 안에서 돌리는 ExecuteSkill — ForceStop 때 같이 멈춤
 
@@ -24,31 +25,47 @@ public abstract class SkillBase : MonoBehaviour
 
     public bool IsReady           => cooldownTimer <= 0f;
     public float CooldownRemaining => Mathf.Max(cooldownTimer, 0f);
-    public float CooldownRatio    => skillData != null && skillData.cooldown.Length > 0
-        ? Mathf.Clamp01(cooldownTimer / GetArrayValue(skillData.cooldown))
-        : 0f;
+    public float CooldownRatio
+    {
+        get
+        {
+            // 외부에서 남은 시간만 지정한 경우(SetCooldown)는 전체 길이를 모르므로 지금 레벨 기준 쿨타임으로 나눈다
+            float total = cooldownTotal > 0f ? cooldownTotal : GetArrayValue(skillData != null ? skillData.cooldown : null, LiveLevel);
+            return total > 0f ? Mathf.Clamp01(cooldownTimer / total) : 0f;
+        }
+    }
+
+    // 캐릭터의 실시간 스킬 레벨 — 슬롯은 씬 시작 시점 레벨로 만들어지므로, 그 뒤에 스킬을 올렸으면 skillLevel과 다를 수 있다
+    private int LiveLevel => myStat != null && skillData != null ? Mathf.Max(1, myStat.GetSkillLevel(skillData)) : skillLevel;
+
+    // skillLevel을 실시간 레벨로 맞춘다. 스킬을 실제로 쓰는 순간(TryUseSkill)마다 호출되므로
+    // 리더 입력·팔로워 자동 시전·힐 자동 시전·사거리 대기 후 발동 모두 최신 레벨로 나간다
+    public void SyncLevel() => skillLevel = LiveLevel;
 
     // maxLevel과 배열(cooldown/mpCost) 길이가 어긋나 있어도 크래시 없이 마지막 유효값으로 대체
-    private float GetArrayValue(float[] arr)
+    private float GetArrayValue(float[] arr) => GetArrayValue(arr, skillLevel);
+
+    private static float GetArrayValue(float[] arr, int level)
     {
         if (arr == null || arr.Length == 0) return 0f;
-        int idx = Mathf.Clamp(skillLevel - 1, 0, arr.Length - 1);
+        int idx = Mathf.Clamp(level - 1, 0, arr.Length - 1);
         return arr[idx];
     }
 
-    public void SetCooldown(float remaining) => cooldownTimer = remaining;
+    public void SetCooldown(float remaining)
+    {
+        cooldownTimer = remaining;
+        cooldownTotal = 0f;
+    }
 
-    // 지금 레벨 기준 마나 소모량 — skillLevel은 스킬을 실제로 쓸 때만 동기화되므로(SkillManager.SyncSkillLevel)
-    // UI 표시용으로는 캐릭터의 실시간 스킬 레벨을 우선 사용. 패시브는 0
+    // 지금 레벨 기준 마나 소모량 — skillLevel은 스킬을 실제로 쓸 때만 동기화되므로(SyncLevel)
+    // UI 표시용으로는 캐릭터의 실시간 스킬 레벨을 사용. 패시브는 0
     public float CurrentMpCost
     {
         get
         {
             if (skillData == null || skillData.skillType == SkillData.SkillType.Passive) return 0f;
-            int level = myStat != null ? Mathf.Max(1, myStat.GetSkillLevel(skillData)) : skillLevel;
-            var arr = skillData.mpCost;
-            if (arr == null || arr.Length == 0) return 0f;
-            return arr[Mathf.Clamp(level - 1, 0, arr.Length - 1)];
+            return GetArrayValue(skillData.mpCost, LiveLevel);
         }
     }
 
@@ -87,6 +104,7 @@ public abstract class SkillBase : MonoBehaviour
     public bool TryUseSkill(Transform target = null)
     {
         if (skillData == null) return false;
+        SyncLevel(); // 지속시간·수치·마나·쿨타임 모두 지금 레벨 기준으로
         if (!IsReady) return false;
         if (!CanUseNow) return false;
 
@@ -116,6 +134,7 @@ public abstract class SkillBase : MonoBehaviour
 
         skillCoroutine = StartCoroutine(SkillRoutine(target));
         cooldownTimer  = GetArrayValue(skillData.cooldown);
+        cooldownTotal  = cooldownTimer;
         return true;
     }
 

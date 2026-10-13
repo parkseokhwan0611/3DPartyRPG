@@ -336,6 +336,7 @@ public class SkillManager : MonoBehaviour
         foreach (var slot in slots)
         {
             if (slot == null || !slot.IsReady) continue;
+            slot.SyncLevel(); // 아래 판단(IsWorthAutoUsing의 소환 수 등)도 지금 레벨 기준으로
             if (slot.skillData.skillType == SkillData.SkillType.Heal)    continue;
             if (slot.skillData.skillType == SkillData.SkillType.Passive) continue;
             if (!slot.CanUseNow || !slot.IsWorthAutoUsing)               continue; // 소환수 없는 도발, 멀쩡한 소환수 재소환 등
