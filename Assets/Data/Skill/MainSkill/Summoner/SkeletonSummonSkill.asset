@@ -41,7 +41,8 @@ MonoBehaviour:
   - 25
   skillPointCost: 0200000002000000020000000300000003000000
   action: 0
-  summonPrefab: {fileID: -3705308823269699832, guid: 4044c57df62b4094a863b3b949dfbd4b, type: 3}
+  summonPrefab: {fileID: -3705308823269699832, guid: 4044c57df62b4094a863b3b949dfbd4b,
+    type: 3}
   summonCountByLevel: 0100000001000000010000000200000002000000
   baseDuration: 15
   durationPerLevel: 1.25
@@ -52,13 +53,12 @@ MonoBehaviour:
   useAp: 1
   baseDefRatio: 0.4
   defRatioPerLevel: 0.05
-  spawnRadius: 1.5
   tauntKind: 0
   tauntRadius: 6
   baseTauntAggro: 100
   tauntAggroPerLevel: 0
   tauntEffectPoolKey: 
-  animTriggerName: doHeal
+  animTriggerName: doSummon
   animDuration: 1
   effectSpawnDelay: 0.3
   effectPoolKey: 
