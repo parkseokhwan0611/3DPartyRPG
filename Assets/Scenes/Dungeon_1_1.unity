@@ -545516,6 +545516,14 @@ MonoBehaviour:
     perfab: {fileID: 3969387340055931328, guid: 7140a8c4d3be39f4d9c7432584ce9883,
       type: 3}
     count: 1
+  - objectName: SummonerNormalAtk
+    perfab: {fileID: 9005181927664405306, guid: 277208c2fdb5c6240a9bdad2bb6d8e0e,
+      type: 3}
+    count: 1
+  - objectName: Hit 3 black fire
+    perfab: {fileID: 3808964353962585286, guid: 5b6f930c358690a4bba28460218058eb,
+      type: 3}
+    count: 1
 --- !u!4 &1470750948
 Transform:
   m_ObjectHideFlags: 0
@@ -641755,6 +641763,9 @@ MonoBehaviour:
     volumeMultiplier: 0.7
   - name: SkeletonDisappear
     clip: {fileID: 8300000, guid: bc0ba5e482e95f44189c59d5cf2ebf31, type: 3}
+    volumeMultiplier: 0.5
+  - name: Summoner_NormalAtk
+    clip: {fileID: 8300000, guid: 7babbe78f2a5144428d968893be867ab, type: 3}
     volumeMultiplier: 0.5
   sfxVolume: 0.5
   sfxSourceCount: 8
