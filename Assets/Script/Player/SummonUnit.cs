@@ -463,12 +463,20 @@ public class SummonUnit : MonoBehaviour, IDamageable
         }
     }
 
+    // 주인 기준 소환수 자리 — 뒤쪽 좌(짝수)·우(홀수)로 번갈아 서고, 3번째부터는 한 줄 더 뒤로.
+    // 소환 위치(SummonSkill)와 따라다니는 자리가 같아서, 소환되자마자 자리로 걸어가지 않는다
+    public const float FollowSpacing = 1.2f;
+    public static Vector3 FollowSpot(Transform owner, int index)
+    {
+        float side = (index % 2 == 0) ? -1f : 1f;
+        int   row  = index / 2;
+        return owner.position + owner.rotation * new Vector3(side * FollowSpacing, 0f, -FollowSpacing * (row + 1));
+    }
+
     // 싸울 대상이 없으면 주인 뒤쪽 좌우에 붙어 따라다닌다
     private void FollowOwner()
     {
-        Transform owner = Owner.transform;
-        float side      = (_spawnIndex % 2 == 0) ? -1f : 1f;
-        Vector3 spot    = owner.position + owner.rotation * new Vector3(side * 1.2f, 0f, -1.2f);
+        Vector3 spot = FollowSpot(Owner.transform, _spawnIndex);
 
         if ((transform.position - spot).sqrMagnitude > followDistance * followDistance) MoveTo(spot);
         else if (!_agent.pathPending && _agent.hasPath && _agent.remainingDistance < 0.3f) StopMoving();

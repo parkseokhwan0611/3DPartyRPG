@@ -107,7 +107,7 @@ public class SummonSkill : SkillBase
     }
 
     // ─────────────────────────────────────────────────────────────────
-    // 소환 — 같은 스킬로 부른 소환수는 교체, 시전자 앞쪽 부채꼴로 나란히 배치
+    // 소환 — 같은 스킬로 부른 소환수는 교체, 처음부터 따라다니는 자리(시전자 뒤쪽 좌우)에 배치
     // ─────────────────────────────────────────────────────────────────
 
     private void DoSummon(SummonSkillData data)
@@ -116,12 +116,10 @@ public class SummonSkill : SkillBase
 
         SummonUnit.DespawnFrom(myStat, data);
 
-        int   count  = data.GetSummonCount(skillLevel);
-        float spread = 60f; // 소환수 사이 각도
+        int count = data.GetSummonCount(skillLevel);
         for (int i = 0; i < count; i++)
         {
-            float   angle = (i - (count - 1) * 0.5f) * spread;
-            Vector3 pos   = transform.position + Quaternion.Euler(0f, angle, 0f) * transform.forward * data.spawnRadius;
+            Vector3 pos = SummonUnit.FollowSpot(transform, i);
             if (NavMesh.SamplePosition(pos, out NavMeshHit hit, 2f, NavMesh.AllAreas)) pos = hit.position;
             else pos = transform.position;
 

@@ -33,8 +33,6 @@ public class SummonSkillData : SkillData
     [Tooltip("소환수 방어력·마법 저항력 = 시전자 방어력·마법 저항력 × 이 값 (1 = 100%)")]
     public float baseDefRatio     = 1f;
     public float defRatioPerLevel = 0f;
-    [Tooltip("시전자로부터 이 거리만큼 앞쪽 부채꼴로 나란히 소환")]
-    public float spawnRadius = 1.5f;
 
     [Header("도발 (Action = Taunt)")]
     [Tooltip("명령을 받을 소환수 종류")]
