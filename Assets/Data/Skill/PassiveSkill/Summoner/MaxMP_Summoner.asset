@@ -10,25 +10,25 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 72fc38e46b28c16479c1fcb1332fbc1a, type: 3}
-  m_Name: MagicDMGIncrease
+  m_Name: MaxMP_Summoner
   m_EditorClassIdentifier: 
-  skillId: MagicATK
-  skillName: "\uB9C8\uB825 \uAC15\uD654"
-  description: "\uB9C8\uBC95 \uACF5\uACA9\uB825\uC774 \uC99D\uAC00\uD569\uB2C8\uB2E4."
-  icon: {fileID: 21300000, guid: bb286fbbb93a8b74e8d35ca31b23b7e6, type: 3}
-  requiredClass: 2
+  skillId: SummonerMaxMP
+  skillName: "\uB9C8\uB825 \uC99D\uC9C4"
+  description: "\uCD5C\uB300 \uB9C8\uB098\uAC00 \uC99D\uAC00\uD569\uB2C8\uB2E4."
+  icon: {fileID: 21300000, guid: 95c076b3f531697469ee83e2c5c57ece, type: 3}
+  requiredClass: 5
   skillType: 4
   skillCategory: 2
   sfxEntries: []
   skillPriority: 0
   maxLevel: 5
-  requiredCharLevel: 10
+  requiredCharLevel: 1
   mpCost: []
   cooldown: []
-  skillPointCost: 0200000002000000020000000200000004000000
-  effectType: 1
+  skillPointCost: 0100000002000000020000000300000004000000
+  effectType: 11
   valueMode: 0
-  baseValue: 20
+  baseValue: 10
   valuePerLevel: 10
   hasSecondEffect: 0
   secondEffectType: 8

@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: ShieldAtk
   m_EditorClassIdentifier: 
   skillId: ShieldAtk
-  skillName: "\uBC29\uC5B4\uB9C9 \uAC15\uD0C0"
+  skillName: "\uBC29\uD328 \uAC15\uD0C0"
   description: "\uC801\uC744 \uB0B4\uB9AC\uCE58\uACE0 \uC790\uC2E0\uC5D0\uAC8C \uC77C\uC815
     \uC2DC\uAC04 \uBCF4\uD638\uB9C9\uC744 \uBD80\uC5EC\uD569\uB2C8\uB2E4."
   icon: {fileID: 21300000, guid: 302b4dea97d5ec843923598abe23f69a, type: 3}
@@ -23,6 +23,8 @@ MonoBehaviour:
   sfxEntries:
   - sfxKey: Warrior_Main2
     delay: 0.7
+    repeatCount: 1
+    repeatInterval: 0.5
   skillPriority: 1
   maxLevel: 5
   requiredCharLevel: 10
@@ -82,6 +84,7 @@ MonoBehaviour:
   projectileCount: 1
   projectileInterval: 0
   projectileSpreadAngle: 0
+  projectileShotSfxKey: 
   animTriggerName: doShieldAtk
   animDuration: 1.2
   effectSpawnDelay: 0.9

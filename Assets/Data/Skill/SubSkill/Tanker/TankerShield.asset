@@ -16,11 +16,15 @@ MonoBehaviour:
   skillName: "\uC131\uC2A4\uB7EC\uC6B4 \uBCF4\uD638"
   description: "\uD30C\uD2F0\uC6D0 \uBAA8\uB450\uC5D0\uAC8C \uBCF4\uD638\uB9C9\uC744
     \uC90D\uB2C8\uB2E4."
-  icon: {fileID: 21300000, guid: 29430f88b5983214692d51223ffb4f00, type: 3}
+  icon: {fileID: 21300000, guid: e429059f9aef8e34cac4cc51768ddf12, type: 3}
   requiredClass: 0
   skillType: 1
   skillCategory: 1
-  sfxEntries: []
+  sfxEntries:
+  - sfxKey: Tanker_Sub1
+    delay: 0
+    repeatCount: 1
+    repeatInterval: 0
   skillPriority: 0
   maxLevel: 5
   requiredCharLevel: 10

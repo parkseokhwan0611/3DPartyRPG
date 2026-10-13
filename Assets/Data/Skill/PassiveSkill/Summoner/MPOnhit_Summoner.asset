@@ -10,27 +10,37 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 72fc38e46b28c16479c1fcb1332fbc1a, type: 3}
-  m_Name: MPOnhit
+  m_Name: MPOnhit_Summoner
   m_EditorClassIdentifier: 
-  skillId: MPOnhit
-  skillName: "\uB9C8\uB098 \uAC10\uC751"
-  description: "\uAE30\uBCF8 \uACF5\uACA9\uC2DC \uB9C8\uB098\uAC00 \uD68C\uBCF5\uB429\uB2C8\uB2E4."
-  icon: {fileID: 21300000, guid: b72d7e78b2d53094da1cce58ce76de41, type: 3}
-  requiredClass: 2
+  skillId: SummonerMPOnhit
+  skillName: "\uB9C8\uB825 \uBC1C\uD1B1"
+  description: "\uC18C\uD658\uC218\uAC00 \uAE30\uBCF8 \uACF5\uACA9\uC2DC \uB9C8\uB098\uAC00
+    \uD68C\uBCF5\uB429\uB2C8\uB2E4."
+  icon: {fileID: 21300000, guid: 69e45f85bcdd5804eb5dc34b5e807058, type: 3}
+  requiredClass: 5
   skillType: 4
   skillCategory: 2
   sfxEntries: []
   skillPriority: 0
   maxLevel: 5
-  requiredCharLevel: 1
+  requiredCharLevel: 10
   mpCost: []
   cooldown: []
-  skillPointCost: 0100000002000000020000000300000004000000
-  effectType: 12
+  skillPointCost: 0200000002000000020000000300000003000000
+  effectType: 25
+  valueMode: 0
   baseValue: 1
   valuePerLevel: 0.25
+  hasSecondEffect: 0
+  secondEffectType: 8
+  secondValueMode: 0
+  secondBaseValue: 0
+  secondValuePerLevel: 0
   baseProcChance: 0
   procChancePerLevel: 0
   baseProcValue: 0
   procValuePerLevel: 0
+  baseProcDuration: 0
+  procDurationPerLevel: 0
   procEffectPoolKey: 
+  procSkill: {fileID: 0}

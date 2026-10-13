@@ -10,19 +10,21 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a70ac1c355a5a5a49b0f39626fc9e2be, type: 3}
-  m_Name: DMGDecrease
+  m_Name: DMGDecrease_Warrior
   m_EditorClassIdentifier: 
-  skillId: DMGDecrease
+  skillId: WarriorDMGDecrease
   skillName: "\uACE0\uD1B5 \uAC10\uB0B4"
   description: "\uC9C0\uC18D\uC2DC\uAC04 \uB3D9\uC548 \uC790\uC2E0\uC774 \uC785\uB294
     \uD53C\uD574\uB97C \uAC10\uC18C\uC2DC\uD0B5\uB2C8\uB2E4."
-  icon: {fileID: 21300000, guid: 2b908f5f20beff14fa10bdef4506d4d1, type: 3}
+  icon: {fileID: 21300000, guid: 4ba0a0c27b4c6ea45ad09abf5b43f711, type: 3}
   requiredClass: 1
   skillType: 1
   skillCategory: 1
   sfxEntries:
   - sfxKey: Tanker_Sub2
     delay: 0
+    repeatCount: 1
+    repeatInterval: 0.5
   skillPriority: 0
   maxLevel: 5
   requiredCharLevel: 1
