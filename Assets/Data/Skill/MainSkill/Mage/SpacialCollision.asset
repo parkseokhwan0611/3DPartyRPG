@@ -22,6 +22,8 @@ MonoBehaviour:
   sfxEntries:
   - sfxKey: Mage_Main2
     delay: 0.3
+    repeatCount: 1
+    repeatInterval: 0.5
   skillPriority: 1
   maxLevel: 5
   requiredCharLevel: 10
@@ -49,7 +51,7 @@ MonoBehaviour:
     coeff: 1
     coeffPerLevel: 0.1
   castRange: 6
-  baseRange: 2
+  baseRange: 3
   rangePerLevel: 0
   isAoe: 1
   onHitDebuffs: []
@@ -72,6 +74,7 @@ MonoBehaviour:
   projectileCount: 1
   projectileInterval: 0
   projectileSpreadAngle: 0
+  projectileShotSfxKey: 
   animTriggerName: doZoneSkill
   animDuration: 1.3
   effectSpawnDelay: 0.3
