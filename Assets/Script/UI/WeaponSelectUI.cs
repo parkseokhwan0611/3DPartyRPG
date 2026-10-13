@@ -17,6 +17,8 @@ public class WeaponSelectUI : MonoBehaviour
         public TMP_Text label;
         [Tooltip("무기 이름 — 버튼 글자와 칸의 무기 이름 텍스트에 표시. 비우면 버튼에 적힌 글자 그대로")]
         public string weaponName;
+        [Tooltip("역할 태그 (예: 탱커, 근접 딜러, 서포터) — 칸의 Role Text에 표시. 비우면 표시 안 함")]
+        public string role;
         [Tooltip("이 무기를 골랐을 때 칸의 설명 텍스트에 표시할 내용")]
         [TextArea(3, 6)]
         public string description;
@@ -39,6 +41,8 @@ public class WeaponSelectUI : MonoBehaviour
         public ClassDisplayModel displayModel;
         public TMP_Text characterNameText;
         public TMP_Text weaponNameText;
+        [Tooltip("역할 태그 텍스트 (비워두면 무기 이름 앞에 [역할]로 붙여서 표시)")]
+        public TMP_Text roleText;
         public TMP_Text descriptionText;
         [Tooltip("0번 = 첫 번째 무기, 1번 = 두 번째 무기 (DataManager의 Base Data List / Second Class List 순서)")]
         public List<WeaponButton> weaponButtons = new List<WeaponButton>();
@@ -138,7 +142,15 @@ public class WeaponSelectUI : MonoBehaviour
 
         if (col.characterNameText != null)
             col.characterNameText.text = string.IsNullOrEmpty(cls.displayName) ? cls.name : cls.displayName;
-        if (col.weaponNameText  != null) col.weaponNameText.text  = sel != null ? sel.GetDisplayName(cls) : cls.classType.ToString();
+        string weaponName = sel != null ? sel.GetDisplayName(cls) : cls.classType.ToString();
+        string role       = sel != null ? sel.role : "";
+
+        if (col.roleText != null)
+            col.roleText.text = string.IsNullOrEmpty(role) ? "" : $"[{role}]";
+        else if (!string.IsNullOrEmpty(role))
+            weaponName = $"[{role}] {weaponName}"; // 역할 텍스트 칸이 없으면 무기 이름 앞에 붙임
+
+        if (col.weaponNameText  != null) col.weaponNameText.text  = weaponName;
         if (col.descriptionText != null) col.descriptionText.text = sel != null ? sel.description : "";
 
         for (int i = 0; i < col.weaponButtons.Count; i++)
