@@ -293106,93 +293106,6 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 818500997}
   m_PrefabAsset: {fileID: 0}
---- !u!1001 &819693878
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 1075712664182657804, guid: 3d9c0427d76b8714ab057048ce42863b,
-        type: 3}
-      propertyPath: m_Name
-      value: Portal_Back
-      objectReference: {fileID: 0}
-    - target: {fileID: 5822139004800782574, guid: 3d9c0427d76b8714ab057048ce42863b,
-        type: 3}
-      propertyPath: portalId
-      value: Forest_1_1_to_Forest_Tutorial
-      objectReference: {fileID: 0}
-    - target: {fileID: 5822139004800782574, guid: 3d9c0427d76b8714ab057048ce42863b,
-        type: 3}
-      propertyPath: destinationSpawnId
-      value: Forest_Tutorial_to_Forest_1_1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5822139004800782574, guid: 3d9c0427d76b8714ab057048ce42863b,
-        type: 3}
-      propertyPath: destinationSceneName
-      value: Forest_Tutorial
-      objectReference: {fileID: 0}
-    - target: {fileID: 8078761070689332417, guid: 3d9c0427d76b8714ab057048ce42863b,
-        type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 3.1
-      objectReference: {fileID: 0}
-    - target: {fileID: 8078761070689332417, guid: 3d9c0427d76b8714ab057048ce42863b,
-        type: 3}
-      propertyPath: m_LocalPosition.y
-      value: -1.953
-      objectReference: {fileID: 0}
-    - target: {fileID: 8078761070689332417, guid: 3d9c0427d76b8714ab057048ce42863b,
-        type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 24
-      objectReference: {fileID: 0}
-    - target: {fileID: 8078761070689332417, guid: 3d9c0427d76b8714ab057048ce42863b,
-        type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 8078761070689332417, guid: 3d9c0427d76b8714ab057048ce42863b,
-        type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8078761070689332417, guid: 3d9c0427d76b8714ab057048ce42863b,
-        type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8078761070689332417, guid: 3d9c0427d76b8714ab057048ce42863b,
-        type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8078761070689332417, guid: 3d9c0427d76b8714ab057048ce42863b,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8078761070689332417, guid: 3d9c0427d76b8714ab057048ce42863b,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8078761070689332417, guid: 3d9c0427d76b8714ab057048ce42863b,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 8052704687585107677, guid: 3d9c0427d76b8714ab057048ce42863b,
-        type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 0}
-  m_SourcePrefab: {fileID: 100100000, guid: 3d9c0427d76b8714ab057048ce42863b, type: 3}
 --- !u!1001 &819932629
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -304867,6 +304780,93 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 860413024}
   m_PrefabAsset: {fileID: 0}
+--- !u!1001 &860982122
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 1075712664182657804, guid: 3d9c0427d76b8714ab057048ce42863b,
+        type: 3}
+      propertyPath: m_Name
+      value: Portal_Back
+      objectReference: {fileID: 0}
+    - target: {fileID: 5822139004800782574, guid: 3d9c0427d76b8714ab057048ce42863b,
+        type: 3}
+      propertyPath: portalId
+      value: Dungeon_1_1_to_Dungeon_Tutorial
+      objectReference: {fileID: 0}
+    - target: {fileID: 5822139004800782574, guid: 3d9c0427d76b8714ab057048ce42863b,
+        type: 3}
+      propertyPath: destinationSpawnId
+      value: Dungeon_Tutorial_to_Dungeon_1_1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5822139004800782574, guid: 3d9c0427d76b8714ab057048ce42863b,
+        type: 3}
+      propertyPath: destinationSceneName
+      value: Dungeon_Tutorial
+      objectReference: {fileID: 0}
+    - target: {fileID: 8078761070689332417, guid: 3d9c0427d76b8714ab057048ce42863b,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 1.15
+      objectReference: {fileID: 0}
+    - target: {fileID: 8078761070689332417, guid: 3d9c0427d76b8714ab057048ce42863b,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -3.9
+      objectReference: {fileID: 0}
+    - target: {fileID: 8078761070689332417, guid: 3d9c0427d76b8714ab057048ce42863b,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 32.22
+      objectReference: {fileID: 0}
+    - target: {fileID: 8078761070689332417, guid: 3d9c0427d76b8714ab057048ce42863b,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8078761070689332417, guid: 3d9c0427d76b8714ab057048ce42863b,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8078761070689332417, guid: 3d9c0427d76b8714ab057048ce42863b,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8078761070689332417, guid: 3d9c0427d76b8714ab057048ce42863b,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8078761070689332417, guid: 3d9c0427d76b8714ab057048ce42863b,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8078761070689332417, guid: 3d9c0427d76b8714ab057048ce42863b,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8078761070689332417, guid: 3d9c0427d76b8714ab057048ce42863b,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 8052704687585107677, guid: 3d9c0427d76b8714ab057048ce42863b,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 0}
+  m_SourcePrefab: {fileID: 100100000, guid: 3d9c0427d76b8714ab057048ce42863b, type: 3}
 --- !u!1001 &861091650
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -641779,6 +641779,8 @@ MonoBehaviour:
   sceneBgmMap:
   - sceneName: TitleScene
     bgmKey: LoginBGM
+  - sceneName: Dungeon_Tutorial
+    bgmKey: ForestBGM
   - sceneName: Dungeon_1_1
     bgmKey: ForestBGM
   - sceneName: Dungeon_1_2
@@ -641793,8 +641795,6 @@ MonoBehaviour:
     bgmKey: ForestBGM
   - sceneName: PrologueScene
     bgmKey: PrologueBGM
-  - sceneName: Forest_Tutorial
-    bgmKey: ForestBGM
   enableGlobalUiClick: 1
   uiClickSfxKey: UIClick
 --- !u!114 &1710041647
@@ -641875,13 +641875,13 @@ MonoBehaviour:
   - {fileID: 11400000, guid: db5b648041af36d4cb1501cdfc9513a7, type: 2}
   - {fileID: 11400000, guid: ce29ad0ab4947ff448997a7db3175de5, type: 2}
   - {fileID: 11400000, guid: c6af59a8b0f2a424ea7b78d92785ff19, type: 2}
-  startWithSecondClass: 000101
+  startWithSecondClass: 000000
   partyLevel: 20
   partyExp: 0
   gold: 0
   selectedPartyIndex: 0
   sceneDisplayNames:
-  - sceneName: Forest_Tutorial
+  - sceneName: Dungeon_Tutorial
     displayName: "\uC138\uACC4\uC218\uC758 \uC601\uC5ED"
   - sceneName: Dungeon_1_1
     displayName: "\uACE0\uBE14\uB9B0 \uC8FC\uC220\uC0AC\uC758 \uD68C\uB791"
@@ -842486,5 +842486,5 @@ SceneRoots:
   - {fileID: 208789293}
   - {fileID: 7755142}
   - {fileID: 1713439972}
-  - {fileID: 819693878}
   - {fileID: 1915635077}
+  - {fileID: 860982122}
