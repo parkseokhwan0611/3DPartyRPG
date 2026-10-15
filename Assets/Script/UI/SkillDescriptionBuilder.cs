@@ -6,6 +6,24 @@ using UnityEngine;
 public static class SkillDescriptionBuilder
 {
     // ─────────────────────────────────────────────────────────────────
+    // 마나 소모량 / 쿨타임 — 장비 감소가 반영된 실제 값. showBase면 감소가 있을 때 "(기본 N)"을 덧붙인다
+    // (글자 칸이 넓은 스킬창은 기본값 포함, 좁은 전투 팝업 쿨타임 칸은 실제 값만)
+    // ─────────────────────────────────────────────────────────────────
+
+    public static string FormatMpCost(float baseCost, CharacterStat caster, bool showBase)
+        => WithBase(SkillBase.ReducedMpCost(baseCost, caster), baseCost, "0.#", "", showBase);
+
+    public static string FormatCooldown(float baseCooldown, CharacterStat caster, bool showBase, string format = "0.#")
+        => WithBase(SkillBase.ReducedCooldown(baseCooldown, caster), baseCooldown, format, "초", showBase);
+
+    private static string WithBase(float actual, float baseValue, string format, string unit, bool showBase)
+    {
+        string shown = actual.ToString(format) + unit;
+        if (!showBase || actual.ToString(format) == baseValue.ToString(format)) return shown;
+        return $"{shown} (기본 {baseValue.ToString(format)}{unit})";
+    }
+
+    // ─────────────────────────────────────────────────────────────────
     // 데미지 스킬
     // ─────────────────────────────────────────────────────────────────
 
@@ -62,6 +80,15 @@ public static class SkillDescriptionBuilder
             lines.AppendLine($"[투척] 폭발 범위: {dmg.GetRange(level):F1}m");
         else if (dmg.fireProjectile && dmg.projectileCount > 1)
             lines.AppendLine($"[투사체] {dmg.projectileCount}발 발사 (한 발마다 위 데미지)");
+        else if (dmg.IsZone)
+        {
+            // 장판 — SkillZone과 같은 규칙: 단발이면 1회 판정, 아니면 간격마다 지속시간 동안 반복 판정
+            // 설명 칸 높이가 고정이라 한 줄에 들어가게 짧게
+            string delay = dmg.zoneActivationDelay > 0f ? $", {dmg.zoneActivationDelay:0.#}초 후" : "";
+            lines.AppendLine(dmg.zoneHitOnce || dmg.zoneDamageInterval <= 0f
+                ? $"[장판] 범위 {dmg.GetRange(level):F1}m, 1회 판정{delay}"
+                : $"[장판] 범위 {dmg.GetRange(level):F1}m, {dmg.zoneDamageInterval:0.#}초마다 {dmg.zoneDuration:0.#}초간{delay}");
+        }
         else if (dmg.isAoe)
             lines.AppendLine($"[광역] 범위: {dmg.GetRange(level):F1}m");
 
@@ -74,10 +101,11 @@ public static class SkillDescriptionBuilder
                 float duration = d.GetDuration(level);
                 switch (d.effectType)
                 {
-                    case StatusEffectType.Stun:          lines.AppendLine($"스턴 {duration}초");                         break;
-                    case StatusEffectType.Slow:          lines.AppendLine($"슬로우 {val * 100f:F0}% {duration}초");      break;
+                    // 용어는 머리 위 상태 표시(기절·둔화)와 통일
+                    case StatusEffectType.Stun:          lines.AppendLine($"기절 {duration}초");                         break;
+                    case StatusEffectType.Slow:          lines.AppendLine($"둔화 {val * 100f:F0}% {duration}초");        break;
                     case StatusEffectType.AtkDown:       lines.AppendLine($"공격력 감소 {FormatDebuffValue(d, val)} {duration}초"); break;
-                    case StatusEffectType.MoveSpeedDown: lines.AppendLine($"이속 감소 {val * 100f:F0}% {duration}초");   break;
+                    case StatusEffectType.MoveSpeedDown: lines.AppendLine($"이동 속도 감소 {val * 100f:F0}% {duration}초"); break;
                     case StatusEffectType.DefDown:       lines.AppendLine($"방어력 감소 {FormatDebuffValue(d, val)} {duration}초"); break;
                     case StatusEffectType.Poison:        lines.AppendLine($"독 초당 {val:F0} {duration}초");             break;
                 }
@@ -462,10 +490,10 @@ public static class SkillDescriptionBuilder
 
             switch (effect.effectType)
             {
-                case StatusEffectType.Stun:          result += $"스턴 {duration}초\n";                          break;
-                case StatusEffectType.Slow:          result += $"슬로우 {value * 100f:F0}% {duration}초\n";     break;
+                case StatusEffectType.Stun:          result += $"기절 {duration}초\n";                          break;
+                case StatusEffectType.Slow:          result += $"둔화 {value * 100f:F0}% {duration}초\n";       break;
                 case StatusEffectType.AtkDown:       result += $"공격력 감소 {FormatDebuffValue(effect, value)} {duration}초\n"; break;
-                case StatusEffectType.MoveSpeedDown: result += $"이속 감소 {value * 100f:F0}% {duration}초\n";  break;
+                case StatusEffectType.MoveSpeedDown: result += $"이동 속도 감소 {value * 100f:F0}% {duration}초\n"; break;
                 case StatusEffectType.DefDown:       result += $"방어력 감소 {FormatDebuffValue(effect, value)} {duration}초\n"; break;
                 case StatusEffectType.Poison:        result += $"독 초당 {value:F0} {duration}초\n";              break;
             }
@@ -558,7 +586,8 @@ public static class SkillDescriptionBuilder
                     ? $"평타 치명타 시 {ChanceText(passive, level)}{passive.procSkill.skillName} 발동"
                     : $"평타 치명타 시 {ChanceText(passive, level)}번개 (마법 공격력 × {passive.GetProcValue(level) * 100f:0.#}%)";
             case PassiveSkillData.PassiveEffectType.OnHitPoison:
-                return $"평타 적중 시 {ChanceText(passive, level)}독 — 초당 공격력의 {passive.GetProcValue(level) * 100f:0.#}% 마법 데미지 ({passive.GetProcDuration(level):0.#}초)";
+                // 실제 독 데미지 기준 — 근접 평타는 물리 공격력, 원거리 평타는 마법 공격력 (CharacterStat.ApplyPoison)
+                return $"평타 적중 시 {ChanceText(passive, level)}독 — 초당 공격력(근접: 물리 / 원거리: 마법)의 {passive.GetProcValue(level) * 100f:0.#}% 마법 데미지 ({passive.GetProcDuration(level):0.#}초)";
             case PassiveSkillData.PassiveEffectType.OnKillHeal:
                 return $"적 처치 시 최대 체력의 {passive.GetProcValue(level) * 100f:0.#}% 회복";
             case PassiveSkillData.PassiveEffectType.HealCrit:
@@ -568,7 +597,11 @@ public static class SkillDescriptionBuilder
             case PassiveSkillData.PassiveEffectType.OnHitCooldownReset:
                 return $"평타 적중 시 {ChanceText(passive, level)}퀵슬롯 스킬 쿨타임 초기화 (쿨 초기화 스킬 제외)";
             case PassiveSkillData.PassiveEffectType.Revive:
-                return "사망 시 1회 부활 (쿨타임 10분)";
+            {
+                // 실제 부활 체력 — CharacterStat.TryRevive와 같은 기준 (값이 없으면 20%)
+                float ratio = value > 0f ? value : 0.2f;
+                return $"사망 시 최대 체력의 {ratio * 100f:0.#}%로 1회 부활 (쿨타임 10분)";
+            }
             default:
                 return "";
         }

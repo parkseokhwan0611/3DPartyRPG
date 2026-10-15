@@ -23,8 +23,14 @@ public class EnemyHpBar : MonoBehaviour
 
     public float changeSpeed = 1.5f; // HP 바 변경 속도
 
+    [Tooltip("체력이 가득 차 있고 보호막·상태이상이 없으면 HP 바를 숨긴다 — 몬스터마다 캔버스가 하나씩이라, " +
+             "싸우지 않는 몬스터의 캔버스 렌더링을 생략. 맞는 순간 다시 보인다. 끄면 항상 표시")]
+    public bool hideWhenFull = true;
+    private Canvas _canvas;
+
     void Start()
     {
+        _canvas = GetComponent<Canvas>();
         fixedRotation = transform.rotation;
         // enemyHp.hp는 EnemyHp.Start()에서 초기화되는데 컴포넌트 간 Start() 실행 순서가
         // 보장되지 않아 여기서 읽으면 레이스 컨디션이 생김 — 스폰 시 항상 풀피이므로 1로 고정 시작,
@@ -62,6 +68,7 @@ public class EnemyHpBar : MonoBehaviour
     void LateUpdate()
     {
         if (camTransform == null) return;
+        if (_canvas != null && !_canvas.enabled) return; // 숨겨져 있으면 카메라를 바라볼 필요 없음
         transform.LookAt(transform.position + camTransform.rotation * Vector3.forward, camTransform.rotation * Vector3.up);
     }
 
@@ -70,6 +77,22 @@ public class EnemyHpBar : MonoBehaviour
         HpChange();
         ShieldChange();
         StatusTextChange();
+        UpdateVisibility();
+    }
+
+    // 캔버스 컴포넌트만 꺼서 그리지 않는다 — 오브젝트는 켜둔 채라 이 스크립트는 계속 돌며 맞는 순간 다시 켠다
+    void UpdateVisibility()
+    {
+        if (_canvas == null) return;
+
+        bool show = !hideWhenFull || enemyHp == null || enemyHp.maxHp <= 0f
+                 || enemyHp.hp < enemyHp.maxHp
+                 || currentHpFill < 0.999f
+                 || (mask != null && mask.fillAmount > currentHpFill + 0.001f) // 깎이는 연출이 남아 있음
+                 || currentShieldFill > 0.001f
+                 || !string.IsNullOrEmpty(shownStatus);
+
+        if (_canvas.enabled != show) _canvas.enabled = show;
     }
 
     // ─────────────────────────────────────────────────────────────────

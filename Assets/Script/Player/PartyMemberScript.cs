@@ -22,7 +22,9 @@ public class PartyMemberScript : MonoBehaviour
     // SkillManager 등 외부에서 매 프레임 GetComponent로 재조회하지 않도록 캐시된 참조 노출
     public CharacterStat StatComp => statComp;
     public AttackBase    AttackComp => attackComp; // 소환수가 리더의 공격 대상을 따라갈 때 사용
+    public SkillManager  SkillComp  => skillManager;
     private PartyStatusEffectHandler statusHandler;
+    public PartyStatusEffectHandler StatusHandler => statusHandler;
     private int _chainIndex = 0;
 
     // ─────────────────────────────────────────
@@ -511,6 +513,21 @@ public class PartyMemberScript : MonoBehaviour
     {
         yield return new WaitForSecondsRealtime(deathHideDelay);
         gameObject.SetActive(false);
+    }
+
+    // 이전 씬에서 쓰러진 채(체력 0) 넘어온 파티원 — 사망 연출·사운드·게임오버 판정 없이 바로 쓰러진 상태로 둔다.
+    // 부활 수단(부활 NPC·아이템 등)이 생기기 전까지는 씬이 바뀌어도 계속 빠져 있는다.
+    // 오브젝트를 끄는 건 호출자(PartyManager)가 다음 프레임에 한다 — 같은 프레임에 끄면 아직 Start를 못 돈
+    // CharacterStat·UI가 데이터에 바인딩되지 못한다
+    public void MarkDeadOnSceneStart()
+    {
+        ChangeState(MemberState.Dead);
+        if (agent != null && agent.enabled)
+        {
+            agent.ResetPath();
+            agent.enabled = false;
+        }
+        if (leaderVFX != null) leaderVFX.SetActive(false);
     }
 
     void SmoothLookAt(Vector3 targetPos)

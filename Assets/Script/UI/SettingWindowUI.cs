@@ -32,7 +32,9 @@ public class SettingWindowUI : MonoBehaviour
         if (SaveManager.instance == null) return;
 
         bool success = SaveManager.instance.Save();
-        ShowFeedback(success ? "저장 완료!" : "보스 룸에서는 저장할 수 없습니다.");
+        if (success)                           ShowFeedback("저장 완료!");
+        else if (!SaveManager.instance.CanSave) ShowFeedback("보스 룸에서는 저장할 수 없습니다.");
+        else                                   ShowFeedback("저장에 실패했습니다.");
     }
 
     private void OnMainMenuClicked()

@@ -49,6 +49,7 @@ public class TutorialMoveHint : MonoBehaviour
         _hintText.color = Color.white;
         _hintText.fontStyle = FontStyles.Bold;
         _hintText.enableWordWrapping = true;
+        _hintText.raycastTarget = false; // 안내 문구가 화면 UI로 잡혀 그 위 우클릭 이동이 막히지 않게
         if (koreanFont != null) _hintText.font = koreanFont;
 
         var rect = textGo.GetComponent<RectTransform>();

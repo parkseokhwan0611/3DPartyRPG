@@ -133,8 +133,10 @@ public class DamageSkillData : SkillData
              "위의 사운드(Sfx Entries)는 모션 시작 기준으로 한 번만 나므로, 총소리는 여기에 넣고 Sfx Entries에서는 빼기")]
     public string projectileShotSfxKey;
 
-    // 범위 판정 스킬인지 (설명문 [광역] 표기용) — 수류탄형은 항상 범위 폭발
-    public bool IsAreaDamage => isAoe || throwGrenade;
+    // 범위 판정 스킬인지 (설명문 [광역] 표기용) — 수류탄형은 항상 범위 폭발, 장판형은 범위 안의 적 전부 판정
+    // (투사체·수류탄이 장판형보다 우선하므로 그 경우의 장판 설정은 무시)
+    public bool IsZone       => spawnAtTarget && !throwGrenade && !fireProjectile;
+    public bool IsAreaDamage => isAoe || throwGrenade || IsZone;
 
     [Header("애니메이션 / 이펙트")]
     public string animTriggerName;    // 애니메이터 트리거 이름

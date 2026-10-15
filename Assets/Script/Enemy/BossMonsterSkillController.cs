@@ -96,7 +96,7 @@ public class BossMonsterSkillController : MonoBehaviour, ISkillCaster
 
     void Update()
     {
-        if (GameManager.instance == null || !GameManager.instance.isLive) return;
+        if (!GameManager.IsLive) return;
         if (_attackBase == null || skills.Count == 0) return;
         if (_enemyHp != null && _enemyHp.isDead) return; // 죽은 뒤엔 새 스킬 시전 자체를 시작하지 않음
 

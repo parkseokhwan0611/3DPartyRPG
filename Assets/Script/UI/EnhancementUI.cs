@@ -97,6 +97,8 @@ public class EnhancementUI : MonoBehaviour
 
     void OnDestroy()
     {
+        // 올려 둔 주문서는 인벤토리에서 1개 빼 둔 상태 — 창이 닫히지 않은 채 씬이 바뀌어도(게임 오버 등) 돌려준다
+        ReturnScroll();
         if (instance == this) { instance = null; IsOpen = false; }
     }
 

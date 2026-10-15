@@ -24,6 +24,11 @@ public class ObjectPoolManager : MonoBehaviour
     [SerializeField]
     private ObjectInfo[] objectInfos = null;
 
+    [Tooltip("풀마다 반납된 오브젝트를 최대 몇 개까지 보관할지 (Count가 더 크면 Count). " +
+             "예전엔 Count와 같아서, 데미지 텍스트처럼 동시에 Count개 넘게 쓰이면 반납 때마다 파괴하고 다음에 새로 생성했음")]
+    [SerializeField]
+    private int maxPoolSize = 32;
+
     // 오브젝트풀들을 관리할 딕셔너리
     private Dictionary<string, IObjectPool<GameObject>> ojbectPoolDic = new Dictionary<string, IObjectPool<GameObject>>();
 
@@ -32,10 +37,13 @@ public class ObjectPoolManager : MonoBehaviour
 
     private void Awake()
     {
-        if (instance == null)
-            instance = this;
-        else
-            Destroy(this.gameObject);
+        if (instance != null && instance != this)
+        {
+            // 중복이면 풀을 만들지 않고 끝낸다 (예전엔 파괴하면서도 Init을 실행해 프리팹을 잔뜩 생성했음)
+            Destroy(gameObject);
+            return;
+        }
+        instance = this;
 
         Init();
     }
@@ -65,9 +73,18 @@ public class ObjectPoolManager : MonoBehaviour
 
             // 풀별로 이름/프리팹을 클로저로 캡처 — 재진입(풀에서 꺼낸 오브젝트의 Awake/OnEnable이
             // 다시 GetGo()를 호출하는 경우)에도 엉뚱한 프리팹이 생성되지 않도록 공유 필드 대신 사용
+            // 이중 반납 검사(collectionCheck)는 반납할 때마다 풀 전체를 훑으므로 에디터에서만 켠다
+#if UNITY_EDITOR
+            const bool collectionCheck = true;
+#else
+            const bool collectionCheck = false;
+#endif
+            int count   = objectInfos[idx].count;
+            int maxSize = Mathf.Max(count, maxPoolSize, 1);
+
             IObjectPool<GameObject> pool = null;
             pool = new ObjectPool<GameObject>(() => CreatePooledItem(prefab, pool), OnTakeFromPool, OnReturnedToPool,
-                OnDestroyPoolObject, true, objectInfos[idx].count, objectInfos[idx].count);
+                OnDestroyPoolObject, collectionCheck, count, maxSize);
 
             goDic.Add(name, prefab);
             ojbectPoolDic.Add(name, pool);

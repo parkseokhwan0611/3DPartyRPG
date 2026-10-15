@@ -69,13 +69,14 @@ public class SkillDetailPanelUI : MonoBehaviour
         {
             int idx = currentLevel - 1;
 
+            // 장비의 마나 소모·쿨타임 감소를 반영한 실제 값 (감소가 있으면 기본값도 함께 — 칸이 넓어 한 줄에 들어감)
             if (!isPassive && idx < skill.mpCost.Length)
-                SetTextSafe(mpCostText, $"마나 소모량: {skill.mpCost[idx]}");
+                SetTextSafe(mpCostText, $"마나 소모량: {SkillDescriptionBuilder.FormatMpCost(skill.mpCost[idx], currentCaster, true)}");
             else
                 SetTextSafe(mpCostText, "");
 
             if (!isPassive && idx < skill.cooldown.Length)
-                SetTextSafe(cooldownText, $"쿨타임: {skill.cooldown[idx]}초");
+                SetTextSafe(cooldownText, $"쿨타임: {SkillDescriptionBuilder.FormatCooldown(skill.cooldown[idx], currentCaster, true)}");
             else
                 SetTextSafe(cooldownText, "");
 
@@ -97,24 +98,33 @@ public class SkillDetailPanelUI : MonoBehaviour
             SetTextSafe(nextSkillLvText, $"다음 레벨: LV {nextLevel}");
 
             if (!isPassive && nextIdx < skill.mpCost.Length)
-                SetTextSafe(nextMpCostText, $"마나 소모량: {skill.mpCost[nextIdx]}");
+                SetTextSafe(nextMpCostText, $"마나 소모량: {SkillDescriptionBuilder.FormatMpCost(skill.mpCost[nextIdx], currentCaster, true)}");
             else
                 SetTextSafe(nextMpCostText, "");
 
             if (!isPassive && nextIdx < skill.cooldown.Length)
-                SetTextSafe(nextCooldownText, $"쿨타임: {skill.cooldown[nextIdx]}초");
+                SetTextSafe(nextCooldownText, $"쿨타임: {SkillDescriptionBuilder.FormatCooldown(skill.cooldown[nextIdx], currentCaster, true)}");
             else
                 SetTextSafe(nextCooldownText, "");
 
             ShowNextStatByType(skill, nextLevel);
 
-            if (nextIdx < skill.skillPointCost.Length)
+            // 비용 배열이 최대 레벨보다 짧으면 마지막 값 — CharacterStatus.TryLevelUpSkill과 같은 기준.
+            // 예전엔 이 경우 버튼 상태를 건드리지 않아 직전에 본 스킬의 상태가 남았음
+            if (skill.skillPointCost != null && skill.skillPointCost.Length > 0)
             {
-                int cost = skill.skillPointCost[nextIdx];
+                int cost = skill.skillPointCost[Mathf.Clamp(nextIdx, 0, skill.skillPointCost.Length - 1)];
                 SetTextSafe(requiredSkillPointText, $"필요 스킬 포인트: {cost}");
                 SetTextSafe(levelConditionText, $"필요 레벨: {requiredLevel}");
                 if (learnButton != null)
                     learnButton.interactable = status.skillPoint >= cost && partyLevel >= requiredLevel;
+            }
+            else
+            {
+                // 비용이 설정되지 않은 스킬은 습득 불가 (TryLevelUpSkill도 거절)
+                SetTextSafe(requiredSkillPointText, "");
+                SetTextSafe(levelConditionText,     $"필요 레벨: {requiredLevel}");
+                if (learnButton != null) learnButton.interactable = false;
             }
         }
         else

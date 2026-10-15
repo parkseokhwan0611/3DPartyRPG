@@ -68,6 +68,10 @@ public class PartyManager : MonoBehaviour
     {
         if (partyMembers.Count == 0) return;
 
+        // 이전 씬에서 쓰러진 채(체력 0) 넘어온 파티원은 리더·체인에서 빼고 숨긴다 (부활 수단이 생기기 전까지 유지).
+        // CharacterStat은 아직 바인딩 전일 수 있으므로 DataManager의 상태를 직접 확인
+        MarkMembersDeadFromData();
+
         // PartyManager는 씬 로컬이라 씬이 바뀌면 항상 0번으로 리더가 초기화되므로,
         // DataManager(DontDestroyOnLoad)에 남아있는 이전 리더 인덱스를 이어받는다
         int startIndex = DataManager.instance != null ? DataManager.instance.currentLeaderIndex : 0;
@@ -85,6 +89,33 @@ public class PartyManager : MonoBehaviour
 
         if (DataManager.instance != null)
             DataManager.instance.OnLevelUp += PlayLevelUpEffect;
+    }
+
+    private void MarkMembersDeadFromData()
+    {
+        if (DataManager.instance == null) return;
+        var statuses = DataManager.instance.partyStatuses;
+
+        var dead = new List<PartyMemberScript>();
+        foreach (var member in partyMembers)
+        {
+            if (member == null || member.StatComp == null) continue;
+            int idx = member.StatComp.partyIndex;
+            if (idx < 0 || idx >= statuses.Count || statuses[idx].currentHp > 0f) continue;
+
+            member.MarkDeadOnSceneStart();
+            dead.Add(member);
+        }
+
+        if (dead.Count > 0) StartCoroutine(HideNextFrame(dead));
+    }
+
+    // 다른 컴포넌트들의 Start(데이터 바인딩·UI 구독)가 끝난 다음 프레임에 숨긴다
+    private System.Collections.IEnumerator HideNextFrame(List<PartyMemberScript> members)
+    {
+        yield return null;
+        foreach (var m in members)
+            if (m != null && m.CurrentState == PartyMemberScript.MemberState.Dead) m.gameObject.SetActive(false);
     }
 
     // 파티 전체를 targetPos로 이동시키되, 씬에 원래 배치돼 있던 파티원 간 상대 위치(포메이션)는
@@ -122,8 +153,8 @@ public class PartyManager : MonoBehaviour
     {
         if (partyMembers.Count == 0) return;
 
-        // 인벤토리/메뉴/상점/대화 열려있으면 캐릭터 입력 전부 차단
-        if (MenuTabUI.IsOpen || ShopUI.IsOpen || DialogueUI.IsOpen) return;
+        // 인벤토리/메뉴/상점/대화/강화 창이 열려있으면 캐릭터 입력 전부 차단 (NPC·포탈·물약 단축키와 같은 기준)
+        if (MenuTabUI.IsOpen || ShopUI.IsOpen || DialogueUI.IsOpen || EnhancementUI.IsOpen) return;
 
         HandleLeaderChangeInput();
         HandleCommandInput();
@@ -136,7 +167,7 @@ public class PartyManager : MonoBehaviour
 
         if (currentLeader == null || currentLeader.CurrentState == PartyMemberScript.MemberState.Dead) return;
 
-        var skillManager = currentLeader.GetComponent<SkillManager>();
+        var skillManager = currentLeader.SkillComp; // 캐시된 참조 (매 프레임 GetComponent 방지)
         if (skillManager != null) skillManager.HandleKeyInput();
     }
 
@@ -159,17 +190,18 @@ public class PartyManager : MonoBehaviour
 
         // 스킬 시전 중(버프 등)에는 이동/공격 명령 자체를 받지 않음 — 기본 공격과 동일하게
         // 이펙트가 끝날 때까지(SkillBase.SkillRoutine이 IsCastingSkill을 풀어줄 때까지) 묶어둠
-        AttackBase leaderAttack = currentLeader.GetComponent<AttackBase>();
+        AttackBase leaderAttack = currentLeader.AttackComp;
         if (leaderAttack != null && leaderAttack.IsCastingSkill) return;
 
         // 스턴 중에는 이동/공격 명령 자체를 받지 않음 — 실행이 안 되는 명령을 굳이 받아서
         // 마커를 찍거나 타겟을 갱신할 필요 없음
-        var leaderStatus = currentLeader.GetComponent<PartyStatusEffectHandler>();
+        var leaderStatus = currentLeader.StatusHandler;
         if (leaderStatus != null && leaderStatus.HasDebuff(StatusEffectType.Stun)) return;
 
         // 롤 스타일 A+좌클릭 강제 공격 — 공격 가능한 오브젝트 위에서만 발동
         if (Input.GetKey(KeyCode.A) && Input.GetMouseButtonDown(0))
         {
+            if (IsPointerOverScreenUI()) return; // 퀵슬롯·미니맵 등 UI 위 클릭은 월드 명령으로 보내지 않음
             Ray attackRay = mainCamera.ScreenPointToRay(Input.mousePosition);
             if (TryGetEnemyHit(attackRay, out RaycastHit forcedHit))
                 DispatchAttackCommand(forcedHit);
@@ -177,6 +209,7 @@ public class PartyManager : MonoBehaviour
         }
 
         if (!Input.GetMouseButtonDown(1)) return;
+        if (IsPointerOverScreenUI()) return;
 
         Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
 
@@ -196,6 +229,35 @@ public class PartyManager : MonoBehaviour
             if (!TryGetWalkablePoint(groundHit.point, out Vector3 walkablePoint)) return;
             DispatchMoveCommand(walkablePoint);
         }
+    }
+
+    // 마우스가 화면 UI(HUD·미니맵·퀵슬롯 등) 위에 있는지. 몬스터·캐릭터 머리 위 HP 바 같은 월드 스페이스 UI는
+    // 제외 — 그걸 UI로 치면 몬스터 HP 바 위를 우클릭했을 때 공격 명령이 막힌다. 클릭한 프레임에만 호출된다
+    private readonly List<UnityEngine.EventSystems.RaycastResult> _uiHits = new List<UnityEngine.EventSystems.RaycastResult>();
+    private UnityEngine.EventSystems.PointerEventData _uiPointer;
+    private UnityEngine.EventSystems.EventSystem _uiPointerOwner;
+
+    bool IsPointerOverScreenUI()
+    {
+        var eventSystem = UnityEngine.EventSystems.EventSystem.current;
+        if (eventSystem == null) return false;
+
+        if (_uiPointer == null || _uiPointerOwner != eventSystem)
+        {
+            _uiPointer      = new UnityEngine.EventSystems.PointerEventData(eventSystem);
+            _uiPointerOwner = eventSystem;
+        }
+        _uiPointer.position = Input.mousePosition;
+
+        _uiHits.Clear();
+        eventSystem.RaycastAll(_uiPointer, _uiHits);
+        foreach (var hit in _uiHits)
+        {
+            if (hit.gameObject == null) continue;
+            Canvas canvas = hit.gameObject.GetComponentInParent<Canvas>();
+            if (canvas != null && canvas.rootCanvas.renderMode != RenderMode.WorldSpace) return true;
+        }
+        return false;
     }
 
     // 클릭 지점 근처에 실제로 걸을 수 있는 NavMesh가 있는지 확인. 있으면 그 위의 정확한 지점으로 스냅.
@@ -233,7 +295,7 @@ public class PartyManager : MonoBehaviour
         foreach (var member in partyMembers)
         {
             if (member.CurrentState == PartyMemberScript.MemberState.Dead) continue;
-            var attack = member.GetComponent<AttackBase>();
+            var attack = member.AttackComp;
             if (attack != null) attack.SetTarget(hit.transform);
         }
 
@@ -248,7 +310,7 @@ public class PartyManager : MonoBehaviour
         _lastMoveDestination = destination;
         _hasPendingDestination = true;
 
-        var leaderAttack = currentLeader.GetComponent<AttackBase>();
+        var leaderAttack = currentLeader.AttackComp;
         if (leaderAttack != null) leaderAttack.SetTarget(null);
         currentLeader.agent.stoppingDistance = 0.1f;
 
@@ -260,7 +322,7 @@ public class PartyManager : MonoBehaviour
             {
                 if (member == currentLeader) continue;
                 if (member.CurrentState == PartyMemberScript.MemberState.Dead) continue;
-                var attack = member.GetComponent<AttackBase>();
+                var attack = member.AttackComp;
                 if (attack != null) attack.SetTarget(null);
                 member.agent.stoppingDistance = member.stopDistance;
             }

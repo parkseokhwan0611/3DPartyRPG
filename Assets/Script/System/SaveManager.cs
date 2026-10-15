@@ -53,10 +53,7 @@ public class SaveManager : MonoBehaviour
                     .GetSlot(ConsumableType.MpPotion)?.data?.itemId ?? "";
             }
 
-            // NPC 재고
-            data.npcStocks.Clear();
-            foreach (var npc in NpcInteractable.AllInstances)
-                data.npcStocks.Add(npc.GetStockSave());
+            // NPC 재고는 DataManager.GetSaveData가 모든 씬의 NPC 몫을 이미 채움
 
             // 퀘스트 진행 상황
             QuestManager.instance?.FillSaveData(data);
@@ -111,7 +108,11 @@ public class SaveManager : MonoBehaviour
     // 로드
     // ─────────────────────────────────────────────────────────────────
 
-    public bool Load()
+    // 마지막 Load()가 이동해야 할 씬 — 저장한 씬, 그 씬을 열 수 없으면(빌드 목록에서 빠짐·구버전 세이브) fallbackScene
+    public string LoadedSceneName { get; private set; }
+
+    // 씬 이동은 호출자(TitleMenuUI)가 LoadedSceneName으로 직접 한다
+    public bool Load(string fallbackScene = null)
     {
         if (!HasSaveData)
         {
@@ -123,10 +124,23 @@ public class SaveManager : MonoBehaviour
         {
             string json = File.ReadAllText(SavePath);
             GameSaveData data = JsonUtility.FromJson<GameSaveData>(json);
+
+            // 저장한 씬으로 돌아간다. 열 수 없는 씬이면 fallbackScene으로 가고, 그 경우 저장된 좌표는
+            // 다른 맵의 좌표라 위치·카메라 복원은 건너뛴다 (퀵슬롯·NPC 재고·포션 슬롯은 그대로 복원)
+            bool savedSceneOk = !string.IsNullOrEmpty(data.sceneName) && Application.CanStreamedLevelBeLoaded(data.sceneName);
+            LoadedSceneName = savedSceneOk ? data.sceneName : fallbackScene;
+            if (string.IsNullOrEmpty(LoadedSceneName))
+            {
+                Debug.LogError($"[SaveManager] 저장된 씬 '{data.sceneName}'을(를) 열 수 없고 대체 씬도 없습니다.");
+                return false;
+            }
+            if (!savedSceneOk)
+                Debug.LogWarning($"[SaveManager] 저장된 씬 '{data.sceneName}'을(를) 열 수 없어 '{LoadedSceneName}'(으)로 이동합니다.");
+
             DataManager.instance?.LoadSaveData(data);
 
             QuestManager.instance?.RestoreProgress(data);
-            StartCoroutine(RestorePosition(data));
+            StartCoroutine(RestoreAfterSceneLoad(data, LoadedSceneName, savedSceneOk));
 
             Debug.Log("[SaveManager] 로드 완료");
             return true;
@@ -152,19 +166,19 @@ public class SaveManager : MonoBehaviour
         }
     }
 
-    private IEnumerator RestorePosition(GameSaveData data)
+    private IEnumerator RestoreAfterSceneLoad(GameSaveData data, string sceneName, bool restorePositions)
     {
-        if (string.IsNullOrEmpty(data.sceneName)) yield break;
-
-        // 씬 전환은 호출자(TitleMenuUI 등)가 담당 — 여기서는 씬이 준비될 때까지만 대기
-        yield return new WaitUntil(() => SceneManager.GetActiveScene().name == data.sceneName);
+        // 씬 전환은 호출자(TitleMenuUI 등)가 담당 — 여기서는 그 씬이 준비될 때까지만 대기.
+        // 예전엔 저장한 씬만 기다렸는데 이어하기가 항상 고정 씬으로 이동해서, 다른 씬에서 저장했으면
+        // 영원히 기다리느라 퀵슬롯·NPC 재고·포션 슬롯이 하나도 복원되지 않았음
+        yield return new WaitUntil(() => SceneManager.GetActiveScene().name == sceneName);
         yield return null; // 오브젝트 초기화 1프레임 대기
 
         var party = PartyManager.instance?.partyMembers;
 
-        // 파티 위치/카메라 복원은 partyPositions가 있을 때만 — 구버전 세이브 등으로 비어있어도
-        // 퀵슬롯/NPC재고/포션슬롯 복원은 서로 무관하므로 계속 진행해야 함
-        if (party != null && data.partyPositions.Count > 0)
+        // 파티 위치/카메라 복원은 저장한 씬으로 돌아왔고 partyPositions가 있을 때만 — 구버전 세이브 등으로
+        // 비어있어도 퀵슬롯/NPC재고/포션슬롯 복원은 서로 무관하므로 계속 진행해야 함
+        if (restorePositions && party != null && data.partyPositions.Count > 0)
         {
             for (int i = 0; i < party.Count && i < data.partyPositions.Count; i++)
             {
@@ -189,25 +203,8 @@ public class SaveManager : MonoBehaviour
         }
 
         RestoreQuickSlots(data);
-        RestoreNpcStocks(data);
         RestorePotionSlots(data);
-    }
-
-    private void RestoreNpcStocks(GameSaveData data)
-    {
-        if (data.npcStocks == null || data.npcStocks.Count == 0) return;
-        var allNpcs = NpcInteractable.AllInstances;
-        foreach (var stockSave in data.npcStocks)
-        {
-            foreach (var npc in allNpcs)
-            {
-                if (npc.NpcId == stockSave.npcId)
-                {
-                    npc.RestoreStock(stockSave);
-                    break;
-                }
-            }
-        }
+        // NPC 재고는 DataManager.LoadSaveData가 복원 — NPC가 직접 읽어가므로 씬 로드를 기다릴 필요 없음
     }
 
     private void RestoreQuickSlots(GameSaveData data)

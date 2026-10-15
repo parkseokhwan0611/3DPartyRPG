@@ -68,8 +68,8 @@ public class SettingsUI : MonoBehaviour
 
         if (resolutionDropdown != null)
         {
-            int idx = _resolutions.FindIndex(r =>
-                r.width == Screen.currentResolution.width && r.height == Screen.currentResolution.height);
+            // Screen.currentResolution은 모니터 해상도라 창 모드에선 실제 창 크기와 다름 — 실제 게임 화면 크기 기준
+            int idx = _resolutions.FindIndex(r => r.width == Screen.width && r.height == Screen.height);
             resolutionDropdown.SetValueWithoutNotify(Mathf.Max(0, idx));
         }
     }

@@ -110,6 +110,7 @@ public class QuestManager : MonoBehaviour
             AudioManager.instance?.PlaySFX("QuestAccept");
 
         OnQuestChanged?.Invoke();
+        HandleInventoryChanged(); // 첫 퀘스트가 수집형이고 시작 아이템으로 이미 채워진 경우
     }
 
     public void RestoreProgress(GameSaveData data)
@@ -120,6 +121,7 @@ public class QuestManager : MonoBehaviour
         completedQuestIds = new List<string>(data.completedQuestIds ?? new List<string>());
         RefreshInventorySubscription();
         OnQuestChanged?.Invoke();
+        HandleInventoryChanged(); // 수집형 퀘스트 진행도를 불러온 인벤토리 기준으로 다시 맞춤
     }
 
     public void FillSaveData(GameSaveData data)
@@ -256,7 +258,10 @@ public class QuestManager : MonoBehaviour
             foreach (var rewardItem in quest.rewardItems)
             {
                 if (rewardItem?.item == null) continue;
-                DataManager.instance.sharedInventory.TryAddItem(new ItemInstance(rewardItem.item, rewardItem.count));
+                var reward = new ItemInstance(rewardItem.item, rewardItem.count);
+                // 인벤토리가 가득 차 못 넣은 보상은 리더 발밑에 떨어뜨린다 (예전엔 그냥 사라졌음)
+                if (!DataManager.instance.sharedInventory.TryAddItem(reward))
+                    DropNearLeader(reward);
             }
         }
 
@@ -270,5 +275,28 @@ public class QuestManager : MonoBehaviour
             AudioManager.instance?.PlaySFX("QuestAccept");
 
         OnQuestChanged?.Invoke();
+
+        // 다음 퀘스트가 수집형이고 이미 아이템을 갖고 있으면 바로 반영 (인벤토리가 또 바뀔 때까지 멈춰 있지 않게)
+        HandleInventoryChanged();
+    }
+
+    // 몬스터 드랍과 같은 월드 아이템(풀 키 "WorldItem_등급")으로 리더 주변에 떨어뜨린다
+    private static void DropNearLeader(ItemInstance item)
+    {
+        var leader = PartyManager.instance != null ? PartyManager.instance.currentLeader : null;
+        GameObject go = ObjectPoolManager.instance != null
+            ? ObjectPoolManager.instance.GetGo($"WorldItem_{item.data.grade}")
+            : null;
+        if (leader == null || go == null)
+        {
+            if (go != null) go.GetComponent<PoolAble>()?.ReleaseObject();
+            Debug.LogWarning($"[QuestManager] 인벤토리가 가득 차 보상 '{item.data.itemName}'을(를) 지급하지 못했습니다.");
+            return;
+        }
+
+        Vector2 scatter = UnityEngine.Random.insideUnitCircle * 1.5f;
+        go.transform.SetPositionAndRotation(leader.transform.position + new Vector3(scatter.x, 0.5f, scatter.y), Quaternion.identity);
+        go.GetComponent<WorldItem>()?.Setup(item);
+        AudioManager.instance?.PlaySFX("ItemDrop");
     }
 }

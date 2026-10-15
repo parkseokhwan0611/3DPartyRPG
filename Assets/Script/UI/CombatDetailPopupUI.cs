@@ -92,12 +92,15 @@ public class CombatDetailPopupUI : MonoBehaviour
         int level = caster != null ? Mathf.Max(1, caster.GetSkillLevel(data)) : Mathf.Max(1, skill.skillLevel);
 
         SetIconAndText(data.icon, $"Lv {level} {data.skillName}", data.description);
-        if (cooldownText != null) cooldownText.text = $"{GetArrayValue(data.cooldown, level):F1}초";
+        // 장비 감소를 반영한 실제 쿨타임 — 이름 옆 칸이 좁아 기본값은 붙이지 않음 (줄바꿈 방지)
+        if (cooldownText != null)
+            cooldownText.text = SkillDescriptionBuilder.FormatCooldown(GetArrayValue(data.cooldown, level), caster, false, "F1");
 
         if (statsText != null)
         {
             var sb = new StringBuilder();
-            sb.AppendLine($"MP 소모: {GetArrayValue(data.mpCost, level):F0}");
+            // 스탯 칸은 넓어서 감소가 있으면 기본값도 함께 표시
+            sb.AppendLine($"MP 소모: {SkillDescriptionBuilder.FormatMpCost(GetArrayValue(data.mpCost, level), caster, true)}");
 
             // 데미지/치유량/버프 수치 — 전투 팝업은 계산식 없이 최종 수치만 표시
             string detail = SkillDescriptionBuilder.BuildCombatDescription(data, level, caster);

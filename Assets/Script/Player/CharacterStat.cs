@@ -258,6 +258,9 @@ public partial class CharacterStat : MonoBehaviour, IDamageable
 
     private void ApplyDamage(float finalDamage, Color damageColor, bool isCrit = false)
     {
+        // 쓰러진 뒤 사라지기 전(사망 연출 중)에 맞은 공격은 무시 — 체력은 이미 0이라 데미지 숫자만 뜨던 문제
+        if (myMember != null && myMember.CurrentState == PartyMemberScript.MemberState.Dead) return;
+
         if (shieldHandler != null)
             finalDamage = shieldHandler.AbsorbDamage(finalDamage);
 
@@ -277,6 +280,9 @@ public partial class CharacterStat : MonoBehaviour, IDamageable
     public void HealHp(float amount, bool showAura = true)
     {
         if (myStatus == null || amount <= 0f) return;
+        // 쓰러진 파티원은 힐로 살아나지 않는다 — 시전 딜레이 동안 대상이 죽은 단일 힐 등 모든 힐 경로 공통
+        // (부활은 부활 패시브·추후 부활 NPC/아이템 전용)
+        if (myMember != null && myMember.CurrentState == PartyMemberScript.MemberState.Dead) return;
         myStatus.currentHp = Mathf.Clamp(myStatus.currentHp + amount, 0, myStatus.MaxHp);
         myStatus.RaiseHpChanged();
         OnHpChanged?.Invoke();

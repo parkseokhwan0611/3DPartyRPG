@@ -20,7 +20,7 @@ public class TitleMenuUI : MonoBehaviour
     [Header("# 씬")]
     [Tooltip("새 게임 시작 시 이동할 씬 — 무기 선택 (그다음 프롤로그 → 게임)")]
     [SerializeField] string newGameSceneName = "WeaponSelect";
-    [Tooltip("이어하기 시 곧바로 이동할 씬 — 이미 무기를 고르고 프롤로그를 본 상태이므로 스테이지로 바로 진입")]
+    [Tooltip("이어하기는 저장한 씬으로 돌아간다. 저장한 씬을 열 수 없을 때(빌드 목록에서 빠짐 등)만 이 씬으로 이동")]
     [SerializeField] string gameSceneName = "Dungeon_1_1";
 
     private bool _isTransitioning = false;
@@ -91,8 +91,16 @@ public class TitleMenuUI : MonoBehaviour
         if (SaveManager.instance == null) return;
         _isTransitioning = true;
         SetButtonsInteractable(false);
-        SaveManager.instance.Load();
-        SceneLoader.Load(gameSceneName);
+
+        // 저장한 씬으로 이동 (그 씬을 열 수 없을 때만 gameSceneName). 불러오기에 실패하면 타이틀에 그대로 남는다
+        if (!SaveManager.instance.Load(gameSceneName))
+        {
+            _isTransitioning = false;
+            SetButtonsInteractable(true);
+            if (loadGameButton != null) loadGameButton.interactable = SaveManager.instance.HasSaveData;
+            return;
+        }
+        SceneLoader.Load(SaveManager.instance.LoadedSceneName);
     }
 
     private void OnExitClicked()

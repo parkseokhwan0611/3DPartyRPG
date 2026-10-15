@@ -61,6 +61,8 @@ public class CombatQuickSlot : MonoBehaviour, IPointerEnterHandler, IPointerExit
     // 쿨다운 오버레이
     // ─────────────────────────────────────────────────────────────────
 
+    private int _shownCooldownKey = int.MinValue; // 지금 쿨타임 텍스트에 보이는 값 (정수 초 ×10, 1초 미만은 0.1초 단위 −100)
+
     public void UpdateCooldown(float ratio, float remaining, float buffRemainingRatio)
     {
         // 쿨다운 오버레이
@@ -70,17 +72,24 @@ public class CombatQuickSlot : MonoBehaviour, IPointerEnterHandler, IPointerExit
             cooldownOverlay.fillAmount = ratio;
         }
 
-        // 쿨다운 텍스트
+        // 쿨다운 텍스트 — 화면에 보이는 숫자가 바뀔 때만 문자열을 새로 만든다 (매 프레임 할당 방지)
         if (cooldownText != null)
         {
             if (remaining > 0f)
             {
                 cooldownText.gameObject.SetActive(true);
-                cooldownText.text = FormatTime(remaining);
+                // FormatTime과 같은 반올림 기준 (1초 이상: 올림 정수, 1초 미만: 소수점 한 자리)
+                int shownKey = remaining >= 1f ? Mathf.CeilToInt(remaining) * 10 : Mathf.RoundToInt(remaining * 10f) - 100;
+                if (shownKey != _shownCooldownKey)
+                {
+                    _shownCooldownKey = shownKey;
+                    cooldownText.text = FormatTime(remaining);
+                }
             }
             else
             {
                 cooldownText.gameObject.SetActive(false);
+                _shownCooldownKey = int.MinValue;
             }
         }
 

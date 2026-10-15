@@ -115,12 +115,14 @@ public class CharacterEquipment
                 ApplySubOption(status, sub);
         }
 
-        // 3. 장비로 인해 최대체력이 바뀐 만큼 현재체력도 같은 폭으로 조정
-        if (preserveHpDeficit)
+        // 3. 최대체력 변화에 맞춰 현재체력 조정 — 최대 체력 버프(PartyStatusEffectHandler)와 같은 규칙:
+        //    늘어나면 늘어난 만큼 채워주고, 줄어들면 넘치는 부분만 잘라낸다 (장비를 벗는 것만으로 체력이 깎여
+        //    죽는 일이 없게). 죽은 캐릭터(현재체력 0)는 장비를 바꿔도 체력이 생기지 않게 건드리지 않는다
+        if (preserveHpDeficit && status.currentHp > 0f)
         {
             float delta = status.MaxHp - oldMaxHp;
-            if (delta != 0f)
-                status.currentHp = Mathf.Max(0f, status.currentHp + delta);
+            if (delta > 0f) status.currentHp += delta;
+            status.currentHp = Mathf.Min(status.currentHp, status.MaxHp);
         }
     }
 

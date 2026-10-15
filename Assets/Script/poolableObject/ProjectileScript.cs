@@ -34,6 +34,8 @@ public class ProjectileScript : PoolAble
     private bool isCrit = false; // 발사 시점에 미리 굴려서 들고 있다가, 맞는 순간 데미지 텍스트에 반영
 
     private Coroutine disableCoroutine;
+    // 이미 무언가에 맞았는지 — 콜라이더를 꺼도 같은 물리 프레임에 대기 중이던 충돌은 또 들어오므로 직접 막는다
+    private bool _hasHit;
 
     // ─────────────────────────────────────────────────────────────────
     // 초기화
@@ -59,6 +61,7 @@ public class ProjectileScript : PoolAble
         if (col != null) col.enabled = true;
         if (lightSourse != null) lightSourse.enabled = true;
 
+        _hasHit = false;
         ResetProjectile();
 
         if (disableCoroutine != null) StopCoroutine(disableCoroutine);
@@ -147,6 +150,10 @@ public class ProjectileScript : PoolAble
 
     protected virtual void OnCollisionEnter(Collision collision)
     {
+        // 한 발은 한 번만 맞는다 (겹쳐 있는 대상 여럿과 같은 프레임에 충돌해도 데미지는 처음 하나에게만)
+        if (_hasHit) return;
+        _hasHit = true;
+
         // 1. 데미지 처리 — 물리/마법 여부에 따라 맞는 대상이 알아서 경감·색상 처리
         bool hitValidTarget = false;
 

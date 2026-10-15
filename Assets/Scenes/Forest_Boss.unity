@@ -339111,6 +339111,74 @@ ParticleSystem:
         m_PostInfinity: 2
         m_RotationOrder: 4
     vectorLabel1_3: W
+--- !u!1001 &1133832094
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 576596681239792009, guid: ebac0a97f89dbe04fb697cbc9770ee0c,
+        type: 3}
+      propertyPath: m_Name
+      value: PoolManager
+      objectReference: {fileID: 0}
+    - target: {fileID: 3879434152437783571, guid: ebac0a97f89dbe04fb697cbc9770ee0c,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3879434152437783571, guid: ebac0a97f89dbe04fb697cbc9770ee0c,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3879434152437783571, guid: ebac0a97f89dbe04fb697cbc9770ee0c,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3879434152437783571, guid: ebac0a97f89dbe04fb697cbc9770ee0c,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3879434152437783571, guid: ebac0a97f89dbe04fb697cbc9770ee0c,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3879434152437783571, guid: ebac0a97f89dbe04fb697cbc9770ee0c,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3879434152437783571, guid: ebac0a97f89dbe04fb697cbc9770ee0c,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3879434152437783571, guid: ebac0a97f89dbe04fb697cbc9770ee0c,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3879434152437783571, guid: ebac0a97f89dbe04fb697cbc9770ee0c,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3879434152437783571, guid: ebac0a97f89dbe04fb697cbc9770ee0c,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: ebac0a97f89dbe04fb697cbc9770ee0c, type: 3}
 --- !u!1 &1136470996
 GameObject:
   m_ObjectHideFlags: 0
@@ -517580,203 +517648,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1608668054}
   m_CullTransparentMesh: 1
---- !u!1 &1609027934
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1609027936}
-  - component: {fileID: 1609027935}
-  m_Layer: 0
-  m_Name: PoolManager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &1609027935
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1609027934}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 54daec7c74778294f908ea6316eab59c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  objectInfos:
-  - objectName: MoveMarker
-    perfab: {fileID: 2113228358838426867, guid: 4c4063db0596f1e4e85849c0b53cb6f4,
-      type: 3}
-    count: 15
-  - objectName: AttackMarker
-    perfab: {fileID: 2113228358838426867, guid: 8f00ebd6b210b0347915029d8a49f27f,
-      type: 3}
-    count: 15
-  - objectName: QuestMarker
-    perfab: {fileID: 2113228358838426867, guid: 17324539ec27e3047b8284e495a85f6c,
-      type: 3}
-    count: 2
-  - objectName: LevelUpEffect
-    perfab: {fileID: 1515737762508409511, guid: 988130f384d7fd341a928b8eca6108d3,
-      type: 3}
-    count: 1
-  - objectName: WorldItem_Normal
-    perfab: {fileID: 8489436070256825637, guid: 83571b95e3087ca45940bdacd4a5c491,
-      type: 3}
-    count: 20
-  - objectName: WorldItem_Advanced
-    perfab: {fileID: 611909421892698927, guid: a74406462ac3b744cbe0d5733c6e68eb, type: 3}
-    count: 20
-  - objectName: WorldItem_Elite
-    perfab: {fileID: 748328652070792689, guid: 92986647ab3ba85479675da2f3dfed50, type: 3}
-    count: 20
-  - objectName: WorldItem_Legendary
-    perfab: {fileID: 1425675813843997490, guid: 016281d97f53b154abf6f7b272c1d27b,
-      type: 3}
-    count: 20
-  - objectName: WorldItem_Mythic
-    perfab: {fileID: 7675397667225046791, guid: bf441499e0ce60647b51a40d89c32726,
-      type: 3}
-    count: 20
-  - objectName: CircleSkillIndicator
-    perfab: {fileID: 8043421567398606088, guid: 2a6404b25daace94a9f6ab302156a10f,
-      type: 3}
-    count: 3
-  - objectName: Yellow Sword Slash 1
-    perfab: {fileID: 7992772246130552058, guid: a13c128387f03754f84446212bfdd477,
-      type: 3}
-    count: 5
-  - objectName: HealerNormalAtk
-    perfab: {fileID: 3593354913146554835, guid: 1548e2a11f77a9e4cbabc665edfe7b4b,
-      type: 3}
-    count: 5
-  - objectName: DealerNormalAtk
-    perfab: {fileID: 4030561519296910290, guid: 2d6decd2b1f115a41972054be270ba56,
-      type: 3}
-    count: 5
-  - objectName: Hit 7 pink
-    perfab: {fileID: 8782024233737970620, guid: aee9084de8abedd42b81198ffd4bd054,
-      type: 3}
-    count: 5
-  - objectName: Hit 4 yellow arrow
-    perfab: {fileID: 1446723560700238633, guid: eaa882ce4e12f934bbda3a0ef8fcfde9,
-      type: 3}
-    count: 5
-  - objectName: NormalDamageText
-    perfab: {fileID: 441271096938680117, guid: 684230b9243a97b48b1153cdbb963f76, type: 3}
-    count: 5
-  - objectName: PlayerDamageText
-    perfab: {fileID: 441271096938680117, guid: 3c8906c7b6fa8f84dbc52f88a9a69776, type: 3}
-    count: 10
-  - objectName: PlayerHealText
-    perfab: {fileID: 441271096938680117, guid: d2e86ef16b4a21147b6bb9259bda67aa, type: 3}
-    count: 5
-  - objectName: HolyPierce
-    perfab: {fileID: 2493904726565639848, guid: bb5d089e5738cc44f901f923f232d1cc,
-      type: 3}
-    count: 2
-  - objectName: DefBuff
-    perfab: {fileID: 1687172063034959228, guid: fddb7828b3926784fb895e9699f72049,
-      type: 3}
-    count: 1
-  - objectName: ThunderSlash
-    perfab: {fileID: 849045093443236884, guid: 111c6ca0ec5b0fa48803c4ba6aa42e90, type: 3}
-    count: 2
-  - objectName: GiantSlash
-    perfab: {fileID: 5266221001641745148, guid: 58a0e92a2d0a95441b6b08f58b98ab5c,
-      type: 3}
-    count: 2
-  - objectName: DotHeal
-    perfab: {fileID: 8734122359314112353, guid: 90e166aae116709449a024dc45112f59,
-      type: 3}
-    count: 1
-  - objectName: Cleans
-    perfab: {fileID: 4885993744736997009, guid: 4b859d2329e20154ab747500e1953c3a,
-      type: 3}
-    count: 1
-  - objectName: MPRegen
-    perfab: {fileID: 8689840811846480658, guid: fbc6bd2e27f2ed849a77b1af74af7de1,
-      type: 3}
-    count: 1
-  - objectName: PartyHeal
-    perfab: {fileID: 5328322788109955815, guid: b96a25acca81c234782f47d1bdef6828,
-      type: 3}
-    count: 2
-  - objectName: DarkMagicLightning
-    perfab: {fileID: 5086033594084904282, guid: b970957b50cad9545ac7bab7acdf36b6,
-      type: 3}
-    count: 5
-  - objectName: SpacialCollision
-    perfab: {fileID: 2601378963704586577, guid: 5c9591dfa4997524f910376414f26c3e,
-      type: 3}
-    count: 2
-  - objectName: FirePillar
-    perfab: {fileID: 2141267316498306331, guid: c56299558572b684f913523c83a82c02,
-      type: 3}
-    count: 2
-  - objectName: SkeletonArrow
-    perfab: {fileID: 578519138604507454, guid: c6a106962d5c5d847bf3e7a9281cf42f, type: 3}
-    count: 10
-  - objectName: GoblinGrenade
-    perfab: {fileID: 5374478776143434586, guid: 65eb11be821dcf448bbe36854a013c95,
-      type: 3}
-    count: 10
-  - objectName: GrenadeExplosion
-    perfab: {fileID: 2399505414507422832, guid: 922d1ba19564df544b86a36bc65163d1,
-      type: 3}
-    count: 10
-  - objectName: SlingerStone
-    perfab: {fileID: 7321320559479759428, guid: 452f53f67f798c149950756fcc0788b3,
-      type: 3}
-    count: 10
-  - objectName: StoneExplosion
-    perfab: {fileID: 69150081087587767, guid: 097ccce976f62a24ba658738eb20359e, type: 3}
-    count: 10
-  - objectName: GoblinBossNormalAtk
-    perfab: {fileID: 8896009124873254560, guid: bb02e11c85da19a49a2eed98688d266e,
-      type: 3}
-    count: 3
-  - objectName: Hit 12 slime
-    perfab: {fileID: 6974237041032268551, guid: df5990e5162238b48be9ef4495a27c3d,
-      type: 3}
-    count: 3
-  - objectName: GoblinDarkExplosion
-    perfab: {fileID: 5402716474444746077, guid: fbfd0e9e74b664c48b853b4068d9c0f5,
-      type: 3}
-    count: 1
-  - objectName: PoisionBottle
-    perfab: {fileID: 1270340009616595327, guid: 0236f84ff2ee05a4d9e1fe3d4b8e41d3,
-      type: 3}
-    count: 1
-  - objectName: GoblinBossBottle
-    perfab: {fileID: 1363209929856299772, guid: 132add7d8aeb4474e993ab2aea84ed45,
-      type: 3}
-    count: 1
-  - objectName: BossSummonVFX
-    perfab: {fileID: 8424819827099072664, guid: 2b0bbc5dc916ee24da1671c66c675957,
-      type: 3}
-    count: 3
---- !u!4 &1609027936
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1609027934}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1609430792
 GameObject:
   m_ObjectHideFlags: 0
@@ -561122,51 +560993,6 @@ Transform:
   m_Children:
   - {fileID: 431695243}
   m_Father: {fileID: 1948053457}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1719173682
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1719173684}
-  - component: {fileID: 1719173683}
-  m_Layer: 0
-  m_Name: GameManager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &1719173683
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1719173682}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d16722f5c58249d408a3396d70566326, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  isLive: 1
---- !u!4 &1719173684
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1719173682}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 26.034193, y: 0.96392655, z: 5.617974}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1719430895
 GameObject:
@@ -609200,6 +609026,84 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1871296018}
   m_CullTransparentMesh: 1
+--- !u!1001 &1871339073
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 287185657419625512, guid: 015e5c8646bd0c34d82d38ae51a8ba04,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 524.49347
+      objectReference: {fileID: 0}
+    - target: {fileID: 287185657419625512, guid: 015e5c8646bd0c34d82d38ae51a8ba04,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 256.40488
+      objectReference: {fileID: 0}
+    - target: {fileID: 287185657419625512, guid: 015e5c8646bd0c34d82d38ae51a8ba04,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 31.035677
+      objectReference: {fileID: 0}
+    - target: {fileID: 287185657419625512, guid: 015e5c8646bd0c34d82d38ae51a8ba04,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 287185657419625512, guid: 015e5c8646bd0c34d82d38ae51a8ba04,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 287185657419625512, guid: 015e5c8646bd0c34d82d38ae51a8ba04,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 287185657419625512, guid: 015e5c8646bd0c34d82d38ae51a8ba04,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 287185657419625512, guid: 015e5c8646bd0c34d82d38ae51a8ba04,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 287185657419625512, guid: 015e5c8646bd0c34d82d38ae51a8ba04,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 287185657419625512, guid: 015e5c8646bd0c34d82d38ae51a8ba04,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 945928093153045648, guid: 015e5c8646bd0c34d82d38ae51a8ba04,
+        type: 3}
+      propertyPath: m_Name
+      value: SceneLoader
+      objectReference: {fileID: 0}
+    - target: {fileID: 3944515772201278365, guid: 015e5c8646bd0c34d82d38ae51a8ba04,
+        type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8431540331600255197, guid: 015e5c8646bd0c34d82d38ae51a8ba04,
+        type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 015e5c8646bd0c34d82d38ae51a8ba04, type: 3}
 --- !u!1 &1873468313
 GameObject:
   m_ObjectHideFlags: 0
@@ -695773,9 +695677,8 @@ SceneRoots:
   - {fileID: 2125171594}
   - {fileID: 1771052541}
   - {fileID: 1929760348}
-  - {fileID: 1719173684}
   - {fileID: 1562592518}
-  - {fileID: 1609027936}
+  - {fileID: 1133832094}
   - {fileID: 1853548222}
   - {fileID: 1112639006}
   - {fileID: 50482402}
@@ -695791,3 +695694,4 @@ SceneRoots:
   - {fileID: 1224154899021912818}
   - {fileID: 1956720669}
   - {fileID: 115505883}
+  - {fileID: 1871339073}

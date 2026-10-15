@@ -9,11 +9,13 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1314634815865661653}
+  - component: {fileID: 6436009167430926336}
   - component: {fileID: 1069165368840630408}
   - component: {fileID: 1843819047121375808}
   - component: {fileID: 4084207772254143417}
   - component: {fileID: 4890718339328564867}
   - component: {fileID: 2911264311777437961}
+  - component: {fileID: 5554503942166689792}
   - component: {fileID: 3977090485056006170}
   m_Layer: 0
   m_Name: CoreSystem
@@ -393,3 +395,28 @@ MonoBehaviour:
     bgmKey: PrologueBGM
   enableGlobalUiClick: 1
   uiClickSfxKey: UIClick
+--- !u!114 &6436009167430926336
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2114802944394787709}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1d1288f57aeb4659a71f897682f4e091, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &5554503942166689792
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2114802944394787709}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d16722f5c58249d408a3396d70566326, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isLive: 1

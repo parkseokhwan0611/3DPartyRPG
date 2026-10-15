@@ -49,12 +49,12 @@ public class DebuffSkill : SkillBase
         if (data.effectSpawnDelay > 0f)
             yield return new WaitForSeconds(data.effectSpawnDelay);
 
-        // 4. 이펙트 스폰
+        // 4. 이펙트 스폰 (시전 딜레이 동안 대상이 사라졌으면 시전자 위치 기준)
         SpawnEffect(data, target);
 
-        // 5. 디버프 적용
-        if (data.isAoe) ApplyAoeDebuff(data);
-        else            ApplySingleDebuff(data, target);
+        // 5. 디버프 적용 — 단일 대상이 그사이 죽어 사라졌으면 건너뜀
+        if (data.isAoe)          ApplyAoeDebuff(data);
+        else if (target != null) ApplySingleDebuff(data, target);
 
         // ★ 디버프 적용 완료 → 후딜 캔슬 허용
         ReleaseActivating();

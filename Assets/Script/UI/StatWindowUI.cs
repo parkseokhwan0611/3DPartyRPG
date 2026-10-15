@@ -176,8 +176,8 @@ public class StatWindowUI : MonoBehaviour
             case StatType.Dex: status.addedDex++; break;
         }
 
-        // VIT로 최대체력이 오른 만큼 현재체력도 같은 폭으로 조정
-        if (type == StatType.Vit)
+        // VIT로 최대체력이 오른 만큼 현재체력도 같은 폭으로 조정 — 쓰러진 캐릭터(체력 0)는 체력이 생기지 않게 제외
+        if (type == StatType.Vit && status.currentHp > 0f)
         {
             float delta = status.MaxHp - oldMaxHp;
             if (delta != 0f) status.currentHp = Mathf.Max(0f, status.currentHp + delta);

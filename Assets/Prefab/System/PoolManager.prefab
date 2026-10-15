@@ -1,0 +1,271 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &576596681239792009
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3879434152437783571}
+  - component: {fileID: 3658099352949772778}
+  m_Layer: 0
+  m_Name: PoolManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3879434152437783571
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 576596681239792009}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &3658099352949772778
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 576596681239792009}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 54daec7c74778294f908ea6316eab59c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  objectInfos:
+  - objectName: MoveMarker
+    perfab: {fileID: 2113228358838426867, guid: 4c4063db0596f1e4e85849c0b53cb6f4,
+      type: 3}
+    count: 1
+  - objectName: AttackMarker
+    perfab: {fileID: 2113228358838426867, guid: 8f00ebd6b210b0347915029d8a49f27f,
+      type: 3}
+    count: 1
+  - objectName: QuestMarker
+    perfab: {fileID: 2113228358838426867, guid: 17324539ec27e3047b8284e495a85f6c,
+      type: 3}
+    count: 1
+  - objectName: LevelUpEffect
+    perfab: {fileID: 1515737762508409511, guid: 988130f384d7fd341a928b8eca6108d3,
+      type: 3}
+    count: 1
+  - objectName: AtkTextVFX
+    perfab: {fileID: 4246062865696273535, guid: ae53cd52eb5a24c4fadd0a33abba26b2,
+      type: 3}
+    count: 3
+  - objectName: DefTextVFX
+    perfab: {fileID: 279788610510384803, guid: 989297ad6d719ca4dacd336fe164bd0f, type: 3}
+    count: 3
+  - objectName: CritTextVFX
+    perfab: {fileID: 3071085564086693562, guid: 228b0191eb4a8604db016a7207073d44,
+      type: 3}
+    count: 3
+  - objectName: WorldItem_Normal
+    perfab: {fileID: 8489436070256825637, guid: 83571b95e3087ca45940bdacd4a5c491,
+      type: 3}
+    count: 3
+  - objectName: WorldItem_Advanced
+    perfab: {fileID: 611909421892698927, guid: a74406462ac3b744cbe0d5733c6e68eb, type: 3}
+    count: 3
+  - objectName: WorldItem_Elite
+    perfab: {fileID: 748328652070792689, guid: 92986647ab3ba85479675da2f3dfed50, type: 3}
+    count: 3
+  - objectName: WorldItem_Legendary
+    perfab: {fileID: 1425675813843997490, guid: 016281d97f53b154abf6f7b272c1d27b,
+      type: 3}
+    count: 3
+  - objectName: WorldItem_Mythic
+    perfab: {fileID: 7675397667225046791, guid: bf441499e0ce60647b51a40d89c32726,
+      type: 3}
+    count: 3
+  - objectName: CircleSkillIndicator
+    perfab: {fileID: 8043421567398606088, guid: 2a6404b25daace94a9f6ab302156a10f,
+      type: 3}
+    count: 1
+  - objectName: TankerNormalAtk
+    perfab: {fileID: 7992772246130552058, guid: a13c128387f03754f84446212bfdd477,
+      type: 3}
+    count: 1
+  - objectName: WarriorNormalAtk
+    perfab: {fileID: 9137677466435184615, guid: f4578e17337c3cd4e9653415d8f291ce,
+      type: 3}
+    count: 1
+  - objectName: MageNormalAtk
+    perfab: {fileID: 4030561519296910290, guid: 2d6decd2b1f115a41972054be270ba56,
+      type: 3}
+    count: 1
+  - objectName: HealerNormalAtk
+    perfab: {fileID: 3593354913146554835, guid: 1548e2a11f77a9e4cbabc665edfe7b4b,
+      type: 3}
+    count: 1
+  - objectName: Hit 7 pink
+    perfab: {fileID: 8782024233737970620, guid: aee9084de8abedd42b81198ffd4bd054,
+      type: 3}
+    count: 1
+  - objectName: Hit 4 yellow arrow
+    perfab: {fileID: 1446723560700238633, guid: eaa882ce4e12f934bbda3a0ef8fcfde9,
+      type: 3}
+    count: 1
+  - objectName: NormalDamageText
+    perfab: {fileID: 441271096938680117, guid: 684230b9243a97b48b1153cdbb963f76, type: 3}
+    count: 3
+  - objectName: PlayerDamageText
+    perfab: {fileID: 441271096938680117, guid: 3c8906c7b6fa8f84dbc52f88a9a69776, type: 3}
+    count: 3
+  - objectName: PlayerHealText
+    perfab: {fileID: 441271096938680117, guid: d2e86ef16b4a21147b6bb9259bda67aa, type: 3}
+    count: 3
+  - objectName: HolyPierce
+    perfab: {fileID: 2493904726565639848, guid: bb5d089e5738cc44f901f923f232d1cc,
+      type: 3}
+    count: 1
+  - objectName: DefBuff
+    perfab: {fileID: 1687172063034959228, guid: fddb7828b3926784fb895e9699f72049,
+      type: 3}
+    count: 1
+  - objectName: ThunderSlash
+    perfab: {fileID: 849045093443236884, guid: 111c6ca0ec5b0fa48803c4ba6aa42e90, type: 3}
+    count: 1
+  - objectName: GiantSlash
+    perfab: {fileID: 5266221001641745148, guid: 58a0e92a2d0a95441b6b08f58b98ab5c,
+      type: 3}
+    count: 1
+  - objectName: DotHeal
+    perfab: {fileID: 8734122359314112353, guid: 90e166aae116709449a024dc45112f59,
+      type: 3}
+    count: 3
+  - objectName: Cleans
+    perfab: {fileID: 4885993744736997009, guid: 4b859d2329e20154ab747500e1953c3a,
+      type: 3}
+    count: 3
+  - objectName: MPRegen
+    perfab: {fileID: 8689840811846480658, guid: fbc6bd2e27f2ed849a77b1af74af7de1,
+      type: 3}
+    count: 3
+  - objectName: PartyHeal
+    perfab: {fileID: 5328322788109955815, guid: b96a25acca81c234782f47d1bdef6828,
+      type: 3}
+    count: 3
+  - objectName: DarkMagicLightning
+    perfab: {fileID: 5086033594084904282, guid: b970957b50cad9545ac7bab7acdf36b6,
+      type: 3}
+    count: 1
+  - objectName: SpacialCollision
+    perfab: {fileID: 2601378963704586577, guid: 5c9591dfa4997524f910376414f26c3e,
+      type: 3}
+    count: 1
+  - objectName: FirePillar
+    perfab: {fileID: 2141267316498306331, guid: c56299558572b684f913523c83a82c02,
+      type: 3}
+    count: 1
+  - objectName: SkeletonArrow
+    perfab: {fileID: 578519138604507454, guid: c6a106962d5c5d847bf3e7a9281cf42f, type: 3}
+    count: 3
+  - objectName: GoblinGrenade
+    perfab: {fileID: 5374478776143434586, guid: 65eb11be821dcf448bbe36854a013c95,
+      type: 3}
+    count: 3
+  - objectName: GrenadeExplosion
+    perfab: {fileID: 2399505414507422832, guid: 922d1ba19564df544b86a36bc65163d1,
+      type: 3}
+    count: 3
+  - objectName: SlingerStone
+    perfab: {fileID: 7321320559479759428, guid: 452f53f67f798c149950756fcc0788b3,
+      type: 3}
+    count: 3
+  - objectName: StoneExplosion
+    perfab: {fileID: 69150081087587767, guid: 097ccce976f62a24ba658738eb20359e, type: 3}
+    count: 3
+  - objectName: GoblinBossNormalAtk
+    perfab: {fileID: 8896009124873254560, guid: bb02e11c85da19a49a2eed98688d266e,
+      type: 3}
+    count: 1
+  - objectName: Hit 12 slime
+    perfab: {fileID: 6974237041032268551, guid: df5990e5162238b48be9ef4495a27c3d,
+      type: 3}
+    count: 1
+  - objectName: GoblinDarkExplosion
+    perfab: {fileID: 5402716474444746077, guid: fbfd0e9e74b664c48b853b4068d9c0f5,
+      type: 3}
+    count: 1
+  - objectName: PoisionBottle
+    perfab: {fileID: 1270340009616595327, guid: 0236f84ff2ee05a4d9e1fe3d4b8e41d3,
+      type: 3}
+    count: 1
+  - objectName: GoblinBossBottle
+    perfab: {fileID: 1363209929856299772, guid: 132add7d8aeb4474e993ab2aea84ed45,
+      type: 3}
+    count: 1
+  - objectName: BossSummonVFX
+    perfab: {fileID: 8424819827099072664, guid: 2b0bbc5dc916ee24da1671c66c675957,
+      type: 3}
+    count: 3
+  - objectName: ShieldAtk
+    perfab: {fileID: 5392028382893834318, guid: e672c57d365252d4abe859f2b9178a96,
+      type: 3}
+    count: 1
+  - objectName: ArmorBreak
+    perfab: {fileID: 5565295773590080820, guid: a1de69485680d874d9f06110292c5037,
+      type: 3}
+    count: 1
+  - objectName: DarkSlash
+    perfab: {fileID: 9062496707702780286, guid: e01be93015de1ec4db1beaaf95894e76,
+      type: 3}
+    count: 1
+  - objectName: GunslingerNormalAtk
+    perfab: {fileID: 7423072485500159914, guid: e96fa4571da47f6439bdf19dfc162138,
+      type: 3}
+    count: 1
+  - objectName: Firing
+    perfab: {fileID: 5564285188340267498, guid: 27f7887fe46f93e4798fdcfc91d93714,
+      type: 3}
+    count: 1
+  - objectName: GunslingerBomb
+    perfab: {fileID: 5046351873399558040, guid: 90862c54957f4e00aa9051f6287c3d9d,
+      type: 3}
+    count: 1
+  - objectName: GunslingerBombExplosion
+    perfab: {fileID: 8584265374633801674, guid: 51237ad6cac946969185f01a633c6b02,
+      type: 3}
+    count: 1
+  - objectName: TripleFire
+    perfab: {fileID: 4635932933509735402, guid: e5c221e9e998f604b9ddea6faf28d7f0,
+      type: 3}
+    count: 3
+  - objectName: LaserAttack
+    perfab: {fileID: 1464554354907837643, guid: d10bdd28581a4f7408b890c1986c19f9,
+      type: 3}
+    count: 1
+  - objectName: BlackMagic
+    perfab: {fileID: 8080560312672726575, guid: b017383bd5df7f74b86d76ae85bc1a3f,
+      type: 3}
+    count: 1
+  - objectName: SkeletonDisappear
+    perfab: {fileID: 3969387340055931328, guid: 7140a8c4d3be39f4d9c7432584ce9883,
+      type: 3}
+    count: 1
+  - objectName: SummonerNormalAtk
+    perfab: {fileID: 9005181927664405306, guid: 277208c2fdb5c6240a9bdad2bb6d8e0e,
+      type: 3}
+    count: 1
+  - objectName: Hit 3 black fire
+    perfab: {fileID: 3808964353962585286, guid: 5b6f930c358690a4bba28460218058eb,
+      type: 3}
+    count: 1
+  - objectName: SkeletonTaunt
+    perfab: {fileID: 5993686850658209635, guid: 4e159ff4ba8b98143b76ca99cbd70d75,
+      type: 3}
+    count: 2
+  maxPoolSize: 32

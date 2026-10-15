@@ -81,6 +81,9 @@ public abstract class MonsterSkillBase : MonoBehaviour
     // 실제로 적중시키는 지점(범위 판정 루프, 투사체 히트 콜백 등)에서 대상 하나당 한 번씩 호출
     protected void ApplyDebuff(GameObject target)
     {
+        // this == null: 화살·수류탄이 날아가는 동안 시전한 몬스터가 죽어 파괴된 경우 — 디버프 출처(gameObject)를
+        // 읽을 수 없으므로 디버프만 건너뛴다 (데미지는 투사체가 이미 적용함)
+        if (this == null) return;
         if (debuff == MonsterSkillDebuff.None || target == null) return;
 
         StatusEffectType type = debuff == MonsterSkillDebuff.Stun ? StatusEffectType.Stun : StatusEffectType.Slow;

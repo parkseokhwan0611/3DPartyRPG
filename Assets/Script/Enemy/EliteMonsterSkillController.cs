@@ -52,7 +52,7 @@ public class EliteMonsterSkillController : MonoBehaviour, ISkillCaster
 
     void Update()
     {
-        if (GameManager.instance == null || !GameManager.instance.isLive) return;
+        if (!GameManager.IsLive) return;
         if (skill == null || _attackBase == null) return;
         if (_enemyHp != null && _enemyHp.isDead) return; // 죽은 뒤엔 새 스킬 시전 자체를 시작하지 않음
 

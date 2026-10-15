@@ -78,6 +78,27 @@ public class DataManager : MonoBehaviour
     public string hpPotionSlotItemId = "";
     public string mpPotionSlotItemId = "";
 
+    // NPC 상점 한정 재고 — NPC ID → (상점 항목 인덱스 → 남은 수량). 한 번도 사지 않은 항목은 없음(= 최대 재고).
+    // NPC는 씬 로컬이라 예전엔 NPC가 직접 들고 있어서 씬을 나갔다 오면 재고가 다시 찼고,
+    // 저장도 지금 씬의 NPC만 기록됐음 — 씬이 바뀌어도 살아남는 여기에 모든 NPC 재고를 보관한다
+    private readonly Dictionary<string, Dictionary<int, int>> npcStocks = new Dictionary<string, Dictionary<int, int>>();
+
+    public bool TryGetNpcStock(string npcId, int entryIndex, out int remaining)
+    {
+        remaining = 0;
+        return !string.IsNullOrEmpty(npcId)
+            && npcStocks.TryGetValue(npcId, out var stocks)
+            && stocks.TryGetValue(entryIndex, out remaining);
+    }
+
+    public void SetNpcStock(string npcId, int entryIndex, int remaining)
+    {
+        if (string.IsNullOrEmpty(npcId)) return;
+        if (!npcStocks.TryGetValue(npcId, out var stocks))
+            npcStocks[npcId] = stocks = new Dictionary<int, int>();
+        stocks[entryIndex] = remaining;
+    }
+
     [Header("테스트 설정")]
     [Tooltip("게임 시작 시 각 캐릭터에게 지급할 스킬 포인트")]
     public int startSkillPoint = 1;
@@ -109,8 +130,12 @@ public class DataManager : MonoBehaviour
 
         instance = this;
         DontDestroyOnLoad(gameObject);
+        _startPartyLevel = partyLevel; // 인스펙터에 넣은 값 = 새 게임 시작 레벨 (플레이 중 오른 레벨과 구분해 보관)
         InitData();
     }
+
+    // 새 게임 시작 레벨 — partyLevel은 플레이하면서 오르므로, 처음 값을 따로 들고 있다가 새 게임마다 되돌린다
+    private int _startPartyLevel = 1;
 
     // ─────────────────────────────────────────────────────────────────
     // 초기화 (새 게임 시작 시에도 호출)
@@ -130,11 +155,12 @@ public class DataManager : MonoBehaviour
         }
 
         // 전체 상태 초기화
-        // partyLevel은 여기서 강제로 1로 되돌리지 않음 — 인스펙터에 설정된 값을 시작 레벨로 사용
-        // (테스트용으로 미리 높은 레벨을 넣어두거나, 씬 재진입 시에도 유지되도록)
+        // partyLevel은 1이 아니라 인스펙터에 설정된 시작 레벨로 되돌림 (테스트용으로 미리 높은 레벨을 넣어둘 수 있게).
+        // DataManager는 씬이 바뀌어도 살아 있어서, 되돌리지 않으면 한 판 플레이 후 새 게임을 해도 이전 레벨이 남았음
         partyStatuses.Clear();
         partyEquipments.Clear();
         sharedInventory    = new Inventory();
+        partyLevel         = _startPartyLevel;
         partyExp           = 0;
         gold               = 0;
         selectedPartyIndex = 0;
@@ -144,6 +170,7 @@ public class DataManager : MonoBehaviour
         hpPotionSlotItemId = "";
         mpPotionSlotItemId = "";
         currentLeaderIndex = 0;
+        npcStocks.Clear();
 
         // 시작 아이템 지급
         if (startItems != null)
@@ -201,6 +228,7 @@ public class DataManager : MonoBehaviour
                 addedDex   = status.addedDex,
                 classType   = status.classData != null ? (int)status.classData.classType : -1,
                 classChosen = status.classChosen,
+                reviveCooldown = Mathf.Max(0f, status.reviveCooldownTimer),
             };
 
             foreach (var kvp in status.skillLevels)
@@ -246,6 +274,15 @@ public class DataManager : MonoBehaviour
             }
         }
 
+        // NPC 한정 재고 — 지금 씬에 없는 NPC 것까지 전부
+        foreach (var npc in npcStocks)
+        {
+            var stockSave = new NpcStockSave { npcId = npc.Key };
+            foreach (var kvp in npc.Value)
+                stockSave.stocks.Add(new NpcStockEntry { entryIndex = kvp.Key, remaining = kvp.Value });
+            save.npcStocks.Add(stockSave);
+        }
+
         return save;
     }
 
@@ -269,6 +306,16 @@ public class DataManager : MonoBehaviour
         hpPotionSlotItemId  = save.hpPotionSlotItemId;
         mpPotionSlotItemId  = save.mpPotionSlotItemId;
 
+        // NPC 한정 재고 — NPC들은 이 값을 직접 읽으므로 씬 로드 순서와 무관
+        npcStocks.Clear();
+        if (save.npcStocks != null)
+            foreach (var npc in save.npcStocks)
+            {
+                if (npc?.stocks == null) continue;
+                foreach (var entry in npc.stocks)
+                    SetNpcStock(npc.npcId, entry.entryIndex, entry.remaining);
+            }
+
         // 캐릭터 복원
         for (int i = 0; i < baseDataList.Count && i < save.characters.Count; i++)
         {
@@ -281,6 +328,7 @@ public class DataManager : MonoBehaviour
             status.classData   = savedClass != null ? savedClass : baseDataList[i];
             status.charName    = GetCharName(status.classData);
             status.classChosen = saved.classChosen;
+            status.reviveCooldownTimer = saved.reviveCooldown;
             status.currentHp  = saved.currentHp;
             status.currentMp  = saved.currentMp;
             status.statPoint  = saved.statPoint;
@@ -335,6 +383,14 @@ public class DataManager : MonoBehaviour
             // currentHp는 이미 세이브 파일의 최종값(saved.currentHp)으로 세팅돼 있으므로
             // 장비 복원으로 인한 최대체력 증가분을 또 더하면 중복 반영됨 — false로 스킵
             partyEquipments[entry.characterIndex].RecalculateStats(partyStatuses[entry.characterIndex], preserveHpDeficit: false);
+        }
+
+        // 최대 체력·마나 버프 중에 저장했으면 현재값이 버프 없는 최대치를 넘을 수 있으므로 잘라낸다
+        foreach (var status in partyStatuses)
+        {
+            if (status?.classData == null) continue;
+            status.currentHp = Mathf.Min(status.currentHp, status.MaxHp);
+            status.currentMp = Mathf.Min(status.currentMp, status.MaxMp);
         }
 
         OnDataInitialized?.Invoke();

@@ -47,33 +47,38 @@ public class DamageSkill : SkillBase
 
         PlaySkillSfx(data);
 
+        // 시전 딜레이 동안 대상이 죽어 사라질 수 있으므로 위치를 미리 기억 (장판·수류탄은 그 자리에 떨어진다)
+        Vector3 targetPos = target.position;
+
         // 3. 이펙트 스폰 타이밍 대기
         if (data.effectSpawnDelay > 0f)
             yield return new WaitForSeconds(data.effectSpawnDelay);
+
+        if (target != null) targetPos = target.position;
 
         // 4. 이펙트 스폰 + 데미지 판정
         if (data.throwGrenade)
         {
             // 수류탄형: 포물선으로 던지고, 착지 시 GrenadeProjectile이 직접 범위 판정
-            ThrowGrenade(data, target);
+            ThrowGrenade(data, targetPos);
         }
         else if (data.fireProjectile)
         {
             // 투사체형: 개수·간격·퍼짐 각도대로 발사, 맞는 순간 ProjectileScript가 데미지 적용.
-            // 연사면 마지막 발까지 쏜 뒤에 후딜 캔슬을 허용한다
+            // 연사면 마지막 발까지 쏜 뒤에 후딜 캔슬을 허용한다 (대상이 사라지면 마지막 방향으로 발사)
             yield return FireProjectiles(data, target);
         }
         else if (data.spawnAtTarget)
         {
             // 장판형: 타겟 위치에 스폰, SkillZone이 직접 판정
-            SpawnZone(data, target);
+            SpawnZone(data, targetPos);
         }
         else
         {
-            // 일반형: 시전자 위치에 스폰, 즉시 판정
+            // 일반형: 시전자 위치에 스폰, 즉시 판정 (단일 대상이 사라졌으면 데미지 없음)
             SpawnEffect(data);
-            if (data.isAoe) ApplyAoeDamage(data);
-            else            ApplySingleDamage(data, target);
+            if (data.isAoe)          ApplyAoeDamage(data);
+            else if (target != null) ApplySingleDamage(data, target);
         }
 
         // 5.5 부가 버프 적용 (시전자 자신 — 명중 여부와 무관하게 스킬 사용 시점에 1회 적용)
@@ -246,7 +251,7 @@ public class DamageSkill : SkillBase
     }
 
     // 장판형 — 타겟 위치에 이펙트 스폰 후 SkillZone에 파라미터 전달
-    private void SpawnZone(DamageSkillData data, Transform target)
+    private void SpawnZone(DamageSkillData data, Vector3 targetPos)
     {
         if (string.IsNullOrEmpty(data.effectPoolKey)) return;
         if (ObjectPoolManager.instance == null) return;
@@ -255,7 +260,7 @@ public class DamageSkill : SkillBase
         if (effect == null) return;
 
         // 타겟 위치에 배치 (오프셋 적용)
-        effect.transform.position = target.position + data.effectSpawnOffset;
+        effect.transform.position = targetPos + data.effectSpawnOffset;
         effect.transform.rotation = Quaternion.Euler(data.effectSpawnRotation);
 
         // SkillZone에 판정 파라미터 전달
@@ -363,7 +368,7 @@ public class DamageSkill : SkillBase
 
     // 수류탄형 — 몬스터 수류탄(MonsterGrenadeSkill)과 같은 GrenadeProjectile로 던진다.
     // 착지 지점은 지금 대상의 발밑으로 고정, 폭발 반경은 스킬 범위(GetRange)
-    private void ThrowGrenade(DamageSkillData data, Transform target)
+    private void ThrowGrenade(DamageSkillData data, Vector3 targetPos)
     {
         if (string.IsNullOrEmpty(data.effectPoolKey)) return;
         if (ObjectPoolManager.instance == null) return;
@@ -380,7 +385,7 @@ public class DamageSkill : SkillBase
         }
 
         Vector3 start   = transform.position + transform.rotation * data.effectSpawnOffset;
-        Vector3 landing = target.position;
+        Vector3 landing = targetPos;
         go.transform.rotation = transform.rotation * Quaternion.Euler(data.effectSpawnRotation);
 
         // 치명타는 폭발에 맞은 대상마다 GrenadeProjectile이 굴리므로 여기서는 치명타 전 데미지만 넘긴다

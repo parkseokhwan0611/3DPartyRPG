@@ -176,6 +176,19 @@ public class QuestHudUI : MonoBehaviour
     // 진행도 텍스트 (NpcDialogue: 남은 거리 / KillMonster: 처치 현황)
     // ─────────────────────────────────────────────────────────────────
 
+    // 매 프레임 문자열을 새로 만들지 않도록, 표시 내용이 실제로 바뀔 때만 텍스트를 갱신한다
+    // (종류: 0 = 비움, 1 = 남은 거리, 2 = 처치 현황 / 값: 그 종류에서 화면에 보이는 수치)
+    private int _shownKind  = -1;
+    private int _shownValue;
+
+    private bool ChangeShown(int kind, int value)
+    {
+        if (kind == _shownKind && value == _shownValue) return false;
+        _shownKind  = kind;
+        _shownValue = value;
+        return true;
+    }
+
     private void UpdateProgressText()
     {
         if (progressText == null) return;
@@ -183,7 +196,7 @@ public class QuestHudUI : MonoBehaviour
         var quest = QuestManager.instance != null ? QuestManager.instance.CurrentQuest : null;
         if (quest == null || _showingCompletion)
         {
-            progressText.text = "";
+            if (ChangeShown(0, 0)) progressText.text = "";
             return;
         }
 
@@ -195,9 +208,11 @@ public class QuestHudUI : MonoBehaviour
                 if (npc != null && leader != null)
                 {
                     float distance = Vector3.Distance(leader.transform.position, npc.transform.position);
-                    progressText.text = string.Format(distanceFormat, distance);
+                    // 0.1m 단위로만 다시 만든다 (기본 형식은 정수 m라 실제 글자는 1m마다 바뀜)
+                    if (ChangeShown(1, Mathf.RoundToInt(distance * 10f)))
+                        progressText.text = string.Format(distanceFormat, distance);
                 }
-                else
+                else if (ChangeShown(0, 0))
                 {
                     progressText.text = "";
                 }
@@ -205,11 +220,12 @@ public class QuestHudUI : MonoBehaviour
 
             case QuestObjectiveType.KillMonster:
                 int shown = Mathf.Min(QuestManager.instance.CurrentProgress, quest.TargetCount);
-                progressText.text = $"{shown}/{quest.TargetCount} 마리 처치";
+                if (ChangeShown(2, shown * 100000 + quest.TargetCount))
+                    progressText.text = $"{shown}/{quest.TargetCount} 마리 처치";
                 break;
 
             default:
-                progressText.text = "";
+                if (ChangeShown(0, 0)) progressText.text = "";
                 break;
         }
     }

@@ -36,8 +36,9 @@ public class NpcInteractable : MonoBehaviour
     // 런타임 재고 추적 (수량 제한 아이템)
     // ─────────────────────────────────────────────────────────────────
 
-    /// <summary>남은 재고. ShopData.entries 인덱스 → 남은 수량.</summary>
-    private Dictionary<int, int> _remainingStock = new Dictionary<int, int>();
+    /// <summary>DataManager가 없을 때(이 씬만 단독 실행 등)만 쓰는 임시 재고. 평소엔 DataManager.npcStocks에 보관 —
+    /// NPC는 씬 로컬이라 여기에만 두면 씬을 나갔다 오면 재고가 다시 찼음</summary>
+    private Dictionary<int, int> _localStock = new Dictionary<int, int>();
 
     private bool _playerInRange    = false;
     private bool _isDialogueActive = false;
@@ -66,7 +67,12 @@ public class NpcInteractable : MonoBehaviour
         if (shopData == null || entryIndex < 0 || entryIndex >= shopData.entries.Count) return 0;
         var entry = shopData.entries[entryIndex];
         if (!entry.hasStockLimit) return int.MaxValue;
-        return _remainingStock.TryGetValue(entryIndex, out int v) ? v : entry.maxStock;
+
+        int v;
+        bool found = DataManager.instance != null
+            ? DataManager.instance.TryGetNpcStock(NpcId, entryIndex, out v)
+            : _localStock.TryGetValue(entryIndex, out v);
+        return found ? v : entry.maxStock;
     }
 
     /// <summary>구매 시 재고 차감. 재고 부족이면 false.</summary>
@@ -79,27 +85,11 @@ public class NpcInteractable : MonoBehaviour
         int remaining = GetRemainingStock(entryIndex);
         if (remaining < amount) return false;
 
-        _remainingStock[entryIndex] = remaining - amount;
+        if (DataManager.instance != null) DataManager.instance.SetNpcStock(NpcId, entryIndex, remaining - amount);
+        else                              _localStock[entryIndex] = remaining - amount;
         return true;
     }
-
-    /// <summary>세이브용: 현재 재고 상태 반환 (hasStockLimit 항목만).</summary>
-    public NpcStockSave GetStockSave()
-    {
-        var save = new NpcStockSave { npcId = NpcId };
-        foreach (var kvp in _remainingStock)
-            save.stocks.Add(new NpcStockEntry { entryIndex = kvp.Key, remaining = kvp.Value });
-        return save;
-    }
-
-    /// <summary>로드용: 저장된 재고 상태 복원.</summary>
-    public void RestoreStock(NpcStockSave save)
-    {
-        _remainingStock.Clear();
-        if (save?.stocks == null) return;
-        foreach (var entry in save.stocks)
-            _remainingStock[entry.entryIndex] = entry.remaining;
-    }
+    // 재고 저장·불러오기는 DataManager.GetSaveData/LoadSaveData가 모든 NPC 몫을 한꺼번에 처리한다
 
     // ─────────────────────────────────────────────────────────────────
     // Unity 생명주기

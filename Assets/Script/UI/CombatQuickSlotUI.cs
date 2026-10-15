@@ -50,7 +50,8 @@ public class CombatQuickSlotUI : MonoBehaviour
         // OnLeaderChanged 이벤트가 (씬 전환 등 타이밍 문제로) 누락되더라도 화면이 이전
         // 캐릭터 스킬로 고정돼버리지 않도록, 실제 리더 기준 SkillManager와 어긋나 있으면
         // 매 프레임 자동으로 다시 동기화
-        var actualLeaderSkillManager = PartyManager.instance?.currentLeader?.GetComponent<SkillManager>();
+        var leader = PartyManager.instance != null ? PartyManager.instance.currentLeader : null;
+        var actualLeaderSkillManager = leader != null ? leader.SkillComp : null; // 캐시된 참조 (매 프레임 GetComponent 방지)
         if (actualLeaderSkillManager != null && actualLeaderSkillManager != currentSkillManager)
             RefreshSlots();
 

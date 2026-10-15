@@ -49,8 +49,9 @@ public class WorldItem : MonoBehaviour
         if (_camera != null && nameLabel != null)
             nameLabel.transform.rotation = _camera.transform.rotation;
 
-        // F키 줍기
-        if (_insideCount > 0 && Input.GetKeyDown(KeyCode.F))
+        // F키 줍기 — 메뉴·상점·대화·강화 창이 열려 있으면 막음 (NPC·포탈과 같은 기준)
+        bool anyUiOpen = MenuTabUI.IsOpen || ShopUI.IsOpen || DialogueUI.IsOpen || EnhancementUI.IsOpen;
+        if (_insideCount > 0 && !anyUiOpen && Input.GetKeyDown(KeyCode.F))
             TryPickup();
     }
 

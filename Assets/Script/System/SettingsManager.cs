@@ -17,7 +17,8 @@ public class SettingsManager : MonoBehaviour
 
     void Awake()
     {
-        if (instance != null && instance != this) { Destroy(gameObject); return; }
+        // 다른 매니저와 같은 CoreSystem 오브젝트에 있으므로 중복이면 이 컴포넌트만 제거 (오브젝트 중복 처리는 CoreSystem 담당)
+        if (instance != null && instance != this) { Destroy(this); return; }
         instance = this;
         DontDestroyOnLoad(gameObject);
     }

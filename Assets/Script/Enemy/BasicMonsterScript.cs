@@ -29,8 +29,16 @@ public class BasicMonsterScript : MonoBehaviour
     [Tooltip("다음 배회 지점으로 이동하는 간격 (초)")]
     public float wanderInterval = 3f;
 
+    [Header("# 최적화")]
+    [Tooltip("가장 가까운 파티원이 이 거리(m)보다 멀고 전투 중이 아니면 배회를 멈추고 쉰다 (경로 계산 생략). " +
+             "Chase Distance보다 충분히 커야 함. 0이면 항상 배회")]
+    public float dormantDistance = 45f;
+
     private const float TargetingInterval = 0.2f;
     private float targetingTimer          = 0f;
+
+    private static readonly int IsWalkingHash = Animator.StringToHash("isWalking");
+    private bool _dormant; // 파티가 멀어서 쉬는 중
 
     private AttackBase attackModule;
     private StatusEffectHandler statusHandler;
@@ -102,13 +110,14 @@ public class BasicMonsterScript : MonoBehaviour
 
     void Update()
     {
-        if (GameManager.instance == null || !GameManager.instance.isLive) return;
+        if (!GameManager.IsLive) return;
         if (enemyHp == null || enemyHp.isDead) return;
         if (attackModule == null) return;
         if (statusHandler != null && statusHandler.HasDebuff(StatusEffectType.Stun)) return;
 
+        // 문자열 대신 해시로 — 공격·스턴 스크립트도 isWalking을 직접 끄므로 값 캐시 없이 매 프레임 맞춘다
         if (animator != null)
-            animator.SetBool("isWalking", navAgent.velocity.sqrMagnitude > 0.01f);
+            animator.SetBool(IsWalkingHash, navAgent.velocity.sqrMagnitude > 0.01f);
 
         DecayAggro();
         UpdateTauntExpiry();
@@ -117,14 +126,46 @@ public class BasicMonsterScript : MonoBehaviour
         if (targetingTimer >= TargetingInterval)
         {
             targetingTimer = 0f;
+            // 어그로 1순위는 대상 판단 주기에만 다시 계산 — 매 프레임 어그로 대상마다 컴포넌트를 조회하던 비용 절감.
+            // 어그로가 새로 쌓이는 순간(AddAggro)과 도발 종료 때는 즉시 다시 계산한다
+            RefreshAggroTarget();
+            UpdateDormant();
             TargetingLogic();
         }
 
-        // 타겟 없을 때만 배회
+        // 타겟 없을 때만 배회 (파티가 멀면 쉼)
         if (attackModule.currentTarget == null)
-            HandleWander();
+        {
+            if (!_dormant) HandleWander();
+        }
         else
             _wanderTimer = 0f; // 전투 중 타이머 리셋 — 전투 종료 후 즉시 배회 시작 방지
+    }
+
+    // 전투와 무관하고 파티가 멀리 있으면 쉰다 — 플레이어가 볼 수 없는 몬스터까지 계속 배회 경로를 계산하지 않게.
+    // 쉬기 시작할 때 가던 길을 멈추고, 다시 깨어나면 바로 새 배회 지점을 고른다
+    private void UpdateDormant()
+    {
+        bool dormant = false;
+        if (dormantDistance > 0f && attackModule.currentTarget == null && aggroTable.Count == 0
+            && PartyManager.instance != null && PartyManager.instance.partyMembers.Count > 0)
+        {
+            Transform nearest = GetNearestPartyMember();
+            dormant = nearest == null
+                   || (nearest.position - transform.position).sqrMagnitude > dormantDistance * dormantDistance;
+        }
+
+        if (dormant == _dormant) return;
+        _dormant = dormant;
+
+        if (dormant)
+        {
+            if (navAgent.enabled && navAgent.isOnNavMesh && navAgent.hasPath) navAgent.ResetPath();
+        }
+        else
+        {
+            _wanderTimer = wanderInterval;
+        }
     }
 
     // ─────────────────────────────────────────────────────────────────
@@ -256,10 +297,9 @@ public class BasicMonsterScript : MonoBehaviour
             {
                 aggroTable.Remove(key);
                 _tauntUntil.Remove(key); // 도발 효과도 어그로와 함께 끝
+                if (key == aggroTarget) aggroTarget = null; // 1순위가 빠지면 다음 판단 주기에 다시 계산
             }
         }
-
-        RefreshAggroTarget();
     }
 
     // ─────────────────────────────────────────────────────────────────
@@ -402,7 +442,10 @@ public class BasicMonsterScript : MonoBehaviour
         targetingTimer = TargetingInterval;
 
         if (attackModule.currentTarget == null)
+        {
+            RefreshAggroTarget();
             TargetingLogic();
+        }
         else
             attackModule.ResetAttackCooldown();
     }

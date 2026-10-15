@@ -64,6 +64,8 @@ public class CharacterSaveData
     public int  classType = -1;
     // 무기를 이미 골랐는지 (게임 초반 1회 선택용)
     public bool classChosen;
+    // 부활 패시브 남은 쿨타임(초) — 저장하지 않으면 불러오기만으로 쿨타임이 초기화됐음 (구버전 세이브는 0)
+    public float reviveCooldown;
 }
 
 [System.Serializable]

@@ -637,6 +637,14 @@ public class SummonUnit : MonoBehaviour, IDamageable
                 Vector3 to   = _target.position + Vector3.up;
                 Quaternion rot = Quaternion.LookRotation((to - from).normalized);
                 go.transform.SetPositionAndRotation(from, rot);
+                // 풀에서 꺼낸 직후 Rigidbody가 이전 위치·속도를 들고 있으면 첫 물리 프레임에 엉뚱한 곳으로 튐 (다른 발사 코드와 동일)
+                if (go.TryGetComponent(out Rigidbody rb))
+                {
+                    rb.position        = from;
+                    rb.rotation        = rot;
+                    rb.velocity        = Vector3.zero;
+                    rb.angularVelocity = Vector3.zero;
+                }
                 if (go.TryGetComponent(out ProjectileScript proj))
                     proj.SetProjectileData(damage, attacker, OnProjectileHit, isMagic, isCrit);
                 return;

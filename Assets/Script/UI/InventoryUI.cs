@@ -56,6 +56,12 @@ public class InventoryUI : MonoBehaviour
     [Header("등급 스프라이트 (0:일반 ~ 4:신화)")]
     [SerializeField] Sprite[] gradeSprites;
 
+    [Header("안내 문구 (선택)")]
+    [Tooltip("\"인벤토리가 가득 찼습니다\" 같은 안내를 잠깐 띄울 텍스트. 비워두면 콘솔에만 출력")]
+    [SerializeField] TextMeshProUGUI messageText;
+    [SerializeField] float           messageDuration = 2f;
+    private Coroutine _messageRoutine;
+
     // ─────────────────────────────────────────────────────────────────
     // 내부 상태
     // ─────────────────────────────────────────────────────────────────
@@ -92,6 +98,7 @@ public class InventoryUI : MonoBehaviour
     void Awake()
     {
         instance = this;
+        if (messageText != null) messageText.gameObject.SetActive(false); // 안내 문구는 필요할 때만 표시
 
         // 슬롯 딕셔너리 초기화
         equipButtons[EquipSlot.Weapon]   = slotWeapon;
@@ -211,6 +218,13 @@ public class InventoryUI : MonoBehaviour
         SelectCharacter(selectedCharIndex);
         RefreshInventory();
         RefreshGold();
+    }
+
+    // 안내 문구 코루틴은 창이 꺼지면 같이 멈추므로, 다음에 열 때 문구가 남아 있지 않게 정리
+    void OnDisable()
+    {
+        _messageRoutine = null;
+        if (messageText != null) messageText.gameObject.SetActive(false);
     }
 
     private int GetLeaderPartyIndex()
@@ -513,6 +527,14 @@ public class InventoryUI : MonoBehaviour
         var equip = DataManager.instance.partyEquipments[selectedCharIndex];
         var stat  = DataManager.instance.partyStatuses[selectedCharIndex];
 
+        // 인벤토리에 넣을 자리가 없으면 해제하지 않는다 — 예전엔 슬롯에서 먼저 빼고 넣기에 실패해 장비가 사라졌음
+        if (equip.GetSlot(slot) == null) return;
+        if (inv.IsFull)
+        {
+            ShowMessage("인벤토리가 가득 찼습니다.");
+            return;
+        }
+
         ItemInstance item = equip.Unequip(slot);
         if (item != null) inv.TryAddItem(item);
         equip.RecalculateStats(stat);
@@ -523,6 +545,26 @@ public class InventoryUI : MonoBehaviour
         CloseDetailPopup();
         RefreshEquipSlots();
         RefreshInventory();
+    }
+
+    private void ShowMessage(string message)
+    {
+        if (messageText == null)
+        {
+            Debug.Log($"[InventoryUI] {message}");
+            return;
+        }
+        if (_messageRoutine != null) StopCoroutine(_messageRoutine);
+        _messageRoutine = StartCoroutine(MessageRoutine(message));
+    }
+
+    private System.Collections.IEnumerator MessageRoutine(string message)
+    {
+        messageText.text = message;
+        messageText.gameObject.SetActive(true);
+        yield return new WaitForSecondsRealtime(messageDuration);
+        messageText.gameObject.SetActive(false);
+        _messageRoutine = null;
     }
 
     private CharacterStat GetCharStat(int partyIndex)
@@ -606,7 +648,15 @@ public class InventoryUI : MonoBehaviour
         if (selectedItem.IsEquipment)
             inv.Remove(selectedItem);
         else
+        {
             inv.ConsumeItem(selectedItem, qty);
+
+            // 퀵슬롯에 등록된 물약을 전부 팔았으면 등록 해제 — 상점에서 팔 때와 같은 처리
+            var mgr = PotionQuickSlotManager.instance;
+            if (mgr != null && selectedItem.stackCount <= 0 && selectedItem.data is ConsumableData cd
+                && mgr.GetSlot(cd.consumableType) == selectedItem)
+                mgr.DeregisterPotion(cd.consumableType);
+        }
 
         DataManager.instance.AddGold(totalPrice);
         AudioManager.instance?.PlaySFX("Money");

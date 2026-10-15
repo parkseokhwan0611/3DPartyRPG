@@ -1934,7 +1934,6 @@ GameObject:
   - component: {fileID: 5912092316878814854}
   - component: {fileID: 3018145943725653863}
   - component: {fileID: 3877183826084301460}
-  - component: {fileID: 8585909372843210769}
   - component: {fileID: 4459364954321388507}
   m_Layer: 7
   m_Name: Canvas
@@ -2014,23 +2013,6 @@ MonoBehaviour:
   m_DefaultSpriteDPI: 96
   m_DynamicPixelsPerUnit: 1
   m_PresetInfoIsWorld: 1
---- !u!114 &8585909372843210769
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4309104400653590314}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dc42784cf147c0c48a680349fa168899, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_IgnoreReversedGraphics: 1
-  m_BlockingObjects: 0
-  m_BlockingMask:
-    serializedVersion: 2
-    m_Bits: 4294967295
 --- !u!114 &4459364954321388507
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3058,7 +3040,7 @@ Animator:
   m_Enabled: 1
   m_Avatar: {fileID: 0}
   m_Controller: {fileID: 9100000, guid: f07ac4e8c2748694fb3496c667e27986, type: 2}
-  m_CullingMode: 0
+  m_CullingMode: 1
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
   m_LinearVelocityBlending: 0

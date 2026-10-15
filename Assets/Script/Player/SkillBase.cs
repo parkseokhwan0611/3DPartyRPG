@@ -30,7 +30,7 @@ public abstract class SkillBase : MonoBehaviour
         get
         {
             // 외부에서 남은 시간만 지정한 경우(SetCooldown)는 전체 길이를 모르므로 지금 레벨 기준 쿨타임으로 나눈다
-            float total = cooldownTotal > 0f ? cooldownTotal : GetArrayValue(skillData != null ? skillData.cooldown : null, LiveLevel);
+            float total = cooldownTotal > 0f ? cooldownTotal : (skillData != null ? CooldownAt(LiveLevel) : 0f);
             return total > 0f ? Mathf.Clamp01(cooldownTimer / total) : 0f;
         }
     }
@@ -43,8 +43,6 @@ public abstract class SkillBase : MonoBehaviour
     public void SyncLevel() => skillLevel = LiveLevel;
 
     // maxLevel과 배열(cooldown/mpCost) 길이가 어긋나 있어도 크래시 없이 마지막 유효값으로 대체
-    private float GetArrayValue(float[] arr) => GetArrayValue(arr, skillLevel);
-
     private static float GetArrayValue(float[] arr, int level)
     {
         if (arr == null || arr.Length == 0) return 0f;
@@ -58,6 +56,20 @@ public abstract class SkillBase : MonoBehaviour
         cooldownTotal = 0f;
     }
 
+    // 장비의 "스킬 쿨타임 감소"·"마나 소모 감소" 옵션 상한 — 여러 장비를 겹쳐도 쿨타임·마나가 0에 가까워지지 않게
+    public const float MaxCooldownReduce = 0.5f;
+    public const float MaxMpCostReduce   = 0.5f;
+
+    // 장비 감소를 반영한 실제 마나·쿨타임 — 스킬 사용과 설명창(SkillDetailPanelUI·CombatDetailPopupUI)이 같은 값을 쓰도록 공개
+    public static float ReducedMpCost(float baseCost, CharacterStat caster)
+        => baseCost * (1f - Mathf.Clamp(caster != null ? caster.TotalMpReduce : 0f, 0f, MaxMpCostReduce));
+    public static float ReducedCooldown(float baseCooldown, CharacterStat caster)
+        => baseCooldown * (1f - Mathf.Clamp(caster != null ? caster.TotalCDReduce : 0f, 0f, MaxCooldownReduce));
+
+    // 실제로 쓰는 마나·쿨타임 (레벨별 값 × 장비 감소). 예전엔 장비 감소 옵션이 표시만 되고 적용되지 않았음
+    private float MpCostAt(int level)   => ReducedMpCost(GetArrayValue(skillData.mpCost, level), myStat);
+    private float CooldownAt(int level) => ReducedCooldown(GetArrayValue(skillData.cooldown, level), myStat);
+
     // 지금 레벨 기준 마나 소모량 — skillLevel은 스킬을 실제로 쓸 때만 동기화되므로(SyncLevel)
     // UI 표시용으로는 캐릭터의 실시간 스킬 레벨을 사용. 패시브는 0
     public float CurrentMpCost
@@ -65,7 +77,7 @@ public abstract class SkillBase : MonoBehaviour
         get
         {
             if (skillData == null || skillData.skillType == SkillData.SkillType.Passive) return 0f;
-            return GetArrayValue(skillData.mpCost, LiveLevel);
+            return MpCostAt(LiveLevel);
         }
     }
 
@@ -128,12 +140,12 @@ public abstract class SkillBase : MonoBehaviour
         // 패시브는 MP 소모 없음
         if (skillData.skillType != SkillData.SkillType.Passive)
         {
-            float cost = GetArrayValue(skillData.mpCost);
+            float cost = MpCostAt(skillLevel);
             if (!myStat.TryUseMp(cost)) return false;
         }
 
         skillCoroutine = StartCoroutine(SkillRoutine(target));
-        cooldownTimer  = GetArrayValue(skillData.cooldown);
+        cooldownTimer  = CooldownAt(skillLevel);
         cooldownTotal  = cooldownTimer;
         return true;
     }

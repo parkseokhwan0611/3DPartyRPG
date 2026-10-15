@@ -26,11 +26,9 @@ public class PotionQuickSlotManager : MonoBehaviour
         instance = this;
     }
 
-    // 원래 이 컴포넌트는 씬마다 파괴 후 재생성되는 씬 로컬 오브젝트로 설계됐지만, DataManager 등
-    // DontDestroyOnLoad를 호출하는 매니저와 같은 오브젝트에 함께 배치되면 그 오브젝트 전체가
-    // 씬 전환에도 의도치 않게 살아남을 수 있다. 그 경우 Start()는 최초 1회만 실행되므로, 슬롯
+    // CoreSystem 프리팹에 붙어 씬이 바뀌어도 살아남는다. Start()는 최초 1회만 실행되므로, 슬롯
     // 등록·인벤토리 구독 로직을 DataManager.OnDataInitialized(새 게임/로드마다 발생)에도 걸어서
-    // 이 오브젝트가 씬 로컬이든 우연히 계속 살아남든 항상 최신 데이터 기준으로 맞춰지게 한다
+    // 새 게임·불러오기 때마다 최신 데이터 기준으로 다시 맞춘다
     void Start()
     {
         if (DataManager.instance != null)
@@ -155,7 +153,7 @@ public class PotionQuickSlotManager : MonoBehaviour
         if (_hpCooldownRemaining > 0f) _hpCooldownRemaining -= Time.deltaTime;
         if (_mpCooldownRemaining > 0f) _mpCooldownRemaining -= Time.deltaTime;
 
-        if (GameManager.instance == null || !GameManager.instance.isLive) return;
+        if (!GameManager.IsLive) return;
         if (MenuTabUI.IsOpen || ShopUI.IsOpen || DialogueUI.IsOpen || EnhancementUI.IsOpen) return;
 
         if (Input.GetKeyDown(KeyCode.S)) TryUsePotion(ConsumableType.HpPotion);
