@@ -59,7 +59,22 @@ public class DataManagerEditor : Editor
         dataManager.itemRegistry = items;
         EditorUtility.SetDirty(dataManager);
 
+        // CoreSystem 프리팹 인스턴스면 바로 프리팹에 반영 — 모든 씬의 CoreSystem이 같이 갱신된다
+        bool appliedToPrefab = false;
+        if (PrefabUtility.IsPartOfPrefabInstance(dataManager))
+        {
+            PrefabUtility.RecordPrefabInstancePropertyModifications(dataManager);
+            var source        = PrefabUtility.GetCorrespondingObjectFromSource(dataManager);
+            string prefabPath = source != null ? AssetDatabase.GetAssetPath(source) : null;
+            if (!string.IsNullOrEmpty(prefabPath))
+            {
+                PrefabUtility.ApplyObjectOverride(dataManager, prefabPath, InteractionMode.UserAction);
+                appliedToPrefab = true;
+            }
+        }
+
         string summary = $"[DataManagerEditor] 아이템 레지스트리를 {items.Count}개로 갱신했습니다.";
+        if (appliedToPrefab) summary += " (CoreSystem 프리팹에 적용 — 모든 씬에 반영)";
         if (duplicateCount > 0) summary += $" (중복 itemId {duplicateCount}개 제외)";
         if (emptyIdCount   > 0) summary += $" (itemId 없음 {emptyIdCount}개 제외)";
         Debug.Log(summary);
