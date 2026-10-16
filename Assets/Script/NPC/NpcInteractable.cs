@@ -151,6 +151,31 @@ public class NpcInteractable : MonoBehaviour
         return !qm.IsAwaitingReport;
     }
 
+    // 이 NPC가 지금 퀘스트가 아니라 체인의 다음 퀘스트(대화 대상·보고 대상)에서 등장할 차례인지 —
+    // 순서를 건너뛰고 먼저 찾아오면 퀘스트 대사(Dialogue Lines) 대신 미완료 대사를 보여주기 위함
+    bool IsFutureQuestTarget()
+    {
+        if (npcType != NpcType.Story) return false;
+
+        var qm      = QuestManager.instance;
+        var current = qm?.CurrentQuest;
+        if (current == null || qm.Chain == null) return false;
+
+        // 지금 퀘스트의 대상이면 기존 흐름(대화 완료 / 보고 미완료 판정)을 따름
+        if (current.objectiveType == QuestObjectiveType.NpcDialogue && current.targetNpcId == NpcId) return false;
+        if (current.RequiresReport && current.reportNpcId == NpcId) return false;
+
+        var quests = qm.Chain.quests;
+        for (int i = qm.CurrentQuestIndex + 1; i < quests.Count; i++)
+        {
+            var q = quests[i];
+            if (q == null) continue;
+            if (q.objectiveType == QuestObjectiveType.NpcDialogue && q.targetNpcId == NpcId) return true;
+            if (q.RequiresReport && q.reportNpcId == NpcId) return true;
+        }
+        return false;
+    }
+
     void StartDialogue()
     {
         if (DialogueUI.instance == null) return;
@@ -163,6 +188,12 @@ public class NpcInteractable : MonoBehaviour
             lines = (notReadyDialogueLines != null && notReadyDialogueLines.Length > 0)
                 ? notReadyDialogueLines
                 : new[] { new DialogueLine { speaker = DialogueLine.Speaker.NPC, text = "아직 처치를 다 마치지 못한 것 같군요." } };
+        }
+        else if (IsFutureQuestTarget())
+        {
+            lines = (notReadyDialogueLines != null && notReadyDialogueLines.Length > 0)
+                ? notReadyDialogueLines
+                : new[] { new DialogueLine { speaker = DialogueLine.Speaker.NPC, text = "아직은 때가 아닙니다." } };
         }
         else
         {

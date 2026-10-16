@@ -25,6 +25,7 @@ public class QuestManager : MonoBehaviour
             : null;
 
     public int CurrentProgress => currentProgress;
+    public int CurrentQuestIndex => currentQuestIndex;
     // 처치 목표는 다 채웠지만 보고 대상 NPC와의 대화가 아직 남아있는 상태
     public bool IsAwaitingReport =>
         CurrentQuest != null && CurrentQuest.RequiresReport && currentProgress >= CurrentQuest.TargetCount;

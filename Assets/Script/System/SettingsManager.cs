@@ -83,8 +83,9 @@ public class SettingsManager : MonoBehaviour
 
     public void SaveFullscreen(bool fullscreen) => PlayerPrefs.SetInt(KeyFullscreen, fullscreen ? 1 : 0);
 
-    public float GetBgmVolume()  => PlayerPrefs.GetFloat(KeyBgmVolume, 0.5f);
-    public float GetSfxVolume()  => PlayerPrefs.GetFloat(KeySfxVolume, 0.5f);
+    // 저장된 값이 없으면(첫 실행) AudioManager 인스펙터의 시작 볼륨을 그대로 기본값으로 사용
+    public float GetBgmVolume()  => PlayerPrefs.GetFloat(KeyBgmVolume, AudioManager.instance != null ? AudioManager.instance.BgmVolume : 0.3f);
+    public float GetSfxVolume()  => PlayerPrefs.GetFloat(KeySfxVolume, AudioManager.instance != null ? AudioManager.instance.SfxVolume : 0.5f);
     public int   GetQuality()    => PlayerPrefs.GetInt(KeyQuality, QualitySettings.GetQualityLevel());
     public bool  GetFullscreen() => PlayerPrefs.GetInt(KeyFullscreen, Screen.fullScreen ? 1 : 0) == 1;
 }
