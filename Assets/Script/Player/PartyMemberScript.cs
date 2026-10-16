@@ -159,7 +159,7 @@ public class PartyMemberScript : MonoBehaviour
             {
                 float sqrDist      = (transform.position - targetToFollow.position).sqrMagnitude;
                 float emergencyDist = resumeDistance * emergencyFollowMultiplier;
-                if (sqrDist > emergencyDist * emergencyDist)
+                if (sqrDist > emergencyDist * emergencyDist && !IsLeaderFighting())
                 {
                     attackComp?.ForceCancelAttack();
                     ChangeState(MemberState.Following);
@@ -187,6 +187,20 @@ public class PartyMemberScript : MonoBehaviour
             HandleFollowLogic();
             TryRejoinLeaderTarget();
         }
+    }
+
+    // 리더가 아직 살아있는 적과 싸우는 중인지 — 비상 추격(emergencyFollowMultiplier)은 리더가 회피 등으로
+    // 전투를 벗어날 때만 필요하다. 싸우는 중에도 거리만 보고 끊으면, 원거리 팔로워(사거리 6~7.5m)가 사거리 끝에서
+    // 쏘는 동안 근접 리더와의 거리가 비상 거리(4.4~5.4m)를 넘어 공격을 끊고 리더 옆으로 걸어가 버렸음
+    // (새 타겟 지정 직후·스킬 사용 직후 팔로워가 리더 대상을 안 때리던 원인)
+    private bool IsLeaderFighting()
+    {
+        var leader = PartyManager.instance != null ? PartyManager.instance.currentLeader : null;
+        if (leader == null || leader == this || leader.CurrentState == MemberState.Dead) return false;
+        var leaderAttack = leader.AttackComp;
+        if (leaderAttack == null || leaderAttack.currentTarget == null) return false;
+        var enemy = leaderAttack.currentTarget.GetComponent<EnemyHp>();
+        return enemy == null || !enemy.isDead;
     }
 
     // 팔로워가 비상 추격(emergencyFollowMultiplier)이나 스턴 후 거리 초과로 공격 대상을 잃고 따라붙은 뒤,
@@ -468,7 +482,7 @@ public class PartyMemberScript : MonoBehaviour
         {
             float sqrDist       = (transform.position - targetToFollow.position).sqrMagnitude;
             float emergencyDist = resumeDistance * emergencyFollowMultiplier;
-            if (sqrDist > emergencyDist * emergencyDist)
+            if (sqrDist > emergencyDist * emergencyDist && !IsLeaderFighting())
             {
                 ChangeState(MemberState.Following);
                 _lastFollowDestination = Vector3.positiveInfinity;

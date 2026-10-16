@@ -103980,7 +103980,7 @@ Transform:
   m_GameObject: {fileID: 362605918}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 29.2, y: -4, z: 101.5}
+  m_LocalPosition: {x: -39.29, y: 11.28, z: -132.839}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -203254,7 +203254,7 @@ Transform:
   m_GameObject: {fileID: 670640650}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -13.16, y: -4, z: 61.74}
+  m_LocalPosition: {x: -12.43, y: 9.82, z: -149.53}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -222180,7 +222180,7 @@ Transform:
   m_GameObject: {fileID: 743054513}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 24, y: -4, z: 139.1}
+  m_LocalPosition: {x: -58.95, y: 8.021, z: -129.79}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -222198,10 +222198,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ba170ddb67e23de4a8b0a8b75ab2daa1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  monsterPrefab: {fileID: 8762004475818107220, guid: b40280d1a92c91b4b825e31c1ea7c03e,
+  monsterPrefab: {fileID: 7138388956008483013, guid: d8c07aea3d8d5a745b985fe2909338bb,
     type: 3}
   spawnPoint: {fileID: 0}
-  respawnDelay: 60
+  respawnDelay: 120
   spawnOnStart: 1
 --- !u!1 &743550996
 GameObject:
@@ -302294,55 +302294,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1051520544}
   m_CullTransparentMesh: 1
---- !u!1 &1052301753
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1052301754}
-  - component: {fileID: 1052301755}
-  m_Layer: 0
-  m_Name: GoblinThiefSpawner (7)
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1052301754
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1052301753}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -11.2, y: -4, z: 121.3}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1713439972}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1052301755
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1052301753}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ba170ddb67e23de4a8b0a8b75ab2daa1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  monsterPrefab: {fileID: 8762004475818107220, guid: b40280d1a92c91b4b825e31c1ea7c03e,
-    type: 3}
-  spawnPoint: {fileID: 0}
-  respawnDelay: 60
-  spawnOnStart: 1
 --- !u!1 &1052357177
 GameObject:
   m_ObjectHideFlags: 0
@@ -335938,55 +335889,6 @@ MonoBehaviour:
   mainMenuButton: {fileID: 1369616090}
   exitButton: {fileID: 2018552207}
   titleSceneName: TitleScene
---- !u!1 &1150377274
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1150377275}
-  - component: {fileID: 1150377276}
-  m_Layer: 0
-  m_Name: GoblinThiefSpawner (6)
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1150377275
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1150377274}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 31, y: -4, z: 112.5}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1713439972}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1150377276
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1150377274}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ba170ddb67e23de4a8b0a8b75ab2daa1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  monsterPrefab: {fileID: 8762004475818107220, guid: b40280d1a92c91b4b825e31c1ea7c03e,
-    type: 3}
-  spawnPoint: {fileID: 0}
-  respawnDelay: 60
-  spawnOnStart: 1
 --- !u!1001 &1151978522
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -341889,7 +341791,7 @@ Transform:
   m_GameObject: {fileID: 1177237893}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1.44, y: -4, z: 59.22}
+  m_LocalPosition: {x: -7.82, y: 7.376, z: -161.27}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -356166,55 +356068,6 @@ Transform:
   - {fileID: 2108789026}
   m_Father: {fileID: 967450311}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1260679923
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1260679924}
-  - component: {fileID: 1260679925}
-  m_Layer: 0
-  m_Name: GoblinThiefSpawner (9)
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1260679924
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1260679923}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 27, y: -4, z: 77.5}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1713439972}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1260679925
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1260679923}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ba170ddb67e23de4a8b0a8b75ab2daa1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  monsterPrefab: {fileID: 8762004475818107220, guid: b40280d1a92c91b4b825e31c1ea7c03e,
-    type: 3}
-  spawnPoint: {fileID: 0}
-  respawnDelay: 60
-  spawnOnStart: 1
 --- !u!1 &1260789564
 GameObject:
   m_ObjectHideFlags: 0
@@ -385164,55 +385017,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1339708948}
   m_CullTransparentMesh: 1
---- !u!1 &1340198779
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1340198780}
-  - component: {fileID: 1340198781}
-  m_Layer: 0
-  m_Name: GoblinThiefSpawner (8)
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1340198780
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1340198779}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -10.3, y: -4, z: 95.5}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1713439972}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1340198781
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1340198779}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ba170ddb67e23de4a8b0a8b75ab2daa1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  monsterPrefab: {fileID: 8762004475818107220, guid: b40280d1a92c91b4b825e31c1ea7c03e,
-    type: 3}
-  spawnPoint: {fileID: 0}
-  respawnDelay: 60
-  spawnOnStart: 1
 --- !u!1 &1341406135
 GameObject:
   m_ObjectHideFlags: 0
@@ -412898,55 +412702,6 @@ Transform:
   - {fileID: 1692749181}
   m_Father: {fileID: 1256415831}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1389653913
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1389653914}
-  - component: {fileID: 1389653915}
-  m_Layer: 0
-  m_Name: GoblinThiefSpawner (11)
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1389653914
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1389653913}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -10.1, y: -4, z: 78.6}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1713439972}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1389653915
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1389653913}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ba170ddb67e23de4a8b0a8b75ab2daa1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  monsterPrefab: {fileID: 8762004475818107220, guid: b40280d1a92c91b4b825e31c1ea7c03e,
-    type: 3}
-  spawnPoint: {fileID: 0}
-  respawnDelay: 60
-  spawnOnStart: 1
 --- !u!1001 &1390158262
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -456879,7 +456634,7 @@ Transform:
   m_GameObject: {fileID: 1537870426}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 18.8, y: -4, z: 50.7}
+  m_LocalPosition: {x: -12.54, y: 9.28, z: -138.07}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -496350,55 +496105,6 @@ Transform:
   - {fileID: 528059343}
   m_Father: {fileID: 348854821}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1632858116
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1632858117}
-  - component: {fileID: 1632858118}
-  m_Layer: 0
-  m_Name: GoblinThiefSpawner (10)
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1632858117
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1632858116}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 6.7, y: -4, z: 73.5}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1713439972}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1632858118
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1632858116}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ba170ddb67e23de4a8b0a8b75ab2daa1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  monsterPrefab: {fileID: 8762004475818107220, guid: b40280d1a92c91b4b825e31c1ea7c03e,
-    type: 3}
-  spawnPoint: {fileID: 0}
-  respawnDelay: 60
-  spawnOnStart: 1
 --- !u!1 &1633640900
 GameObject:
   m_ObjectHideFlags: 0
@@ -515619,7 +515325,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1713439972
 Transform:
   m_ObjectHideFlags: 0
@@ -515639,12 +515345,6 @@ Transform:
   - {fileID: 362605919}
   - {fileID: 1829864533}
   - {fileID: 743054514}
-  - {fileID: 1150377275}
-  - {fileID: 1052301754}
-  - {fileID: 1340198780}
-  - {fileID: 1260679924}
-  - {fileID: 1632858117}
-  - {fileID: 1389653914}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1715648541
@@ -548679,7 +548379,7 @@ Transform:
   m_GameObject: {fileID: 1829864532}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -9.9, y: -4, z: 70.3}
+  m_LocalPosition: {x: -48.72, y: 8.34, z: -128.65}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
