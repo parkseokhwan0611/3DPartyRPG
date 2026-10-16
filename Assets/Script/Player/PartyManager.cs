@@ -18,11 +18,13 @@ public class PartyManager : MonoBehaviour
     public LayerMask groundLayer;
     public CinemachineVirtualCamera virtualCamera;
     public CameraFollowTarget cameraFollowTarget;
-    [Tooltip("이동 클릭 지점이 NavMesh와 이 거리(미터) 이내면 그 위의 정확한 지점으로 스냅해서 " +
-             "이동, 더 멀면(바위 등 장애물 위) 이동 명령 자체를 무시함. 작게 유지해야 함 — " +
-             "너무 크면 장애물 위를 클릭해도 그 장애물 가장자리 NavMesh가 이 반경 안에 걸려서 " +
-             "여전히 '근처로 이동'해버림")]
-    public float maxWalkableSnapDistance = 0.15f;
+    [Tooltip("이동 클릭 지점과 가장 가까운 NavMesh 지점의 수평 거리 허용치(m). 벽 쪽 바닥은 NavMesh가 " +
+             "에이전트 반경만큼 깎여 있어서, 이보다 작으면 벽 근처·좁은 통로 클릭이 무시됨")]
+    public float maxWalkableSnapHorizontal = 0.6f;
+    [Tooltip("이동 클릭 지점과 NavMesh의 높이 차 허용치(m). NavMesh는 실제 바닥보다 수십 cm 뜨거나 묻힐 수 있어 " +
+             "(경사·울퉁불퉁한 바닥) 너무 작으면 정상 바닥 클릭이 무시되고, 너무 크면 바위 등 장애물 위를 " +
+             "클릭했을 때 그 가장자리로 '근처 이동'해버림 — 걸어서 오를 수 없는 높이(Step Height)보다 조금 크게")]
+    public float maxWalkableSnapHeight = 0.5f;
     public static PartyManager instance;
     // 게임오버 화면이 떠있는 동안인지 — MenuTabUI 등에서 메뉴 열림을 차단하는 데 사용
     public static bool IsGameOver { get; private set; }
@@ -35,6 +37,7 @@ public class PartyManager : MonoBehaviour
     public string levelUpEffectPoolKey = "LevelUpEffect";
 
     private int enemyLayer;
+    private int _enemyOccluderMask; // 적 클릭 판정 시 적을 가리는 것으로 볼 레이어 (바닥 + Default/Obstacle/Tree)
     private Camera mainCamera;
     private Vector3 _lastMoveDestination;
     private bool _hasPendingDestination = false;
@@ -63,6 +66,7 @@ public class PartyManager : MonoBehaviour
         instance   = this;
         mainCamera = Camera.main;
         enemyLayer = LayerMask.GetMask("Enemy");
+        _enemyOccluderMask = groundLayer | LayerMask.GetMask("Default", "Obstacle", "Tree");
     }
     void Start()
     {
@@ -231,8 +235,11 @@ public class PartyManager : MonoBehaviour
         }
     }
 
-    // 마우스가 화면 UI(HUD·미니맵·퀵슬롯 등) 위에 있는지. 몬스터·캐릭터 머리 위 HP 바 같은 월드 스페이스 UI는
-    // 제외 — 그걸 UI로 치면 몬스터 HP 바 위를 우클릭했을 때 공격 명령이 막힌다. 클릭한 프레임에만 호출된다
+    // 마우스가 "상호작용하는" 화면 UI(버튼·슬롯·슬라이더·스크롤·드래그·호버 툴팁 등) 위에 있는지.
+    // 배경 이미지·텍스트·HP 바처럼 이벤트를 받지 않는 장식 UI는 Raycast Target이 켜져 있어도 무시 —
+    // 퀘스트 HUD 패널 같은 장식 UI가 그 아래 바닥 클릭을 막아 이동이 안 되던 문제. 씬마다 Raycast Target을 끌 필요 없음
+    // 몬스터·캐릭터 머리 위 HP 바 같은 월드 스페이스 UI도 제외 — 그걸 UI로 치면 몬스터 HP 바 위를 우클릭했을 때
+    // 공격 명령이 막힌다. 클릭한 프레임에만 호출된다
     private readonly List<UnityEngine.EventSystems.RaycastResult> _uiHits = new List<UnityEngine.EventSystems.RaycastResult>();
     private UnityEngine.EventSystems.PointerEventData _uiPointer;
     private UnityEngine.EventSystems.EventSystem _uiPointerOwner;
@@ -255,17 +262,27 @@ public class PartyManager : MonoBehaviour
         {
             if (hit.gameObject == null) continue;
             Canvas canvas = hit.gameObject.GetComponentInParent<Canvas>();
-            if (canvas != null && canvas.rootCanvas.renderMode != RenderMode.WorldSpace) return true;
+            if (canvas == null || canvas.rootCanvas.renderMode == RenderMode.WorldSpace) continue;
+
+            // 자기 자신이나 부모에 이벤트 핸들러(Button·Slider·ScrollRect·드래그 슬롯 등)가 있을 때만 UI 클릭으로 본다
+            if (UnityEngine.EventSystems.ExecuteEvents.GetEventHandler<UnityEngine.EventSystems.IEventSystemHandler>(hit.gameObject) != null)
+                return true;
         }
         return false;
     }
 
     // 클릭 지점 근처에 실제로 걸을 수 있는 NavMesh가 있는지 확인. 있으면 그 위의 정확한 지점으로 스냅.
+    // 수평·높이 허용치를 따로 봄 — 바위 위를 클릭하면 가장 가까운 NavMesh(바위 가장자리 바닥)와 높이 차가 커서 무시됨
     bool TryGetWalkablePoint(Vector3 rawPoint, out Vector3 walkablePoint)
     {
         walkablePoint = rawPoint;
-        if (!NavMesh.SamplePosition(rawPoint, out NavMeshHit navHit, maxWalkableSnapDistance, NavMesh.AllAreas))
+        float radius = Mathf.Sqrt(maxWalkableSnapHorizontal * maxWalkableSnapHorizontal + maxWalkableSnapHeight * maxWalkableSnapHeight);
+        if (!NavMesh.SamplePosition(rawPoint, out NavMeshHit navHit, radius, NavMesh.AllAreas))
             return false;
+
+        Vector3 diff = navHit.position - rawPoint;
+        if (Mathf.Abs(diff.y) > maxWalkableSnapHeight) return false;
+        if (diff.x * diff.x + diff.z * diff.z > maxWalkableSnapHorizontal * maxWalkableSnapHorizontal) return false;
 
         walkablePoint = navHit.position;
         return true;
@@ -275,9 +292,12 @@ public class PartyManager : MonoBehaviour
     // 레이캐스트 (결과만 반환, 사이드이펙트 없음)
     // ─────────────────────────────────────────────────────────────────
 
+    // 적 레이어만 보고 쏘면 벽·바닥을 뚫고 그 너머(벽 뒤, 아래층)의 몬스터까지 클릭됨 → 이동 대신 공격 명령이 나가서
+    // 마커도 안 뜨고 캐릭터가 엉뚱한 적을 향함. 적보다 앞에 바닥·장애물이 있으면 적 클릭으로 보지 않는다
     bool TryGetEnemyHit(Ray ray, out RaycastHit hit)
     {
-        return Physics.Raycast(ray, out hit, Mathf.Infinity, enemyLayer);
+        if (!Physics.Raycast(ray, out hit, Mathf.Infinity, enemyLayer)) return false;
+        return !Physics.Raycast(ray, hit.distance, _enemyOccluderMask, QueryTriggerInteraction.Ignore);
     }
 
     bool TryGetGroundHit(Ray ray, out RaycastHit hit)
