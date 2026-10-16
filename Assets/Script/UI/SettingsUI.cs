@@ -30,10 +30,9 @@ public class SettingsUI : MonoBehaviour
 
     void Start()
     {
-        // 슬라이더 자체 범위를 0~10으로 강제 (에디터 기본값이 0~1이어도 항상 맞도록)
-        if (bgmSlider != null) { bgmSlider.minValue = 0f; bgmSlider.maxValue = 10f; }
-        if (sfxSlider != null) { sfxSlider.minValue = 0f; sfxSlider.maxValue = 10f; }
-
+        // 슬라이더 자체 범위를 0~10으로 강제 (에디터 기본값이 0~1이어도 항상 맞도록) + 정수 단위로만 이동
+        if (bgmSlider != null) { bgmSlider.minValue = 0f; bgmSlider.maxValue = 10f; bgmSlider.wholeNumbers = true; }
+        if (sfxSlider != null) { sfxSlider.minValue = 0f; sfxSlider.maxValue = 10f; sfxSlider.wholeNumbers = true; }
         BuildResolutionDropdown();
         RefreshFromSaved();
 
