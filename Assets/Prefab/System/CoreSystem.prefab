@@ -39,6 +39,18 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &6436009167430926336
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2114802944394787709}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1d1288f57aeb4659a71f897682f4e091, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &1069165368840630408
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -161,6 +173,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1f80982d6d96c6947884b6ec6b728bf2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &5554503942166689792
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2114802944394787709}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d16722f5c58249d408a3396d70566326, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isLive: 1
 --- !u!114 &3977090485056006170
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -379,6 +404,10 @@ MonoBehaviour:
     bgmKey: LoginBGM
   - sceneName: Dungeon_Tutorial
     bgmKey: ForestBGM
+  - sceneName: WeaponSelect
+    bgmKey: LoginBGM
+  - sceneName: PrologueScene
+    bgmKey: PrologueBGM
   - sceneName: Dungeon_1_1
     bgmKey: ForestBGM
   - sceneName: Dungeon_1_2
@@ -391,32 +420,5 @@ MonoBehaviour:
     bgmKey: ForestBGM
   - sceneName: Forest_Boss
     bgmKey: ForestBGM
-  - sceneName: PrologueScene
-    bgmKey: PrologueBGM
   enableGlobalUiClick: 1
   uiClickSfxKey: UIClick
---- !u!114 &6436009167430926336
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2114802944394787709}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1d1288f57aeb4659a71f897682f4e091, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &5554503942166689792
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2114802944394787709}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d16722f5c58249d408a3396d70566326, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  isLive: 1
