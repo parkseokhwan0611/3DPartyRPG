@@ -119,6 +119,28 @@ public class MinimapCaptureTool : EditorWindow
         };
         cam.targetTexture = rt;
 
+        // 카메라는 자기 Culling Mask에 없는 레이어의 라이트도 빼고 렌더링한다 — 촬영 레이어를 Plane/Tree만 고르면
+        // Default 레이어의 Directional Light가 빠져 환경광(하늘색)만 받아 파랗게 찍힘.
+        // 촬영 중에만 라이트를 촬영 레이어로 옮겨 포함시키고 끝나면 원래 레이어로 되돌린다 (라이트가 비추는 대상은 그대로)
+        int captureLayer = FirstLayerInMask(cullingMask);
+        var movedLights = new System.Collections.Generic.List<(GameObject go, int layer)>();
+        if (captureLayer >= 0)
+        {
+            foreach (var light in Object.FindObjectsOfType<Light>())
+            {
+                if (!light.isActiveAndEnabled) continue;
+                var go = light.gameObject;
+                if ((cullingMask.value & (1 << go.layer)) != 0) continue;
+                movedLights.Add((go, go.layer));
+                go.layer = captureLayer;
+            }
+        }
+
+        // 카메라가 지형 위 높이 여유(50m 등)만큼 떨어져 있어 씬 포그의 시작/끝 거리를 넘기면 화면 전체가 포그 색으로 덮임
+        // (Dungeon_Tutorial: 파란 포그, 30~95m) — 촬영 중에만 포그를 끄고 끝나면 되돌린다
+        bool prevFog = RenderSettings.fog;
+        RenderSettings.fog = false;
+
         RenderTexture prevActive = RenderTexture.active;
         try
         {
@@ -134,6 +156,10 @@ public class MinimapCaptureTool : EditorWindow
         }
         finally
         {
+            foreach (var (go, layer) in movedLights)
+                if (go != null) go.layer = layer;
+            RenderSettings.fog = prevFog;
+
             RenderTexture.active = prevActive;
             cam.targetTexture = null;
             rt.Release();
@@ -147,6 +173,13 @@ public class MinimapCaptureTool : EditorWindow
         Debug.Log($"[MinimapCaptureTool] 캡처 완료 — 중심: ({_lastCapturedBounds.center.x:F2}, {_lastCapturedBounds.center.z:F2}), " +
                   $"크기: ({_lastCapturedBounds.size.x:F2} x {_lastCapturedBounds.size.z:F2}). " +
                   "런타임 미니맵 스크립트의 월드→UV 변환에 이 값을 사용하세요.");
+    }
+
+    private static int FirstLayerInMask(LayerMask mask)
+    {
+        for (int i = 0; i < 32; i++)
+            if ((mask.value & (1 << i)) != 0) return i;
+        return -1;
     }
 
     private Bounds ComputeBounds()
