@@ -98,27 +98,6 @@ public class MinimapCaptureTool : EditorWindow
             return;
         }
 
-        float half = Mathf.Max(bounds.extents.x, bounds.extents.z) * paddingMultiplier;
-
-        var camGo = new GameObject("__MinimapCaptureCamera") { hideFlags = HideFlags.HideAndDontSave };
-        var cam = camGo.AddComponent<Camera>();
-        cam.orthographic = true;
-        cam.orthographicSize = half;
-        cam.cullingMask = cullingMask;
-        cam.clearFlags = CameraClearFlags.SolidColor;
-        cam.backgroundColor = new Color(0, 0, 0, 0);
-        cam.nearClipPlane = 0.1f;
-        cam.farClipPlane = bounds.size.y + cameraHeightMargin * 2f + 10f;
-
-        camGo.transform.position = new Vector3(bounds.center.x, bounds.max.y + cameraHeightMargin, bounds.center.z);
-        camGo.transform.rotation = Quaternion.Euler(90f, 0f, 0f);
-
-        var rt = new RenderTexture(resolution, resolution, 24, RenderTextureFormat.ARGB32)
-        {
-            antiAliasing = 2
-        };
-        cam.targetTexture = rt;
-
         // 카메라는 자기 Culling Mask에 없는 레이어의 라이트도 빼고 렌더링한다 — 촬영 레이어를 Plane/Tree만 고르면
         // Default 레이어의 Directional Light가 빠져 환경광(하늘색)만 받아 파랗게 찍힘.
         // 촬영 중에만 라이트를 촬영 레이어로 옮겨 포함시키고 끝나면 원래 레이어로 되돌린다 (라이트가 비추는 대상은 그대로)
@@ -141,16 +120,30 @@ public class MinimapCaptureTool : EditorWindow
         bool prevFog = RenderSettings.fog;
         RenderSettings.fog = false;
 
-        RenderTexture prevActive = RenderTexture.active;
+        float centerX = bounds.center.x, centerZ = bounds.center.z;
+        float half = Mathf.Max(bounds.extents.x, bounds.extents.z);
         try
         {
-            cam.Render();
+            // 1차: 작은 해상도로 찍어서 실제로 픽셀이 찍힌 영역만 찾아 범위를 줄인다 (자동 크롭) —
+            // Renderer 경계에는 위에서 안 보이는 벽 뒷면 등도 들어가서, 그대로 쓰면 빈 공간까지 캡처됨
+            const int probeRes = 512;
+            Texture2D probe = RenderTopDown(bounds, centerX, centerZ, half, probeRes);
+            if (TryGetOpaqueRect(probe, out int minPx, out int minPy, out int maxPx, out int maxPy))
+            {
+                float pixelSize = half * 2f / probeRes;
+                float minX = centerX - half + minPx * pixelSize;
+                float maxX = centerX - half + (maxPx + 1) * pixelSize;
+                float minZ = centerZ - half + minPy * pixelSize;
+                float maxZ = centerZ - half + (maxPy + 1) * pixelSize;
+                centerX = (minX + maxX) * 0.5f;
+                centerZ = (minZ + maxZ) * 0.5f;
+                half    = Mathf.Max(maxX - minX, maxZ - minZ) * 0.5f;
+            }
+            Object.DestroyImmediate(probe);
 
-            RenderTexture.active = rt;
-            var tex = new Texture2D(resolution, resolution, TextureFormat.RGBA32, false);
-            tex.ReadPixels(new Rect(0, 0, resolution, resolution), 0, 0);
-            tex.Apply();
-
+            // 2차: 줄인 범위 + 여백으로 최종 해상도 캡처
+            half *= paddingMultiplier;
+            Texture2D tex = RenderTopDown(bounds, centerX, centerZ, half, resolution);
             SaveTexture(tex);
             Object.DestroyImmediate(tex);
         }
@@ -159,20 +152,90 @@ public class MinimapCaptureTool : EditorWindow
             foreach (var (go, layer) in movedLights)
                 if (go != null) go.layer = layer;
             RenderSettings.fog = prevFog;
+        }
 
+        _lastCapturedBounds = new Bounds(new Vector3(centerX, bounds.center.y, centerZ), new Vector3(half * 2f, bounds.size.y, half * 2f));
+        _hasCaptured = true;
+
+        // 씬의 MinimapUI에 범위를 바로 입력 — 손으로 옮겨 적다가 재캡처 후 갱신을 빼먹으면 아이콘 위치가 어긋남
+        var minimap = Object.FindObjectOfType<MinimapUI>(true);
+        if (minimap != null)
+        {
+            Undo.RecordObject(minimap, "Minimap Capture Bounds");
+            minimap.mapWorldCenter = new Vector2(centerX, centerZ);
+            minimap.mapWorldSize   = new Vector2(half * 2f, half * 2f);
+            EditorUtility.SetDirty(minimap);
+            UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(minimap.gameObject.scene);
+            Debug.Log($"[MinimapCaptureTool] '{minimap.name}'의 Map World Center/Size에 자동 입력했습니다 — 씬을 저장하세요.", minimap);
+        }
+        else
+        {
+            Debug.LogWarning("[MinimapCaptureTool] 씬에서 MinimapUI를 찾지 못해 범위를 자동 입력하지 못했습니다. 아래 값을 직접 입력하세요.");
+        }
+
+        Debug.Log($"[MinimapCaptureTool] 캡처 완료 — 중심: ({_lastCapturedBounds.center.x:F2}, {_lastCapturedBounds.center.z:F2}), " +
+                  $"크기: ({_lastCapturedBounds.size.x:F2} x {_lastCapturedBounds.size.z:F2}). " +
+                  "런타임 미니맵 스크립트의 월드→UV 변환에 이 값을 사용하세요.");
+    }
+
+    // 위에서 내려다보는 직교 카메라로 (centerX, centerZ) 중심, 한 변 half*2 크기의 정사각형 영역을 찍는다
+    private Texture2D RenderTopDown(Bounds bounds, float centerX, float centerZ, float half, int res)
+    {
+        var camGo = new GameObject("__MinimapCaptureCamera") { hideFlags = HideFlags.HideAndDontSave };
+        var cam = camGo.AddComponent<Camera>();
+        cam.orthographic = true;
+        cam.orthographicSize = half;
+        cam.cullingMask = cullingMask;
+        cam.clearFlags = CameraClearFlags.SolidColor;
+        cam.backgroundColor = new Color(0, 0, 0, 0);
+        cam.nearClipPlane = 0.1f;
+        cam.farClipPlane = bounds.size.y + cameraHeightMargin * 2f + 10f;
+
+        camGo.transform.position = new Vector3(centerX, bounds.max.y + cameraHeightMargin, centerZ);
+        camGo.transform.rotation = Quaternion.Euler(90f, 0f, 0f);
+
+        var rt = new RenderTexture(res, res, 24, RenderTextureFormat.ARGB32) { antiAliasing = 2 };
+        cam.targetTexture = rt;
+
+        RenderTexture prevActive = RenderTexture.active;
+        try
+        {
+            cam.Render();
+            RenderTexture.active = rt;
+            var tex = new Texture2D(res, res, TextureFormat.RGBA32, false);
+            tex.ReadPixels(new Rect(0, 0, res, res), 0, 0);
+            tex.Apply();
+            return tex;
+        }
+        finally
+        {
             RenderTexture.active = prevActive;
             cam.targetTexture = null;
             rt.Release();
             Object.DestroyImmediate(rt);
             Object.DestroyImmediate(camGo);
         }
+    }
 
-        _lastCapturedBounds = new Bounds(bounds.center, new Vector3(half * 2f, bounds.size.y, half * 2f));
-        _hasCaptured = true;
-
-        Debug.Log($"[MinimapCaptureTool] 캡처 완료 — 중심: ({_lastCapturedBounds.center.x:F2}, {_lastCapturedBounds.center.z:F2}), " +
-                  $"크기: ({_lastCapturedBounds.size.x:F2} x {_lastCapturedBounds.size.z:F2}). " +
-                  "런타임 미니맵 스크립트의 월드→UV 변환에 이 값을 사용하세요.");
+    // 알파가 있는(무언가 찍힌) 픽셀들의 최소/최대 좌표. 하나도 없으면 false
+    private static bool TryGetOpaqueRect(Texture2D tex, out int minX, out int minY, out int maxX, out int maxY)
+    {
+        Color32[] pixels = tex.GetPixels32();
+        int w = tex.width, h = tex.height;
+        minX = w; minY = h; maxX = -1; maxY = -1;
+        for (int y = 0; y < h; y++)
+        {
+            int row = y * w;
+            for (int x = 0; x < w; x++)
+            {
+                if (pixels[row + x].a < 8) continue;
+                if (x < minX) minX = x;
+                if (x > maxX) maxX = x;
+                if (y < minY) minY = y;
+                if (y > maxY) maxY = y;
+            }
+        }
+        return maxX >= 0;
     }
 
     private static int FirstLayerInMask(LayerMask mask)
@@ -194,7 +257,11 @@ public class MinimapCaptureTool : EditorWindow
 
         foreach (var r in renderers)
         {
-            if (r == null || !r.enabled) continue;
+            if (r == null || !r.enabled || !r.gameObject.activeInHierarchy) continue;
+            // 실제로 찍히는 것만 범위에 포함 — 촬영 레이어 밖 오브젝트, 경계가 실제보다 훨씬 크게 잡히는
+            // 파티클·트레일·라인 렌더러가 섞이면 아무것도 없는 빈 공간까지 캡처 범위가 넓어짐
+            if ((cullingMask.value & (1 << r.gameObject.layer)) == 0) continue;
+            if (r is ParticleSystemRenderer || r is TrailRenderer || r is LineRenderer) continue;
             if (!initialized) { bounds = r.bounds; initialized = true; }
             else bounds.Encapsulate(r.bounds);
         }
