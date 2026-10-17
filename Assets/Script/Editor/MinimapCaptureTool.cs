@@ -25,7 +25,7 @@ public class MinimapCaptureTool : EditorWindow
     private float outsideBrightness = 0.35f;
     private float edgeExpand = 0.7f;      // NavMesh는 벽에서 에이전트 반경만큼 안쪽으로 구워지므로 그만큼 넓혀 실제 바닥 가장자리에 맞춤
     private bool drawOutline = true;
-    private Color outlineColor = new Color(1f, 0.9f, 0.65f, 0.9f);
+    private Color outlineColor = new Color32(0x96, 0x02, 0x00, 0xFF); // #960200
     private float outlineWidthPx = 2f;
     private float minIslandArea = 10f;    // 이보다 작은 NavMesh 조각(바위 위 등 따로 떨어진 곳)은 강조하지 않음
 
