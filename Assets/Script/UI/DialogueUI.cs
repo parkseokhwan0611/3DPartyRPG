@@ -31,6 +31,9 @@ public class DialogueUI : MonoBehaviour
     [SerializeField] float charDelay = 0.03f;
 
     public static bool IsOpen { get; private set; }
+    // 대화창이 마지막으로 닫힌 시각(unscaled) — 대사를 넘긴 스페이스바가 같은 프레임에 파티원 고정 키로도
+    // 처리되지 않도록 PartyManager가 닫힌 직후 잠깐 고정 키를 잠그는 데 사용
+    public static float LastClosedTime { get; private set; } = float.NegativeInfinity;
 
     private DialogueLine[] _lines;
     private int            _lineIndex;
@@ -88,6 +91,7 @@ public class DialogueUI : MonoBehaviour
     public void Close()
     {
         IsOpen = false;
+        LastClosedTime = Time.unscaledTime;
         StopTyping();
         panel?.SetActive(false);
         SetCombatUI(true);

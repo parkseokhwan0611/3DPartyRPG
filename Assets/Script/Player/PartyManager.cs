@@ -25,6 +25,8 @@ public class PartyManager : MonoBehaviour
              "(경사·울퉁불퉁한 바닥) 너무 작으면 정상 바닥 클릭이 무시되고, 너무 크면 바위 등 장애물 위를 " +
              "클릭했을 때 그 가장자리로 '근처 이동'해버림 — 걸어서 오를 수 없는 높이(Step Height)보다 조금 크게")]
     public float maxWalkableSnapHeight = 0.5f;
+    [Tooltip("NPC 대화가 끝난 뒤 파티원 고정(Space) 키를 잠그는 시간(초) — 대사를 넘긴 스페이스바가 고정 키로 처리되는 것 방지")]
+    public float partyHoldLockAfterDialogue = 0.3f;
     public static PartyManager instance;
     // 게임오버 화면이 떠있는 동안인지 — MenuTabUI 등에서 메뉴 열림을 차단하는 데 사용
     public static bool IsGameOver { get; private set; }
@@ -166,7 +168,8 @@ public class PartyManager : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.T))
             ToggleAutoSkill();
 
-        if (Input.GetKeyDown(KeyCode.Space))
+        // 대사를 스페이스바로 넘겨 대화가 끝난 직후엔 잠깐 잠금 — 같은 입력이 고정 키로도 처리돼 바로 켜지던 문제
+        if (Input.GetKeyDown(KeyCode.Space) && Time.unscaledTime - DialogueUI.LastClosedTime > partyHoldLockAfterDialogue)
             TogglePartyHold();
 
         if (currentLeader == null || currentLeader.CurrentState == PartyMemberScript.MemberState.Dead) return;
