@@ -67,8 +67,11 @@ public class Portal : MonoBehaviour
 
     // 파티원이 여러 명이라 트리거 범위에 동시에 걸칠 수 있음 — bool 하나로 추적하면
     // 한 명이 먼저 나갈 때 다른 파티원이 아직 안에 있어도 false로 덮어써버리는 문제가 생김.
-    // 안에 들어와 있는 파티원 수를 세어서, 0이 될 때만 실제로 프롬프트를 끔.
-    private int _insideCount;
+    // 안에 들어와 있는 파티원을 모아두고, 비었을 때만 실제로 프롬프트를 끔.
+    // 숫자로만 세면 Player 태그가 붙은 평타 투사체·소환수가 범위 안에서 풀로 돌아가며(비활성화 시
+    // OnTriggerExit가 오지 않음) 카운트가 남아, 맵 어디서든 F키로 포탈이 작동했음 → 파티원만, 실체로 추적
+    private readonly HashSet<PartyMemberScript> _inside = new HashSet<PartyMemberScript>();
+    private bool _promptShown;
 
     void Awake()
     {
@@ -100,23 +103,47 @@ public class Portal : MonoBehaviour
 
     void Update()
     {
+        // 범위 안에서 죽어 숨겨졌거나 비활성화된 파티원은 OnTriggerExit 없이 사라지므로 직접 정리
+        if (_inside.Count > 0)
+        {
+            _inside.RemoveWhere(m => m == null || !m.isActiveAndEnabled || m.CurrentState == PartyMemberScript.MemberState.Dead);
+            RefreshPrompt();
+        }
+
         bool anyUiOpen = MenuTabUI.IsOpen || ShopUI.IsOpen || DialogueUI.IsOpen || EnhancementUI.IsOpen;
-        if (_insideCount > 0 && !anyUiOpen && !SceneLoader.IsLoading && Input.GetKeyDown(KeyCode.F))
+        if (_inside.Count > 0 && !anyUiOpen && !SceneLoader.IsLoading && Input.GetKeyDown(KeyCode.F))
             UsePortal();
     }
 
     void OnTriggerEnter(Collider other)
     {
-        if (!other.CompareTag("Player")) return;
-        _insideCount++;
-        if (_insideCount == 1 && promptObject != null) promptObject.SetActive(true);
+        var member = GetPartyMember(other);
+        if (member == null) return;
+        _inside.Add(member);
+        RefreshPrompt();
     }
 
     void OnTriggerExit(Collider other)
     {
-        if (!other.CompareTag("Player")) return;
-        _insideCount = Mathf.Max(0, _insideCount - 1);
-        if (_insideCount == 0 && promptObject != null) promptObject.SetActive(false);
+        var member = GetPartyMember(other);
+        if (member == null) return;
+        _inside.Remove(member);
+        RefreshPrompt();
+    }
+
+    // Player 태그 중 실제 파티원만 (투사체·소환수 제외)
+    private static PartyMemberScript GetPartyMember(Collider other)
+    {
+        if (!other.CompareTag("Player")) return null;
+        return other.GetComponentInParent<PartyMemberScript>();
+    }
+
+    private void RefreshPrompt()
+    {
+        bool show = _inside.Count > 0;
+        if (show == _promptShown) return;
+        _promptShown = show;
+        if (promptObject != null) promptObject.SetActive(show);
     }
 
     private void UsePortal()
@@ -127,8 +154,8 @@ public class Portal : MonoBehaviour
             return;
         }
 
-        _insideCount = 0;
-        if (promptObject != null) promptObject.SetActive(false);
+        _inside.Clear();
+        RefreshPrompt();
 
         // 이동 직전 상태를 체크포인트로 자동 저장 — 현재 이미 보스방 안이라면
         // SaveManager.CanSave가 알아서 막아주므로 여기서 따로 분기할 필요 없음.

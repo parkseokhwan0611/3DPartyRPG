@@ -69,10 +69,14 @@ public class QuickSlot : MonoBehaviour, IDropHandler, IPointerClickHandler
             quickSlotUI.RegisterSkill(slotIndex, draggedIcon.SkillData);
     }
 
-    // 슬롯 우클릭으로 스킬 해제
+    // 슬롯 우클릭 또는 좌클릭 더블클릭으로 스킬 해제
     public void OnPointerClick(PointerEventData eventData)
     {
-        if (eventData.button == PointerEventData.InputButton.Right)
+        if (AssignedSkill == null) return;
+
+        bool rightClick  = eventData.button == PointerEventData.InputButton.Right;
+        bool doubleClick = eventData.button == PointerEventData.InputButton.Left && eventData.clickCount >= 2;
+        if (rightClick || doubleClick)
             ClearSkill();
     }
 

@@ -21,6 +21,24 @@ public class HpMpBarUI : MonoBehaviour
     {
         if (stat == null) return;
 
+        RefreshImmediate();
+        // CharacterStat이 DataManager와 연결되는 것도 Start라 이 Start가 먼저 돌면 MaxHp가 0이라 위에서 아무것도
+        // 못 채우고 Image 기본값(가득 참)이 남는다 — 살아있는 파티원은 HP 변화 이벤트로 곧 맞춰지지만, 죽은 채로
+        // 씬에 들어온 파티원은 이벤트가 없어 HP 바가 계속 가득 차 보였음. 모든 Start가 끝난 다음 프레임에 다시 맞춘다
+        StartCoroutine(RefreshNextFrame());
+    }
+
+    private IEnumerator RefreshNextFrame()
+    {
+        yield return null;
+        RefreshImmediate();
+    }
+
+    // 현재 값으로 바를 즉시 세팅 (애니메이션 없이)
+    private void RefreshImmediate()
+    {
+        if (stat == null) return;
+
         if (stat.MaxHp > 0 && hpBar != null)
             hpBar.fillAmount = stat.Hp / stat.MaxHp;
 
