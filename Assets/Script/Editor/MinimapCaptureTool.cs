@@ -1,5 +1,7 @@
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.AI;
+using System.Collections.Generic;
 using System.IO;
 
 /// <summary>
@@ -18,13 +20,22 @@ public class MinimapCaptureTool : EditorWindow
     private float cameraHeightMargin = 50f;
     private string outputFolder = "Assets/Textures/Minimap";
 
+    // 베이크된 NavMesh로 갈 수 있는 영역을 구해, 그 밖을 어둡게 칠하고 경계에 외곽선을 넣는다
+    private bool highlightWalkable = true;
+    private float outsideBrightness = 0.35f;
+    private float edgeExpand = 0.7f;      // NavMesh는 벽에서 에이전트 반경만큼 안쪽으로 구워지므로 그만큼 넓혀 실제 바닥 가장자리에 맞춤
+    private bool drawOutline = true;
+    private Color outlineColor = new Color(1f, 0.9f, 0.65f, 0.9f);
+    private float outlineWidthPx = 2f;
+    private float minIslandArea = 10f;    // 이보다 작은 NavMesh 조각(바위 위 등 따로 떨어진 곳)은 강조하지 않음
+
     private Bounds _lastCapturedBounds;
     private bool _hasCaptured;
 
     [MenuItem("Tools/Minimap/Capture Top-Down Map")]
     private static void Open()
     {
-        GetWindow<MinimapCaptureTool>("Minimap Capture").minSize = new Vector2(360, 320);
+        GetWindow<MinimapCaptureTool>("Minimap Capture").minSize = new Vector2(360, 480);
     }
 
     private void OnGUI()
@@ -41,6 +52,22 @@ public class MinimapCaptureTool : EditorWindow
         paddingMultiplier = EditorGUILayout.FloatField("여백 배율", paddingMultiplier);
         cameraHeightMargin = EditorGUILayout.FloatField("카메라 높이 여유(m)", cameraHeightMargin);
         outputFolder = EditorGUILayout.TextField("저장 폴더", outputFolder);
+
+        EditorGUILayout.Space();
+        EditorGUILayout.LabelField("길 강조 (베이크된 NavMesh 기준)", EditorStyles.boldLabel);
+        highlightWalkable = EditorGUILayout.Toggle("갈 수 없는 곳 어둡게", highlightWalkable);
+        using (new EditorGUI.DisabledScope(!highlightWalkable))
+        {
+            outsideBrightness = EditorGUILayout.Slider("바깥 밝기", outsideBrightness, 0f, 1f);
+            edgeExpand = EditorGUILayout.FloatField(new GUIContent("가장자리 확장(m)", "NavMesh는 벽에서 에이전트 반경만큼 떨어져 구워짐 — 보통 에이전트 반경과 같게"), edgeExpand);
+            minIslandArea = EditorGUILayout.FloatField(new GUIContent("최소 영역 넓이(m²)", "이보다 작은 따로 떨어진 NavMesh 조각은 강조하지 않음"), minIslandArea);
+            drawOutline = EditorGUILayout.Toggle("외곽선", drawOutline);
+            using (new EditorGUI.DisabledScope(!drawOutline))
+            {
+                outlineColor = EditorGUILayout.ColorField("외곽선 색", outlineColor);
+                outlineWidthPx = EditorGUILayout.Slider("외곽선 두께(px)", outlineWidthPx, 0.5f, 8f);
+            }
+        }
 
         EditorGUILayout.Space();
         if (GUILayout.Button("캡처", GUILayout.Height(32)))
@@ -144,6 +171,7 @@ public class MinimapCaptureTool : EditorWindow
             // 2차: 줄인 범위 + 여백으로 최종 해상도 캡처
             half *= paddingMultiplier;
             Texture2D tex = RenderTopDown(bounds, centerX, centerZ, half, resolution);
+            if (highlightWalkable) ApplyWalkableHighlight(tex, centerX, centerZ, half);
             SaveTexture(tex);
             Object.DestroyImmediate(tex);
         }
@@ -215,6 +243,160 @@ public class MinimapCaptureTool : EditorWindow
             Object.DestroyImmediate(rt);
             Object.DestroyImmediate(camGo);
         }
+    }
+
+    // ─────────────────────────────────────────────────────────────────
+    // 길 강조
+    // ─────────────────────────────────────────────────────────────────
+
+    // 캡처 이미지에 NavMesh 영역을 겹쳐서, 갈 수 있는 곳은 그대로 두고 바깥은 어둡게, 경계에는 외곽선을 칠한다.
+    // 텍스처 좌표: 왼쪽 아래(0,0) = 월드 (centerX - half, centerZ - half), 오른쪽 = +X, 위쪽 = +Z
+    private void ApplyWalkableHighlight(Texture2D tex, float centerX, float centerZ, float half)
+    {
+        int res = tex.width;
+        float pixelSize = half * 2f / res;
+        bool[] mask = RasterizeNavMesh(res, centerX - half, centerZ - half, pixelSize);
+        if (mask == null) return;
+
+        float[] dist = DistanceFromMask(mask, res);
+        float expandPx = Mathf.Max(0f, edgeExpand) / pixelSize;
+        float outlinePx = drawOutline ? outlineWidthPx : 0f;
+
+        Color32[] pixels = tex.GetPixels32();
+        for (int i = 0; i < pixels.Length; i++)
+        {
+            // 0 = 갈 수 있는 곳, 1 = 경계 밖 1px 이상 — 사이는 계단 현상 없이 부드럽게 섞음
+            float outside = Mathf.Clamp01(dist[i] - expandPx);
+            if (outside <= 0f) continue;
+
+            Color c = pixels[i];
+            float k = Mathf.Lerp(1f, outsideBrightness, outside);
+            c.r *= k; c.g *= k; c.b *= k;
+
+            if (outlinePx > 0f)
+            {
+                float o = outside * Mathf.Clamp01(expandPx + outlinePx + 1f - dist[i]) * outlineColor.a;
+                if (o > 0f)
+                {
+                    c.r = Mathf.Lerp(c.r, outlineColor.r, o);
+                    c.g = Mathf.Lerp(c.g, outlineColor.g, o);
+                    c.b = Mathf.Lerp(c.b, outlineColor.b, o);
+                    c.a = Mathf.Max(c.a, o); // 아무것도 안 찍힌(투명) 자리에서도 외곽선은 보이게
+                }
+            }
+            pixels[i] = c;
+        }
+        tex.SetPixels32(pixels);
+        tex.Apply();
+    }
+
+    // 베이크된 NavMesh 삼각형을 위에서 본 모양 그대로 픽셀 마스크로 칠한다. 작은 조각(minIslandArea 미만)은 제외
+    private bool[] RasterizeNavMesh(int res, float originX, float originZ, float pixelSize)
+    {
+        NavMeshTriangulation tri = NavMesh.CalculateTriangulation();
+        Vector3[] v = tri.vertices;
+        int[] idx = tri.indices;
+        if (v.Length == 0 || idx.Length == 0)
+        {
+            Debug.LogWarning("[MinimapCaptureTool] 베이크된 NavMesh가 없어 길 강조를 건너뜁니다. NavMesh를 먼저 Bake하세요.");
+            return null;
+        }
+
+        // 타일 경계에서 같은 위치의 정점이 따로 나오므로 위치로 합친 뒤, 정점을 공유하는 삼각형끼리 한 조각으로 묶음
+        var weld = new Dictionary<Vector3Int, int>();
+        int[] vid = new int[v.Length];
+        for (int i = 0; i < v.Length; i++)
+        {
+            var key = new Vector3Int(Mathf.RoundToInt(v[i].x * 100f), Mathf.RoundToInt(v[i].y * 100f), Mathf.RoundToInt(v[i].z * 100f));
+            if (!weld.TryGetValue(key, out int id)) { id = weld.Count; weld[key] = id; }
+            vid[i] = id;
+        }
+        int[] parent = new int[weld.Count];
+        for (int i = 0; i < parent.Length; i++) parent[i] = i;
+        int Find(int x) { while (parent[x] != x) { parent[x] = parent[parent[x]]; x = parent[x]; } return x; }
+        for (int t = 0; t < idx.Length; t += 3)
+        {
+            int a = Find(vid[idx[t]]), b = Find(vid[idx[t + 1]]), c = Find(vid[idx[t + 2]]);
+            parent[b] = a; parent[Find(c)] = a;
+        }
+        var islandArea = new Dictionary<int, float>();
+        for (int t = 0; t < idx.Length; t += 3)
+        {
+            int root = Find(vid[idx[t]]);
+            islandArea.TryGetValue(root, out float area);
+            islandArea[root] = area + TriangleAreaXZ(v[idx[t]], v[idx[t + 1]], v[idx[t + 2]]);
+        }
+
+        bool[] mask = new bool[res * res];
+        int skipped = 0;
+        for (int t = 0; t < idx.Length; t += 3)
+        {
+            if (islandArea[Find(vid[idx[t]])] < minIslandArea) { skipped++; continue; }
+            Vector2 p0 = ToPixel(v[idx[t]]), p1 = ToPixel(v[idx[t + 1]]), p2 = ToPixel(v[idx[t + 2]]);
+            int minX = Mathf.Max(0, Mathf.FloorToInt(Mathf.Min(p0.x, Mathf.Min(p1.x, p2.x))));
+            int maxX = Mathf.Min(res - 1, Mathf.CeilToInt(Mathf.Max(p0.x, Mathf.Max(p1.x, p2.x))));
+            int minY = Mathf.Max(0, Mathf.FloorToInt(Mathf.Min(p0.y, Mathf.Min(p1.y, p2.y))));
+            int maxY = Mathf.Min(res - 1, Mathf.CeilToInt(Mathf.Max(p0.y, Mathf.Max(p1.y, p2.y))));
+            float area = Edge(p0, p1, p2);
+            if (Mathf.Abs(area) < 1e-6f) continue;
+            for (int y = minY; y <= maxY; y++)
+            for (int x = minX; x <= maxX; x++)
+            {
+                var p = new Vector2(x + 0.5f, y + 0.5f);
+                float w0 = Edge(p1, p2, p), w1 = Edge(p2, p0, p), w2 = Edge(p0, p1, p);
+                // 감기 방향과 상관없이 세 값의 부호가 모두 같으면 삼각형 안
+                if ((w0 >= 0f && w1 >= 0f && w2 >= 0f) || (w0 <= 0f && w1 <= 0f && w2 <= 0f))
+                    mask[y * res + x] = true;
+            }
+        }
+        if (skipped > 0)
+            Debug.Log($"[MinimapCaptureTool] {minIslandArea}m² 미만의 작은 NavMesh 조각(삼각형 {skipped}개)은 강조에서 제외했습니다.");
+        return mask;
+
+        Vector2 ToPixel(Vector3 w) => new Vector2((w.x - originX) / pixelSize, (w.z - originZ) / pixelSize);
+    }
+
+    private static float Edge(Vector2 a, Vector2 b, Vector2 p) => (b.x - a.x) * (p.y - a.y) - (b.y - a.y) * (p.x - a.x);
+
+    private static float TriangleAreaXZ(Vector3 a, Vector3 b, Vector3 c) =>
+        Mathf.Abs((b.x - a.x) * (c.z - a.z) - (c.x - a.x) * (b.z - a.z)) * 0.5f;
+
+    // 각 픽셀에서 가장 가까운 마스크 픽셀까지의 거리(px). 2패스 챔퍼 근사 — 확장·외곽선 폭 계산용으로 충분히 정확함
+    private static float[] DistanceFromMask(bool[] mask, int res)
+    {
+        const float D1 = 1f, D2 = 1.41421356f;
+        float[] d = new float[mask.Length];
+        for (int i = 0; i < d.Length; i++) d[i] = mask[i] ? 0f : float.MaxValue;
+
+        for (int y = 0; y < res; y++)
+        for (int x = 0; x < res; x++)
+        {
+            int i = y * res + x;
+            float v = d[i];
+            if (x > 0) v = Mathf.Min(v, d[i - 1] + D1);
+            if (y > 0)
+            {
+                v = Mathf.Min(v, d[i - res] + D1);
+                if (x > 0)       v = Mathf.Min(v, d[i - res - 1] + D2);
+                if (x < res - 1) v = Mathf.Min(v, d[i - res + 1] + D2);
+            }
+            d[i] = v;
+        }
+        for (int y = res - 1; y >= 0; y--)
+        for (int x = res - 1; x >= 0; x--)
+        {
+            int i = y * res + x;
+            float v = d[i];
+            if (x < res - 1) v = Mathf.Min(v, d[i + 1] + D1);
+            if (y < res - 1)
+            {
+                v = Mathf.Min(v, d[i + res] + D1);
+                if (x < res - 1) v = Mathf.Min(v, d[i + res + 1] + D2);
+                if (x > 0)       v = Mathf.Min(v, d[i + res - 1] + D2);
+            }
+            d[i] = v;
+        }
+        return d;
     }
 
     // 알파가 있는(무언가 찍힌) 픽셀들의 최소/최대 좌표. 하나도 없으면 false
