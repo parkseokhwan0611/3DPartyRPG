@@ -100,14 +100,14 @@ public class QuestManager : MonoBehaviour
     // 새 게임 / 로드 진입점 (TitleMenuUI / SaveManager에서 호출)
     // ─────────────────────────────────────────────────────────────────
 
-    public void StartNewGame()
+    public void StartNewGame(bool playSound = true)
     {
         currentQuestIndex = 0;
         currentProgress   = 0;
         completedQuestIds.Clear();
         RefreshInventorySubscription();
 
-        if (CurrentQuest != null)
+        if (playSound && CurrentQuest != null)
             AudioManager.instance?.PlaySFX("QuestAccept");
 
         OnQuestChanged?.Invoke();
@@ -295,8 +295,12 @@ public class QuestManager : MonoBehaviour
             return;
         }
 
+        // 산개 지점이 벽 너머·바위 속이면 주울 수 없으므로 걸을 수 있는 바닥(NavMesh) 위로 보정, 없으면 리더 발밑
         Vector2 scatter = UnityEngine.Random.insideUnitCircle * 1.5f;
-        go.transform.SetPositionAndRotation(leader.transform.position + new Vector3(scatter.x, 0.5f, scatter.y), Quaternion.identity);
+        Vector3 pos = leader.transform.position + new Vector3(scatter.x, 0f, scatter.y);
+        pos = UnityEngine.AI.NavMesh.SamplePosition(pos, out var navHit, 1.5f, UnityEngine.AI.NavMesh.AllAreas)
+            ? navHit.position : leader.transform.position;
+        go.transform.SetPositionAndRotation(pos + Vector3.up * 0.5f, Quaternion.identity);
         go.GetComponent<WorldItem>()?.Setup(item);
         AudioManager.instance?.PlaySFX("ItemDrop");
     }

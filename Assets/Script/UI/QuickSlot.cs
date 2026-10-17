@@ -63,10 +63,9 @@ public class QuickSlot : MonoBehaviour, IDropHandler, IPointerClickHandler
             return;
         }
 
-        SetSkill(draggedIcon.SkillData);
-
-        if (quickSlotUI != null)
-            quickSlotUI.RegisterSkill(slotIndex, draggedIcon.SkillData);
+        // 등록 가능 여부(쿨타임 중 교체 불가 등)는 QuickSlotUI가 판단하고, 성공하면 이 슬롯 UI도 거기서 갱신한다
+        if (quickSlotUI != null) quickSlotUI.RegisterSkill(slotIndex, draggedIcon.SkillData);
+        else                     SetSkill(draggedIcon.SkillData);
     }
 
     // 슬롯 우클릭 또는 좌클릭 더블클릭으로 스킬 해제
@@ -100,9 +99,9 @@ public class QuickSlot : MonoBehaviour, IDropHandler, IPointerClickHandler
 
     public void ClearSkill()
     {
-        SetSkill(null);
-        if (quickSlotUI != null)
-            quickSlotUI.RegisterSkill(slotIndex, null);
+        // 쿨타임 중이면 QuickSlotUI가 거절하고 슬롯 UI도 그대로 둔다
+        if (quickSlotUI != null) quickSlotUI.RegisterSkill(slotIndex, null);
+        else                     SetSkill(null);
     }
 
     // ─────────────────────────────────────────────────────────────────

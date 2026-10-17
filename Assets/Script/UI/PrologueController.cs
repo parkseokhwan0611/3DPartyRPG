@@ -1,7 +1,6 @@
-using System.Collections;
+﻿using System.Collections;
 using TMPro;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 // 검은 화면에 텍스트만 띄우는 세계관 프롤로그. 클릭/키 입력으로 페이지를 넘기고,
@@ -94,7 +93,8 @@ public class PrologueController : MonoBehaviour
     {
         _isBusy = true;
         yield return Fade(_bodyGroup, 1f, 0f);
-        SceneManager.LoadScene(nextSceneName);
+        // 다른 씬 이동과 같이 로딩 화면을 거친다 — 동기 로딩은 무거운 튜토리얼 씬을 읽는 동안 화면이 멈춤
+        SceneLoader.Load(nextSceneName);
     }
 
     private IEnumerator Fade(CanvasGroup group, float from, float to)

@@ -55,6 +55,41 @@ public class SkillManager : MonoBehaviour
     {
         if (DataManager.instance != null)
             DataManager.instance.OnPartyClassChanged += HandlePartyClassChanged;
+
+        RestoreCooldownsFromDataManager();
+    }
+
+    // 이전 씬에서 넘어온 남은 쿨타임 적용 — 스킬 컴포넌트는 씬마다 새로 만들어져 쿨타임이 0부터 시작하므로
+    private void RestoreCooldownsFromDataManager()
+    {
+        if (DataManager.instance == null || myStat == null) return;
+        foreach (var slot in slots)
+        {
+            if (slot == null || slot.skillData == null) continue;
+            if (DataManager.instance.TryTakeSkillCooldown(myStat.partyIndex, slot.skillData.skillId, out float remaining))
+                slot.SetCooldown(remaining);
+        }
+    }
+
+    // 씬을 떠날 때 남은 쿨타임을 DataManager에 맡겨둔다 (다음 씬의 Start에서 다시 적용)
+    private void RecordCooldownsToDataManager()
+    {
+        if (DataManager.instance == null || ReferenceEquals(myStat, null)) return;
+        // 씬 언로드 중엔 같은 오브젝트의 스킬 컴포넌트가 이미 파괴 처리돼 Unity의 == null이 true일 수 있다 —
+        // 읽는 값(남은 시간·SkillData)은 관리 메모리에 그대로 있으므로 참조 자체만 확인한다
+        int partyIndex = myStat.partyIndex;
+        foreach (var slot in slots)
+        {
+            if (slot is null || slot.skillData is null) continue;
+            DataManager.instance.RecordSkillCooldown(partyIndex, slot.skillData.skillId, slot.CooldownRemaining);
+        }
+    }
+
+    // 스킬창에서 슬롯 교체를 막을 때 사용 — 교체하면 스킬 컴포넌트가 새로 만들어져 쿨타임이 초기화되므로
+    public bool IsSlotOnCooldown(int index)
+    {
+        SkillBase skill = GetSlot(index);
+        return skill != null && skill.CooldownRemaining > 0f;
     }
 
     // 무기(클래스)를 바꾸면 배운 스킬이 초기화되므로, 이전 클래스 스킬이 남지 않게 퀵슬롯을 전부 비운다
@@ -104,6 +139,8 @@ public class SkillManager : MonoBehaviour
 
     void OnDestroy()
     {
+        RecordCooldownsToDataManager();
+
         if (attackBase != null)
             attackBase.OnAttackExecuted -= HandleAttackCount;
         if (DataManager.instance != null)

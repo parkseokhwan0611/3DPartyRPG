@@ -43,9 +43,10 @@ public class QuickSlotUI : MonoBehaviour
     // 슬롯에 스킬 등록 (QuickSlot.OnDrop에서 호출)
     // ─────────────────────────────────────────────────────────────────
 
-    public void RegisterSkill(int slotIndex, SkillData skill)
+    // 등록(교체·해제 포함)에 성공하면 true. 쿨타임 중인 스킬이 걸려 있으면 거절하고 false
+    public bool RegisterSkill(int slotIndex, SkillData skill)
     {
-        if (slotIndex < 0 || slotIndex >= slots.Length) return;
+        if (slotIndex < 0 || slotIndex >= slots.Length) return false;
 
         // 현재 스킬창에서 보고 있는 캐릭터 기준으로 등록
         // 스킬창은 평소 비활성 패널일 수 있어 매번 스캔하지 않고 최초 1회만 찾아서 캐싱
@@ -56,11 +57,18 @@ public class QuickSlotUI : MonoBehaviour
             ? _cachedSkillWindow.GetCurrentCharIndex()
             : 0;
 
-        if (PartyManager.instance == null) return;
-        if (charIndex < 0 || charIndex >= PartyManager.instance.partyMembers.Count) return;
+        if (PartyManager.instance == null) return false;
+        if (charIndex < 0 || charIndex >= PartyManager.instance.partyMembers.Count) return false;
 
         PartyMemberScript member = PartyManager.instance.partyMembers[charIndex];
         SkillManager skillManager = member?.GetComponent<SkillManager>();
+
+        // 쿨타임 중인 스킬은 교체·해제·다른 슬롯으로 옮기기 불가 — 슬롯을 바꾸면 스킬이 새로 만들어져 쿨타임이 초기화되므로
+        if (skillManager != null && IsBlockedByCooldown(skillManager, slotIndex, skill, out SkillBase coolingSkill))
+        {
+            ShowMessage("쿨타임 중인 스킬은 교체할 수 없습니다.", coolingSkill);
+            return false;
+        }
 
         // 동일 스킬이 다른 슬롯에 이미 등록돼 있으면 해당 슬롯 해제
         if (skill != null)
@@ -90,7 +98,77 @@ public class QuickSlotUI : MonoBehaviour
         {
             CombatQuickSlotUI.instance?.RefreshSlots();
         }
+        return true;
     }
+
+    // 대상 슬롯의 지금 스킬이 쿨타임 중이거나(교체·해제), 등록하려는 스킬이 다른 슬롯에서 쿨타임 중이면(이동) 막는다.
+    // 같은 슬롯에 같은 스킬을 다시 놓는 건 아무것도 안 바뀌므로 허용
+    private bool IsBlockedByCooldown(SkillManager skillManager, int slotIndex, SkillData skill, out SkillBase coolingSkill)
+    {
+        coolingSkill = null;
+        SkillBase current = skillManager.GetSlot(slotIndex);
+        if (current != null && current.skillData == skill) return false;
+
+        if (skillManager.IsSlotOnCooldown(slotIndex)) { coolingSkill = current; return true; }
+
+        if (skill != null)
+        {
+            for (int i = 0; i < slots.Length; i++)
+            {
+                if (i == slotIndex) continue;
+                SkillBase other = skillManager.GetSlot(i);
+                if (other != null && other.skillData == skill && skillManager.IsSlotOnCooldown(i)) { coolingSkill = other; return true; }
+            }
+        }
+        return false;
+    }
+
+    // ─────────────────────────────────────────────────────────────────
+    // 안내 메시지 — 퀵슬롯 안내 문구("스킬을 드래그해 등록" 등) 자리에 잠깐 띄웠다가 원래 문구로 되돌린다
+    // ─────────────────────────────────────────────────────────────────
+
+    [Header("# 안내 메시지 (선택)")]
+    [Tooltip("퀵슬롯 안내 문구 텍스트. 쿨타임 중 교체를 시도하면 이 자리에 경고를 띄웠다가 원래 문구로 되돌린다. " +
+             "비워두면 콘솔 로그만 남김")]
+    [SerializeField] TMPro.TextMeshProUGUI messageText;
+    [Tooltip("경고 문구를 띄워두는 시간(초). 그 전에 해당 스킬의 쿨타임이 끝나면 바로 원래 문구로 돌아간다")]
+    [SerializeField] float messageRevertDelay = 3f;
+
+    private string    _originalMessage;   // 원래 안내 문구 (처음 경고를 띄울 때 보관)
+    private bool      _messageShowing;
+    private float     _messageEndTime;
+    private SkillBase _messageBlockingSkill;
+
+    private void ShowMessage(string message, SkillBase blockingSkill)
+    {
+        if (messageText == null) { Debug.Log($"[QuickSlotUI] {message}"); return; }
+
+        if (!_messageShowing) _originalMessage = messageText.text;
+        messageText.text      = message;
+        _messageShowing       = true;
+        _messageEndTime       = Time.unscaledTime + messageRevertDelay;
+        _messageBlockingSkill = blockingSkill;
+    }
+
+    private void UpdateMessage()
+    {
+        if (!_messageShowing) return;
+
+        bool cooldownDone = _messageBlockingSkill == null || _messageBlockingSkill.CooldownRemaining <= 0f;
+        if (cooldownDone || Time.unscaledTime >= _messageEndTime)
+            RestoreMessage();
+    }
+
+    private void RestoreMessage()
+    {
+        if (!_messageShowing) return;
+        _messageShowing       = false;
+        _messageBlockingSkill = null;
+        if (messageText != null) messageText.text = _originalMessage;
+    }
+
+    // 스킬창을 닫으면 경고를 남겨두지 않는다
+    void OnDisable() => RestoreMessage();
 
     // 더블클릭 등록용 — 빈 슬롯이 있으면 거기에, 없으면 첫 슬롯(Q)에 등록 (드래그와 동일한 결과)
     public void RegisterSkillToEmptySlot(SkillData skill)
@@ -122,6 +200,8 @@ public class QuickSlotUI : MonoBehaviour
 
     void Update()
     {
+        UpdateMessage();
+
         if (_cachedSkillManager == null) return;
 
         for (int i = 0; i < slots.Length; i++)

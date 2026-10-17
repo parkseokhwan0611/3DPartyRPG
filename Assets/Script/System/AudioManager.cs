@@ -211,7 +211,8 @@ public class AudioManager : MonoBehaviour
         float t = 0f;
         while (t < bgmFadeDuration)
         {
-            t += Time.deltaTime;
+            // 실제 시간 기준 — 로딩 화면 중(SceneLoader가 시간을 멈춤)에도 BGM 전환이 멈추지 않게
+            t += Time.unscaledDeltaTime;
             bgmSource.volume = Mathf.Lerp(from, toGetter(), t / bgmFadeDuration);
             yield return null;
         }

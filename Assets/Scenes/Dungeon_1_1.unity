@@ -621,7 +621,7 @@ MonoBehaviour:
   m_OverrideVoxelSize: 0
   m_VoxelSize: 0.23333333
   m_MinRegionArea: 2
-  m_NavMeshData: {fileID: 23800000, guid: c45245b8327ebf34abf088af9a9287db, type: 2}
+  m_NavMeshData: {fileID: 23800000, guid: 1a116bc2dea7ff74d95a1598153f4f76, type: 2}
   m_BuildHeightMesh: 0
 --- !u!1 &9817108
 GameObject:
@@ -241102,6 +241102,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Portal_Back
       objectReference: {fileID: 0}
+    - target: {fileID: 1075712664182657804, guid: 3d9c0427d76b8714ab057048ce42863b,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 5822139004800782574, guid: 3d9c0427d76b8714ab057048ce42863b,
         type: 3}
       propertyPath: portalId
@@ -431588,6 +431593,7 @@ MonoBehaviour:
   cameraFollowTarget: {fileID: 2056592582}
   maxWalkableSnapHorizontal: 0.6
   maxWalkableSnapHeight: 0.5
+  partyHoldLockAfterDialogue: 0.3
   gameOverUI: {fileID: 920746052}
   titleSceneName: TitleScene
   levelUpEffectPoolKey: LevelUpEffect
@@ -488713,6 +488719,8 @@ MonoBehaviour:
   slotW: {fileID: 1506641544}
   slotE: {fileID: 667759621}
   slotR: {fileID: 1817858151}
+  messageText: {fileID: 0}
+  messageRevertDelay: 3
 --- !u!114 &1586100503
 MonoBehaviour:
   m_ObjectHideFlags: 0

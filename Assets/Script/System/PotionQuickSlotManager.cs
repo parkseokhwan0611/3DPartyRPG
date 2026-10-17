@@ -154,7 +154,7 @@ public class PotionQuickSlotManager : MonoBehaviour
         if (_mpCooldownRemaining > 0f) _mpCooldownRemaining -= Time.deltaTime;
 
         if (!GameManager.IsLive) return;
-        if (MenuTabUI.IsOpen || ShopUI.IsOpen || DialogueUI.IsOpen || EnhancementUI.IsOpen) return;
+        if (MenuTabUI.IsOpen || ShopUI.IsOpen || DialogueUI.IsOpen || EnhancementUI.IsOpen || SceneLoader.IsLoading) return;
 
         if (Input.GetKeyDown(KeyCode.S)) TryUsePotion(ConsumableType.HpPotion);
         if (Input.GetKeyDown(KeyCode.D)) TryUsePotion(ConsumableType.MpPotion);

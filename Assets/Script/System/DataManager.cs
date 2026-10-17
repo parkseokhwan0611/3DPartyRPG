@@ -64,6 +64,8 @@ public class DataManager : MonoBehaviour
     // 포탈 등으로 씬이 바뀌면 항상 0번(리스트 첫 캐릭터)으로 리더가 초기화됨. 여기(DataManager,
     // DontDestroyOnLoad)에 실시간으로 기록해뒀다가 새 씬 시작 시 그대로 이어받는다
     public int currentLeaderIndex = 0;
+    // 자동 스킬(T) 설정 — PartyManager는 씬마다 새로 만들어져서 여기 두지 않으면 포탈·이어하기마다 ON으로 돌아갔음
+    public bool autoSkillEnabled = true;
 
     // 새 게임 시작 시 true — 게임 씬 로드 후 PotionQuickSlotManager가 시작 포션을
     // 퀵슬롯에 자동 등록하는 데 사용되고, 등록 즉시 소비(false)됨. 로드 게임은
@@ -170,7 +172,9 @@ public class DataManager : MonoBehaviour
         hpPotionSlotItemId = "";
         mpPotionSlotItemId = "";
         currentLeaderIndex = 0;
+        autoSkillEnabled   = true;
         npcStocks.Clear();
+        _skillCooldownEnds.Clear();
 
         // 시작 아이템 지급
         if (startItems != null)
@@ -209,6 +213,8 @@ public class DataManager : MonoBehaviour
             partyLevel         = partyLevel,
             partyExp           = partyExp,
             selectedPartyIndex = selectedPartyIndex,
+            currentLeaderIndex = currentLeaderIndex,
+            autoSkillEnabled   = autoSkillEnabled,
             gold               = gold,
         };
 
@@ -293,6 +299,10 @@ public class DataManager : MonoBehaviour
         partyLevel                 = save.partyLevel;
         partyExp                   = save.partyExp;
         selectedPartyIndex         = save.selectedPartyIndex;
+        // 리더도 저장 당시 그대로 — 예전엔 저장하지 않아 직전 플레이에서 마지막으로 조종하던 캐릭터가 리더가 됐음.
+        // 범위 밖·사망한 리더는 PartyManager가 첫 생존자로 바꿔준다
+        currentLeaderIndex         = save.currentLeaderIndex;
+        autoSkillEnabled           = save.autoSkillEnabled;
         gold                       = save.gold;
         pendingAutoRegisterPotions = false;
 
@@ -305,6 +315,9 @@ public class DataManager : MonoBehaviour
         partyQuickSlots     = new List<CharacterQuickSlotSave>(save.quickSlots);
         hpPotionSlotItemId  = save.hpPotionSlotItemId;
         mpPotionSlotItemId  = save.mpPotionSlotItemId;
+
+        // 씬 이동용 쿨타임 기록은 버림 — 불러온 쿨타임은 SaveManager.RestoreQuickSlots가 세이브 값으로 적용
+        _skillCooldownEnds.Clear();
 
         // NPC 한정 재고 — NPC들은 이 값을 직접 읽으므로 씬 로드 순서와 무관
         npcStocks.Clear();
@@ -599,6 +612,34 @@ public class DataManager : MonoBehaviour
             case 2: entry.slot2 = skillId; break;
             case 3: entry.slot3 = skillId; break;
         }
+    }
+
+    // ─────────────────────────────────────────────────────────────────
+    // 스킬 쿨타임 (씬 전환 후에도 유지)
+    // ─────────────────────────────────────────────────────────────────
+
+    // 파티원 인덱스 → (skillId → 쿨타임이 끝나는 Time.time). 스킬 컴포넌트는 씬마다 새로 만들어져서
+    // 여기 남겨두지 않으면 포탈을 왕복하는 것만으로 모든 쿨타임이 초기화됐음.
+    // 로딩 중엔 SceneLoader가 시간을 멈추므로 Time.time 기준이면 로딩 시간은 쿨타임에서 빠지지 않는다
+    private readonly Dictionary<int, Dictionary<string, float>> _skillCooldownEnds = new Dictionary<int, Dictionary<string, float>>();
+
+    public void RecordSkillCooldown(int partyIndex, string skillId, float remaining)
+    {
+        if (partyIndex < 0 || string.IsNullOrEmpty(skillId) || remaining <= 0f) return;
+        if (!_skillCooldownEnds.TryGetValue(partyIndex, out var map))
+            _skillCooldownEnds[partyIndex] = map = new Dictionary<string, float>();
+        map[skillId] = Time.time + remaining;
+    }
+
+    // 남은 쿨타임을 꺼내고 기록은 지운다 (한 번 적용하면 이후는 스킬 컴포넌트가 직접 관리)
+    public bool TryTakeSkillCooldown(int partyIndex, string skillId, out float remaining)
+    {
+        remaining = 0f;
+        if (string.IsNullOrEmpty(skillId) || !_skillCooldownEnds.TryGetValue(partyIndex, out var map)) return false;
+        if (!map.TryGetValue(skillId, out float end)) return false;
+        map.Remove(skillId);
+        remaining = end - Time.time;
+        return remaining > 0f;
     }
 
     // ─────────────────────────────────────────────────────────────────

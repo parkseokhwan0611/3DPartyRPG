@@ -50,7 +50,13 @@ public class PartyManager : MonoBehaviour
     // ─────────────────────────────────────────
     // 자동 스킬 사용 (팔로워 전용, T로 토글)
     // ─────────────────────────────────────────
-    public bool AutoSkillEnabled { get; private set; } = true;
+    // 실제 값은 DataManager가 보관 — 씬 이동·이어하기 후에도 유지 (DataManager가 없는 단독 테스트용으로만 로컬 값 사용)
+    public bool AutoSkillEnabled
+    {
+        get => DataManager.instance != null ? DataManager.instance.autoSkillEnabled : _autoSkillLocal;
+        private set { if (DataManager.instance != null) DataManager.instance.autoSkillEnabled = value; else _autoSkillLocal = value; }
+    }
+    private bool _autoSkillLocal = true;
     public event System.Action<bool> OnAutoSkillToggled;
 
     // ─────────────────────────────────────────
@@ -88,10 +94,20 @@ public class PartyManager : MonoBehaviour
         }
 
         if (startIndex >= 0) ChangeLeader(startIndex);
+        else
+        {
+            // 전원 사망 상태로 저장된 세이브(저장 막기 이전 버전) — 조작할 캐릭터가 없어 갇히므로 바로 게임오버
+            TriggerGameOver(0f);
+            return;
+        }
 
-        // 방금 포탈을 타고 이 씬에 들어왔다면, 그 포탈이 지정한 스폰 포탈 위치로 파티 전체를 이동
+        // 방금 포탈을 타고 이 씬에 들어왔다면, 그 포탈이 지정한 스폰 포탈 위치로 파티 전체를 이동.
+        // 카메라도 바로 옮긴다 — 안 그러면 씬에 처음 배치된 리더 위치에서 도착 지점까지 화면이 미끄러지듯 따라감
         if (Portal.TryConsumePendingSpawn(out Vector3 spawnPos))
+        {
             RepositionPartyAt(spawnPos);
+            if (currentLeader != null) SnapCameraToPosition(currentLeader.transform.position);
+        }
 
         if (DataManager.instance != null)
             DataManager.instance.OnLevelUp += PlayLevelUpEffect;
@@ -139,6 +155,13 @@ public class PartyManager : MonoBehaviour
             Vector3 offset = member.transform.position - leaderOriginalPos;
             Vector3 newPos = targetPos + offset;
 
+            // 대열 자리가 벽 너머 등 NavMesh 밖이면 Warp가 실패해 씬에 처음 배치된 자리에 남았다가 맵을 가로질러
+            // 달려왔음 — 가까운 NavMesh 위로, 그것도 없으면 도착 지점으로 보정
+            if (NavMesh.SamplePosition(newPos, out NavMeshHit hit, 2f, NavMesh.AllAreas))
+                newPos = hit.position;
+            else if (NavMesh.SamplePosition(targetPos, out hit, 2f, NavMesh.AllAreas))
+                newPos = hit.position;
+
             if (member.agent != null && member.agent.enabled)
                 member.agent.Warp(newPos);
             else
@@ -160,7 +183,8 @@ public class PartyManager : MonoBehaviour
         if (partyMembers.Count == 0) return;
 
         // 인벤토리/메뉴/상점/대화/강화 창이 열려있으면 캐릭터 입력 전부 차단 (NPC·포탈·물약 단축키와 같은 기준)
-        if (MenuTabUI.IsOpen || ShopUI.IsOpen || DialogueUI.IsOpen || EnhancementUI.IsOpen) return;
+        // 로딩 화면 중(포탈 이동 등)에도 이전 씬에서 이동·스킬 입력이 들어가지 않게 차단
+        if (MenuTabUI.IsOpen || ShopUI.IsOpen || DialogueUI.IsOpen || EnhancementUI.IsOpen || SceneLoader.IsLoading) return;
 
         HandleLeaderChangeInput();
         HandleCommandInput();
@@ -582,12 +606,14 @@ public class PartyManager : MonoBehaviour
     private System.Collections.IEnumerator ShowGameOverAfterDelay(float delay)
     {
         yield return new WaitForSecondsRealtime(delay);
+        // 씬 시작 직후(전원 사망 세이브)면 로딩이 끝나 SceneLoader가 시간을 되돌린 뒤에 멈춰야 정지가 유지된다
+        while (SceneLoader.IsLoading) yield return null;
         // yield 도중 gameOverUI가 파괴됐을 경우를 대비해 재확인
         if (gameOverUI == null) yield break;
+        MenuTabUI.CloseAllWindows();
         gameOverUI.SetActive(true);
         IsGameOver = true;
-        // 페이드(fade:true)는 Time.deltaTime 기반 코루틴인데 바로 다음 줄에서 timeScale을 0으로
-        // 멈춰버리면 페이드가 끝까지 못 가고 볼륨이 어중간하게 멈춘 채 계속 재생됨 — 즉시 정지로 처리
+        // 게임오버는 BGM을 즉시 끊는다 (페이드 없이)
         AudioManager.instance?.StopBGM(fade: false);
         AudioManager.instance?.PlaySFX("GameOver");
         Time.timeScale = 0f;

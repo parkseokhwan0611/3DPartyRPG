@@ -50,6 +50,7 @@ public class MenuTabUI : MonoBehaviour
     {
         if (menuWindow == null) return;
         if (PartyManager.IsGameOver) return; // 게임오버 화면에서는 메뉴/설정창 열기 차단
+        if (SceneLoader.IsLoading) return;   // 로딩 화면 중에도 차단
 
         if (Input.GetKeyDown(KeyCode.Tab))
         {
@@ -91,6 +92,24 @@ public class MenuTabUI : MonoBehaviour
         // 씬 리로드·오브젝트 파괴 시 static 플래그 초기화
         // (메뉴 열린 채 씬 전환되어도 다음 씬에서 입력 차단 방지)
         IsOpen = false;
+        if (_instance == this) _instance = null;
+    }
+
+    private static MenuTabUI _instance;
+    void Awake() => _instance = this;
+
+    // 게임오버 화면을 띄울 때 열려 있던 창을 전부 닫는다 — 남겨두면 게임오버 화면 뒤에서 대화가 Space로 계속
+    // 넘어가 끝나면 상점이 열리는 등 뒤쪽 UI가 계속 동작했음. 대화는 완료 콜백 없이 닫으므로 상점·강화가 이어서 열리지 않음
+    public static void CloseAllWindows()
+    {
+        if (DialogueUI.IsOpen)    DialogueUI.instance?.Close();
+        if (ShopUI.IsOpen)        ShopUI.instance?.Close();
+        if (EnhancementUI.IsOpen) EnhancementUI.instance?.Close(); // 강화 진행 중이면 그대로 남음 (끝나야 닫힘)
+        if (_instance != null && _instance.menuWindow != null && _instance.menuWindow.activeSelf)
+        {
+            IsOpen = false;
+            _instance.menuWindow.SetActive(false);
+        }
     }
 
     // ─────────────────────────────────────────────────────────────────

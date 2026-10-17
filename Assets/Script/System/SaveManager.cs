@@ -12,7 +12,21 @@ public class SaveManager : MonoBehaviour
 
     private string SavePath => Path.Combine(Application.persistentDataPath, "save.json");
 
-    public bool CanSave    => !isInBossRoom;
+    public bool CanSave    => !isInBossRoom && HasAliveMember;
+
+    // 살아 있는 파티원이 하나라도 있는지 — 마지막 파티원이 쓰러진 뒤 게임오버 화면이 뜨기 전(2초)에 저장하면
+    // 전원 사망 상태가 저장돼, 이어하기 후 리더도 없고 게임오버도 안 떠 아무것도 할 수 없었음
+    public bool HasAliveMember
+    {
+        get
+        {
+            var statuses = DataManager.instance != null ? DataManager.instance.partyStatuses : null;
+            if (statuses == null || statuses.Count == 0) return true; // 데이터가 없으면 판단하지 않음
+            foreach (var s in statuses)
+                if (s != null && s.currentHp > 0f) return true;
+            return false;
+        }
+    }
     public bool HasSaveData => File.Exists(SavePath);
 
     // DataManager 등 다른 매니저와 같은 오브젝트에 함께 배치되는 경우가 있어, 중복 감지 시
@@ -34,7 +48,8 @@ public class SaveManager : MonoBehaviour
     {
         if (!CanSave)
         {
-            Debug.Log("[SaveManager] 보스 룸에서는 세이브할 수 없습니다.");
+            Debug.Log(isInBossRoom ? "[SaveManager] 보스 룸에서는 세이브할 수 없습니다."
+                                   : "[SaveManager] 살아 있는 파티원이 없어 세이브할 수 없습니다.");
             return false;
         }
 
@@ -92,7 +107,7 @@ public class SaveManager : MonoBehaviour
             }
 
             string json = JsonUtility.ToJson(data, prettyPrint: true);
-            File.WriteAllText(SavePath, json);
+            WriteSaveFileSafely(json);
             Debug.Log($"[SaveManager] 세이브 완료: {SavePath}");
             if (playSound) AudioManager.instance?.PlaySFX("SaveComplete");
             return true;
@@ -102,6 +117,19 @@ public class SaveManager : MonoBehaviour
             Debug.LogError($"[SaveManager] 세이브 실패: {e.Message}");
             return false;
         }
+    }
+
+    // 임시 파일에 다 쓴 뒤 원래 파일과 바꾼다 — 바로 덮어쓰면 쓰는 도중 게임이 꺼졌을 때 파일이 반만 남아
+    // 이어하기가 실패하고 이전 세이브까지 잃었음. 교체 직전까지는 이전 세이브가 그대로 남아 있다
+    private void WriteSaveFileSafely(string json)
+    {
+        string tempPath = SavePath + ".tmp";
+        File.WriteAllText(tempPath, json);
+
+        if (File.Exists(SavePath))
+            File.Replace(tempPath, SavePath, null);
+        else
+            File.Move(tempPath, SavePath);
     }
 
     // ─────────────────────────────────────────────────────────────────
@@ -136,6 +164,10 @@ public class SaveManager : MonoBehaviour
             }
             if (!savedSceneOk)
                 Debug.LogWarning($"[SaveManager] 저장된 씬 '{data.sceneName}'을(를) 열 수 없어 '{LoadedSceneName}'(으)로 이동합니다.");
+
+            // 보스방에서는 저장할 수 없으므로 세이브는 항상 보스방 밖 상태 — 보스방에서 타이틀로 나갔다가
+            // 이어하면 이전 플래그가 남아 포탈을 탈 때까지 저장이 막혔음
+            isInBossRoom = false;
 
             DataManager.instance?.LoadSaveData(data);
 

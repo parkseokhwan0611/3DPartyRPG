@@ -89,7 +89,7 @@ public class PartyStatusEffectHandler : MonoBehaviour
 
     public void ApplyThorns(BuffSkillData data, BuffSkillData.BuffEffect effect, int level, float duration)
     {
-        if (data == null || effect == null || duration <= 0f) return;
+        if (data == null || effect == null || duration <= 0f || IsDead) return;
 
         bool wasActive = HasThorns;
         _thornsData   = data;
@@ -150,8 +150,14 @@ public class PartyStatusEffectHandler : MonoBehaviour
     // 버프 적용
     // ─────────────────────────────────────────────────────────────────
 
+    // 쓰러진 뒤 사라지기 전(사망 연출 중)인지 — 이때 걸린 효과는 오브젝트가 꺼지며 만료 코루틴이 죽어 스탯이
+    // 복구되지 않고(씬 이동 전까지 저장 데이터에 남음), 스턴은 시체에 스턴 모션을 덮어씀
+    private bool IsDead => partyMember != null && partyMember.CurrentState == PartyMemberScript.MemberState.Dead;
+
     public void ApplyBuff(StatusEffect effect)
     {
+        if (IsDead) return;
+
         // 디버프 면역 중이면 디버프 무시 (스턴 포함)
         if (IsDebuffImmune && IsDebuff(effect.effectType)) return;
 
@@ -273,7 +279,11 @@ public class PartyStatusEffectHandler : MonoBehaviour
     // 보호막 적용 — 수치는 기존 보호막에 합산하고, 만료 타이머는 이번 지속시간으로 새로 갱신한다
     // (예: 5초짜리 보호막이 걸린 지 3초 지난 상태에서 8초짜리 보호막을 또 걸면, 수치는 합쳐지고
     // 전체가 지금부터 8초 뒤에 함께 만료된다)
-    public void ApplyShield(float amount, float duration, GameObject source) => _shield.Apply(amount, duration);
+    public void ApplyShield(float amount, float duration, GameObject source)
+    {
+        if (IsDead) return;
+        _shield.Apply(amount, duration);
+    }
 
     // ─────────────────────────────────────────────────────────────────
     // 데미지 시 보호막 먼저 소모

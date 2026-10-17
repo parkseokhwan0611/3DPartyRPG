@@ -52,7 +52,10 @@ public class SceneLoader : MonoBehaviour
     private IEnumerator LoadAsync(string sceneName)
     {
         IsLoading = true;
-        Time.timeScale = 1f;
+        // 로딩 화면이 떠 있는 동안 이전 씬을 멈춘다 — 포탈 자동 저장 직후 몬스터가 계속 때려서 로딩 중에 입은
+        // 피해(심하면 사망)가 다음 씬으로 넘어갔음. 대기는 전부 Realtime이라 로딩 진행에는 영향 없음.
+        // 게임오버 등으로 이미 0이었어도 다음 씬이 뜨면 아래에서 1로 되돌린다
+        Time.timeScale = 0f;
         if (loadingPanel != null) loadingPanel.SetActive(true);
         ShowRandomTip();
         SetProgress(0f);
@@ -61,6 +64,15 @@ public class SceneLoader : MonoBehaviour
 
         float startTime = Time.realtimeSinceStartup;
         AsyncOperation op = SceneManager.LoadSceneAsync(sceneName);
+        if (op == null)
+        {
+            // 빌드 목록에 없는 씬 등 — 멈춘 채로 남지 않게 원래대로 되돌린다
+            Debug.LogError($"[SceneLoader] 씬 '{sceneName}'을(를) 불러올 수 없습니다. Build Settings를 확인하세요.");
+            Time.timeScale = 1f;
+            if (loadingPanel != null) loadingPanel.SetActive(false);
+            IsLoading = false;
+            yield break;
+        }
         op.allowSceneActivation = false;
 
         while (op.progress < 0.9f)
@@ -80,6 +92,7 @@ public class SceneLoader : MonoBehaviour
         op.allowSceneActivation = true;
         yield return new WaitUntil(() => op.isDone);
 
+        Time.timeScale = 1f;
         if (loadingPanel != null) loadingPanel.SetActive(false);
         IsLoading = false;
     }

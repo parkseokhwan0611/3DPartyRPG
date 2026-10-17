@@ -1,4 +1,4 @@
-using TMPro;
+﻿using TMPro;
 using UnityEngine;
 
 public class WorldItem : MonoBehaviour
@@ -7,7 +7,9 @@ public class WorldItem : MonoBehaviour
     public TextMeshPro nameLabel;
 
     private ItemInstance _item;
-    private int _insideCount;
+    // 범위 안 파티원 — 숫자로만 세면 Player 태그가 붙은 평타 투사체·소환수가 범위 안에서 풀로 돌아가며(비활성화 시
+    // OnTriggerExit가 오지 않음) 카운트가 남아, 맵 어디서든 F키로 주워졌음 → 파티원만, 실체로 추적 (Portal과 동일)
+    private readonly System.Collections.Generic.HashSet<PartyMemberScript> _inside = new System.Collections.Generic.HashSet<PartyMemberScript>();
     private Camera _camera;
     private PoolAble _poolAble;
     private ParticleSystem[] _particleSystems;
@@ -26,7 +28,7 @@ public class WorldItem : MonoBehaviour
     // 풀에서 재사용될 때마다 이전 상태(범위 체크 등)가 남아있지 않도록 초기화
     void OnEnable()
     {
-        _insideCount = 0;
+        _inside.Clear();
     }
 
     public void Setup(ItemInstance item)
@@ -50,19 +52,32 @@ public class WorldItem : MonoBehaviour
             nameLabel.transform.rotation = _camera.transform.rotation;
 
         // F키 줍기 — 메뉴·상점·대화·강화 창이 열려 있으면 막음 (NPC·포탈과 같은 기준)
-        bool anyUiOpen = MenuTabUI.IsOpen || ShopUI.IsOpen || DialogueUI.IsOpen || EnhancementUI.IsOpen;
-        if (_insideCount > 0 && !anyUiOpen && Input.GetKeyDown(KeyCode.F))
+        // 범위 안에서 죽어 숨겨진 파티원은 OnTriggerExit 없이 사라지므로 직접 정리
+        if (_inside.Count > 0)
+            _inside.RemoveWhere(m => m == null || !m.isActiveAndEnabled || m.CurrentState == PartyMemberScript.MemberState.Dead);
+
+        bool anyUiOpen = MenuTabUI.IsOpen || ShopUI.IsOpen || DialogueUI.IsOpen || EnhancementUI.IsOpen || SceneLoader.IsLoading;
+        if (_inside.Count > 0 && !anyUiOpen && Input.GetKeyDown(KeyCode.F))
             TryPickup();
     }
 
     void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Player")) _insideCount++;
+        var member = GetPartyMember(other);
+        if (member != null) _inside.Add(member);
     }
 
     void OnTriggerExit(Collider other)
     {
-        if (other.CompareTag("Player")) _insideCount = Mathf.Max(0, _insideCount - 1);
+        var member = GetPartyMember(other);
+        if (member != null) _inside.Remove(member);
+    }
+
+    // Player 태그 중 실제 파티원만 (투사체·소환수 제외)
+    private static PartyMemberScript GetPartyMember(Collider other)
+    {
+        if (!other.CompareTag("Player")) return null;
+        return other.GetComponentInParent<PartyMemberScript>();
     }
 
     private void ApplyGradeVisuals()

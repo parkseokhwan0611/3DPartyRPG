@@ -81,7 +81,9 @@ public class TitleMenuUI : MonoBehaviour
         _isTransitioning = true;
         SetButtonsInteractable(false);
         DataManager.instance?.InitData();
-        QuestManager.instance?.StartNewGame();
+        QuestManager.instance?.StartNewGame(playSound: false); // 타이틀에서 퀘스트 수락음이 나지 않게
+        // 보스방에서 타이틀로 나왔으면 플래그가 남아 새 게임에서 저장이 막힘
+        if (SaveManager.instance != null) SaveManager.instance.isInBossRoom = false;
         SceneLoader.Load(newGameSceneName);
     }
 

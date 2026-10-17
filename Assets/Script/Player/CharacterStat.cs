@@ -405,6 +405,8 @@ public partial class CharacterStat : MonoBehaviour, IDamageable
     public void RecoverMp(float amount, bool showAura = true, bool showText = true)
     {
         if (myStatus == null || amount <= 0f) return;
+        // 쓰러진 파티원은 MP도 회복하지 않는다 — 죽기 직전 쏜 투사체가 뒤늦게 맞아 타격 시 MP 회복이 터지는 경우 등
+        if (myMember != null && myMember.CurrentState == PartyMemberScript.MemberState.Dead) return;
         myStatus.RecoverMp(amount);
         OnMpChanged?.Invoke();
         if (showText) SpawnManaText(amount);

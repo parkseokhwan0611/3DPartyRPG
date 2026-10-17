@@ -61,18 +61,7 @@ public class MonsterDropTable : ScriptableObject
             int count = Random.Range(entry.minCount, entry.maxCount + 1);
             var inst = new ItemInstance(data, count);
 
-            // 몬스터 발 위치 주변에 랜덤 산개
-            Vector2 scatter = Random.insideUnitCircle * 1.5f;
-            Vector3 spawnPos = position + new Vector3(scatter.x, spawnHeightOffset, scatter.y);
-
-            // 산개된 지점은 사망 위치와 지면 높이가 다를 수 있음(경사/굴곡) — 실제 지면에 다시 스냅
-            if (groundLayer.value != 0)
-            {
-                Vector3 rayOrigin = spawnPos + Vector3.up * 10f;
-                // 트리거 콜라이더(WorldItem, Portal 등)는 무시 — 실제 지형만 검사
-                if (Physics.Raycast(rayOrigin, Vector3.down, out RaycastHit groundHit, 30f, groundLayer, QueryTriggerInteraction.Ignore))
-                    spawnPos = groundHit.point + Vector3.up * spawnHeightOffset;
-            }
+            Vector3 spawnPos = GetDropPosition(position);
 
             // 풀 키가 설정돼 있으면 풀에서 꺼내고, 아니면 기존처럼 Instantiate (설정 전에도 정상 동작)
             string poolKey = gradeIndex < gradePoolKeys.Length ? gradePoolKeys[gradeIndex] : null;
@@ -91,5 +80,28 @@ public class MonsterDropTable : ScriptableObject
         // 여러 아이템이 동시에 드랍돼도 사운드는 한 번만
         if (didDrop)
             AudioManager.instance?.PlaySFX("ItemDrop");
+    }
+
+    // 몬스터 발 위치 주변에 랜덤 산개한 뒤, 걸어가서 주울 수 있는 자리로 보정한다.
+    // 예전엔 산개 지점 10m 위에서 아래로 지면을 찾아서, 동굴 구조물·위층 바닥 위에 올라가거나 벽 너머로 넘어가거나
+    // 바닥 레이어가 아닌 바위를 통과해 바위 속에 묻히는 경우가 있었음 → NavMesh(걸을 수 있는 바닥) 위로 먼저 보정
+    private Vector3 GetDropPosition(Vector3 deathPos)
+    {
+        Vector2 scatter = Random.insideUnitCircle * 1.5f;
+        Vector3 groundPos = deathPos + new Vector3(scatter.x, 0f, scatter.y);
+
+        if (UnityEngine.AI.NavMesh.SamplePosition(groundPos, out var navHit, 1.5f, UnityEngine.AI.NavMesh.AllAreas))
+            groundPos = navHit.position;
+        else if (UnityEngine.AI.NavMesh.SamplePosition(deathPos, out navHit, 2f, UnityEngine.AI.NavMesh.AllAreas))
+            groundPos = navHit.position;   // 산개 지점이 벽 너머 등이면 사망 위치로
+        else
+            groundPos = deathPos;
+
+        // NavMesh 높이는 실제 바닥과 수십 cm 어긋날 수 있음 — 바로 위(2m)에서 실제 바닥 면에 맞춘다 (천장까지 올라가지 않게 짧게)
+        if (groundLayer.value != 0
+            && Physics.Raycast(groundPos + Vector3.up * 2f, Vector3.down, out RaycastHit groundHit, 4f, groundLayer, QueryTriggerInteraction.Ignore))
+            groundPos = groundHit.point;
+
+        return groundPos + Vector3.up * spawnHeightOffset;
     }
 }

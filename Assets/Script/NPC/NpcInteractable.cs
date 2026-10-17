@@ -105,7 +105,7 @@ public class NpcInteractable : MonoBehaviour
         UpdateProximity();
 
         // 인벤토리·상점·대화 UI가 열려있으면 F키 차단
-        bool anyUiOpen = MenuTabUI.IsOpen || ShopUI.IsOpen || DialogueUI.IsOpen || EnhancementUI.IsOpen;
+        bool anyUiOpen = MenuTabUI.IsOpen || ShopUI.IsOpen || DialogueUI.IsOpen || EnhancementUI.IsOpen || SceneLoader.IsLoading;
         if (_playerInRange && !_isDialogueActive && !anyUiOpen && Input.GetKeyDown(KeyCode.F))
             StartDialogue();
     }

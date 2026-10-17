@@ -1474,7 +1474,7 @@ MonoBehaviour:
   m_OverrideVoxelSize: 0
   m_VoxelSize: 0.23333333
   m_MinRegionArea: 2
-  m_NavMeshData: {fileID: 23800000, guid: 1a116bc2dea7ff74d95a1598153f4f76, type: 2}
+  m_NavMeshData: {fileID: 23800000, guid: c45245b8327ebf34abf088af9a9287db, type: 2}
   m_BuildHeightMesh: 0
 --- !u!1001 &8668993
 PrefabInstance:
@@ -539211,6 +539211,7 @@ MonoBehaviour:
   cameraFollowTarget: {fileID: 2056592582}
   maxWalkableSnapHorizontal: 0.6
   maxWalkableSnapHeight: 0.5
+  partyHoldLockAfterDialogue: 0.3
   gameOverUI: {fileID: 920746052}
   titleSceneName: TitleScene
   levelUpEffectPoolKey: LevelUpEffect
@@ -606186,6 +606187,8 @@ MonoBehaviour:
   slotW: {fileID: 1506641544}
   slotE: {fileID: 667759621}
   slotR: {fileID: 1817858151}
+  messageText: {fileID: 860055232}
+  messageRevertDelay: 3
 --- !u!114 &1586100503
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -842134,9 +842137,9 @@ SceneRoots:
   - {fileID: 8726483124267807286}
   - {fileID: 8360175447064796849}
   - {fileID: 1462476264}
-  - {fileID: 2056592583}
   - {fileID: 993098610}
   - {fileID: 573241347}
+  - {fileID: 2056592583}
   - {fileID: 8749914052938799966}
   - {fileID: 1717466810}
   - {fileID: 208789293}

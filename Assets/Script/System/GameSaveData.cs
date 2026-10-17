@@ -10,6 +10,8 @@ public class GameSaveData
     public int partyLevel;
     public int partyExp;
     public int selectedPartyIndex;
+    public int currentLeaderIndex; // 저장 당시 리더 (PartyManager.partyMembers 인덱스) — 리더 추가 전 세이브는 0
+    public bool autoSkillEnabled = true; // 자동 스킬(T) — 이 값 추가 전 세이브는 기본값 ON으로 읽힘
     public int gold;
     public List<CharacterSaveData> characters = new List<CharacterSaveData>();
     public List<ItemSaveEntry>     inventory  = new List<ItemSaveEntry>();
