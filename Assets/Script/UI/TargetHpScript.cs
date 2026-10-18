@@ -20,7 +20,14 @@ public class TargetHpScript : MonoBehaviour
     [Tooltip("타겟이 Boss 등급일 때만 켜짐")]
     public GameObject bossIndicator;
 
+    [Header("# 레벨 차이 경고 (몬스터 레벨 - 파티 레벨)")]
+    public int   cautionLevelGap = 2;
+    public Color cautionNameColor = Color.yellow;
+    public int   dangerLevelGap  = 5;
+    public Color dangerNameColor  = Color.red;
+
     private EnemyHp currentTarget;
+    private Color   _defaultNameColor;
     private StatusEffectHandler shieldHandler;
 
     // 리더 추적용 캐시 — 리더가 바뀔 때만 AttackBase를 다시 가져옴
@@ -28,7 +35,22 @@ public class TargetHpScript : MonoBehaviour
     private AttackBase        _leaderAttack;
     private Transform         _trackedTargetTransform;
 
-    void Awake() => instance = this;
+    void Awake()
+    {
+        instance = this;
+        if (nameText != null) _defaultNameColor = nameText.color;
+    }
+
+    // 타겟을 잡은 채로 레벨업하면 색을 다시 계산
+    void Start()
+    {
+        if (DataManager.instance != null) DataManager.instance.OnLevelUp += UpdateNameColor;
+    }
+
+    void OnDestroy()
+    {
+        if (DataManager.instance != null) DataManager.instance.OnLevelUp -= UpdateNameColor;
+    }
 
     // 매 타격이 아니라, 리더가 지금 공격 중인 대상 하나만 추적
     void Update()
@@ -60,6 +82,7 @@ public class TargetHpScript : MonoBehaviour
         currentTarget = newTarget;
         if (rootVisual != null) rootVisual.SetActive(true);
         if (nameText != null) nameText.text = currentTarget.enemyName;
+        UpdateNameColor();
 
         if (eliteIndicator != null) eliteIndicator.SetActive(currentTarget.grade == EnemyHp.MonsterGrade.Elite);
         if (bossIndicator  != null) bossIndicator.SetActive(currentTarget.grade == EnemyHp.MonsterGrade.Boss);
@@ -82,6 +105,17 @@ public class TargetHpScript : MonoBehaviour
         if (rootVisual != null) rootVisual.SetActive(false);
         if (eliteIndicator != null) eliteIndicator.SetActive(false);
         if (bossIndicator  != null) bossIndicator.SetActive(false);
+    }
+
+    // 몬스터가 파티보다 cautionLevelGap 이상 높으면 노랑, dangerLevelGap 이상 높으면 빨강
+    private void UpdateNameColor()
+    {
+        if (nameText == null || currentTarget == null) return;
+        int partyLevel = DataManager.instance != null ? DataManager.instance.partyLevel : 1;
+        int gap = currentTarget.level - partyLevel;
+        nameText.color = gap >= dangerLevelGap  ? dangerNameColor
+                       : gap >= cautionLevelGap ? cautionNameColor
+                       : _defaultNameColor;
     }
 
     void UpdateHPBar(float currentHp, float maxHp)

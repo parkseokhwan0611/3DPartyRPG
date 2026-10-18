@@ -745,8 +745,10 @@ MonoBehaviour:
   hpBar: {fileID: 8500249732430435545}
   mask: {fileID: 7578155691832140904}
   shieldBar: {fileID: 4696114124074046824}
+  statusText: {fileID: 0}
   hpAmount: 0
   changeSpeed: 1.5
+  hideWhenFull: 1
 --- !u!1 &2785237705958785312
 GameObject:
   m_ObjectHideFlags: 0
@@ -2986,6 +2988,7 @@ MonoBehaviour:
   wanderRadius: 5
   wanderSpeed: 1.5
   wanderInterval: 3
+  dormantDistance: 45
 --- !u!114 &3856763206860892303
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3027,15 +3030,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: db5518911df8ae84da3b30d78b763b17, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hp: 800
-  maxHp: 800
+  hp: 1000
+  maxHp: 1000
   isDead: 0
   grade: 0
   def: 10
   magicRes: 10
   physicalDamageColor: {r: 1, g: 0.43137255, b: 0.003921569, a: 1}
   magicDamageColor: {r: 0, g: 0.75686276, b: 1, a: 1}
-  enemyName: "\uACE0\uBE14\uB9B0 \uC804\uC0AC (Lv.3)"
+  enemyName: "\uACE0\uBE14\uB9B0 \uC804\uC0AC (Lv.1)"
   monsterId: GoblinWarrior
   damageTextPoolKey: NormalDamageText
   hudPos: {fileID: 4404188302445500025}

@@ -22,6 +22,8 @@ public class EnemyHp : MonoBehaviour, IDamageable
     [Header("# 몬스터 등급")]
     [Tooltip("일반/정예/보스 — 타겟 HP UI 등에서 등급별 추가 표시(별 등)에 사용")]
     public MonsterGrade grade = MonsterGrade.Normal;
+    [Tooltip("몬스터 레벨 — 타겟 HP UI에서 파티 레벨과의 차이로 이름 색을 바꾸는 데 사용")]
+    [Min(1)] public int level = 1;
 
     [Header("# 방어 스탯")]
     [Tooltip("물리 피해 경감에 사용 (경감율 = def / (def + 100))")]
