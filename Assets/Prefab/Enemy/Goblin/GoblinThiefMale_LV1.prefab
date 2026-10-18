@@ -2029,8 +2029,10 @@ MonoBehaviour:
   hpBar: {fileID: 5293541672997698011}
   mask: {fileID: 3929805805703289133}
   shieldBar: {fileID: 3855738281513680439}
+  statusText: {fileID: 0}
   hpAmount: 0
   changeSpeed: 1.5
+  hideWhenFull: 1
 --- !u!1 &4466547023460160213
 GameObject:
   m_ObjectHideFlags: 0
@@ -3004,7 +3006,7 @@ GameObject:
   - component: {fileID: 7954425702217469426}
   - component: {fileID: 4220463396946552067}
   m_Layer: 7
-  m_Name: GoblinThiefMale
+  m_Name: GoblinThiefMale_LV1
   m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3074,6 +3076,7 @@ MonoBehaviour:
   wanderRadius: 5
   wanderSpeed: 1.5
   wanderInterval: 3
+  dormantDistance: 45
 --- !u!114 &1045097644406216187
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3115,8 +3118,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: db5518911df8ae84da3b30d78b763b17, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hp: 400
-  maxHp: 400
+  hp: 600
+  maxHp: 600
   isDead: 0
   grade: 0
   def: 5

@@ -106,8 +106,10 @@ MonoBehaviour:
   hpBar: {fileID: 200272079324361607}
   mask: {fileID: 5967987616165564357}
   shieldBar: {fileID: 6853447215329209675}
+  statusText: {fileID: 0}
   hpAmount: 0
   changeSpeed: 1.5
+  hideWhenFull: 1
 --- !u!1 &239121463114612387
 GameObject:
   m_ObjectHideFlags: 0
@@ -2839,7 +2841,7 @@ GameObject:
   - component: {fileID: 2954108488559834413}
   - component: {fileID: 5657755758779661811}
   m_Layer: 7
-  m_Name: GoblinSlinger
+  m_Name: GoblinSlinger_LV1
   m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2909,6 +2911,7 @@ MonoBehaviour:
   wanderRadius: 5
   wanderSpeed: 1.5
   wanderInterval: 3
+  dormantDistance: 45
 --- !u!114 &8691192928333905137
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3004,8 +3007,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: db5518911df8ae84da3b30d78b763b17, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hp: 1500
-  maxHp: 1500
+  hp: 2000
+  maxHp: 2000
   isDead: 0
   grade: 1
   def: 20
