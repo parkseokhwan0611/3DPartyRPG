@@ -143,12 +143,7 @@ public class QuestManager : MonoBehaviour
         if (quest == null || quest.objectiveType != QuestObjectiveType.KillMonster) return;
         if (enemy == null || string.IsNullOrEmpty(quest.targetMonsterId)) return;
 
-        if (enemy.monsterId != quest.targetMonsterId)
-        {
-            Debug.Log($"[QuestManager] 처치한 몬스터의 Monster Id '{enemy.monsterId}'가 현재 퀘스트의 Target Monster Id " +
-                      $"'{quest.targetMonsterId}'와 일치하지 않아 진행되지 않았습니다. (EnemyHp의 Monster Id 필드를 확인하세요)");
-            return;
-        }
+        if (enemy.monsterId != quest.targetMonsterId) return;
 
         currentProgress = Mathf.Min(currentProgress + 1, quest.TargetCount);
         OnQuestProgressChanged?.Invoke();

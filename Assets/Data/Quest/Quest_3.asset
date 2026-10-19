@@ -13,20 +13,21 @@ MonoBehaviour:
   m_Name: Quest_3
   m_EditorClassIdentifier: 
   questId: quest_3
-  questName: "\uACE0\uBE14\uB9B0 \uC8FC\uC220\uC0AC \uCC98\uCE58"
-  description: "\uACE0\uBE14\uB9B0 \uC8FC\uC220\uC0AC\uB97C \uCC98\uCE58\uD558\uC138\uC694."
+  questName: "\uC0AC\uB0E5\uAFBC\uC758 \uC758\uB8B0"
+  description: "\uACE0\uBE14\uB9B0 \uD22C\uCC99\uBCD1 3\uB9C8\uB9AC\uB97C \uCC98\uCE58\uD558\uACE0
+    \uACE0\uBE14\uB9B0 \uC8FC\uC220\uC0AC\uC758 \uD68C\uB791\uC73C\uB85C \uAC00\uC138\uC694."
   objectiveType: 2
-  targetNpcId: NPC_Siner
-  targetNpcDisplayName: "\uC0AC\uB0E5\uAFBC \uC2DC\uB108"
+  targetNpcId: 
+  targetNpcDisplayName: 
   targetItem: {fileID: 0}
   targetItemCount: 1
-  targetMonsterId: GoblinBoss
-  targetMonsterDisplayName: "\uACE0\uBE14\uB9B0 \uC8FC\uC220\uC0AC"
-  targetMonsterCount: 1
-  reportNpcId: 
-  reportNpcDisplayName: 
-  rewardExp: 50
-  rewardGold: 50
+  targetMonsterId: GoblinSlinger
+  targetMonsterDisplayName: "\uACE0\uBE14\uB9B0 \uD22C\uCC99\uBCD1"
+  targetMonsterCount: 3
+  reportNpcId: NPC_Siner
+  reportNpcDisplayName: "\uC0AC\uB0E5\uAFBC \uC2DC\uB108"
+  rewardExp: 100
+  rewardGold: 100
   rewardItems:
   - item: {fileID: 11400000, guid: 780180cf1b0df8945a2df703d6f54460, type: 2}
     count: 5
