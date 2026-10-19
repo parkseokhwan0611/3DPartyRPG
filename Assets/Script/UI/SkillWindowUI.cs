@@ -19,9 +19,9 @@ public class SkillWindowUI : MonoBehaviour
     private int currentCharIndex = 0;
 
     // 레벨 조건
-    private readonly int[] mainRequiredLevels    = { 1, 5, 15, 30, 40, 50 };
+    private readonly int[] mainRequiredLevels    = { 1, 6, 16, 30, 40, 50 };
     private readonly int[] subRequiredLevels     = { 1, 10, 30, 50 };
-    private readonly int[] passiveRequiredLevels = { 1, 5, 15, 30, 40, 50 };
+    private readonly int[] passiveRequiredLevels = { 1, 6, 16, 30, 40, 50 };
 
     // ─────────────────────────────────────────────────────────────────
     // Unity 생명주기
