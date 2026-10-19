@@ -13,20 +13,18 @@ MonoBehaviour:
   m_Name: Quest_3
   m_EditorClassIdentifier: 
   questId: quest_3
-  questName: "\uACE0\uBE14\uB9B0 \uB3C4\uB451 \uCC98\uCE58"
-  description: "\uACE0\uBE14\uB9B0 \uC8FC\uC220\uC0AC\uC758 \uBD80\uD558 \uACE0\uBE14\uB9B0
-    \uB3C4\uB451\uC744 15\uB9C8\uB9AC \uCC98\uCE58\uD558\uACE0 \uC232 \uBD81\uCABD\uC758
-    \uC0AC\uB0E5\uAFBC \uC54C\uBC84\uD2B8\uC5D0\uAC8C \uBCF4\uACE0\uD558\uC2ED\uC2DC\uC624."
+  questName: "\uACE0\uBE14\uB9B0 \uC8FC\uC220\uC0AC \uCC98\uCE58"
+  description: "\uACE0\uBE14\uB9B0 \uC8FC\uC220\uC0AC\uB97C \uCC98\uCE58\uD558\uC138\uC694."
   objectiveType: 2
-  targetNpcId: NPC_Mac
-  targetNpcDisplayName: "\uC0AC\uB0E5\uAFBC \uB9E5"
+  targetNpcId: NPC_Siner
+  targetNpcDisplayName: "\uC0AC\uB0E5\uAFBC \uC2DC\uB108"
   targetItem: {fileID: 0}
   targetItemCount: 1
-  targetMonsterId: GoblinThief
-  targetMonsterDisplayName: "\uACE0\uBE14\uB9B0 \uB3C4\uB451"
-  targetMonsterCount: 15
-  reportNpcId: NPC_Albert
-  reportNpcDisplayName: "\uC0AC\uB0E5\uAFBC \uC54C\uBC84\uD2B8"
+  targetMonsterId: GoblinBoss
+  targetMonsterDisplayName: "\uACE0\uBE14\uB9B0 \uC8FC\uC220\uC0AC"
+  targetMonsterCount: 1
+  reportNpcId: 
+  reportNpcDisplayName: 
   rewardExp: 50
   rewardGold: 50
   rewardItems:

@@ -321,10 +321,16 @@ public class PartyManager : MonoBehaviour
 
     // 적 레이어만 보고 쏘면 벽·바닥을 뚫고 그 너머(벽 뒤, 아래층)의 몬스터까지 클릭됨 → 이동 대신 공격 명령이 나가서
     // 마커도 안 뜨고 캐릭터가 엉뚱한 적을 향함. 적보다 앞에 바닥·장애물이 있으면 적 클릭으로 보지 않는다
+    // 단, OcclusionFader가 반투명하게 만든 벽은 적이 그대로 보이므로 가림으로 치지 않는다
+    private readonly RaycastHit[] _occluderHits = new RaycastHit[16];
+
     bool TryGetEnemyHit(Ray ray, out RaycastHit hit)
     {
         if (!Physics.Raycast(ray, out hit, Mathf.Infinity, enemyLayer)) return false;
-        return !Physics.Raycast(ray, hit.distance, _enemyOccluderMask, QueryTriggerInteraction.Ignore);
+        int count = Physics.RaycastNonAlloc(ray, _occluderHits, hit.distance, _enemyOccluderMask, QueryTriggerInteraction.Ignore);
+        for (int i = 0; i < count; i++)
+            if (!OcclusionFader.IsFaded(_occluderHits[i].collider)) return false;
+        return true;
     }
 
     bool TryGetGroundHit(Ray ray, out RaycastHit hit)
@@ -338,18 +344,23 @@ public class PartyManager : MonoBehaviour
 
     void DispatchAttackCommand(RaycastHit hit)
     {
+        // 클릭한 콜라이더가 몬스터 자식(무기 등)이어도 본체(EnemyHp)를 대상으로 — 자식을 대상으로 잡으면
+        // 사망 감지·대상 HP UI가 안 돼서 시체가 사라질 때까지 계속 때렸음
+        EnemyHp enemy = hit.collider.GetComponentInParent<EnemyHp>();
+        if (enemy != null && enemy.isDead) return;
+        Transform target = enemy != null ? enemy.transform : hit.transform;
+
         _hasPendingDestination = false; // 공격 명령이 이동 목적지를 덮어씀
         foreach (var member in partyMembers)
         {
             if (member.CurrentState == PartyMemberScript.MemberState.Dead) continue;
             var attack = member.AttackComp;
-            if (attack != null) attack.SetTarget(hit.transform);
+            if (attack != null) attack.SetTarget(target);
         }
 
         // hit.point는 몬스터 콜라이더 표면(몸통 등)에서 맞은 지점이라 지면보다 이미 떠있을 수 있음 —
         // 마커는 타겟의 발밑(루트 위치) 기준으로 찍음
-        Vector3 markerPos = hit.transform != null ? hit.transform.position : hit.point;
-        SpawnMarker("AttackMarker", markerPos);
+        SpawnMarker("AttackMarker", target.position);
     }
 
     void DispatchMoveCommand(Vector3 destination)

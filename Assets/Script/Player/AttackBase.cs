@@ -243,8 +243,25 @@ public abstract class AttackBase : MonoBehaviour
                 agent.SetDestination(dest);
                 _lastChaseDestination = dest;
             }
+
+            // 대상까지 경로가 이어지지 않는데(NavMesh 섬·바위 위·턱 너머) 갈 수 있는 끝까지 와버렸으면 포기 —
+            // 안 그러면 사거리 밖에 영원히 서 있는다. 파티원만 — 몬스터는 0.2초마다 대상을 다시 잡아 어그로 효과음이 반복됨
+            if (_ownerStat != null && !agent.pathPending && agent.hasPath
+                && agent.pathStatus == NavMeshPathStatus.PathPartial
+                && agent.remainingDistance <= UnreachableArriveDistance)
+            {
+                UnreachableTarget = currentTarget;
+                agent.ResetPath();
+                agent.velocity = Vector3.zero;
+                ClearTarget();
+            }
         }
     }
+
+    // 경로가 끊겨 공격을 포기한 대상 — 팔로워가 리더 대상에 다시 합류(TryRejoinLeaderTarget)하며 같은 곳을 왕복하지 않게.
+    // 플레이어가 그 적을 다시 클릭하면(SetTarget) 지워져서 한 번 더 시도한다
+    public Transform UnreachableTarget { get; private set; }
+    private const float UnreachableArriveDistance = 0.3f;
 
     protected virtual void StopAndAttack()
     {
@@ -280,13 +297,20 @@ public abstract class AttackBase : MonoBehaviour
     // 플레이어용 — firstAttackDelay 적용
     public void SetTarget(Transform target)
     {
-        if (currentTarget == target) return;
+        if (currentTarget == target)
+        {
+            // 공격 모션 도중 대상이 죽어 이미 비워진 상태에서 이동 명령이 오면 남은 모션도 끊어야 바로 걷는다 —
+            // 그냥 반환하면 모션이 끝날 때까지 걷는 동작 없이 미끄러지듯 이동했음
+            if (target == null && IsAttackAnimPlaying) StopAttackCoroutine();
+            return;
+        }
 
         // 이동 명령(target == null)은 공격 모션을 즉시 끊는다.
         // 다른 적을 클릭한 경우는 지금 모션을 끝까지 재생한 뒤(IsAttackAnimPlaying이 풀린 뒤) 새 대상으로 넘어간다
         if (target == null || !IsAttackAnimPlaying)
             StopAttackCoroutine();
-        attackCooldown = 0f;
+        // 공격 쿨다운은 대상을 바꿔도 유지 — 초기화하면 두 적을 번갈아 클릭해 공격 간격을 건너뛸 수 있었음
+        if (target != null) UnreachableTarget = null;
 
         if (anim != null)
             anim.ResetTrigger("doNormalAttack");
@@ -334,7 +358,7 @@ public abstract class AttackBase : MonoBehaviour
         if (agent != null && agent.enabled && agent.isOnNavMesh)
             agent.isStopped = false;
 
-        attackCooldown   = 0f;
+        // 공격 쿨다운은 대상을 바꿔도 유지 (SetTarget과 동일) — 스턴·사망 정리 때는 ForceCancelAttack/ResetAttackCooldown이 따로 초기화
         firstAttackDelay = 0f;
 
         if (anim != null)

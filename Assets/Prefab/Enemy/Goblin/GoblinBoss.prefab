@@ -10570,8 +10570,10 @@ MonoBehaviour:
   hpBar: {fileID: 3825976636174152974}
   mask: {fileID: 7281171308481739356}
   shieldBar: {fileID: 5220357600389120551}
+  statusText: {fileID: 0}
   hpAmount: 0
   changeSpeed: 1.5
+  hideWhenFull: 1
 --- !u!1 &2439463792558474632
 GameObject:
   m_ObjectHideFlags: 0
@@ -10973,7 +10975,7 @@ MeshCollider:
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 5
   m_Convex: 0
   m_CookingOptions: 30
@@ -11764,6 +11766,7 @@ MonoBehaviour:
   wanderRadius: 5
   wanderSpeed: 1.5
   wanderInterval: 3
+  dormantDistance: 45
 --- !u!114 &8484272255848392875
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -11805,15 +11808,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: db5518911df8ae84da3b30d78b763b17, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hp: 10000
-  maxHp: 10000
+  hp: 5000
+  maxHp: 5000
   isDead: 0
   grade: 2
+  level: 5
   def: 20
   magicRes: 20
   physicalDamageColor: {r: 1, g: 0.4312668, b: 0.0047169924, a: 1}
   magicDamageColor: {r: 0, g: 0.75510216, b: 1, a: 1}
-  enemyName: "\uACE0\uBE14\uB9B0 \uC8FC\uC220\uC0AC (Lv.20)"
+  enemyName: "\uACE0\uBE14\uB9B0 \uC8FC\uC220\uC0AC (Lv.5)"
   monsterId: GoblinBoss
   damageTextPoolKey: NormalDamageText
   hudPos: {fileID: 7334061907876437521}
@@ -11963,6 +11967,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bossBgmKey: GoblinBossBGM
+  resetDelay: 5
 --- !u!195 &8463187442416703229
 NavMeshAgent:
   m_ObjectHideFlags: 0

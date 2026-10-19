@@ -240496,37 +240496,37 @@ PrefabInstance:
     - target: {fileID: 1075712664182657804, guid: 3d9c0427d76b8714ab057048ce42863b,
         type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5822139004800782574, guid: 3d9c0427d76b8714ab057048ce42863b,
         type: 3}
       propertyPath: portalId
-      value: Dungeon_1_1_to_Dungeon_Tutorial
+      value: Dungeon_1_3_to_Dungeon_Boss
       objectReference: {fileID: 0}
     - target: {fileID: 5822139004800782574, guid: 3d9c0427d76b8714ab057048ce42863b,
         type: 3}
       propertyPath: destinationSpawnId
-      value: Dungeon_Tutorial_to_Dungeon_1_1
+      value: Dungeon_Boss_to_Dungeon_1_3
       objectReference: {fileID: 0}
     - target: {fileID: 5822139004800782574, guid: 3d9c0427d76b8714ab057048ce42863b,
         type: 3}
       propertyPath: destinationSceneName
-      value: Dungeon_Tutorial
+      value: Dungeon_1_3
       objectReference: {fileID: 0}
     - target: {fileID: 8078761070689332417, guid: 3d9c0427d76b8714ab057048ce42863b,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 6.16
+      value: 2.73
       objectReference: {fileID: 0}
     - target: {fileID: 8078761070689332417, guid: 3d9c0427d76b8714ab057048ce42863b,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 9.01
+      value: -3.494
       objectReference: {fileID: 0}
     - target: {fileID: 8078761070689332417, guid: 3d9c0427d76b8714ab057048ce42863b,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: -185.97
+      value: 44.77
       objectReference: {fileID: 0}
     - target: {fileID: 8078761070689332417, guid: 3d9c0427d76b8714ab057048ce42863b,
         type: 3}
@@ -240566,7 +240566,11 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 8052704687585107677, guid: 3d9c0427d76b8714ab057048ce42863b,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 0}
   m_SourcePrefab: {fileID: 100100000, guid: 3d9c0427d76b8714ab057048ce42863b, type: 3}
 --- !u!1001 &862022078
 PrefabInstance:
@@ -542008,6 +542012,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4938466599736208482, guid: 04330b467fdc2ac4a954f0a66a8bd06e,
+        type: 3}
+      propertyPath: enemyName
+      value: "\uACE0\uBE14\uB9B0 \uC8FC\uC220\uC0AC (Lv.5)"
       objectReference: {fileID: 0}
     - target: {fileID: 5285157052835285592, guid: 04330b467fdc2ac4a954f0a66a8bd06e,
         type: 3}

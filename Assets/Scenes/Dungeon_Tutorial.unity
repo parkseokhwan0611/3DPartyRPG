@@ -16011,10 +16011,10 @@ Transform:
   m_Children:
   - {fileID: 2146891427}
   - {fileID: 1021116686}
-  - {fileID: 997298143}
   - {fileID: 1936189517}
   - {fileID: 1294494283}
   - {fileID: 1816118196}
+  - {fileID: 997298143}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &38444726
@@ -99961,9 +99961,13 @@ MonoBehaviour:
   - speaker: 0
     text: "\uC804\uD22C \uBC29\uBC95\uC740 \uB2E4 \uC775\uD788\uC168\uB098\uC694?"
   - speaker: 0
-    text: "\uC774 \uC55E\uC5D0 \uB9C8\uC744\uC758 \uC0AC\uB0E5\uAFBC\uC774 \uC788\uC2B5\uB2C8\uB2E4."
+    text: "\uC774 \uC55E\uC5D0 \uACE0\uBE14\uB9B0\uC774 \uC788\uB294 \uC218\uC815
+      \uB3D9\uAD74\uC774 \uC788\uC2B5\uB2C8\uB2E4."
   - speaker: 0
-    text: "\uADF8\uB97C \uCC3E\uC544\uAC00 \uC758\uB8B0\uB97C \uBC1B\uC73C\uC138\uC694."
+    text: "\uB3D9\uAD74\uC5D0\uB294 \uBBF8\uB9AC \uC628 \uC778\uAC04\uB4E4\uC774
+      \uC788\uC2B5\uB2C8\uB2E4."
+  - speaker: 0
+    text: "\uADF8\uB4E4\uC744 \uB3C4\uC640\uC8FC\uC138\uC694."
   notReadyDialogueLines:
   - speaker: 0
     text: "\uC544\uC9C1\uC740 \uB54C\uAC00 \uC544\uB2D9\uB2C8\uB2E4."
@@ -280446,7 +280450,7 @@ MonoBehaviour:
     text: "\uC601\uC6C5\uB4E4\uC774\uC5EC \uC800\uC758 \uBD80\uB984\uC5D0 \uC751\uD574\uC8FC\uC154\uC11C
       \uAC10\uC0AC\uD569\uB2C8\uB2E4."
   - speaker: 1
-    text: "\uACE0\uACB0\uD55C \uB300\uC9C0\uC758 \uD608\uC871\uC778 \uB0B4\uAC00
+    text: "\uACE0\uACB0\uD55C \uBC14\uB2E4\uC758 \uD608\uC871\uC778 \uB0B4\uAC00
       \uC65C \uC774 \uC794\uBC14\uB9AC\uB4E4\uACFC \uC788\uB294\uC9C0 \uBAA8\uB974\uACA0\uAD70."
   - speaker: 2
     text: "\uC800\uC57C\uB9D0\uB85C \uC800 \uC57C\uB9CC\uC778\uACFC \uC65C \uC788\uB294\uC9C0
@@ -280466,13 +280470,6 @@ MonoBehaviour:
   - speaker: 0
     text: "\uC78E\uC740 \uAC01 \uC9C0\uC5ED\uC758 \uC6B0\uB450\uBA38\uB9AC \uB9C8\uBB3C\uB4E4\uC774
       \uAC16\uACE0 \uC788\uC2B5\uB2C8\uB2E4."
-  - speaker: 1
-    text: "\uC54C\uACA0\uB2E4. \uB0B4\uAC00 \uC804\uC5F4\uC744 \uB9E1\uC9C0."
-  - speaker: 2
-    text: "\uC804 \uB9C8\uBC95\uC73C\uB85C \uD6C4\uC5F4\uC5D0\uC11C \uD654\uB825\uC744
-      \uB2F4\uB2F9\uD558\uC8E0."
-  - speaker: 3
-    text: "\uC804 \uCE58\uC720 \uB9C8\uBC95\uC744 \uB2F4\uB2F9\uD558\uACA0\uC2B5\uB2C8\uB2E4."
   - speaker: 0
     text: "\uC138 \uBD84\uAED8 \uC774 \uC138\uACC4\uC758 \uBBF8\uB798\uAC00 \uB2EC\uB824\uC788\uC2B5\uB2C8\uB2E4."
   - speaker: 0
@@ -556614,7 +556611,7 @@ MonoBehaviour:
   m_OverrideTileSize: 0
   m_TileSize: 256
   m_OverrideVoxelSize: 0
-  m_VoxelSize: 0.16666667
+  m_VoxelSize: 0.23333333
   m_MinRegionArea: 2
   m_NavMeshData: {fileID: 23800000, guid: ed409b7a0a7e54848a98201d489e7a6d, type: 2}
   m_BuildHeightMesh: 0
@@ -580416,7 +580413,9 @@ MonoBehaviour:
     m_Bits: 8
   virtualCamera: {fileID: 1644485183}
   cameraFollowTarget: {fileID: 2056592582}
-  maxWalkableSnapDistance: 0.75
+  maxWalkableSnapHorizontal: 0.6
+  maxWalkableSnapHeight: 0.5
+  partyHoldLockAfterDialogue: 0.3
   gameOverUI: {fileID: 920746052}
   titleSceneName: TitleScene
   levelUpEffectPoolKey: LevelUpEffect
@@ -784596,6 +784595,10 @@ MonoBehaviour:
   shieldBarFill: {fileID: 744159836}
   eliteIndicator: {fileID: 1375748012}
   bossIndicator: {fileID: 461053923}
+  cautionLevelGap: 2
+  cautionNameColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
+  dangerLevelGap: 5
+  dangerNameColor: {r: 1, g: 0, b: 0, a: 1}
 --- !u!1 &1952230807
 GameObject:
   m_ObjectHideFlags: 0

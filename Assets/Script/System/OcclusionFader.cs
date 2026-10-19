@@ -43,10 +43,23 @@ public class OcclusionFader : MonoBehaviour
         go.AddComponent<OcclusionFader>()._lib = lib;
     }
 
+    private static OcclusionFader _instance;
+
     void Awake()
     {
+        _instance = this;
         _mpb = new MaterialPropertyBlock();
         SceneManager.sceneLoaded += HandleSceneLoaded;
+    }
+
+    // 지금 반투명 처리 중인 콜라이더인지 — 반투명해진 벽 너머로 보이는 적은 클릭할 수 있어야 하므로
+    // PartyManager가 적 클릭 판정에서 이 벽은 가림으로 치지 않는다
+    public static bool IsFaded(Collider col)
+    {
+        if (_instance == null || col == null) return false;
+        foreach (var r in _instance.RenderersOf(col))
+            if (_instance._occluding.Contains(r) && _instance._states.ContainsKey(r)) return true;
+        return false;
     }
 
     void Start()
@@ -55,7 +68,11 @@ public class OcclusionFader : MonoBehaviour
             if (p.original != null && p.transparent != null) _fadeOf[p.original] = p.transparent;
     }
 
-    void OnDestroy() => SceneManager.sceneLoaded -= HandleSceneLoaded;
+    void OnDestroy()
+    {
+        SceneManager.sceneLoaded -= HandleSceneLoaded;
+        if (_instance == this) _instance = null;
+    }
 
     // 이전 씬 렌더러는 이미 파괴됐으므로 상태만 비운다
     private void HandleSceneLoaded(Scene scene, LoadSceneMode mode)

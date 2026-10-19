@@ -210,8 +210,9 @@ public class EnemyHp : MonoBehaviour, IDamageable
             animator.SetTrigger("isDead");
         }
 
-        // 콜라이더 비활성화
+        // 콜라이더 비활성화 — 자식(무기 등) 콜라이더까지 꺼야 시체가 클릭되거나 투사체를 막지 않는다
         if (col != null) col.enabled = false;
+        foreach (var c in GetComponentsInChildren<Collider>()) c.enabled = false;
 
         // 내비게이션 중지
         if (navAgent != null && navAgent.enabled)

@@ -43,8 +43,6 @@ public class BasicMonsterScript : MonoBehaviour
     private AttackBase attackModule;
     private StatusEffectHandler statusHandler;
 
-    private bool isAttacking = false;
-
     // 배회
     private Vector3 _spawnPosition;
     private float   _wanderTimer = 0f;
@@ -78,12 +76,6 @@ public class BasicMonsterScript : MonoBehaviour
 
         if (statusHandler != null)
             statusHandler.OnStunEnded += HandleStunEnded;
-
-        if (attackModule != null)
-        {
-            attackModule.OnAttackStarted += () => isAttacking = true;
-            attackModule.OnAttackEnded   += () => isAttacking = false;
-        }
 
         if (enemyHp != null)
             enemyHp.OnDied += HandleDeath;
@@ -339,21 +331,19 @@ public class BasicMonsterScript : MonoBehaviour
 
         if (distToTarget <= chaseDistance)
         {
-            if (!isAttacking)
+            // 대상이 없을 때만 바로 잡고, 이미 있으면 아래에서 "충분히 더 가까울 때만" 교체.
+            // 예전엔 OnAttackStarted/Ended 이벤트로 판단했는데, 공격을 한 번 휘두를 때마다 Ended가 와서
+            // 첫 공격 뒤로는 교체 기준(targetSwitchThreshold)이 꺼져 비슷한 거리의 파티원 사이를 왕복했음
+            if (attackModule.currentTarget == null)
             {
-                if (attackModule.currentTarget != target)
-                {
-                    // 완전히 새로 발견한 경우(타겟 교체가 아니라 무타겟→유타겟)에만 어그로 사운드 재생
-                    bool isFirstSpot = attackModule.currentTarget == null;
+                attackModule.SetTargetImmediate(target);
+                navAgent.speed = navSpeed; // 배회 속도 → 추격 속도 복귀
+                // isStopped 해제는 SetTargetImmediate가 담당 — 공격 도중이라 변경이 대기됐다면
+                // (아직 공격 애니메이션이 안 끝났다면) 여기서 강제로 풀면 안 되기 때문에 건드리지 않음
 
-                    attackModule.SetTargetImmediate(target);
-                    navAgent.speed = navSpeed; // 배회 속도 → 추격 속도 복귀
-                    // isStopped 해제는 SetTargetImmediate가 담당 — 공격 도중이라 변경이 대기됐다면
-                    // (아직 공격 애니메이션이 안 끝났다면) 여기서 강제로 풀면 안 되기 때문에 건드리지 않음
-
-                    if (isFirstSpot && !string.IsNullOrEmpty(aggroSfxKey))
-                        AudioManager.instance?.PlaySFX(aggroSfxKey);
-                }
+                // 완전히 새로 발견한 경우(무타겟→유타겟)에만 어그로 사운드 재생
+                if (!string.IsNullOrEmpty(aggroSfxKey))
+                    AudioManager.instance?.PlaySFX(aggroSfxKey);
             }
             else if (attackModule.currentTarget != target)
             {
@@ -438,7 +428,6 @@ public class BasicMonsterScript : MonoBehaviour
             navAgent.velocity  = Vector3.zero;
         }
 
-        isAttacking    = false;
         targetingTimer = TargetingInterval;
 
         if (attackModule.currentTarget == null)
@@ -457,7 +446,6 @@ public class BasicMonsterScript : MonoBehaviour
     private void HandleDeath()
     {
         attackModule?.SetTargetImmediate(null);
-        isAttacking = false;
         aggroTable.Clear();
         aggroTarget  = null;
         _tauntUntil.Clear();

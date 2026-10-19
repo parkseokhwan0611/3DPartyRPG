@@ -155,30 +155,31 @@ public class ProjectileScript : PoolAble
         _hasHit = true;
 
         // 1. 데미지 처리 — 물리/마법 여부에 따라 맞는 대상이 알아서 경감·색상 처리
-        bool hitValidTarget = false;
+        // 맞은 콜라이더가 자식(무기·몸 부위 등)이어도 본체에 데미지 — 자식만 보면 데미지 없이 투사체만 사라졌음
+        GameObject hitTarget = null;
 
-        EnemyHp enemyStat = collision.gameObject.GetComponent<EnemyHp>();
+        EnemyHp enemyStat = collision.collider.GetComponentInParent<EnemyHp>();
         if (enemyStat != null)
         {
             if (isMagicDamage) enemyStat.TakeMagicDamage(damage, owner, isCrit);
             else                enemyStat.TakeDamage(damage, owner, isCrit);
             onHitCallback?.Invoke(enemyStat);
-            hitValidTarget = true;
+            hitTarget = enemyStat.gameObject;
         }
         else
         {
             // EnemyHp가 없어도 IDamageable이면 데미지는 줌 (예: 플레이어가 맞은 몬스터 투사체)
-            IDamageable target = collision.gameObject.GetComponent<IDamageable>();
+            IDamageable target = collision.collider.GetComponentInParent<IDamageable>();
             if (target != null)
             {
                 if (isMagicDamage) target.TakeMagicDamage(damage, owner, isCrit);
                 else                target.TakeDamage(damage, owner, isCrit);
-                hitValidTarget = true;
+                hitTarget = target is Component c ? c.gameObject : collision.gameObject;
             }
         }
 
-        if (hitValidTarget)
-            onHitTargetCallback?.Invoke(collision.gameObject);
+        if (hitTarget != null)
+            onHitTargetCallback?.Invoke(hitTarget);
 
         // 2. 투사체 물리 정지
         if (rb != null) rb.constraints = RigidbodyConstraints.FreezeAll;

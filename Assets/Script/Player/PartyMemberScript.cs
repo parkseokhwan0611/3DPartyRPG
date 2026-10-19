@@ -218,6 +218,7 @@ public class PartyMemberScript : MonoBehaviour
 
         Transform leaderTarget = leader.AttackComp != null ? leader.AttackComp.currentTarget : null;
         if (leaderTarget == null) return;
+        if (leaderTarget == attackComp.UnreachableTarget) return; // 경로가 끊겨 방금 포기한 적 — 다시 합류하면 같은 곳을 왕복함
 
         var enemy = leaderTarget.GetComponent<EnemyHp>();
         if (enemy != null && enemy.isDead) return;
