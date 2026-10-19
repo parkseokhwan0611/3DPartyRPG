@@ -100,6 +100,7 @@ MonoBehaviour:
   - sceneName: Forest_Boss
     displayName: "\uACE0\uBE14\uB9B0 \uC8FC\uC220\uC0AC\uC758 \uC601\uC5ED"
   currentLeaderIndex: 0
+  autoSkillEnabled: 1
   pendingAutoRegisterPotions: 0
   partyQuickSlots: []
   hpPotionSlotItemId: 
@@ -416,9 +417,9 @@ MonoBehaviour:
     bgmKey: ForestBGM
   - sceneName: Dungeon_1_4
     bgmKey: ForestBGM
-  - sceneName: Forest_Town
+  - sceneName: Dungeon_Boss
     bgmKey: ForestBGM
-  - sceneName: Forest_Boss
+  - sceneName: Forest_Town
     bgmKey: ForestBGM
   enableGlobalUiClick: 1
   uiClickSfxKey: UIClick

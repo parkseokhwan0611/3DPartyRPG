@@ -51,9 +51,15 @@ public class CombatHpUi : HpMpBarUI
         if (debuffText == null || statusHandler == null) return;
 
         if (statusHandler.HasDebuff(StatusEffectType.Stun))
-            debuffText.text = "기절";
+        {
+            debuffText.text  = "기절";
+            debuffText.color = StatusTextColors.Stun;
+        }
         else if (statusHandler.HasDebuff(StatusEffectType.Slow) || statusHandler.HasDebuff(StatusEffectType.MoveSpeedDown))
-            debuffText.text = "둔화";
+        {
+            debuffText.text  = "둔화";
+            debuffText.color = StatusTextColors.Slow;
+        }
         else
             debuffText.text = "";
     }

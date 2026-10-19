@@ -1,0 +1,45 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ddc9a4e6465f4b11915096ff51d3d423, type: 3}
+  m_Name: OcclusionFadeLibrary
+  m_EditorClassIdentifier: 
+  fadeEnabled: 1
+  occluderMask:
+    serializedVersion: 2
+    m_Bits: 10241
+  checkInterval: 0.1
+  castRadius: 0.3
+  targetHeight: 1.2
+  stopShort: 0.6
+  fadedAlpha: 0.3
+  fadeDuration: 0.15
+  pairs:
+  - original: {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
+    transparent: {fileID: 2100000, guid: 4056b9bb783586345b5ca30561f04148, type: 2}
+  - original: {fileID: 2100000, guid: 42b64fdb315e3054ea757d8d1c4bcfa7, type: 2}
+    transparent: {fileID: 2100000, guid: a34f97820b584544f88237539310017a, type: 2}
+  - original: {fileID: 2100000, guid: 7ac7f7ed4e4639c41b96b549364e3a9d, type: 2}
+    transparent: {fileID: 2100000, guid: 6473282182002c64bbc2fced1f982952, type: 2}
+  - original: {fileID: 2100000, guid: 2f812bc7d2391f74095c870e8dea3e37, type: 2}
+    transparent: {fileID: 2100000, guid: 491364036d9c8834bad2901e879c9f46, type: 2}
+  - original: {fileID: 2100000, guid: 0574116a7188c654ab34fcd54a2d0ecc, type: 2}
+    transparent: {fileID: 2100000, guid: ca0287459d7f82d4990e00d301e62a05, type: 2}
+  - original: {fileID: 2100000, guid: 41eeaca2a327f424a968942f71105488, type: 2}
+    transparent: {fileID: 2100000, guid: 9b870bbc2fa634e49a69276cf47b5e5c, type: 2}
+  - original: {fileID: 2100000, guid: 54061fa668860e54a8e96694301d76a9, type: 2}
+    transparent: {fileID: 2100000, guid: 09fd40db4c1582f4d81b625e12d7da76, type: 2}
+  - original: {fileID: 2100000, guid: e3023c0182312214e86398117753528d, type: 2}
+    transparent: {fileID: 2100000, guid: e6f0fc796612ee946a262be5eaff5c55, type: 2}
+  - original: {fileID: 2100000, guid: 5669cbb7e0eee7b469fe44c5a872d2ab, type: 2}
+    transparent: {fileID: 2100000, guid: 7d1b2594fb172e04584eaacf2e979f62, type: 2}
+  - original: {fileID: 2100000, guid: 26e024951e1615149b30c1db2f2f70f6, type: 2}
+    transparent: {fileID: 2100000, guid: b6bb798b7f6b71d4cabf7e9e9208ec37, type: 2}

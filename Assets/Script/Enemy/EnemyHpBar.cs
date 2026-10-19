@@ -119,6 +119,8 @@ public class EnemyHpBar : MonoBehaviour
         if (status == shownStatus) return;
         shownStatus     = status;
         statusText.text = status;
+        if (status == "기절")      statusText.color = StatusTextColors.Stun;
+        else if (status == "둔화") statusText.color = StatusTextColors.Slow;
     }
 
     void HpChange()
