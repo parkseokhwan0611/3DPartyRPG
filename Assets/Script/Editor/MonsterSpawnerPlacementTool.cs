@@ -34,14 +34,34 @@ public class MonsterSpawnerPlacementTool : EditorWindow
     private void OnEnable()
     {
         SceneView.duringSceneGui += OnSceneGUI;
-        if (spawnerRoot == null)
-        {
-            var go = GameObject.Find("MonsterSpawner");
-            if (go != null) spawnerRoot = go.transform;
-        }
+        EditorSceneManager.activeSceneChangedInEditMode += HandleSceneChanged;
+        FindSpawnerRoot();
     }
 
-    private void OnDisable() => SceneView.duringSceneGui -= OnSceneGUI;
+    private void OnDisable()
+    {
+        SceneView.duringSceneGui -= OnSceneGUI;
+        EditorSceneManager.activeSceneChangedInEditMode -= HandleSceneChanged;
+    }
+
+    // 다른 씬을 열면 이전 씬 스포너를 가리키는 미리보기는 쓸 수 없으므로 비우고, 새 씬의 스포너 부모를 다시 찾는다
+    private void HandleSceneChanged(UnityEngine.SceneManagement.Scene from, UnityEngine.SceneManagement.Scene to)
+    {
+        _preview.Clear();
+        _status = null;
+        spawnerRoot = null;
+        template = null;
+        FindSpawnerRoot();
+        Repaint();
+        SceneView.RepaintAll();
+    }
+
+    private void FindSpawnerRoot()
+    {
+        if (spawnerRoot != null) return;
+        var go = GameObject.Find("MonsterSpawner");
+        if (go != null) spawnerRoot = go.transform;
+    }
 
     private void OnGUI()
     {
@@ -179,6 +199,13 @@ public class MonsterSpawnerPlacementTool : EditorWindow
 
     private void Apply()
     {
+        if (spawnerRoot == null)
+        {
+            _preview.Clear();
+            _status = "스포너 부모가 없습니다. 다시 지정한 뒤 미리보기부터 해주세요.";
+            SceneView.RepaintAll();
+            return;
+        }
         MonsterSpawner tpl = template;
         if (tpl == null && spawnerRoot != null) tpl = spawnerRoot.GetComponentInChildren<MonsterSpawner>(true);
         var rng = new System.Random(seed);

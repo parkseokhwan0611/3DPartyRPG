@@ -112,8 +112,8 @@ public static class OcclusionFadeLibraryBuilder
         if (lib != null) return lib;
         EnsureFolder(Path.GetDirectoryName(LibraryPath).Replace('\\', '/'));
         lib = ScriptableObject.CreateInstance<OcclusionFadeLibrary>();
-        // 바닥(Plane)·캐릭터·몬스터는 빼고 벽·장애물이 올 수 있는 레이어만
-        lib.occluderMask = LayerMask.GetMask("Default", "Obstacle", "Tree");
+        // 벽·장애물 레이어만 — 던전 씬은 바닥=Plane, 나머지 맵 조각=Obstacle로 정리돼 있음
+        lib.occluderMask = LayerMask.GetMask("Obstacle", "Tree");
         AssetDatabase.CreateAsset(lib, LibraryPath);
         return lib;
     }

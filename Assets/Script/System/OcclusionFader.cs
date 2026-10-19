@@ -20,6 +20,7 @@ public class OcclusionFader : MonoBehaviour
     private readonly HashSet<Renderer> _occluding = new HashSet<Renderer>();
     private readonly List<Renderer> _toRemove = new List<Renderer>();
     private readonly RaycastHit[] _hits = new RaycastHit[32];
+    private readonly Collider[]   _overlaps = new Collider[16];
     private MaterialPropertyBlock _mpb;
     private float _nextCheck;
 
@@ -86,6 +87,13 @@ public class OcclusionFader : MonoBehaviour
         if (cam == null || pm == null) return;
 
         Vector3 origin = cam.transform.position;
+
+        // SphereCast는 시작 지점에서 이미 겹쳐 있는 콜라이더를 잡지 못한다 — 카메라가 벽·천장 두께 안에 들어간 경우를 따로 잡음
+        int overlapCount = Physics.OverlapSphereNonAlloc(origin, _lib.castRadius, _overlaps, _lib.occluderMask, QueryTriggerInteraction.Ignore);
+        for (int i = 0; i < overlapCount; i++)
+            foreach (var r in RenderersOf(_overlaps[i]))
+                _occluding.Add(r);
+
         foreach (var member in pm.partyMembers)
         {
             if (member == null || !member.gameObject.activeInHierarchy) continue;
