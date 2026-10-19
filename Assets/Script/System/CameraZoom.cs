@@ -44,6 +44,8 @@ public class CameraZoom : MonoBehaviour
     {
         // UI 열려있으면 줌 입력 차단
         if (MenuTabUI.IsOpen || ShopUI.IsOpen || DialogueUI.IsOpen || CombatDetailPopupUI.IsOpen) return;
+        // timeScale 0(로딩·게임오버)이면 SmoothDamp가 NaN을 만들 수 있어 건너뜀 (CameraFollowTarget과 동일)
+        if (Time.deltaTime <= 0f) return;
 
         float scroll = Input.GetAxis("Mouse ScrollWheel");
         if (scroll != 0f)

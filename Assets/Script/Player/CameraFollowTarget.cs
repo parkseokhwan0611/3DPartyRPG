@@ -23,6 +23,9 @@ public class CameraFollowTarget : MonoBehaviour
     void LateUpdate()
     {
         if (followTarget == null) return;
+        // 시간이 멈춘 프레임(로딩 화면·게임오버의 timeScale 0)엔 건너뜀 — SmoothDamp는 deltaTime 0에 현재값이
+        // 목표와 정확히 같으면 속도를 0/0(NaN)으로 만들고, 다음 프레임부터 위치가 NaN이 됨
+        if (Time.deltaTime <= 0f) return;
 
         Vector3 target  = ApplySouthBias(followTarget.position);
         Vector3 current = transform.position;
