@@ -7,6 +7,8 @@ public class PotionQuickSlotManager : MonoBehaviour
 
     public event Action OnHpSlotChanged;
     public event Action OnMpSlotChanged;
+    // 물약을 실제로 사용했을 때 (BossClearTimer 등 통계용) — 씬마다 새로 생기는 매니저라 static으로 둔다
+    public static event Action<ConsumableType> OnPotionUsed;
 
     private ItemInstance _hpSlot             = null;
     private ItemInstance _mpSlot             = null;
@@ -242,6 +244,7 @@ public class PotionQuickSlotManager : MonoBehaviour
 
         if (type == ConsumableType.HpPotion) _hpCooldownRemaining = cd.cooldown;
         else                                  _mpCooldownRemaining = cd.cooldown;
+        OnPotionUsed?.Invoke(type);
     }
 
     // ─────────────────────────────────────────────────────────────────
