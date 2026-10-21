@@ -18,8 +18,8 @@ public class TitleMenuUI : MonoBehaviour
     [SerializeField] GameObject settingsPanel;
 
     [Header("# 씬")]
-    [Tooltip("새 게임 시작 시 이동할 씬 — 무기 선택 (그다음 프롤로그 → 게임)")]
-    [SerializeField] string newGameSceneName = "WeaponSelect";
+    [Tooltip("새 게임 시작 시 이동할 씬 — 클래스 선택 (그다음 프롤로그 → 게임)")]
+    [SerializeField] string newGameSceneName = "ClassSelect";
     [Tooltip("이어하기는 저장한 씬으로 돌아간다. 저장한 씬을 열 수 없을 때(빌드 목록에서 빠짐 등)만 이 씬으로 이동")]
     [SerializeField] string gameSceneName = "Dungeon_1_1";
 

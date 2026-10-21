@@ -77,7 +77,7 @@ public class ClassDisplayModel : MonoBehaviour
         if (changedIndex == partyIndex) Apply();
     }
 
-    // 무기 선택 화면용 — 저장 데이터는 그대로 두고 전시 모델만 해당 클래스로 바꾼다.
+    // 클래스 선택 화면용 — 저장 데이터는 그대로 두고 전시 모델만 해당 클래스로 바꾼다.
     // 한 번 미리보기를 시작하면 이후 데이터 기준 적용(늦게 도는 재시도 등)이 미리보기를 덮어쓰지 않는다
     private ClassData.ClassType? _previewType;
 

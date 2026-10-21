@@ -27,7 +27,7 @@ public class DataManager : MonoBehaviour
     public Inventory                sharedInventory = new Inventory();
     [Tooltip("파티원별 첫 번째 무기(클래스) — 인덱스 = 파티 인덱스. 무기를 고르기 전 기본 클래스")]
     public List<ClassData>          baseDataList;
-    [Tooltip("파티원별 두 번째 무기(클래스) — 인덱스 = 파티 인덱스. 비워두면 그 캐릭터는 무기 선택 불가")]
+    [Tooltip("파티원별 두 번째 무기(클래스) — 인덱스 = 파티 인덱스. 비워두면 그 캐릭터는 클래스 선택 불가")]
     public List<ClassData>          secondClassList = new List<ClassData>();
     public List<ClassSkillTree>     skillTrees;
 
@@ -145,7 +145,7 @@ public class DataManager : MonoBehaviour
 
     public void InitData() => InitData(null);
 
-    // 무기 선택 화면에서 확정할 때 — 고른 클래스로 새 게임 데이터를 처음부터 다시 만든다.
+    // 클래스 선택 화면에서 확정할 때 — 고른 클래스로 새 게임 데이터를 처음부터 다시 만든다.
     // SelectClass로 바꾸면 먼저 끼워둔 기본 클래스의 시작 장비가 인벤토리에 남으므로 이쪽을 쓴다.
     // chosenClasses[i] = 파티원 i가 고른 클래스 (목록에 없는 클래스거나 칸이 모자라면 기본 시작 클래스)
     public void InitData(IList<ClassData.ClassType> chosenClasses)

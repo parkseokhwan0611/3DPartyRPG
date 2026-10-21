@@ -5,9 +5,10 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
-// 새 게임 무기 선택 화면 — 캐릭터마다 한 칸씩, 무기 버튼 두 개 중 하나를 고른다.
-// 고르는 동안은 전시 모델만 바꾸고(ClassDisplayModel.Preview), 확정할 때 고른 클래스로 새 게임 데이터를 다시 만든다
-public class WeaponSelectUI : MonoBehaviour
+// 새 게임 클래스 선택 화면 — 캐릭터마다 한 칸씩, 클래스 버튼 두 개 중 하나를 고른다.
+// 고르는 동안은 전시 모델의 무기·외형만 바꾸고(ClassDisplayModel.Preview), 확정할 때 고른 클래스로 새 게임 데이터를 다시 만든다
+// (버튼·필드 이름의 weapon은 예전 "무기 선택" 시절 이름 — 씬에 저장된 값이 끊기지 않도록 그대로 둔다)
+public class ClassSelectUI : MonoBehaviour
 {
     [Serializable]
     public class WeaponButton
@@ -80,7 +81,7 @@ public class WeaponSelectUI : MonoBehaviour
         if (DataManager.instance == null)
         {
             // 이 씬을 바로 실행한 경우 등 — 고를 클래스 목록이 없으므로 확정을 막는다
-            Debug.LogWarning("[WeaponSelectUI] DataManager가 없습니다. 타이틀 씬에서 새 게임으로 들어와야 합니다.");
+            Debug.LogWarning("[ClassSelectUI] DataManager가 없습니다. 타이틀 씬에서 새 게임으로 들어와야 합니다.");
             if (confirmButton != null) confirmButton.interactable = false;
             return;
         }
