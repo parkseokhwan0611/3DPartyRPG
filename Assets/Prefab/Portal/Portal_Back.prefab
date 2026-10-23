@@ -52,10 +52,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 23bf8f23f29561c4e8bb90e312c5bbd9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  destinationSceneName: Forest1
+  destinationSceneName: Dungeon_Tutorial
   isBossStage: 0
-  portalId: 
-  destinationSpawnId: 
+  portalId: Dungeon_1_1_to_Dungeon_Tutorial
+  destinationSpawnId: Dungeon_Tutorial_to_Dungeon_1_1
   promptObject: {fileID: 4440022817179730623}
   promptText: {fileID: 5180670973324675610}
 --- !u!198 &6964918298316850208
@@ -248,7 +248,7 @@ ParticleSystem:
       serializedVersion: 2
       minMaxState: 0
       minColor: {r: 1, g: 1, b: 1, a: 1}
-      maxColor: {r: 1, g: 0.9737498, b: 0.4009434, a: 1}
+      maxColor: {r: 0.4982315, g: 1, b: 0.39999998, a: 1}
       maxGradient:
         serializedVersion: 2
         key0: {r: 1, g: 1, b: 1, a: 1}
@@ -10286,7 +10286,7 @@ ParticleSystem:
       serializedVersion: 2
       minMaxState: 0
       minColor: {r: 1, g: 1, b: 1, a: 1}
-      maxColor: {r: 1, g: 0.9511895, b: 0.43867922, a: 1}
+      maxColor: {r: 0.43921566, g: 1, b: 0.45482183, a: 1}
       maxGradient:
         serializedVersion: 2
         key0: {r: 1, g: 1, b: 1, a: 1}
@@ -15125,7 +15125,7 @@ ParticleSystem:
       serializedVersion: 2
       minMaxState: 0
       minColor: {r: 1, g: 1, b: 1, a: 1}
-      maxColor: {r: 1, g: 1, b: 0.36470592, a: 1}
+      maxColor: {r: 0.47994983, g: 1, b: 0.36470592, a: 1}
       maxGradient:
         serializedVersion: 2
         key0: {r: 1, g: 1, b: 1, a: 1}
