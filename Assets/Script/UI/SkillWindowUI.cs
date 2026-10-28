@@ -19,9 +19,10 @@ public class SkillWindowUI : MonoBehaviour
     private int currentCharIndex = 0;
 
     // 레벨 조건
-    private readonly int[] mainRequiredLevels    = { 1, 6, 16, 30, 40, 50 };
-    private readonly int[] subRequiredLevels     = { 1, 10, 30, 50 };
-    private readonly int[] passiveRequiredLevels = { 1, 6, 16, 30, 40, 50 };
+    // 1막(고블린, ~20레벨)과 2막(드워프, 21~40레벨)에 나눠 해금 — SO의 requiredCharLevel도 같은 값으로 맞춰 둘 것
+    private readonly int[] mainRequiredLevels    = { 1, 6, 12, 18, 24, 30 };
+    private readonly int[] subRequiredLevels     = { 1, 7, 21, 28 };
+    private readonly int[] passiveRequiredLevels = { 1, 6, 12, 18, 24, 30 };
 
     // ─────────────────────────────────────────────────────────────────
     // Unity 생명주기

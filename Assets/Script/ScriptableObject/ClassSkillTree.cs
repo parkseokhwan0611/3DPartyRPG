@@ -6,12 +6,12 @@ public class ClassSkillTree : ScriptableObject
 {
     public ClassData.ClassType classType;
 
-    [Header("Main 스킬 (6개 / 1, 6, 16, 30, 40, 50레벨)")]
+    [Header("Main 스킬 (6개 / 1, 6, 12, 18, 24, 30레벨)")]
     public List<SkillData> mainSkills = new List<SkillData>();
 
-    [Header("Sub 스킬 (4개 / 1, 10, 30, 50레벨)")]
+    [Header("Sub 스킬 (4개 / 1, 7, 21, 28레벨)")]
     public List<SkillData> subSkills = new List<SkillData>();
 
-    [Header("Passive 스킬 (6개 / 1, 6, 16, 30, 40, 50레벨)")]
+    [Header("Passive 스킬 (6개 / 1, 6, 12, 18, 24, 30레벨)")]
     public List<SkillData> passiveSkills = new List<SkillData>();
 }
