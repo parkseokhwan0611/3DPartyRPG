@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ea2b4cd1a4615ef4d93c79d648127dab, type: 3}
+  m_Name: SkillPointPotion
+  m_EditorClassIdentifier: 
+  itemId: SkillPointPotion
+  itemName: "\uC219\uB828\uC758 \uC601\uC57D"
+  description: "\uD30C\uD2F0\uC6D0 \uC804\uCCB4\uC758 \uC2A4\uD0AC \uD3EC\uC778\uD2B8\uB97C
+    1 \uC99D\uAC00\uC2DC\uD0B5\uB2C8\uB2E4."
+  icon: {fileID: 21300000, guid: 1ae829f99de802c4f9fe5db069f5b831, type: 3}
+  grade: 4
+  sellPrice: 200
+  buyPrice: 0
+  consumableType: 4
+  healAmount: 0
+  cooldown: 0
+  successRate: 0
+  weaponAtkIncrement: 0
+  hpIncrement: 0
+  physDefIncrement: 0
+  magicResIncrement: 0
+  skillPointAmount: 1

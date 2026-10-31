@@ -77,7 +77,7 @@ public static class SkillDescriptionBuilder
         var lines = new StringBuilder();
 
         if (dmg.throwGrenade)
-            lines.AppendLine($"[투척] 폭발 범위: {dmg.GetRange(level):F1}m");
+            lines.AppendLine($"[투척] 폭발 범위 {dmg.GetRange(level):F1}m");
         else if (dmg.fireProjectile && dmg.projectileCount > 1)
             lines.AppendLine($"[투사체] {dmg.projectileCount}발 발사 (한 발마다 위 데미지)");
         else if (dmg.IsZone)
@@ -89,7 +89,7 @@ public static class SkillDescriptionBuilder
                 : $"[장판] 범위 {dmg.GetRange(level):F1}m, {dmg.zoneDamageInterval:0.#}초마다 {dmg.zoneDuration:0.#}초간");
         }
         else if (dmg.isAoe)
-            lines.AppendLine($"[광역] 범위: {dmg.GetRange(level):F1}m");
+            lines.AppendLine($"[광역] 범위 {dmg.GetRange(level):F1}m"); // 장판 줄과 같은 형식
 
         if (dmg.onHitDebuffs != null && dmg.onHitDebuffs.Count > 0)
         {

@@ -115,7 +115,8 @@ public class Inventory
                 ConsumableType.MpPotion          => 1,
                 ConsumableType.WeaponScroll => 2,
                 ConsumableType.ArmorScroll  => 2,
-                _                                => 3,
+                ConsumableType.SkillPoint   => 3,
+                _                              => 3,
             };
         }
         if (item.IsEquipment) return 4;

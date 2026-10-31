@@ -445,6 +445,14 @@ public class DataManager : MonoBehaviour
         }
     }
 
+    // 스킬 포인트 아이템 — 레벨업과 같이 파티원 전원에게 지급
+    public void AddSkillPointToAll(int amount)
+    {
+        if (amount <= 0) return;
+        foreach (var status in partyStatuses)
+            if (status != null) status.skillPoint += amount;
+    }
+
     [Header("경험치 계산식")]
     [Tooltip("필요 경험치 = baseExp + expGrowthRate * level^2")]
     public int   baseExp       = 50;

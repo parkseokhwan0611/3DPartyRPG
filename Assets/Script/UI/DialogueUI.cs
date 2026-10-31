@@ -5,7 +5,7 @@ using TMPro;
 
 /// <summary>
 /// 씬에 하나만 배치하는 NPC 대화 패널.
-/// F 또는 Enter로 대사 진행 / 타이핑 스킵.
+/// Enter·Space·마우스 좌클릭으로 대사 진행 / 타이핑 스킵.
 /// NPC·플레이어 발화자 구분으로 이름 텍스트를 자동 전환.
 /// </summary>
 public class DialogueUI : MonoBehaviour
@@ -59,7 +59,7 @@ public class DialogueUI : MonoBehaviour
     {
         if (!IsOpen) return;
         if (_justOpened) { _justOpened = false; return; }
-        if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.Space))
+        if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.Space) || Input.GetMouseButtonDown(0))
             Advance();
     }
 

@@ -44,6 +44,8 @@ public class InventoryUI : MonoBehaviour
     [SerializeField] Button        sellButton;
     [SerializeField] Button        registerPotionButton;
     [SerializeField] Button        deregisterPotionButton;
+    [Tooltip("스킬 포인트 아이템 등 인벤토리에서 바로 쓰는 소비 아이템의 사용 버튼. 비워두면 포션 등록 버튼을 복제해 같은 자리에 자동 생성")]
+    [SerializeField] Button        useButton;
 
     [Header("판매 수량 패널 (소비·재료 판매 시)")]
     [SerializeField] GameObject     sellQuantityPanel;
@@ -154,6 +156,17 @@ public class InventoryUI : MonoBehaviour
 
         if (registerPotionButton   != null) registerPotionButton  .onClick.AddListener(OnRegisterPotionClicked);
         if (deregisterPotionButton != null) deregisterPotionButton.onClick.AddListener(OnDeregisterPotionClicked);
+        // 사용 버튼이 연결 안 돼 있으면 포션 등록 버튼을 복제 — 물약이 아닐 때만 보이므로 같은 자리를 써도 겹치지 않음
+        if (useButton == null && registerPotionButton != null)
+        {
+            useButton = Instantiate(registerPotionButton, registerPotionButton.transform.parent);
+            useButton.name = "UseButton";
+            useButton.onClick = new Button.ButtonClickedEvent(); // 복제된 등록 리스너 제거
+            var label = useButton.GetComponentInChildren<TextMeshProUGUI>(true);
+            if (label != null) label.text = "사용";
+            useButton.gameObject.SetActive(false);
+        }
+        if (useButton              != null) useButton             .onClick.AddListener(OnUseClicked);
 
         // 판매 수량 슬라이더/인풋 연동
         if (sellQuantitySlider != null)
@@ -440,6 +453,10 @@ public class InventoryUI : MonoBehaviour
             if (deregisterPotionButton != null) deregisterPotionButton.gameObject.SetActive(false);
         }
 
+        // 사용 버튼 (인벤토리에서 바로 쓰는 소비 아이템일 때만)
+        if (useButton != null)
+            useButton.gameObject.SetActive(!isEquipSlotSelected && cd != null && cd.IsUsableFromInventory);
+
         // 판매 가격 (단가 표시, 실제 합산은 수량 확정 시)
         if (sellPriceText != null)
             sellPriceText.text = $"가격: {item.data.sellPrice:N0}원";
@@ -464,6 +481,33 @@ public class InventoryUI : MonoBehaviour
         selectedItem = null;
         if (registerPotionButton   != null) registerPotionButton  .gameObject.SetActive(false);
         if (deregisterPotionButton != null) deregisterPotionButton.gameObject.SetActive(false);
+        if (useButton              != null) useButton             .gameObject.SetActive(false);
+    }
+
+    // ─────────────────────────────────────────────────────────────────
+    // 소비 아이템 사용
+    // ─────────────────────────────────────────────────────────────────
+
+    void OnUseClicked() => UseItem(selectedItem);
+
+    /// <summary>인벤토리에서 바로 쓰는 소비 아이템 사용 — 사용 버튼·더블클릭 공용. 1개씩 소비.</summary>
+    public void UseItem(ItemInstance item)
+    {
+        if (item?.data is not ConsumableData cd || !cd.IsUsableFromInventory || DataManager.instance == null) return;
+
+        switch (cd.consumableType)
+        {
+            case ConsumableType.SkillPoint:
+                DataManager.instance.AddSkillPointToAll(cd.skillPointAmount);
+                ShowMessage($"파티원 전체의 스킬 포인트가 {cd.skillPointAmount} 증가했습니다.");
+                break;
+        }
+
+        DataManager.instance.sharedInventory.ConsumeItem(item, 1);
+        AudioManager.instance?.PlaySFX("LevelUp");
+
+        CloseDetailPopup();
+        RefreshInventory();
     }
 
     // ─────────────────────────────────────────────────────────────────
