@@ -83,11 +83,10 @@ public static class SkillDescriptionBuilder
         else if (dmg.IsZone)
         {
             // 장판 — SkillZone과 같은 규칙: 단발이면 1회 판정, 아니면 간격마다 지속시간 동안 반복 판정
-            // 설명 칸 높이가 고정이라 한 줄에 들어가게 짧게
-            string delay = dmg.zoneActivationDelay > 0f ? $", {dmg.zoneActivationDelay:0.#}초 후" : "";
+            // 설명 칸 높이가 고정이라 한 줄에 들어가게 짧게. 첫 판정까지의 대기(zoneActivationDelay)는 연출 타이밍이라 표기하지 않음
             lines.AppendLine(dmg.zoneHitOnce || dmg.zoneDamageInterval <= 0f
-                ? $"[장판] 범위 {dmg.GetRange(level):F1}m, 1회 판정{delay}"
-                : $"[장판] 범위 {dmg.GetRange(level):F1}m, {dmg.zoneDamageInterval:0.#}초마다 {dmg.zoneDuration:0.#}초간{delay}");
+                ? $"[장판] 범위 {dmg.GetRange(level):F1}m, 1회 판정"
+                : $"[장판] 범위 {dmg.GetRange(level):F1}m, {dmg.zoneDamageInterval:0.#}초마다 {dmg.zoneDuration:0.#}초간");
         }
         else if (dmg.isAoe)
             lines.AppendLine($"[광역] 범위: {dmg.GetRange(level):F1}m");
@@ -114,10 +113,16 @@ public static class SkillDescriptionBuilder
 
         if (dmg.onCastBuffs != null && dmg.onCastBuffs.Count > 0)
         {
-            lines.AppendLine("[시전 시 자신에게]");
+            // 버프 스킬과 같은 형식 — [개인 버프] / 지속시간 / 효과 줄.
+            // 부가 버프끼리 지속시간이 다르면 공통 지속시간 줄 대신 줄마다 (n초)로 표기
+            float firstDur = dmg.onCastBuffs[0].GetDuration(level);
+            bool  sameDur  = dmg.onCastBuffs.TrueForAll(b => Mathf.Approximately(b.GetDuration(level), firstDur));
+
+            lines.AppendLine("[개인 버프]");
+            if (sameDur) lines.AppendLine($"지속시간: {firstDur}초");
             foreach (var b in dmg.onCastBuffs)
             {
-                string line = FormatCastBuffLine(b, level, caster);
+                string line = FormatCastBuffLine(b, level, caster, withDuration: !sameDur);
                 if (!string.IsNullOrEmpty(line)) lines.AppendLine(line);
             }
         }
@@ -132,12 +137,13 @@ public static class SkillDescriptionBuilder
     }
 
     // 데미지 스킬의 시전 시 자기 버프 한 줄 (보호막, 공격 속도 등)
-    private static string FormatCastBuffLine(DamageSkillData.CastBuffEffect b, int level, CharacterStat caster)
+    private static string FormatCastBuffLine(DamageSkillData.CastBuffEffect b, int level, CharacterStat caster, bool withDuration)
     {
         float flat    = b.GetValue(level);
         float scaling = b.GetScalingAmount(level, caster);
         float val     = flat + scaling;
-        float dur     = b.GetDuration(level);
+        // 공통 "지속시간:" 줄이 있으면 줄 끝의 (n초)는 생략
+        string dur    = withDuration ? $" ({b.GetDuration(level)}초)" : "";
         // Percent 모드는 능력치 증가 5종 + 받는 데미지 감소에서만 실제로 적용됨 — 보호막 등은 모드와 무관하게 고정 수치
         bool  pct     = b.IsPercent;
         string amount = pct ? $"{val * 100f:0.#}%" : $"{val:F0}";
@@ -148,19 +154,19 @@ public static class SkillDescriptionBuilder
 
         return b.effectType switch
         {
-            StatusEffectType.Shield         => $"보호막 +{val:F0}{note} ({dur}초)",
-            StatusEffectType.AtkUp          => $"물리 공격력 +{amount}{note} ({dur}초)",
-            StatusEffectType.ApUp           => $"마법 공격력 +{amount}{note} ({dur}초)",
-            StatusEffectType.DefUp          => $"방어력 +{amount}{note} ({dur}초)",
-            StatusEffectType.MagicResUp     => $"마법 저항력 +{amount}{note} ({dur}초)",
-            StatusEffectType.MaxHpUp        => $"최대 체력 +{amount}{note} ({dur}초)",
-            StatusEffectType.AtkSpeedUp     => $"공격 속도 +{val * 100f:0.#}%{note} ({dur}초)",
-            StatusEffectType.CritRateUp     => $"치명타 확률 +{val * 100f:0.#}%{note} ({dur}초)",
-            StatusEffectType.CritDamageUp   => $"치명타 데미지 +{val * 100f:0.#}%{note} ({dur}초)",
-            StatusEffectType.DmgReductionUp => $"받는 데미지 {amount} 감소{note} ({dur}초)",
-            StatusEffectType.MoveSpeedUp    => $"이동 속도 +{val * 100f:0.#}%{note} ({dur}초)",
-            StatusEffectType.Invulnerable   => $"무적 ({dur}초)",
-            StatusEffectType.DebuffImmune   => $"디버프 면역 ({dur}초)",
+            StatusEffectType.Shield         => $"보호막 +{val:F0}{note}{dur}",
+            StatusEffectType.AtkUp          => $"물리 공격력 +{amount}{note}{dur}",
+            StatusEffectType.ApUp           => $"마법 공격력 +{amount}{note}{dur}",
+            StatusEffectType.DefUp          => $"방어력 +{amount}{note}{dur}",
+            StatusEffectType.MagicResUp     => $"마법 저항력 +{amount}{note}{dur}",
+            StatusEffectType.MaxHpUp        => $"최대 체력 +{amount}{note}{dur}",
+            StatusEffectType.AtkSpeedUp     => $"공격 속도 +{val * 100f:0.#}%{note}{dur}",
+            StatusEffectType.CritRateUp     => $"치명타 확률 +{val * 100f:0.#}%{note}{dur}",
+            StatusEffectType.CritDamageUp   => $"치명타 데미지 +{val * 100f:0.#}%{note}{dur}",
+            StatusEffectType.DmgReductionUp => $"받는 데미지 {amount} 감소{note}{dur}",
+            StatusEffectType.MoveSpeedUp    => $"이동 속도 +{val * 100f:0.#}%{note}{dur}",
+            StatusEffectType.Invulnerable   => $"무적{dur}",
+            StatusEffectType.DebuffImmune   => $"디버프 면역{dur}",
             _                               => "",
         };
     }
