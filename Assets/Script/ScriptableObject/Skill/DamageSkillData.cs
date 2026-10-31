@@ -65,6 +65,11 @@ public class DamageSkillData : SkillData
         public float       scalingCoeff    = 0f; // 기본 계수 (예: 0.3 = 스탯의 30%)
         public float       scalingPerLevel = 0f; // 레벨당 계수 증가
 
+        [Tooltip("체크하면 이 버프가 걸려 있는 동안 시전자에게 아우라를 켠다 (버프 스킬의 Aura 스타일과 같은 슬롯 사용)")]
+        public bool useAura   = false;
+        [Tooltip("Use Aura일 때 켤 아우라 — 시전자 CharacterStat의 Buff Auras 배열 인덱스")]
+        public int  auraIndex = 0;
+
         public float GetValue(int level)    => baseValue + (valuePerLevel * (level - 1));
         public float GetDuration(int level) => baseDuration + (durationPerLevel * (level - 1));
         public float GetScaling(int level)  => scalingCoeff + (scalingPerLevel * (level - 1));

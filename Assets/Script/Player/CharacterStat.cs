@@ -492,6 +492,32 @@ public partial class CharacterStat : MonoBehaviour, IDamageable
             DeactivateBuffAura(index);
     }
 
+    // 정해진 시간 동안만 켜는 아우라 — 피해 스킬의 시전 시 부가 버프(DamageSkillData.onCastBuffs)용.
+    // 타이머를 스킬 컴포넌트가 아니라 여기서 돌려서, 퀵슬롯 교체로 스킬 컴포넌트가 사라져도 아우라가 남지 않게 한다.
+    // 버프를 다시 걸면 참조 카운트가 하나 더 붙어, 마지막에 건 버프가 끝날 때 꺼진다
+    private readonly List<int> _timedAuraIndices = new List<int>();
+
+    public void ShowBuffAuraFor(int index, float duration)
+    {
+        if (duration <= 0f || buffAuras == null || index < 0 || index >= buffAuras.Length) return;
+        AcquireBuffAura(index);
+        _timedAuraIndices.Add(index);
+        StartCoroutine(ReleaseTimedAura(index, duration));
+    }
+
+    private IEnumerator ReleaseTimedAura(int index, float duration)
+    {
+        yield return new WaitForSeconds(duration);
+        if (_timedAuraIndices.Remove(index)) ReleaseBuffAura(index);
+    }
+
+    // 사망으로 오브젝트가 꺼지면 위 타이머도 멈추므로, 남은 시간제 아우라를 여기서 풀어 둔다 (안 하면 부활 후에도 켜져 있음)
+    void OnDisable()
+    {
+        foreach (int index in _timedAuraIndices) ReleaseBuffAura(index);
+        _timedAuraIndices.Clear();
+    }
+
     void Die()
     {
         if (myStatus == null) return;

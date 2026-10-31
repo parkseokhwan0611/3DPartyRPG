@@ -22,6 +22,8 @@ MonoBehaviour:
   sfxEntries:
   - sfxKey: Warrior_Main1
     delay: 0
+    repeatCount: 1
+    repeatInterval: 0.5
   skillPriority: 2
   maxLevel: 5
   requiredCharLevel: 1
@@ -53,7 +55,18 @@ MonoBehaviour:
   rangePerLevel: 0
   isAoe: 0
   onHitDebuffs: []
-  onCastBuffs: []
+  onCastBuffs:
+  - effectType: 14
+    valueMode: 1
+    baseValue: 0.1
+    valuePerLevel: 0.025
+    baseDuration: 3
+    durationPerLevel: 0.5
+    scalingStat: 0
+    scalingCoeff: 0
+    scalingPerLevel: 0
+    useAura: 1
+    auraIndex: 2
   hasNextSkillBuff: 0
   nextSkillDamageBonus: 0.2
   nextSkillBuffDuration: 4
@@ -72,6 +85,7 @@ MonoBehaviour:
   projectileCount: 1
   projectileInterval: 0
   projectileSpreadAngle: 0
+  projectileShotSfxKey: 
   animTriggerName: doDarkSlash
   animDuration: 0.75
   effectSpawnDelay: 0.3

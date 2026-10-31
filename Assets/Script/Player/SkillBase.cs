@@ -107,6 +107,21 @@ public abstract class SkillBase : MonoBehaviour
     {
         if (cooldownTimer > 0f)
             cooldownTimer -= Time.deltaTime;
+        if (BuffRemaining > 0f)
+            BuffRemaining -= Time.deltaTime;
+    }
+
+    // 시전자 본인에게 건 버프의 남은 시간 / 총 시간 — 전투 퀵슬롯의 버프 지속시간 바 표시용.
+    // 버프 스킬과, 시전 시 부가 버프가 있는 피해 스킬이 StartBuffTimer로 시작한다
+    public float BuffRemaining { get; private set; } = 0f;
+    private float _buffTotal = 0f;
+    public float BuffRemainingRatio => _buffTotal > 0f ? Mathf.Clamp01(BuffRemaining / _buffTotal) : 0f;
+
+    protected void StartBuffTimer(float duration)
+    {
+        if (duration <= 0f) return;
+        _buffTotal    = duration;
+        BuffRemaining = duration;
     }
 
     // ─────────────────────────────────────────────────────────────────

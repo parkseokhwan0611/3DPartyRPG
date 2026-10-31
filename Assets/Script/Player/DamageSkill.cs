@@ -199,16 +199,26 @@ public class DamageSkill : SkillBase
         if (data.onCastBuffs == null || data.onCastBuffs.Count == 0) return;
         if (statusHandler == null) return;
 
+        float longest = 0f;
         foreach (var buff in data.onCastBuffs)
         {
+            float duration = buff.GetDuration(skillLevel);
+            longest = Mathf.Max(longest, duration);
             statusHandler.ApplyBuff(new StatusEffect(
                 buff.effectType,
                 buff.GetTotalValue(skillLevel, myStat),
-                buff.GetDuration(skillLevel),
+                duration,
                 gameObject,
                 buff.valueMode
             ));
+
+            // 버프 지속시간 동안 아우라 표시 (보호막처럼 시간 전에 깨질 수 있는 효과도 지속시간 기준)
+            if (buff.useAura && myStat != null)
+                myStat.ShowBuffAuraFor(buff.auraIndex, duration);
         }
+
+        // 전투 퀵슬롯의 버프 지속시간 바 — 부가 버프가 여러 개면 가장 오래가는 것 기준
+        StartBuffTimer(longest);
     }
 
     // ─────────────────────────────────────────────────────────────────

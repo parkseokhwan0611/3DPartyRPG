@@ -609,9 +609,7 @@ public class SkillManager : MonoBehaviour
     public float GetBuffRemainingRatio(int index)
     {
         SkillBase skill = GetSlot(index);
-        if (skill is BuffSkill buffSkill)
-            return buffSkill.BuffRemainingRatio;
-        return 0f;
+        return skill != null ? skill.BuffRemainingRatio : 0f;
     }
 
     public Sprite GetSkillIcon(int index)
