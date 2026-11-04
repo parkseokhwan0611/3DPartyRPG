@@ -1570,8 +1570,10 @@ MonoBehaviour:
   hpBar: {fileID: 1490104024423649028}
   mask: {fileID: 3458613861121930132}
   shieldBar: {fileID: 2267045561443580100}
+  statusText: {fileID: 0}
   hpAmount: 0
   changeSpeed: 1.5
+  hideWhenFull: 1
 --- !u!1 &6057921359087723792
 GameObject:
   m_ObjectHideFlags: 0
@@ -1811,7 +1813,7 @@ GameObject:
   - component: {fileID: 4241439091675605891}
   - component: {fileID: 2172192812490824265}
   m_Layer: 7
-  m_Name: Skeleton_Basic
+  m_Name: SkeletonBasic_LV9
   m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1881,6 +1883,7 @@ MonoBehaviour:
   wanderRadius: 5
   wanderSpeed: 1.5
   wanderInterval: 3
+  dormantDistance: 45
 --- !u!114 &2341397149004027399
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1893,7 +1896,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: acd2eab4ef7c61747b38afe6622dbf8d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  attackDamage: 50
+  attackDamage: 100
   attackRange: 1.5
   attackSpeed: 1
   attackDuration: 1.3
@@ -1922,11 +1925,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: db5518911df8ae84da3b30d78b763b17, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hp: 500
-  maxHp: 500
+  hp: 1500
+  maxHp: 1500
   isDead: 0
   grade: 0
-  level: 1
+  level: 9
   def: 0
   magicRes: 0
   physicalDamageColor: {r: 1, g: 0.43137255, b: 0.003921569, a: 1}
@@ -1935,7 +1938,7 @@ MonoBehaviour:
   monsterId: Skeleton
   damageTextPoolKey: NormalDamageText
   hudPos: {fileID: 6243967598665347060}
-  expReward: 5
+  expReward: 80
   goldReward: 10
   destroyDelay: 2
   deathSfxKey: 

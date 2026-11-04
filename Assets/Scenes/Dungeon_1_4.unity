@@ -128028,6 +128028,54 @@ Transform:
   - {fileID: 1400030200}
   m_Father: {fileID: 932931132}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &311789049
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 311789050}
+  - component: {fileID: 311789051}
+  m_Layer: 0
+  m_Name: GoblinWarriorSpawner (3)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &311789050
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 311789049}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: 0.8010943, z: -0, w: -0.5985383}
+  m_LocalPosition: {x: -24.55888, y: -4.876667, z: 79.35599}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1713439972}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &311789051
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 311789049}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ba170ddb67e23de4a8b0a8b75ab2daa1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  monsterPrefab: {fileID: 8728550806363355426, guid: c86914739ba33c4458b74b03457dab7d, type: 3}
+  spawnPoint: {fileID: 0}
+  respawnDelay: 60
+  spawnOnStart: 1
 --- !u!1 &312622811
 GameObject:
   m_ObjectHideFlags: 0
@@ -139591,6 +139639,54 @@ Transform:
   m_Children: []
   m_Father: {fileID: 603555168}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &360647581
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 360647582}
+  - component: {fileID: 360647583}
+  m_Layer: 0
+  m_Name: GoblinMechanicSpawner
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &360647582
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 360647581}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: 0.9350588, z: -0, w: -0.35449272}
+  m_LocalPosition: {x: -11.895534, y: -4.723667, z: 42.24501}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1713439972}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &360647583
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 360647581}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ba170ddb67e23de4a8b0a8b75ab2daa1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  monsterPrefab: {fileID: 5891698071778192486, guid: 9922b3a4421dd2f46b684d382787f326, type: 3}
+  spawnPoint: {fileID: 0}
+  respawnDelay: 60
+  spawnOnStart: 1
 --- !u!1 &362605918
 GameObject:
   m_ObjectHideFlags: 0
@@ -139602,7 +139698,7 @@ GameObject:
   - component: {fileID: 362605919}
   - component: {fileID: 362605920}
   m_Layer: 0
-  m_Name: GoblinSlingerSpawner
+  m_Name: GoblinWarriorSpawner (5)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -139635,10 +139731,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ba170ddb67e23de4a8b0a8b75ab2daa1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  monsterPrefab: {fileID: 7138388956008483013, guid: d8c07aea3d8d5a745b985fe2909338bb,
-    type: 3}
+  monsterPrefab: {fileID: 8728550806363355426, guid: c86914739ba33c4458b74b03457dab7d, type: 3}
   spawnPoint: {fileID: 0}
-  respawnDelay: 120
+  respawnDelay: 60
   spawnOnStart: 1
 --- !u!1001 &362732374
 PrefabInstance:
@@ -177668,6 +177763,54 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 465417202}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &465789454
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 465789455}
+  - component: {fileID: 465789456}
+  m_Layer: 0
+  m_Name: GoblinSlingerSpawner (3)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &465789455
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 465789454}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: 0.88393044, z: -0, w: -0.4676185}
+  m_LocalPosition: {x: -30.312046, y: -4.7974253, z: 125.972275}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1713439972}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &465789456
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 465789454}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ba170ddb67e23de4a8b0a8b75ab2daa1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  monsterPrefab: {fileID: 7138388956008483013, guid: c36eec29474b26d4383113053f877b42, type: 3}
+  spawnPoint: {fileID: 0}
+  respawnDelay: 120
+  spawnOnStart: 1
 --- !u!1 &465807884
 GameObject:
   m_ObjectHideFlags: 0
@@ -262397,6 +262540,54 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1104434338}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &633837250
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 633837251}
+  - component: {fileID: 633837252}
+  m_Layer: 0
+  m_Name: GoblinSlingerSpawner
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &633837251
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 633837250}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: 0.84073526, z: -0, w: -0.54144645}
+  m_LocalPosition: {x: -29.318882, y: -4.742712, z: 45.01977}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1713439972}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &633837252
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 633837250}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ba170ddb67e23de4a8b0a8b75ab2daa1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  monsterPrefab: {fileID: 7138388956008483013, guid: c36eec29474b26d4383113053f877b42, type: 3}
+  spawnPoint: {fileID: 0}
+  respawnDelay: 120
+  spawnOnStart: 1
 --- !u!1001 &634583296
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -269376,7 +269567,7 @@ GameObject:
   - component: {fileID: 670640651}
   - component: {fileID: 670640652}
   m_Layer: 0
-  m_Name: GoblinThiefSpawner
+  m_Name: GoblinMechanicSpawner (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -269409,8 +269600,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ba170ddb67e23de4a8b0a8b75ab2daa1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  monsterPrefab: {fileID: 8762004475818107220, guid: b40280d1a92c91b4b825e31c1ea7c03e,
-    type: 3}
+  monsterPrefab: {fileID: 5891698071778192486, guid: 9922b3a4421dd2f46b684d382787f326, type: 3}
   spawnPoint: {fileID: 0}
   respawnDelay: 60
   spawnOnStart: 1
@@ -296188,7 +296378,7 @@ GameObject:
   - component: {fileID: 743054514}
   - component: {fileID: 743054515}
   m_Layer: 0
-  m_Name: GoblinThiefSpawner (1)
+  m_Name: SkeletonSpawner (3)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -296221,8 +296411,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ba170ddb67e23de4a8b0a8b75ab2daa1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  monsterPrefab: {fileID: 8762004475818107220, guid: b40280d1a92c91b4b825e31c1ea7c03e,
-    type: 3}
+  monsterPrefab: {fileID: 6724196507479747451, guid: e56e07b194b8f844ba454cc19056ecce, type: 3}
   spawnPoint: {fileID: 0}
   respawnDelay: 60
   spawnOnStart: 1
@@ -343974,6 +344163,54 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 923417577}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &923718911
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 923718912}
+  - component: {fileID: 923718913}
+  m_Layer: 0
+  m_Name: GoblinMechanicSpawner (3)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &923718912
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 923718911}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: 0.80568653, z: -0, w: -0.5923422}
+  m_LocalPosition: {x: -10.232494, y: -4.7552514, z: 103.86986}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1713439972}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &923718913
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 923718911}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ba170ddb67e23de4a8b0a8b75ab2daa1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  monsterPrefab: {fileID: 5891698071778192486, guid: 9922b3a4421dd2f46b684d382787f326, type: 3}
+  spawnPoint: {fileID: 0}
+  respawnDelay: 60
+  spawnOnStart: 1
 --- !u!1 &924242375
 GameObject:
   m_ObjectHideFlags: 0
@@ -363204,6 +363441,54 @@ Transform:
   - {fileID: 1673746485}
   m_Father: {fileID: 203823238}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &959184422
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 959184423}
+  - component: {fileID: 959184424}
+  m_Layer: 0
+  m_Name: GoblinWarriorSpawner (2)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &959184423
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 959184422}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: 0.15712202, z: -0, w: -0.9875792}
+  m_LocalPosition: {x: 4.653346, y: -4.7253613, z: 75.78447}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1713439972}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &959184424
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 959184422}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ba170ddb67e23de4a8b0a8b75ab2daa1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  monsterPrefab: {fileID: 8728550806363355426, guid: c86914739ba33c4458b74b03457dab7d, type: 3}
+  spawnPoint: {fileID: 0}
+  respawnDelay: 60
+  spawnOnStart: 1
 --- !u!1 &959226625
 GameObject:
   m_ObjectHideFlags: 0
@@ -364066,6 +364351,54 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 960642635}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &960680900
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 960680901}
+  - component: {fileID: 960680902}
+  m_Layer: 0
+  m_Name: SkeletonArcherSpawner (2)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &960680901
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 960680900}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: 0.93203825, z: -0, w: 0.36235994}
+  m_LocalPosition: {x: 3.367382, y: -4.8536253, z: 109.00294}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1713439972}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &960680902
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 960680900}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ba170ddb67e23de4a8b0a8b75ab2daa1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  monsterPrefab: {fileID: 4394724053476291776, guid: 1a57ffe93211cf743a193fb56a6c90fe, type: 3}
+  spawnPoint: {fileID: 0}
+  respawnDelay: 60
+  spawnOnStart: 1
 --- !u!1 &960894738
 GameObject:
   m_ObjectHideFlags: 0
@@ -382533,6 +382866,54 @@ Transform:
   - {fileID: 103379366}
   m_Father: {fileID: 1678809542}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1011639426
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1011639427}
+  - component: {fileID: 1011639428}
+  m_Layer: 0
+  m_Name: GoblinWarriorSpawner (4)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1011639427
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1011639426}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: 0.4842492, z: -0, w: 0.87493014}
+  m_LocalPosition: {x: -24.24511, y: -4.6539316, z: 111.180885}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1713439972}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1011639428
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1011639426}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ba170ddb67e23de4a8b0a8b75ab2daa1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  monsterPrefab: {fileID: 8728550806363355426, guid: c86914739ba33c4458b74b03457dab7d, type: 3}
+  spawnPoint: {fileID: 0}
+  respawnDelay: 60
+  spawnOnStart: 1
 --- !u!1001 &1012151728
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -404177,7 +404558,7 @@ GameObject:
   - component: {fileID: 1052301754}
   - component: {fileID: 1052301755}
   m_Layer: 0
-  m_Name: GoblinThiefSpawner (2)
+  m_Name: SkeletonArcherSpawner (3)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -404210,8 +404591,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ba170ddb67e23de4a8b0a8b75ab2daa1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  monsterPrefab: {fileID: 8762004475818107220, guid: b40280d1a92c91b4b825e31c1ea7c03e,
-    type: 3}
+  monsterPrefab: {fileID: 4394724053476291776, guid: 1a57ffe93211cf743a193fb56a6c90fe, type: 3}
   spawnPoint: {fileID: 0}
   respawnDelay: 60
   spawnOnStart: 1
@@ -446646,7 +447026,7 @@ GameObject:
   - component: {fileID: 1150377275}
   - component: {fileID: 1150377276}
   m_Layer: 0
-  m_Name: GoblinThiefSpawner (3)
+  m_Name: GoblinWarriorSpawner
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -446660,8 +447040,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1150377274}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 31, y: -4, z: 112.5}
+  m_LocalRotation: {x: -0, y: 0.3127985, z: -0, w: 0.94981956}
+  m_LocalPosition: {x: -26.626497, y: -4.8306193, z: 24.622686}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -446679,8 +447059,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ba170ddb67e23de4a8b0a8b75ab2daa1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  monsterPrefab: {fileID: 8762004475818107220, guid: b40280d1a92c91b4b825e31c1ea7c03e,
-    type: 3}
+  monsterPrefab: {fileID: 8728550806363355426, guid: c86914739ba33c4458b74b03457dab7d, type: 3}
   spawnPoint: {fileID: 0}
   respawnDelay: 60
   spawnOnStart: 1
@@ -455205,7 +455584,7 @@ GameObject:
   - component: {fileID: 1177237894}
   - component: {fileID: 1177237895}
   m_Layer: 0
-  m_Name: GoblinThiefSpawner (4)
+  m_Name: GoblinWarriorSpawner (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -455238,8 +455617,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ba170ddb67e23de4a8b0a8b75ab2daa1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  monsterPrefab: {fileID: 8762004475818107220, guid: b40280d1a92c91b4b825e31c1ea7c03e,
-    type: 3}
+  monsterPrefab: {fileID: 8728550806363355426, guid: c86914739ba33c4458b74b03457dab7d, type: 3}
   spawnPoint: {fileID: 0}
   respawnDelay: 60
   spawnOnStart: 1
@@ -464561,6 +464939,54 @@ Transform:
   - {fileID: 628426547}
   m_Father: {fileID: 1717466810}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1208566276
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1208566277}
+  - component: {fileID: 1208566278}
+  m_Layer: 0
+  m_Name: GoblinMechanicSpawner (4)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1208566277
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1208566276}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: 0.032142024, z: -0, w: -0.99948335}
+  m_LocalPosition: {x: 15.3879795, y: -4.7278967, z: 118.46562}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1713439972}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1208566278
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1208566276}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ba170ddb67e23de4a8b0a8b75ab2daa1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  monsterPrefab: {fileID: 5891698071778192486, guid: 9922b3a4421dd2f46b684d382787f326, type: 3}
+  spawnPoint: {fileID: 0}
+  respawnDelay: 60
+  spawnOnStart: 1
 --- !u!1 &1208728953
 GameObject:
   m_ObjectHideFlags: 0
@@ -477546,7 +477972,7 @@ GameObject:
   - component: {fileID: 1260679924}
   - component: {fileID: 1260679925}
   m_Layer: 0
-  m_Name: GoblinThiefSpawner (5)
+  m_Name: SkeletonSpawner (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -477579,8 +478005,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ba170ddb67e23de4a8b0a8b75ab2daa1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  monsterPrefab: {fileID: 8762004475818107220, guid: b40280d1a92c91b4b825e31c1ea7c03e,
-    type: 3}
+  monsterPrefab: {fileID: 6724196507479747451, guid: e56e07b194b8f844ba454cc19056ecce, type: 3}
   spawnPoint: {fileID: 0}
   respawnDelay: 60
   spawnOnStart: 1
@@ -493500,6 +493925,54 @@ Transform:
   - {fileID: 1638534077}
   m_Father: {fileID: 9817109}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1304672305
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1304672306}
+  - component: {fileID: 1304672307}
+  m_Layer: 0
+  m_Name: GoblinMechanicSpawner (5)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1304672306
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1304672305}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: 0.8445133, z: -0, w: 0.5355346}
+  m_LocalPosition: {x: -19.42324, y: -3.653155, z: 144.09634}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1713439972}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1304672307
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1304672305}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ba170ddb67e23de4a8b0a8b75ab2daa1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  monsterPrefab: {fileID: 5891698071778192486, guid: 9922b3a4421dd2f46b684d382787f326, type: 3}
+  spawnPoint: {fileID: 0}
+  respawnDelay: 60
+  spawnOnStart: 1
 --- !u!1001 &1304988213
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -513525,7 +513998,7 @@ GameObject:
   - component: {fileID: 1340198780}
   - component: {fileID: 1340198781}
   m_Layer: 0
-  m_Name: GoblinSlingerSpawner (1)
+  m_Name: SkeletonArcherSpawner
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -513539,8 +514012,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1340198779}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -10.3, y: -4, z: 95.5}
+  m_LocalRotation: {x: -0, y: 0.90151554, z: -0, w: -0.43274674}
+  m_LocalPosition: {x: -26.77411, y: -4.575679, z: 96.79239}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -513558,10 +514031,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ba170ddb67e23de4a8b0a8b75ab2daa1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  monsterPrefab: {fileID: 7138388956008483013, guid: d8c07aea3d8d5a745b985fe2909338bb,
-    type: 3}
+  monsterPrefab: {fileID: 4394724053476291776, guid: 1a57ffe93211cf743a193fb56a6c90fe, type: 3}
   spawnPoint: {fileID: 0}
-  respawnDelay: 120
+  respawnDelay: 60
   spawnOnStart: 1
 --- !u!1001 &1340785375
 PrefabInstance:
@@ -545546,7 +546018,7 @@ GameObject:
   - component: {fileID: 1389653914}
   - component: {fileID: 1389653915}
   m_Layer: 0
-  m_Name: GoblinThiefSpawner (6)
+  m_Name: GoblinSlingerSpawner (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -545560,8 +546032,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1389653913}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -10.1, y: -4, z: 78.6}
+  m_LocalRotation: {x: -0, y: 0.7027151, z: -0, w: 0.7114714}
+  m_LocalPosition: {x: 27.218985, y: -4.5266666, z: 51.403824}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -545579,10 +546051,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ba170ddb67e23de4a8b0a8b75ab2daa1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  monsterPrefab: {fileID: 8762004475818107220, guid: b40280d1a92c91b4b825e31c1ea7c03e,
-    type: 3}
+  monsterPrefab: {fileID: 7138388956008483013, guid: c36eec29474b26d4383113053f877b42, type: 3}
   spawnPoint: {fileID: 0}
-  respawnDelay: 60
+  respawnDelay: 120
   spawnOnStart: 1
 --- !u!1 &1389721818
 GameObject:
@@ -600240,6 +600711,54 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 1520892721}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1521220744
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1521220745}
+  - component: {fileID: 1521220746}
+  m_Layer: 0
+  m_Name: GoblinSlingerSpawner (2)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1521220745
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1521220744}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: 0.7759502, z: -0, w: 0.63079417}
+  m_LocalPosition: {x: 32.92697, y: -4.876667, z: 123.088715}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1713439972}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1521220746
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1521220744}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ba170ddb67e23de4a8b0a8b75ab2daa1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  monsterPrefab: {fileID: 7138388956008483013, guid: c36eec29474b26d4383113053f877b42, type: 3}
+  spawnPoint: {fileID: 0}
+  respawnDelay: 120
+  spawnOnStart: 1
 --- !u!1001 &1521383604
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -603096,7 +603615,7 @@ GameObject:
   - component: {fileID: 1537870427}
   - component: {fileID: 1537870428}
   m_Layer: 0
-  m_Name: GoblinThiefSpawner (7)
+  m_Name: SkeletonSpawner
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -603110,8 +603629,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1537870426}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 18.8, y: -4, z: 50.7}
+  m_LocalRotation: {x: -0, y: 0.17544912, z: -0, w: -0.9844885}
+  m_LocalPosition: {x: 34.45017, y: -4.876667, z: 27.064835}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -603129,8 +603648,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ba170ddb67e23de4a8b0a8b75ab2daa1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  monsterPrefab: {fileID: 8762004475818107220, guid: b40280d1a92c91b4b825e31c1ea7c03e,
-    type: 3}
+  monsterPrefab: {fileID: 6724196507479747451, guid: e56e07b194b8f844ba454cc19056ecce, type: 3}
   spawnPoint: {fileID: 0}
   respawnDelay: 60
   spawnOnStart: 1
@@ -652105,7 +652623,7 @@ GameObject:
   - component: {fileID: 1632858117}
   - component: {fileID: 1632858118}
   m_Layer: 0
-  m_Name: GoblinThiefSpawner (8)
+  m_Name: SkeletonSpawner (2)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -652119,8 +652637,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1632858116}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 6.7, y: -4, z: 73.5}
+  m_LocalRotation: {x: -0, y: 0.08984389, z: -0, w: 0.9959559}
+  m_LocalPosition: {x: 2.5190978, y: -4.7860055, z: 94.31248}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -652138,8 +652656,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ba170ddb67e23de4a8b0a8b75ab2daa1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  monsterPrefab: {fileID: 8762004475818107220, guid: b40280d1a92c91b4b825e31c1ea7c03e,
-    type: 3}
+  monsterPrefab: {fileID: 6724196507479747451, guid: e56e07b194b8f844ba454cc19056ecce, type: 3}
   spawnPoint: {fileID: 0}
   respawnDelay: 60
   spawnOnStart: 1
@@ -677629,6 +678146,18 @@ Transform:
   - {fileID: 1260679924}
   - {fileID: 1632858117}
   - {fileID: 1389653914}
+  - {fileID: 1304672306}
+  - {fileID: 1208566277}
+  - {fileID: 633837251}
+  - {fileID: 465789455}
+  - {fileID: 1521220745}
+  - {fileID: 360647582}
+  - {fileID: 311789050}
+  - {fileID: 923718912}
+  - {fileID: 959184423}
+  - {fileID: 1890181897}
+  - {fileID: 1011639427}
+  - {fileID: 960680901}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1713952527
@@ -721949,7 +722478,7 @@ GameObject:
   - component: {fileID: 1829864533}
   - component: {fileID: 1829864534}
   m_Layer: 0
-  m_Name: GoblinThiefSpawner (9)
+  m_Name: SkeletonArcherSpawner (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -721982,8 +722511,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ba170ddb67e23de4a8b0a8b75ab2daa1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  monsterPrefab: {fileID: 8762004475818107220, guid: b40280d1a92c91b4b825e31c1ea7c03e,
-    type: 3}
+  monsterPrefab: {fileID: 4394724053476291776, guid: 1a57ffe93211cf743a193fb56a6c90fe, type: 3}
   spawnPoint: {fileID: 0}
   respawnDelay: 60
   spawnOnStart: 1
@@ -745702,6 +746230,54 @@ ParentConstraint:
   m_Sources:
   - sourceTransform: {fileID: 679155750}
     weight: 1
+--- !u!1 &1890181896
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1890181897}
+  - component: {fileID: 1890181898}
+  m_Layer: 0
+  m_Name: GoblinMechanicSpawner (2)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1890181897
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1890181896}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: 0.28919765, z: -0, w: 0.95726943}
+  m_LocalPosition: {x: 18.6895, y: -4.7241244, z: 89.51702}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1713439972}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1890181898
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1890181896}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ba170ddb67e23de4a8b0a8b75ab2daa1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  monsterPrefab: {fileID: 5891698071778192486, guid: 9922b3a4421dd2f46b684d382787f326, type: 3}
+  spawnPoint: {fileID: 0}
+  respawnDelay: 60
+  spawnOnStart: 1
 --- !u!1 &1890468918
 GameObject:
   m_ObjectHideFlags: 0
