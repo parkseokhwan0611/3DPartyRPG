@@ -23,6 +23,9 @@ public class MonsterSpawnerPlacementTool : EditorWindow
     private float portalSafeRadius = 10f;   // 포탈 주변도 비워둠 (도착하자마자 전투 방지)
     private bool keepValidExisting = true;
     private int seed = 1;
+    private bool showCurrent = true;        // 현재 배치된 스포너 위치 표시 (수동 조정용)
+    private bool showCurrentList;
+    private Vector2 _listScroll;
 
     private readonly List<Slot> _preview = new List<Slot>();
     private int _unplacedExisting;
@@ -88,7 +91,78 @@ public class MonsterSpawnerPlacementTool : EditorWindow
 
         if (!string.IsNullOrEmpty(_status)) EditorGUILayout.HelpBox(_status, MessageType.Info);
         EditorGUILayout.HelpBox("씬 뷰: 초록 = 유지, 노랑 = 기존 스포너 이동, 하늘색 = 새로 추가", MessageType.None);
+
+        // ── 현재 배치 표시 ──
+        EditorGUILayout.Space();
+        EditorGUI.BeginChangeCheck();
+        showCurrent = EditorGUILayout.ToggleLeft(new GUIContent("현재 스포너 위치 표시",
+            "씬 뷰에 지금 배치된 스포너를 표시. 원을 클릭하면 해당 스포너가 선택되어 바로 옮길 수 있음"), showCurrent);
+        if (EditorGUI.EndChangeCheck()) SceneView.RepaintAll();
+        if (showCurrent)
+            EditorGUILayout.HelpBox("씬 뷰: 보라 = 현재 스포너, 빨강 = NavMesh 밖(갈 수 없는 위치). 바깥 원은 최소 거리의 절반", MessageType.None);
+
+        if (spawnerRoot != null)
+        {
+            var spawners = spawnerRoot.GetComponentsInChildren<MonsterSpawner>(true);
+            EditorGUILayout.HelpBox(BuildMonsterSummary(spawners), MessageType.Info);
+            showCurrentList = EditorGUILayout.Foldout(showCurrentList, $"현재 스포너 목록 ({spawners.Length}개)", true);
+            if (showCurrentList)
+            {
+                _listScroll = EditorGUILayout.BeginScrollView(_listScroll, GUILayout.MaxHeight(200));
+                foreach (var s in spawners)
+                {
+                    using (new EditorGUILayout.HorizontalScope())
+                    {
+                        bool onMesh = IsOnNavMesh(SpawnPos(s));
+                        var label = $"{s.name}  —  {MonsterName(s)}" + (onMesh ? "" : "  (NavMesh 밖)");
+                        EditorGUILayout.LabelField(label);
+                        if (GUILayout.Button("선택", GUILayout.Width(48)))
+                        {
+                            Selection.activeGameObject = s.gameObject;
+                            SceneView.lastActiveSceneView?.FrameSelected();
+                        }
+                    }
+                }
+                EditorGUILayout.EndScrollView();
+            }
+        }
     }
+
+    // MonsterSpawner와 같은 규칙 — spawnPoint가 있으면 그 위치에 스폰
+    private static Vector3 SpawnPos(MonsterSpawner s)
+    {
+        var sp = new SerializedObject(s).FindProperty("spawnPoint").objectReferenceValue as Transform;
+        return sp != null ? sp.position : s.transform.position;
+    }
+
+    private static string MonsterName(MonsterSpawner s)
+    {
+        var prefab = new SerializedObject(s).FindProperty("monsterPrefab").objectReferenceValue;
+        return prefab != null ? prefab.name : "몬스터 없음";
+    }
+
+    // 배치된 몬스터 종류별 수 — 게임 화면과 같은 "이름 (Lv.N)" 표기, 일반/정예/보스 구분. 많은 순
+    private static string BuildMonsterSummary(MonsterSpawner[] spawners)
+    {
+        var counts = new Dictionary<string, int>();
+        int empty = 0;
+        foreach (var s in spawners)
+        {
+            var prefab = new SerializedObject(s).FindProperty("monsterPrefab").objectReferenceValue as GameObject;
+            var hp = prefab != null ? prefab.GetComponentInChildren<EnemyHp>(true) : null;
+            if (hp == null) { empty++; continue; }
+            string key = hp.DisplayName + (hp.grade == EnemyHp.MonsterGrade.Normal ? "" : hp.grade == EnemyHp.MonsterGrade.Elite ? " [정예]" : " [보스]");
+            counts[key] = counts.TryGetValue(key, out int n) ? n + 1 : 1;
+        }
+        var lines = new List<string> { $"배치된 몬스터 — 총 {spawners.Length - empty}마리" };
+        var sorted = new List<KeyValuePair<string, int>>(counts);
+        sorted.Sort((a, b) => b.Value != a.Value ? b.Value.CompareTo(a.Value) : string.CompareOrdinal(a.Key, b.Key));
+        foreach (var kv in sorted) lines.Add($"· {kv.Key} × {kv.Value}");
+        if (empty > 0) lines.Add($"· 몬스터 미지정 스포너 × {empty}");
+        return string.Join("\n", lines);
+    }
+
+    private static bool IsOnNavMesh(Vector3 pos) => NavMesh.SamplePosition(pos, out _, 1.5f, NavMesh.AllAreas);
 
     private void Compute()
     {
@@ -244,6 +318,23 @@ public class MonsterSpawnerPlacementTool : EditorWindow
             Handles.DrawSolidDisc(s.pos + Vector3.up * 0.05f, Vector3.up, 0.8f);
             Handles.DrawWireDisc(s.pos + Vector3.up * 0.05f, Vector3.up, minSpacing * 0.5f);
             Handles.DrawLine(s.pos, s.pos + Vector3.up * 4f);
+        }
+
+        if (!showCurrent || spawnerRoot == null) return;
+        var labelStyle = new GUIStyle(EditorStyles.boldLabel) { alignment = TextAnchor.MiddleCenter };
+        foreach (var s in spawnerRoot.GetComponentsInChildren<MonsterSpawner>(true))
+        {
+            Vector3 p = SpawnPos(s);
+            Color c = IsOnNavMesh(p) ? new Color(0.85f, 0.35f, 1f) : Color.red;
+            Handles.color = c;
+            Handles.DrawWireDisc(p + Vector3.up * 0.1f, Vector3.up, minSpacing * 0.5f);
+            Handles.DrawLine(p, p + Vector3.up * 3f);
+            // 원을 클릭하면 스포너 선택 → 이동 툴로 바로 조정
+            float size = HandleUtility.GetHandleSize(p) * 0.15f;
+            if (Handles.Button(p + Vector3.up * 0.1f, Quaternion.LookRotation(Vector3.up), Mathf.Max(size, 0.6f), Mathf.Max(size, 0.6f), Handles.CircleHandleCap))
+                Selection.activeGameObject = s.gameObject;
+            labelStyle.normal.textColor = c;
+            Handles.Label(p + Vector3.up * 3.4f, $"{s.name}\n{MonsterName(s)}", labelStyle);
         }
     }
 }

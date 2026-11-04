@@ -4,8 +4,8 @@ using UnityEngine;
 [System.Serializable]
 public class DropEntry
 {
-    [Tooltip("DataManager.itemRegistry에 등록된 아이템 ID")]
-    public string itemId;
+    [Tooltip("드랍할 아이템 SO를 끌어다 놓기")]
+    public ItemData item;
 
     [Range(0f, 1f)]
     [Tooltip("드랍 확률 (0 = 절대 안 드랍, 1 = 항상 드랍)")]
@@ -41,15 +41,13 @@ public class MonsterDropTable : ScriptableObject
         bool didDrop = false;
         foreach (var entry in entries)
         {
-            if (string.IsNullOrEmpty(entry.itemId)) continue;
+            if (entry.item == null) continue;
             if (Random.value > entry.dropRate) continue;
 
-            ItemData data = DataManager.instance.FindItemById(entry.itemId);
-            if (data == null)
-            {
-                Debug.LogWarning($"[DropTable] itemId '{entry.itemId}'를 itemRegistry에서 찾을 수 없습니다.");
-                continue;
-            }
+            ItemData data = entry.item;
+            // 세이브 로드는 itemId로 itemRegistry에서 찾으므로, 등록 안 된 아이템은 주워도 다음 로드 때 사라짐
+            if (DataManager.instance.FindItemById(data.itemId) == null)
+                Debug.LogWarning($"[DropTable] {name}: '{data.itemId}'가 itemRegistry에 없습니다 — 저장 후 불러오면 사라집니다. DataManager.itemRegistry에 등록하세요.");
 
             int gradeIndex = (int)data.grade;
             if (gradeIndex >= gradePrefabs.Length || gradePrefabs[gradeIndex] == null)

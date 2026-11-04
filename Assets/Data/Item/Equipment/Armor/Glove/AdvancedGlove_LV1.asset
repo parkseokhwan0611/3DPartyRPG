@@ -10,26 +10,26 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bdefdd29392da5c46b67a73a4555145e, type: 3}
-  m_Name: BasicChest
+  m_Name: AdvancedGlove_LV1
   m_EditorClassIdentifier: 
-  itemId: BasicChest
-  itemName: "\uC5F0\uC2B5\uC6A9 \uAC11\uC637"
-  description: "\uACAC\uC2B5 \uAE30\uC0AC\uB4E4\uC774 \uCC29\uC6A9\uD558\uB294 \uAC11\uC637\uB2E4."
-  icon: {fileID: 21300000, guid: 791cfbe7dc10a4749940aae09226312b, type: 3}
-  grade: 0
-  sellPrice: 10
-  buyPrice: 30
-  equipType: 3
+  itemId: AdvancedGlove_LV1
+  itemName: "\uAC00\uC8FD \uC7A5\uAC11"
+  description: "\uAE30\uC0AC\uB4E4\uC774 \uCC29\uC6A9\uD558\uB294 \uC7A5\uAC11\uC774\uB2E4."
+  icon: {fileID: 21300000, guid: c0c13248bda0eed4b93678638b5a4ba6, type: 3}
+  grade: 1
+  sellPrice: 5
+  buyPrice: 20
+  equipType: 4
   mainOptions:
   - type: 2
-    value: 100
-    enhancementBonusPerLevel: 20
+    value: 70
+    enhancementBonusPerLevel: 10
   - type: 3
-    value: 15
-    enhancementBonusPerLevel: 3
+    value: 12
+    enhancementBonusPerLevel: 2
   - type: 4
-    value: 15
-    enhancementBonusPerLevel: 3
+    value: 12
+    enhancementBonusPerLevel: 2
   subOptions:
   - type: 1
     value: 3

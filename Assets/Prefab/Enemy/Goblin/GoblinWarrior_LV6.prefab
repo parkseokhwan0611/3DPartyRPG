@@ -2918,7 +2918,7 @@ GameObject:
   - component: {fileID: 5084313715934208434}
   - component: {fileID: 5614104624980467240}
   m_Layer: 7
-  m_Name: GoblinWarrior_LV1
+  m_Name: GoblinWarrior_LV6
   m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3001,7 +3001,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: acd2eab4ef7c61747b38afe6622dbf8d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  attackDamage: 70
+  attackDamage: 90
   attackRange: 2
   attackSpeed: 1
   attackDuration: 2.3
@@ -3030,15 +3030,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: db5518911df8ae84da3b30d78b763b17, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hp: 1000
-  maxHp: 1000
+  hp: 1500
+  maxHp: 1500
   isDead: 0
   grade: 0
+  level: 6
   def: 10
   magicRes: 10
   physicalDamageColor: {r: 1, g: 0.43137255, b: 0.003921569, a: 1}
   magicDamageColor: {r: 0, g: 0.75686276, b: 1, a: 1}
-  enemyName: "\uACE0\uBE14\uB9B0 \uC804\uC0AC (Lv.1)"
+  enemyName: "\uACE0\uBE14\uB9B0 \uC804\uC0AC"
   monsterId: GoblinWarrior
   damageTextPoolKey: NormalDamageText
   hudPos: {fileID: 4404188302445500025}
@@ -3046,7 +3047,7 @@ MonoBehaviour:
   goldReward: 20
   destroyDelay: 2
   deathSfxKey: GoblinDeath
-  dropTable: {fileID: 11400000, guid: f25a15cdb79af0b419076849aec8d354, type: 2}
+  dropTable: {fileID: 11400000, guid: 806117e923483c341a0c9ae48331e9c7, type: 2}
 --- !u!114 &7729391301896545432
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -81,7 +81,7 @@ public class TargetHpScript : MonoBehaviour
         // 2. 새 타겟 설정
         currentTarget = newTarget;
         if (rootVisual != null) rootVisual.SetActive(true);
-        if (nameText != null) nameText.text = currentTarget.enemyName;
+        if (nameText != null) nameText.text = currentTarget.DisplayName;
         UpdateNameColor();
 
         if (eliteIndicator != null) eliteIndicator.SetActive(currentTarget.grade == EnemyHp.MonsterGrade.Elite);

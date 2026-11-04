@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 438d1ff64c702d242a0bb3e42f903ba1, type: 3}
-  m_Name: NormalMonsterTable 0
+  m_Name: NormalMonsterTable_LV1
   m_EditorClassIdentifier: 
   gradePrefabs:
   - {fileID: 8489436070256825637, guid: 83571b95e3087ca45940bdacd4a5c491, type: 3}
@@ -29,43 +29,43 @@ MonoBehaviour:
   - WorldItem_Mythic
   spawnHeightOffset: 0.5
   entries:
-  - itemId: BasicHPPotion
+  - item: {fileID: 11400000, guid: 780180cf1b0df8945a2df703d6f54460, type: 2}
     dropRate: 0.1
     minCount: 1
     maxCount: 1
-  - itemId: BasicHPPotion
+  - item: {fileID: 11400000, guid: 090f952f171e2c04f8363455e384f321, type: 2}
     dropRate: 0.1
     minCount: 1
     maxCount: 1
-  - itemId: BasicWeaponScroll
+  - item: {fileID: 11400000, guid: c48a38f824323894e972bbdd7e025ce7, type: 2}
     dropRate: 0.03
     minCount: 1
     maxCount: 1
-  - itemId: BasicArmorScroll
+  - item: {fileID: 11400000, guid: 9022e3a27e6b96144983138f931fa959, type: 2}
     dropRate: 0.03
     minCount: 1
     maxCount: 1
-  - itemId: BasicSword
+  - item: {fileID: 11400000, guid: 360ee5c4417b22a47b5f196268d678de, type: 2}
     dropRate: 0.05
     minCount: 1
     maxCount: 1
-  - itemId: BasicStaff
+  - item: {fileID: 11400000, guid: fd23787e5d867214a8000ae17c9bea2d, type: 2}
     dropRate: 0.05
     minCount: 1
     maxCount: 1
-  - itemId: BasicHelmet
+  - item: {fileID: 11400000, guid: 9946e955b34c79b4a9778eb045bbf4e4, type: 2}
     dropRate: 0.05
     minCount: 1
     maxCount: 1
-  - itemId: BasicChest
+  - item: {fileID: 11400000, guid: 54d7dee9a0d8e8c4999df667fad79c6b, type: 2}
     dropRate: 0.05
     minCount: 1
     maxCount: 1
-  - itemId: BasicGlove
+  - item: {fileID: 11400000, guid: 16a6f2fc0d7f1a147bb01e2b78a61857, type: 2}
     dropRate: 0.05
     minCount: 1
     maxCount: 1
-  - itemId: BasicBoots
+  - item: {fileID: 11400000, guid: c72b9d38248f14f40a0c7b9a7aedc9ad, type: 2}
     dropRate: 0.05
     minCount: 1
     maxCount: 1

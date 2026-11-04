@@ -1,0 +1,71 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 438d1ff64c702d242a0bb3e42f903ba1, type: 3}
+  m_Name: EliteMonsterTable_LV3
+  m_EditorClassIdentifier: 
+  gradePrefabs:
+  - {fileID: 8489436070256825637, guid: 83571b95e3087ca45940bdacd4a5c491, type: 3}
+  - {fileID: 611909421892698927, guid: a74406462ac3b744cbe0d5733c6e68eb, type: 3}
+  - {fileID: 748328652070792689, guid: 92986647ab3ba85479675da2f3dfed50, type: 3}
+  - {fileID: 1425675813843997490, guid: 016281d97f53b154abf6f7b272c1d27b, type: 3}
+  - {fileID: 7675397667225046791, guid: bf441499e0ce60647b51a40d89c32726, type: 3}
+  groundLayer:
+    serializedVersion: 2
+    m_Bits: 8
+  gradePoolKeys:
+  - WorldItem_Normal
+  - WorldItem_Advanced
+  - WorldItem_Elite
+  - WorldItem_Legendary
+  - WorldItem_Mythic
+  spawnHeightOffset: 0.5
+  entries:
+  - item: {fileID: 11400000, guid: 780180cf1b0df8945a2df703d6f54460, type: 2}
+    dropRate: 0.1
+    minCount: 1
+    maxCount: 1
+  - item: {fileID: 11400000, guid: 090f952f171e2c04f8363455e384f321, type: 2}
+    dropRate: 0.1
+    minCount: 1
+    maxCount: 1
+  - item: {fileID: 11400000, guid: c48a38f824323894e972bbdd7e025ce7, type: 2}
+    dropRate: 0.05
+    minCount: 1
+    maxCount: 1
+  - item: {fileID: 11400000, guid: 9022e3a27e6b96144983138f931fa959, type: 2}
+    dropRate: 0.05
+    minCount: 1
+    maxCount: 1
+  - item: {fileID: 11400000, guid: e587ba44103c84043bccfd06406dc4fe, type: 2}
+    dropRate: 0.05
+    minCount: 1
+    maxCount: 1
+  - item: {fileID: 11400000, guid: 36657b2da32665f48bf1a71953ff4595, type: 2}
+    dropRate: 0.05
+    minCount: 1
+    maxCount: 1
+  - item: {fileID: 11400000, guid: e36bccf9c35bc0646b992d87ac713c29, type: 2}
+    dropRate: 0.05
+    minCount: 1
+    maxCount: 1
+  - item: {fileID: 11400000, guid: 0799803fcb2a9d24bb52bbc08134a184, type: 2}
+    dropRate: 0.05
+    minCount: 1
+    maxCount: 1
+  - item: {fileID: 11400000, guid: 8f1e9adfca2c5504a94cb60eeec75fc5, type: 2}
+    dropRate: 0.05
+    minCount: 1
+    maxCount: 1
+  - item: {fileID: 11400000, guid: 878cba199bb78484f9d630b7dfbe1010, type: 2}
+    dropRate: 0.05
+    minCount: 1
+    maxCount: 1

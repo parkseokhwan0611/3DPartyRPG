@@ -10,21 +10,21 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bdefdd29392da5c46b67a73a4555145e, type: 3}
-  m_Name: BasicSword
+  m_Name: AdvancedSword_LV1
   m_EditorClassIdentifier: 
-  itemId: BasicSword
-  itemName: "\uC5F0\uC2B5\uC6A9 \uC9C1\uAC80"
-  description: "\uACAC\uC2B5 \uAE30\uC0AC\uB4E4\uC774 \uC0AC\uC6A9\uD558\uB294 \uC5F0\uC2B5\uC6A9
+  itemId: AdvancedSword_LV1
+  itemName: "\uAE30\uC0AC\uC758 \uC9C1\uAC80"
+  description: "\uC77C\uBC18 \uAE30\uC0AC\uB4E4\uC774 \uC0AC\uC6A9\uD558\uB294 \uC5F0\uC2B5\uC6A9
     \uC9C1\uAC80\uC774\uB2E4."
-  icon: {fileID: 21300000, guid: d2163106a51974249a54e4528e1414ef, type: 3}
-  grade: 0
-  sellPrice: 10
-  buyPrice: 30
+  icon: {fileID: 21300000, guid: 0e8e5c5761e7ccc4ab1b1ab38ea265f6, type: 3}
+  grade: 1
+  sellPrice: 20
+  buyPrice: 60
   equipType: 0
   mainOptions:
   - type: 0
-    value: 10
-    enhancementBonusPerLevel: 1
+    value: 20
+    enhancementBonusPerLevel: 3
   subOptions:
   - type: 0
-    value: 2
+    value: 4

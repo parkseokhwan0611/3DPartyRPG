@@ -1848,8 +1848,10 @@ MonoBehaviour:
   hpBar: {fileID: 7115369002342646201}
   mask: {fileID: 6235595318044783910}
   shieldBar: {fileID: 785360784150516360}
+  statusText: {fileID: 0}
   hpAmount: 0
   changeSpeed: 1.5
+  hideWhenFull: 1
 --- !u!1 &5657931473942126717
 GameObject:
   m_ObjectHideFlags: 0
@@ -1963,7 +1965,7 @@ GameObject:
   - component: {fileID: 2570099937201112879}
   - component: {fileID: 2943073996123542906}
   m_Layer: 7
-  m_Name: GoblinMechanic_LV1
+  m_Name: GoblinMechanic_LV6
   m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2033,6 +2035,7 @@ MonoBehaviour:
   wanderRadius: 5
   wanderSpeed: 1.5
   wanderInterval: 3
+  dormantDistance: 45
 --- !u!114 &1945803267362582713
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2045,7 +2048,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4ed7bdeb58c5bf84ea89a3e46de426f6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  attackDamage: 50
+  attackDamage: 90
   attackRange: 6
   attackSpeed: 1
   attackDuration: 2
@@ -2080,15 +2083,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: db5518911df8ae84da3b30d78b763b17, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hp: 500
-  maxHp: 500
+  hp: 1000
+  maxHp: 1000
   isDead: 0
   grade: 0
+  level: 6
   def: 3
   magicRes: 3
   physicalDamageColor: {r: 1, g: 0.43137255, b: 0.003921569, a: 1}
   magicDamageColor: {r: 0, g: 0.75686276, b: 1, a: 1}
-  enemyName: "\uACE0\uBE14\uB9B0 \uD3ED\uD0C4\uBCD1 (Lv.3)"
+  enemyName: "\uACE0\uBE14\uB9B0 \uD3ED\uD0C4\uBCD1"
   monsterId: GoblinMechanic
   damageTextPoolKey: NormalDamageText
   hudPos: {fileID: 7310851803670456197}
@@ -2096,7 +2100,7 @@ MonoBehaviour:
   goldReward: 15
   destroyDelay: 2
   deathSfxKey: GoblinDeath
-  dropTable: {fileID: 11400000, guid: f25a15cdb79af0b419076849aec8d354, type: 2}
+  dropTable: {fileID: 11400000, guid: 806117e923483c341a0c9ae48331e9c7, type: 2}
 --- !u!114 &4753954679520638249
 MonoBehaviour:
   m_ObjectHideFlags: 0

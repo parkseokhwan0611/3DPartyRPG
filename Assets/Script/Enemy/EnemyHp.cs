@@ -36,6 +36,7 @@ public class EnemyHp : MonoBehaviour, IDamageable
     public Color magicDamageColor    = new Color32(0x00, 0xC1, 0xFF, 0xFF); // #00C1FF
 
     [Header("# References")]
+    [Tooltip("레벨 표기 없이 이름만 — 화면에는 DisplayName으로 \"이름 (Lv.N)\" 형식이 붙어 표시됨")]
     public string enemyName;
     [Tooltip("퀘스트(몬스터 처치)에서 몬스터 종류를 구분하는 고유 ID. 같은 종류 몬스터는 같은 값 사용")]
     public string monsterId;
@@ -52,6 +53,9 @@ public class EnemyHp : MonoBehaviour, IDamageable
     [Header("# Drop Settings")]
     [Tooltip("이 몬스터의 드랍 테이블 (없으면 드랍 없음)")]
     public MonsterDropTable dropTable;
+
+    // 화면 표시용 이름 — 레벨은 level 값에서 붙인다 (이름에 레벨을 직접 적지 않도록)
+    public string DisplayName => $"{enemyName} (Lv.{level})";
 
     // 이벤트
     public System.Action<float, float> OnHpChanged;

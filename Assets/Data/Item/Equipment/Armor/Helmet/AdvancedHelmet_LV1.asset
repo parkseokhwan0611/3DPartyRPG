@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bdefdd29392da5c46b67a73a4555145e, type: 3}
+  m_Name: AdvancedHelmet_LV1
+  m_EditorClassIdentifier: 
+  itemId: AdvancedHelmet_LV1
+  itemName: "\uD310\uAE08 \uD22C\uAD6C"
+  description: "\uAE30\uC0AC\uB4E4\uC774 \uCC29\uC6A9\uD558\uB294 \uD22C\uAD6C\uB2E4."
+  icon: {fileID: 21300000, guid: 3af2e44543daba445a7456213cec3b80, type: 3}
+  grade: 1
+  sellPrice: 10
+  buyPrice: 60
+  equipType: 2
+  mainOptions:
+  - type: 2
+    value: 70
+    enhancementBonusPerLevel: 15
+  - type: 3
+    value: 12
+    enhancementBonusPerLevel: 3
+  - type: 4
+    value: 12
+    enhancementBonusPerLevel: 3
+  subOptions:
+  - type: 1
+    value: 3
