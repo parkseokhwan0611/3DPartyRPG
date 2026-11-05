@@ -399,13 +399,25 @@ public abstract class AttackBase : MonoBehaviour
         get
         {
             if (currentTarget == null) return transform.position + transform.forward;
-            return _aimPoint != null ? _aimPoint.position : currentTarget.position;
+            if (_aimPoint != null) return _aimPoint.position;
+            // AimTarget이 없는 대상(파티원 등)은 발밑(루트 위치)이 아니라 몸통 콜라이더 중심을 노린다 —
+            // 발밑을 노리면 몬스터 화살이 아래로 꽂히듯 날아가 대상 앞 바닥에 맞았음
+            if (_aimCollider != null && _aimCollider.enabled) return _aimCollider.bounds.center;
+            return currentTarget.position;
         }
     }
 
+    private Collider _aimCollider; // AimTarget이 없을 때 쓰는 대상의 몸통 콜라이더 (트리거 제외)
+
     private void CacheAimPoint(Transform target)
     {
-        _aimPoint = target != null ? target.Find("AimTarget") : null;
+        _aimPoint    = target != null ? target.Find("AimTarget") : null;
+        _aimCollider = null;
+        if (target == null || _aimPoint != null) return;
+
+        if (target.TryGetComponent(out Collider c) && !c.isTrigger) { _aimCollider = c; return; }
+        foreach (var child in target.GetComponentsInChildren<Collider>())
+            if (!child.isTrigger) { _aimCollider = child; return; }
     }
 
     protected void LookAtTarget()

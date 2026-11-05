@@ -1879,7 +1879,7 @@ MonoBehaviour:
   navSpeed: 1.5
   aggroDecayRate: 5
   aggroThreshold: 10
-  aggroSfxKey: 
+  aggroSfxKey: SkeletonAggro
   wanderRadius: 5
   wanderSpeed: 1.5
   wanderInterval: 3
@@ -1909,8 +1909,8 @@ MonoBehaviour:
   isMagicAttack: 0
   critChance: 0.1
   critDamageMultiplier: 1.5
-  attackSfxKey: 
-  attackSfxTimingOffset: 0
+  attackSfxKey: SummonSkeletonAttack
+  attackSfxTimingOffset: -0.6
   hitRadius: 1.2
   hitOffset: 1
 --- !u!114 &491061582447124497
@@ -1941,7 +1941,7 @@ MonoBehaviour:
   expReward: 80
   goldReward: 10
   destroyDelay: 2
-  deathSfxKey: 
+  deathSfxKey: SkeletonDisappear
   dropTable: {fileID: 11400000, guid: f25a15cdb79af0b419076849aec8d354, type: 2}
 --- !u!114 &195042879704489800
 MonoBehaviour:

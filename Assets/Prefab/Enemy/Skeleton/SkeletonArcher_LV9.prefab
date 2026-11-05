@@ -1448,7 +1448,7 @@ MonoBehaviour:
   navSpeed: 1
   aggroDecayRate: 5
   aggroThreshold: 10
-  aggroSfxKey: 
+  aggroSfxKey: SkeletonAggro
   wanderRadius: 5
   wanderSpeed: 1.5
   wanderInterval: 3
@@ -1465,7 +1465,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eafc2a7931809a04abd4a34b82b50a12, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  attackDamage: 150
+  attackDamage: 115
   attackRange: 5
   attackSpeed: 1
   attackDuration: 1.3
@@ -1478,8 +1478,8 @@ MonoBehaviour:
   isMagicAttack: 0
   critChance: 0.1
   critDamageMultiplier: 1.5
-  attackSfxKey: 
-  attackSfxTimingOffset: 0
+  attackSfxKey: SkeletonArcherAtk
+  attackSfxTimingOffset: -0.4
   projectileName: SkeletonArrow
   firePoint: {fileID: 7245785382172826442}
 --- !u!114 &1439802179768294338
@@ -1510,7 +1510,7 @@ MonoBehaviour:
   expReward: 80
   goldReward: 10
   destroyDelay: 2
-  deathSfxKey: 
+  deathSfxKey: SkeletonDisappear
   dropTable: {fileID: 11400000, guid: f25a15cdb79af0b419076849aec8d354, type: 2}
 --- !u!114 &6594971466034312134
 MonoBehaviour:
