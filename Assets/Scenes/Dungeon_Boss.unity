@@ -543409,79 +543409,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1803928586}
   m_Mesh: {fileID: -6733130249137867889, guid: ab4b297512e651249bc6bf927ba5070c, type: 3}
---- !u!1001 &1804289742
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 1473683728507981117, guid: 04330b467fdc2ac4a954f0a66a8bd06e,
-        type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 2.3821363
-      objectReference: {fileID: 0}
-    - target: {fileID: 1473683728507981117, guid: 04330b467fdc2ac4a954f0a66a8bd06e,
-        type: 3}
-      propertyPath: m_LocalPosition.y
-      value: -4.905134
-      objectReference: {fileID: 0}
-    - target: {fileID: 1473683728507981117, guid: 04330b467fdc2ac4a954f0a66a8bd06e,
-        type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 71.17732
-      objectReference: {fileID: 0}
-    - target: {fileID: 1473683728507981117, guid: 04330b467fdc2ac4a954f0a66a8bd06e,
-        type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1473683728507981117, guid: 04330b467fdc2ac4a954f0a66a8bd06e,
-        type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1473683728507981117, guid: 04330b467fdc2ac4a954f0a66a8bd06e,
-        type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1473683728507981117, guid: 04330b467fdc2ac4a954f0a66a8bd06e,
-        type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1473683728507981117, guid: 04330b467fdc2ac4a954f0a66a8bd06e,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1473683728507981117, guid: 04330b467fdc2ac4a954f0a66a8bd06e,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1473683728507981117, guid: 04330b467fdc2ac4a954f0a66a8bd06e,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5285157052835285592, guid: 04330b467fdc2ac4a954f0a66a8bd06e,
-        type: 3}
-      propertyPath: m_Name
-      value: GoblinBoss
-      objectReference: {fileID: 0}
-    - target: {fileID: 5285157052835285592, guid: 04330b467fdc2ac4a954f0a66a8bd06e,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 04330b467fdc2ac4a954f0a66a8bd06e, type: 3}
 --- !u!1 &1806163660
 GameObject:
   m_ObjectHideFlags: 0
@@ -680552,6 +680479,7 @@ GameObject:
   - component: {fileID: 8011402916547983828}
   - component: {fileID: 8011402916547983827}
   - component: {fileID: 8011402916547983826}
+  - component: {fileID: 8011402916547983830}
   - component: {fileID: 8011402916547983825}
   - component: {fileID: 8011402916547983824}
   - component: {fileID: 8011402916547983823}
@@ -682420,7 +682348,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 80b2a678d9277a3468f25a58d046227d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  skills: []
+  skills:
+  - {fileID: 8011402916547983830}
   rerollInterval: 1
   enrageHpRatio: 0.3
   enrageCooldownScale: 0.7
@@ -682516,6 +682445,41 @@ MonoBehaviour:
   wanderSpeed: 1.5
   wanderInterval: 3
   dormantDistance: 45
+--- !u!114 &8011402916547983830
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7234443657417237364}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6ddb3bae78533b4448325da1f501913a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cooldown: 10
+  range: 2
+  useChance: 0.4
+  windupDuration: 1
+  attackDuration: 0.3
+  recoveryDuration: 0.8
+  animTrigger: skill1
+  skillSfxKey: SkeletonBossSkill1
+  unlockHpRatio: 1
+  debuff: 0
+  debuffValue: 0.3
+  debuffDuration: 2
+  damage: 350
+  radius: 3
+  targetLayer:
+    serializedVersion: 2
+    m_Bits: 64
+  isMagicDamage: 0
+  critChance: 0.25
+  critDamageMultiplier: 1.5
+  effectPoolKey: SkeletonBossSkill1
+  effectHeightOffset: 0
+  indicatorPoolKey: CircleSkillIndicator
 --- !u!4 &8020909729056134544
 Transform:
   m_ObjectHideFlags: 0
@@ -685151,36 +685115,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: CoreSystem
       objectReference: {fileID: 0}
-    - target: {fileID: 3977090485056006170, guid: 07e7d928f411eb34d97d77f873339039,
-        type: 3}
-      propertyPath: sfxClips.Array.size
-      value: 64
-      objectReference: {fileID: 0}
-    - target: {fileID: 3977090485056006170, guid: 07e7d928f411eb34d97d77f873339039,
-        type: 3}
-      propertyPath: sfxClips.Array.data[63].clip
-      value: 
-      objectReference: {fileID: 8300000, guid: ec8b0363df9723b479d3a04710983f94, type: 3}
-    - target: {fileID: 3977090485056006170, guid: 07e7d928f411eb34d97d77f873339039,
-        type: 3}
-      propertyPath: sfxClips.Array.data[63].name
-      value: SkeletonBossNormalAtk
-      objectReference: {fileID: 0}
-    - target: {fileID: 3977090485056006170, guid: 07e7d928f411eb34d97d77f873339039,
-        type: 3}
-      propertyPath: sfxClips.Array.data[61].volumeMultiplier
-      value: 0.7
-      objectReference: {fileID: 0}
-    - target: {fileID: 3977090485056006170, guid: 07e7d928f411eb34d97d77f873339039,
-        type: 3}
-      propertyPath: sfxClips.Array.data[62].volumeMultiplier
-      value: 0.7
-      objectReference: {fileID: 0}
-    - target: {fileID: 3977090485056006170, guid: 07e7d928f411eb34d97d77f873339039,
-        type: 3}
-      propertyPath: sfxClips.Array.data[63].volumeMultiplier
-      value: 0.5
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -685909,7 +685843,6 @@ SceneRoots:
   - {fileID: 8749914052938799966}
   - {fileID: 1717466810}
   - {fileID: 208789293}
-  - {fileID: 1804289742}
   - {fileID: 8011402916547983822}
   - {fileID: 1915635077}
   - {fileID: 860982122}

@@ -407,10 +407,19 @@ MonoBehaviour:
     volumeMultiplier: 0.7
   - name: SkeletonAggro
     clip: {fileID: 8300000, guid: fc325b3f26b7002409ff9e3ccea4d91f, type: 3}
-    volumeMultiplier: 1
+    volumeMultiplier: 0.7
   - name: SkeletonArcherAtk
     clip: {fileID: 8300000, guid: 8b820bdace7c2144b9d5639ae74849d8, type: 3}
+    volumeMultiplier: 0.7
+  - name: SkeletonBossNormalAtk
+    clip: {fileID: 8300000, guid: ec8b0363df9723b479d3a04710983f94, type: 3}
+    volumeMultiplier: 0.5
+  - name: PortalSound
+    clip: {fileID: 8300000, guid: a51576cd410c07d42b0ed644b370884c, type: 3}
     volumeMultiplier: 1
+  - name: SkeletonBossSkill1
+    clip: {fileID: 8300000, guid: 4b40fe32fd069834f990bffd23bff31b, type: 3}
+    volumeMultiplier: 0.8
   sfxVolume: 0.5
   sfxSourceCount: 8
   sceneBgmMap:

@@ -33,6 +33,10 @@ public class Portal : MonoBehaviour
              "숲에 있는 '마을로' 포탈의 portalId를 적어두면, 숲에 도착했을 때 그 포탈 위치에 스폰됨")]
     [SerializeField] string destinationSpawnId;
 
+    [Header("사운드")]
+    [Tooltip("포탈 사용 시 재생할 AudioManager SFX 키 (비우면 없음)")]
+    [SerializeField] string useSfxKey = "PortalSound";
+
     // 씬 로드를 넘어 유지되는 정적 상태 — 방금 사용한 포탈이 도착 씬에서 스폰시켜야 할 포탈의 ID
     private static string _pendingSpawnPortalId;
 
@@ -167,6 +171,10 @@ public class Portal : MonoBehaviour
             SaveManager.instance.isInBossRoom = isBossStage;
 
         _pendingSpawnPortalId = destinationSpawnId;
+
+        // AudioManager(CoreSystem)는 씬 로드 후에도 남으므로 로딩 중에도 끝까지 재생됨
+        if (!string.IsNullOrEmpty(useSfxKey))
+            AudioManager.instance?.PlaySFX(useSfxKey);
 
         SceneLoader.Load(destinationSceneName);
     }
