@@ -428903,17 +428903,17 @@ PrefabInstance:
     - target: {fileID: 7347453802505551625, guid: 7e9c1ab8fe9818144ac5522a50787aea,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: -11.1
+      value: 2.43
       objectReference: {fileID: 0}
     - target: {fileID: 7347453802505551625, guid: 7e9c1ab8fe9818144ac5522a50787aea,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 9.394
+      value: -3.34
       objectReference: {fileID: 0}
     - target: {fileID: 7347453802505551625, guid: 7e9c1ab8fe9818144ac5522a50787aea,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: -129.53
+      value: 72.8
       objectReference: {fileID: 0}
     - target: {fileID: 7347453802505551625, guid: 7e9c1ab8fe9818144ac5522a50787aea,
         type: 3}
@@ -428955,6 +428955,12 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7e9c1ab8fe9818144ac5522a50787aea, type: 3}
+--- !u!1 &1395210492 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1558694104297233144, guid: 7e9c1ab8fe9818144ac5522a50787aea,
+    type: 3}
+  m_PrefabInstance: {fileID: 1395210491}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1395434853
 GameObject:
   m_ObjectHideFlags: 0
@@ -704617,6 +704623,7 @@ GameObject:
   - component: {fileID: 8011402916547983826}
   - component: {fileID: 8011402916547983830}
   - component: {fileID: 8011402916547983825}
+  - component: {fileID: 8011402916547983831}
   - component: {fileID: 8011402916547983824}
   - component: {fileID: 8011402916547983823}
   m_Layer: 7
@@ -706522,7 +706529,7 @@ MonoBehaviour:
   goldReward: 100
   destroyDelay: 2
   deathSfxKey: SkeletonDisappear
-  dropTable: {fileID: 0}
+  dropTable: {fileID: 11400000, guid: 988c16f2cacc6ea4d9f9e7fbe4786d51, type: 2}
 --- !u!114 &8011402916547983828
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -706617,6 +706624,21 @@ MonoBehaviour:
   effectPoolKey: SkeletonBossSkill1
   effectHeightOffset: 0
   indicatorPoolKey: CircleSkillIndicator
+--- !u!114 &8011402916547983831
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7234443657417237364}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d4d8a63d8cee1324e8b704a200d09da8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  activateOnClear:
+  - {fileID: 1395210492}
+  activateDelay: 2
 --- !u!4 &8020909729056134544
 Transform:
   m_ObjectHideFlags: 0

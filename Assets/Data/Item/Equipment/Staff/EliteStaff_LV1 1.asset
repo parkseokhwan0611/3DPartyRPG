@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bdefdd29392da5c46b67a73a4555145e, type: 3}
+  m_Name: EliteStaff_LV1 1
+  m_EditorClassIdentifier: 
+  itemId: EliteStaff_LV1 1
+  itemName: "\uB5A1\uAC08\uB098\uBB34 \uC9C0\uD321\uC774"
+  description: "\uC219\uB828\uB41C \uB9C8\uBC95\uC0AC\uAC00 \uC0AC\uC6A9\uD558\uB294
+    \uACE0\uAE09 \uC9C0\uD321\uC774\uB2E4."
+  icon: {fileID: 21300000, guid: 83a03f7181396ed459381585fbaa95cd, type: 3}
+  grade: 2
+  sellPrice: 40
+  buyPrice: 100
+  equipType: 1
+  mainOptions:
+  - type: 1
+    value: 40
+    enhancementBonusPerLevel: 6
+  subOptions:
+  - type: 2
+    value: 7
+  - type: 6
+    value: 0.05
