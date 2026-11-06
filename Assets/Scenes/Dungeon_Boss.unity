@@ -234507,7 +234507,7 @@ MonoBehaviour:
       - Value: 2
       - Value: 2
       - Value: 2
-      maxConnectionDistance: 0.118341126
+      maxConnectionDistance: 0.11834113
       userEdit: 0
     preBuildData:
       enabled: 0
@@ -543472,14 +543472,15 @@ PrefabInstance:
       propertyPath: m_Name
       value: GoblinBoss
       objectReference: {fileID: 0}
+    - target: {fileID: 5285157052835285592, guid: 04330b467fdc2ac4a954f0a66a8bd06e,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 2705776916655652474, guid: 04330b467fdc2ac4a954f0a66a8bd06e,
-        type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 0}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 04330b467fdc2ac4a954f0a66a8bd06e, type: 3}
 --- !u!1 &1806163660
 GameObject:
@@ -672292,7 +672293,7 @@ Animator:
   m_GameObject: {fileID: 7234443657417237364}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 22100000, guid: c3c1c6d0426b6c44794e31015021c6cf, type: 2}
+  m_Controller: {fileID: 9100000, guid: 5b50f7a8418270641b7cb6aefba45e7f, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -682471,23 +682472,23 @@ MonoBehaviour:
   attackDamage: 240
   attackRange: 2
   attackSpeed: 1
-  attackDuration: 2.3
+  attackDuration: 1.4
   currentTarget: {fileID: 0}
   enemyLayer:
     serializedVersion: 2
     m_Bits: 64
-  damageDelay: 1
-  recoveryDuration: 1
+  damageDelay: 0.6
+  recoveryDuration: 0.8
   isMagicAttack: 0
   critChance: 0.25
   critDamageMultiplier: 1.5
-  attackSfxKey: GoblinWarrior
+  attackSfxKey: SkeletonBossNormalAtk
   attackSfxTimingOffset: -0.2
   hitRadius: 1.5
   hitOffset: 1
-  swingVfxPoolKey: 
-  swingVfxOffset: {x: 0, y: 1, z: 1}
-  swingVfxRotation: {x: 0, y: 0, z: 0}
+  swingVfxPoolKey: SkeletonBossNormalAtk
+  swingVfxOffset: {x: 0, y: 1, z: 0.5}
+  swingVfxRotation: {x: 0, y: 0, z: 180}
   swingVfxScale: 1
   hitVfxPoolKey: 
 --- !u!114 &8011402916547983829
@@ -685149,6 +685150,36 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: CoreSystem
+      objectReference: {fileID: 0}
+    - target: {fileID: 3977090485056006170, guid: 07e7d928f411eb34d97d77f873339039,
+        type: 3}
+      propertyPath: sfxClips.Array.size
+      value: 64
+      objectReference: {fileID: 0}
+    - target: {fileID: 3977090485056006170, guid: 07e7d928f411eb34d97d77f873339039,
+        type: 3}
+      propertyPath: sfxClips.Array.data[63].clip
+      value: 
+      objectReference: {fileID: 8300000, guid: ec8b0363df9723b479d3a04710983f94, type: 3}
+    - target: {fileID: 3977090485056006170, guid: 07e7d928f411eb34d97d77f873339039,
+        type: 3}
+      propertyPath: sfxClips.Array.data[63].name
+      value: SkeletonBossNormalAtk
+      objectReference: {fileID: 0}
+    - target: {fileID: 3977090485056006170, guid: 07e7d928f411eb34d97d77f873339039,
+        type: 3}
+      propertyPath: sfxClips.Array.data[61].volumeMultiplier
+      value: 0.7
+      objectReference: {fileID: 0}
+    - target: {fileID: 3977090485056006170, guid: 07e7d928f411eb34d97d77f873339039,
+        type: 3}
+      propertyPath: sfxClips.Array.data[62].volumeMultiplier
+      value: 0.7
+      objectReference: {fileID: 0}
+    - target: {fileID: 3977090485056006170, guid: 07e7d928f411eb34d97d77f873339039,
+        type: 3}
+      propertyPath: sfxClips.Array.data[63].volumeMultiplier
+      value: 0.5
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
