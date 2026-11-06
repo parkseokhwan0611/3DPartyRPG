@@ -305,10 +305,10 @@ public abstract class SkillBase : MonoBehaviour
         return stat switch
         {
             DamageSkillData.ScalingStat.Str => myStat.TotalStr,
+            DamageSkillData.ScalingStat.Dex => myStat.TotalDex,
             DamageSkillData.ScalingStat.Vit => myStat.TotalVit,
             DamageSkillData.ScalingStat.Int => myStat.TotalInt,
             DamageSkillData.ScalingStat.Fth => myStat.TotalFth,
-            DamageSkillData.ScalingStat.Dex => myStat.TotalDex,
             _                               => 0f,
         };
     }

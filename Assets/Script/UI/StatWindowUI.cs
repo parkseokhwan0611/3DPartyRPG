@@ -24,17 +24,17 @@ public class StatWindowUI : MonoBehaviour
 
     [Header("# 기본 스탯 텍스트")]
     public TextMeshProUGUI strText;
+    public TextMeshProUGUI dexText;
     public TextMeshProUGUI vitText;
     public TextMeshProUGUI intText;
     public TextMeshProUGUI fthText;
-    public TextMeshProUGUI dexText;
 
     [Header("# 스탯 올리기 버튼")]
     public Button strButton;
+    public Button dexButton;
     public Button vitButton;
     public Button intButton;
     public Button fthButton;
-    public Button dexButton;
 
     [Header("# 전투 수치 텍스트")]
     public TextMeshProUGUI phyAtkText;
@@ -77,10 +77,10 @@ public class StatWindowUI : MonoBehaviour
 
         // 스탯 올리기 버튼 연결
         if (strButton != null) strButton.onClick.AddListener(() => AddStat(StatType.Str));
+        if (dexButton != null) dexButton.onClick.AddListener(() => AddStat(StatType.Dex));
         if (vitButton != null) vitButton.onClick.AddListener(() => AddStat(StatType.Vit));
         if (intButton != null) intButton.onClick.AddListener(() => AddStat(StatType.Int));
         if (fthButton != null) fthButton.onClick.AddListener(() => AddStat(StatType.Fth));
-        if (dexButton != null) dexButton.onClick.AddListener(() => AddStat(StatType.Dex));
     }
 
     void OnEnable()
@@ -157,7 +157,7 @@ public class StatWindowUI : MonoBehaviour
     // 스탯 포인트 사용
     // ─────────────────────────────────────────────────────────────────
 
-    private enum StatType { Str, Vit, Int, Fth, Dex }
+    private enum StatType { Str, Dex, Vit, Int, Fth }
 
     private void AddStat(StatType type)
     {
@@ -208,18 +208,18 @@ public class StatWindowUI : MonoBehaviour
 
         // ── 기본 스탯 수치 (장비 보너스 포함) ──
         SetText(strText, $"힘: {status.classData.baseStr + status.addedStr + status.equipStr:F0}");
+        SetText(dexText, $"민첩: {status.TotalDex:F0}");
         SetText(vitText, $"체력: {status.classData.baseVit + status.addedVit + status.equipVit:F0}");
         SetText(intText, $"지능: {status.classData.baseInt + status.addedInt + status.equipInt:F0}");
         SetText(fthText, $"신앙: {status.classData.baseFht + status.addedFht + status.equipFht:F0}");
-        SetText(dexText, $"민첩: {status.TotalDex:F0}");
 
         // ── + 버튼 활성/비활성 ──
         bool canSpend = status.statPoint > 0;
         SetButtonInteractable(strButton, canSpend);
+        SetButtonInteractable(dexButton, canSpend);
         SetButtonInteractable(vitButton, canSpend);
         SetButtonInteractable(intButton, canSpend);
         SetButtonInteractable(fthButton, canSpend);
-        SetButtonInteractable(dexButton, canSpend);
 
         // ── 전투 수치 ──
         if (charStat != null)

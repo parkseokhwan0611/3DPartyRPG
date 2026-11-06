@@ -183,10 +183,10 @@ public static class SkillDescriptionBuilder
         string statName = b.scalingStat switch
         {
             DamageSkillData.ScalingStat.Str => "STR",
+            DamageSkillData.ScalingStat.Dex => "DEX",
             DamageSkillData.ScalingStat.Vit => "VIT",
             DamageSkillData.ScalingStat.Int => "INT",
             DamageSkillData.ScalingStat.Fth => "FTH",
-            DamageSkillData.ScalingStat.Dex => "DEX",
             _                               => "",
         };
 
@@ -317,10 +317,10 @@ public static class SkillDescriptionBuilder
         float stat = effect.scalingStat switch
         {
             BuffSkillData.ScalingStat.Str => caster.TotalStr,
+            BuffSkillData.ScalingStat.Dex => caster.TotalDex,
             BuffSkillData.ScalingStat.Vit => caster.TotalVit,
             BuffSkillData.ScalingStat.Int => caster.TotalInt,
             BuffSkillData.ScalingStat.Fth => caster.TotalFth,
-            BuffSkillData.ScalingStat.Dex => caster.TotalDex,
             _                             => 0f,
         };
         return stat * coeff;
@@ -335,10 +335,10 @@ public static class SkillDescriptionBuilder
         string statName = effect.scalingStat switch
         {
             BuffSkillData.ScalingStat.Str => "STR",
+            BuffSkillData.ScalingStat.Dex => "DEX",
             BuffSkillData.ScalingStat.Vit => "VIT",
             BuffSkillData.ScalingStat.Int => "INT",
             BuffSkillData.ScalingStat.Fth => "FTH",
-            BuffSkillData.ScalingStat.Dex => "DEX",
             _                             => "",
         };
 
@@ -395,10 +395,10 @@ public static class SkillDescriptionBuilder
         BuffSkillData.ThornsStat.Atk      => "물리 공격력",
         BuffSkillData.ThornsStat.Ap       => "마법 공격력",
         BuffSkillData.ThornsStat.Str      => "힘",
+        BuffSkillData.ThornsStat.Dex      => "민첩",
         BuffSkillData.ThornsStat.Vit      => "체력",
         BuffSkillData.ThornsStat.Int      => "지능",
         BuffSkillData.ThornsStat.Fth      => "신앙",
-        BuffSkillData.ThornsStat.Dex      => "민첩",
         _                                 => "",
     };
 
@@ -629,10 +629,10 @@ public static class SkillDescriptionBuilder
         return stat switch
         {
             DamageSkillData.ScalingStat.Str => caster.TotalStr,
+            DamageSkillData.ScalingStat.Dex => caster.TotalDex,
             DamageSkillData.ScalingStat.Vit => caster.TotalVit,
             DamageSkillData.ScalingStat.Int => caster.TotalInt,
             DamageSkillData.ScalingStat.Fth => caster.TotalFth,
-            DamageSkillData.ScalingStat.Dex => caster.TotalDex,
             _                               => 0f,
         };
     }
@@ -642,10 +642,10 @@ public static class SkillDescriptionBuilder
         return stat switch
         {
             DamageSkillData.ScalingStat.Str => "힘",
+            DamageSkillData.ScalingStat.Dex => "민첩",
             DamageSkillData.ScalingStat.Vit => "체력",
             DamageSkillData.ScalingStat.Int => "지능",
             DamageSkillData.ScalingStat.Fth => "신앙",
-            DamageSkillData.ScalingStat.Dex => "민첩",
             _                               => "",
         };
     }

@@ -37,20 +37,19 @@ public enum MainOptionType
 // 서브 옵션 종류
 // - 무기/방어구: STR~CritDmg
 // - 장신구:      STR~MagicDmgBonus (SkillCDReduce·MpCostReduce·PhysDmgBonus·MagicDmgBonus 추가)
+// 에셋·세이브에 정수로 저장되므로 번호는 고정 — 인스펙터 목록 순서만 선언 순서로 정렬 (DEX는 나중에 추가돼 12번)
 public enum SubOptionType
 {
     // 기본 스탯
-    STR, VIT, INT, FTH,
-    // 전투 수치
-    PhysDef, MagicRes,
-    CritRate, CritDmg,
+    STR = 0, DEX = 12, VIT = 1, INT = 2, FTH = 3,
+    // 전투 수치 (방어력·마법 저항력은 고정 수치)
+    PhysDef = 4, MagicRes = 5,
+    CritRate = 6, CritDmg = 7,
     // 특수 (장신구 전용 권장)
-    SkillCDReduce,  // 스킬 쿨타임 감소 (0.1 = 10%)
-    MpCostReduce,   // 마나 소모 감소  (0.1 = 10%)
-    PhysDmgBonus,   // 물리 피해 증가  (0.1 = 10%)
-    MagicDmgBonus,  // 마법 피해 증가  (0.1 = 10%)
-    // 기본 스탯 (나중에 추가) — 에셋에 정수로 저장되므로 위 항목들 번호가 밀리지 않게 맨 끝에 둔다
-    DEX,
+    SkillCDReduce = 8,  // 스킬 쿨타임 감소 (0.1 = 10%)
+    MpCostReduce  = 9,  // 마나 소모 감소  (0.1 = 10%)
+    PhysDmgBonus  = 10, // 물리 피해 증가  (0.1 = 10%)
+    MagicDmgBonus = 11, // 마법 피해 증가  (0.1 = 10%)
 }
 
 // ─────────────────────────────────────────────────────────────────

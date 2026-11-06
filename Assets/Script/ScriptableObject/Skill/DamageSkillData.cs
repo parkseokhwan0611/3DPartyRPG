@@ -7,12 +7,13 @@ public class DamageSkillData : SkillData
 {
     public enum ScalingStat
     {
-        None, // 스탯 비례 없음
-        Str,  // 힘
-        Vit,  // 체력
-        Int,  // 지능
-        Fth,  // 신앙
-        Dex,  // 민첩 (에셋에 정수로 저장되므로 항상 맨 끝에 추가)
+        // 에셋에 정수로 저장되므로 번호는 고정 — 인스펙터 목록 순서만 선언 순서(힘·민첩·체력·지능·신앙)로
+        None = 0, // 스탯 비례 없음
+        Str  = 1, // 힘
+        Dex  = 5, // 민첩 (나중에 추가돼 5번)
+        Vit  = 2, // 체력
+        Int  = 3, // 지능
+        Fth  = 4, // 신앙
     }
 
     [Header("데미지 설정")]
@@ -187,10 +188,10 @@ public class DamageSkillData : SkillData
         return stat switch
         {
             ScalingStat.Str => caster.TotalStr,
+            ScalingStat.Dex => caster.TotalDex,
             ScalingStat.Vit => caster.TotalVit,
             ScalingStat.Int => caster.TotalInt,
             ScalingStat.Fth => caster.TotalFth,
-            ScalingStat.Dex => caster.TotalDex,
             _               => 0f,
         };
     }

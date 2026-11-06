@@ -16,10 +16,10 @@ public string charName;
 
     // ── 스탯 포인트 배분으로 올라가는 수치 ──
     public float addedStr = 0;
+    public float addedDex = 0;
     public float addedVit = 0;
     public float addedInt = 0;
     public float addedFht = 0;
-    public float addedDex = 0;
 
     // ── 아이템/장비/깡수치 보너스 (스탯과 별개) ──
     public float bonusAtk = 0f;
@@ -28,10 +28,10 @@ public string charName;
 
     // ── 장비 장착으로 추가되는 수치 (CharacterEquipment.RecalculateStats가 매번 초기화 후 재계산) ──
     public float equipStr      = 0f;
+    public float equipDex      = 0f;
     public float equipVit      = 0f;
     public float equipInt      = 0f;
     public float equipFht      = 0f;
-    public float equipDex      = 0f;
     public float equipAtk      = 0f;   // 무기 메인: 물리 공격력
     public float equipAp       = 0f;   // 무기 메인: 마법 공격력
     public float equipMaxHp    = 0f;   // 방어구 메인: 최대 체력 고정 보너스

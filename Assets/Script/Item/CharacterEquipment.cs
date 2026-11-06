@@ -147,10 +147,10 @@ public class CharacterEquipment
         switch (sub.type)
         {
             case SubOptionType.STR:           status.equipStr      += sub.value; break;
+            case SubOptionType.DEX:           status.equipDex      += sub.value; break;
             case SubOptionType.VIT:           status.equipVit      += sub.value; break;
             case SubOptionType.INT:           status.equipInt      += sub.value; break;
             case SubOptionType.FTH:           status.equipFht      += sub.value; break;
-            case SubOptionType.DEX:           status.equipDex      += sub.value; break;
             case SubOptionType.PhysDef:       status.equipDef      += sub.value; break;
             case SubOptionType.MagicRes:      status.equipMagicRes += sub.value; break;
             case SubOptionType.CritRate:      status.equipCritRate += sub.value; break;

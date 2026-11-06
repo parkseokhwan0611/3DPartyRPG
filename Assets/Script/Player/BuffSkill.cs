@@ -241,10 +241,10 @@ public class BuffSkill : SkillBase
         float stat = effect.scalingStat switch
         {
             BuffSkillData.ScalingStat.Str => caster.TotalStr,
+            BuffSkillData.ScalingStat.Dex => caster.TotalDex,
             BuffSkillData.ScalingStat.Vit => caster.TotalVit,
             BuffSkillData.ScalingStat.Int => caster.TotalInt,
             BuffSkillData.ScalingStat.Fth => caster.TotalFth,
-            BuffSkillData.ScalingStat.Dex => caster.TotalDex,
             _                             => 0f,
         };
 

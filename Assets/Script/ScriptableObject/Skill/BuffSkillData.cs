@@ -39,12 +39,13 @@ public class BuffSkillData : SkillData
 
     public enum ScalingStat
     {
-        None, // 스탯 비례 없음
-        Str,  // 힘
-        Vit,  // 체력
-        Int,  // 지능
-        Fth,  // 신앙
-        Dex,  // 민첩 (에셋에 정수로 저장되므로 항상 맨 끝에 추가)
+        // 에셋에 정수로 저장되므로 번호는 고정 — 인스펙터 목록 순서만 선언 순서(힘·민첩·체력·지능·신앙)로
+        None = 0, // 스탯 비례 없음
+        Str  = 1, // 힘
+        Dex  = 5, // 민첩 (나중에 추가돼 5번)
+        Vit  = 2, // 체력
+        Int  = 3, // 지능
+        Fth  = 4, // 신앙
     }
 
     [System.Serializable]
@@ -152,16 +153,17 @@ public class BuffSkillData : SkillData
     // 반사 데미지 계수에 쓸 수 있는 능력치 — 받은 데미지가 아니라 시전자 능력치로 계산
     public enum ThornsStat
     {
-        Def,       // 방어력
-        MagicRes,  // 마법 저항력
-        MaxHp,     // 최대 체력
-        Atk,       // 물리 공격력
-        Ap,        // 마법 공격력
-        Str,       // 힘
-        Vit,       // 체력
-        Int,       // 지능
-        Fth,       // 신앙
-        Dex,       // 민첩 (에셋에 정수로 저장되므로 항상 맨 끝에 추가)
+        // 에셋에 정수로 저장되므로 번호는 고정 — 인스펙터 목록 순서만 선언 순서로
+        Def      = 0, // 방어력
+        MagicRes = 1, // 마법 저항력
+        MaxHp    = 2, // 최대 체력
+        Atk      = 3, // 물리 공격력
+        Ap       = 4, // 마법 공격력
+        Str      = 5, // 힘
+        Dex      = 9, // 민첩 (나중에 추가돼 9번)
+        Vit      = 6, // 체력
+        Int      = 7, // 지능
+        Fth      = 8, // 신앙
     }
 
     [System.Serializable]
@@ -198,10 +200,10 @@ public class BuffSkillData : SkillData
             ThornsStat.Atk      => owner.TotalAtk,
             ThornsStat.Ap       => owner.TotalAp,
             ThornsStat.Str      => owner.TotalStr,
+            ThornsStat.Dex      => owner.TotalDex,
             ThornsStat.Vit      => owner.TotalVit,
             ThornsStat.Int      => owner.TotalInt,
             ThornsStat.Fth      => owner.TotalFth,
-            ThornsStat.Dex      => owner.TotalDex,
             _                   => 0f,
         };
     }

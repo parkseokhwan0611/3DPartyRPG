@@ -241008,17 +241008,22 @@ PrefabInstance:
     - target: {fileID: 5822139004800782574, guid: 3d9c0427d76b8714ab057048ce42863b,
         type: 3}
       propertyPath: portalId
-      value: Dungeon_1_3_to_Dungeon_Boss
+      value: Dungeon_Boss_to_Dungeon_1_4
+      objectReference: {fileID: 0}
+    - target: {fileID: 5822139004800782574, guid: 3d9c0427d76b8714ab057048ce42863b,
+        type: 3}
+      propertyPath: isBossStage
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5822139004800782574, guid: 3d9c0427d76b8714ab057048ce42863b,
         type: 3}
       propertyPath: destinationSpawnId
-      value: Dungeon_Boss_to_Dungeon_1_3
+      value: Dungeon_1_4_to_Dungeon_Boss
       objectReference: {fileID: 0}
     - target: {fileID: 5822139004800782574, guid: 3d9c0427d76b8714ab057048ce42863b,
         type: 3}
       propertyPath: destinationSceneName
-      value: Dungeon_1_3
+      value: Dungeon_1_4
       objectReference: {fileID: 0}
     - target: {fileID: 8078761070689332417, guid: 3d9c0427d76b8714ab057048ce42863b,
         type: 3}
@@ -375701,15 +375706,15 @@ MonoBehaviour:
   expBarValueText: {fileID: 1451229382}
   statPointText: {fileID: 1302442889}
   strText: {fileID: 1954661257}
+  dexText: {fileID: 194751330}
   vitText: {fileID: 1415539030}
   intText: {fileID: 1408623868}
   fthText: {fileID: 1534269165}
-  dexText: {fileID: 194751330}
   strButton: {fileID: 1538987119}
+  dexButton: {fileID: 2026143137}
   vitButton: {fileID: 678529686}
   intButton: {fileID: 275934291}
   fthButton: {fileID: 1121961168}
-  dexButton: {fileID: 2026143137}
   phyAtkText: {fileID: 1807076188}
   apText: {fileID: 922027850}
   atkSpeedText: {fileID: 922027862}
