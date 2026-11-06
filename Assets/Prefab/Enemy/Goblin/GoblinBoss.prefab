@@ -11692,6 +11692,7 @@ GameObject:
   - component: {fileID: 8335857253635887529}
   - component: {fileID: 7165683147454634721}
   - component: {fileID: 7677295212319549098}
+  - component: {fileID: 2722949185961575665}
   - component: {fileID: 8463187442416703229}
   - component: {fileID: 8873082998577567278}
   m_Layer: 7
@@ -11968,6 +11969,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   bossBgmKey: GoblinBossBGM
   resetDelay: 5
+--- !u!114 &2722949185961575665
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5285157052835285592}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d4d8a63d8cee1324e8b704a200d09da8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  activateOnClear: []
+  activateDelay: 2
 --- !u!195 &8463187442416703229
 NavMeshAgent:
   m_ObjectHideFlags: 0

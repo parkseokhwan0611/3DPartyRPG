@@ -105,7 +105,6 @@ public class ItemSaveEntry
     public string           itemId;
     public int              stackCount;
     public int              enhancementLevel;
-    public List<OptionBonus> enhancementBonuses = new List<OptionBonus>();
 }
 
 [System.Serializable]
@@ -115,5 +114,4 @@ public class EquipSaveEntry
     public EquipSlot          slot;
     public string            itemId;
     public int               enhancementLevel;
-    public List<OptionBonus> enhancementBonuses = new List<OptionBonus>();
 }

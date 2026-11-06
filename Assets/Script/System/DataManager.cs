@@ -259,7 +259,6 @@ public class DataManager : MonoBehaviour
                 itemId             = item.data.itemId,
                 stackCount         = item.stackCount,
                 enhancementLevel   = item.enhancementLevel,
-                enhancementBonuses = item.enhancementBonuses ?? new System.Collections.Generic.List<OptionBonus>(),
             });
         }
 
@@ -275,7 +274,6 @@ public class DataManager : MonoBehaviour
                     slot               = kvp.Key,
                     itemId             = kvp.Value.data.itemId,
                     enhancementLevel   = kvp.Value.enhancementLevel,
-                    enhancementBonuses = kvp.Value.enhancementBonuses ?? new System.Collections.Generic.List<OptionBonus>(),
                 });
             }
         }
@@ -380,7 +378,6 @@ public class DataManager : MonoBehaviour
             if (data == null) continue;
             var inst = new ItemInstance(data, entry.stackCount);
             inst.enhancementLevel   = entry.enhancementLevel;
-            inst.enhancementBonuses = entry.enhancementBonuses ?? new System.Collections.Generic.List<OptionBonus>();
             sharedInventory.TryAddItem(inst);
         }
 
@@ -391,7 +388,6 @@ public class DataManager : MonoBehaviour
             if (FindItemById(entry.itemId) is not EquipItemData equipData) continue;
             var inst = new ItemInstance(equipData);
             inst.enhancementLevel   = entry.enhancementLevel;
-            inst.enhancementBonuses = entry.enhancementBonuses ?? new System.Collections.Generic.List<OptionBonus>();
             partyEquipments[entry.characterIndex].EquipToSlot(inst, entry.slot);
             // currentHp는 이미 세이브 파일의 최종값(saved.currentHp)으로 세팅돼 있으므로
             // 장비 복원으로 인한 최대체력 증가분을 또 더하면 중복 반영됨 — false로 스킵

@@ -61,7 +61,8 @@ public class MainOption
 {
     public MainOptionType type;
     public float          value;
-    [Tooltip("강화 1단계당 증가량. 장신구는 0.")]
+    [Tooltip("강화 1단계당 증가량 (강화 주문서 성공 시 이 값만큼 오름). 장신구는 0.\n" +
+             "강화 수치는 저장하지 않고 단계 × 이 값으로 계산하므로, 바꾸면 이미 강화된 장비에도 바로 반영됨")]
     public float          enhancementBonusPerLevel = 0f;
 
     public float GetEnhancedValue(int level) => value + enhancementBonusPerLevel * level;
