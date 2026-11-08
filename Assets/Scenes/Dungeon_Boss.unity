@@ -704625,6 +704625,7 @@ GameObject:
   - component: {fileID: 8011402916547983827}
   - component: {fileID: 8011402916547983826}
   - component: {fileID: 8011402916547983830}
+  - component: {fileID: 8011402916547983832}
   - component: {fileID: 8011402916547983825}
   - component: {fileID: 8011402916547983831}
   - component: {fileID: 8011402916547983824}
@@ -706497,12 +706498,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   skills:
   - {fileID: 8011402916547983830}
+  - {fileID: 8011402916547983832}
   rerollInterval: 1
   enrageHpRatio: 0.3
   enrageCooldownScale: 0.7
   enrageDamageMultiplier: 1.3
   enrageAuraObject: {fileID: 1130363196}
   enrageSfxKey: GoblinAggro2
+  recoveryEndState: Idle
+  recoveryEndFade: 0.15
 --- !u!114 &8011402916547983827
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -706556,6 +706560,8 @@ MonoBehaviour:
   damageDelay: 0.6
   recoveryDuration: 0.8
   isMagicAttack: 0
+  recoveryEndState: Idle
+  recoveryEndFade: 0.15
   critChance: 0.25
   critDamageMultiplier: 1.5
   attackSfxKey: SkeletonBossNormalAtk
@@ -706608,8 +706614,8 @@ MonoBehaviour:
   range: 2
   useChance: 0.4
   windupDuration: 1
-  attackDuration: 0.3
-  recoveryDuration: 0.8
+  attackDuration: 0.15
+  recoveryDuration: 0.75
   animTrigger: skill1
   skillSfxKey: SkeletonBossSkill1
   unlockHpRatio: 1
@@ -706642,6 +706648,41 @@ MonoBehaviour:
   activateOnClear:
   - {fileID: 1395210492}
   activateDelay: 2
+--- !u!114 &8011402916547983832
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7234443657417237364}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6ddb3bae78533b4448325da1f501913a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cooldown: 10
+  range: 2
+  useChance: 0.4
+  windupDuration: 0.5
+  attackDuration: 0.15
+  recoveryDuration: 1.05
+  animTrigger: skill2
+  skillSfxKey: SkeletonBossSkill2
+  unlockHpRatio: 1
+  debuff: 2
+  debuffValue: 0.3
+  debuffDuration: 1
+  damage: 300
+  radius: 2
+  targetLayer:
+    serializedVersion: 2
+    m_Bits: 64
+  isMagicDamage: 0
+  critChance: 0.25
+  critDamageMultiplier: 1.5
+  effectPoolKey: SkeletonBossSkill2
+  effectHeightOffset: 0
+  indicatorPoolKey: CircleSkillIndicator
 --- !u!4 &8020909729056134544
 Transform:
   m_ObjectHideFlags: 0
@@ -709276,6 +709317,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: CoreSystem
+      objectReference: {fileID: 0}
+    - target: {fileID: 3977090485056006170, guid: 07e7d928f411eb34d97d77f873339039,
+        type: 3}
+      propertyPath: sfxClips.Array.data[66].name
+      value: SkeletonBossSkill2
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

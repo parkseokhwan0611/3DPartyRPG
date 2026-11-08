@@ -626,7 +626,7 @@ public class PartyManager : MonoBehaviour
         IsGameOver = true;
         // 게임오버는 BGM을 즉시 끊는다 (페이드 없이)
         AudioManager.instance?.StopBGM(fade: false);
-        AudioManager.instance?.PlaySFX("GameOver");
+        AudioManager.instance?.PlayJingle("GameOver"); // 게임오버 화면을 벗어나면 끊기도록 정지 가능한 채널로
         Time.timeScale = 0f;
     }
 
@@ -636,6 +636,7 @@ public class PartyManager : MonoBehaviour
         Time.timeScale = 1f;
         IsGameOver = false;
         if (gameOverUI != null) gameOverUI.SetActive(false);
+        AudioManager.instance?.StopJingle();
     }
 
     /// <summary>게임오버 UI의 '타이틀로' 버튼에서 호출 — timeScale 복구 후 타이틀 씬으로 이동</summary>
@@ -643,6 +644,7 @@ public class PartyManager : MonoBehaviour
     {
         Time.timeScale = 1f;
         IsGameOver = false;
+        AudioManager.instance?.StopJingle(); // 로딩 화면까지 이어지지 않게 즉시 정지
         SceneLoader.Load(titleSceneName);
     }
 

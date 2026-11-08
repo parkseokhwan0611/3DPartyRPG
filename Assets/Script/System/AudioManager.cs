@@ -58,6 +58,10 @@ public class AudioManager : MonoBehaviour
     private AudioSource bgmSource;
     private AudioSource[] sfxSources;
     private int sfxIndex;
+    // 게임오버 음악처럼 길고, 화면을 벗어나면 중간에 끊어야 하는 효과음 전용 채널
+    // (PlayOneShot은 개별 정지가 안 되므로 따로 둔다)
+    private AudioSource jingleSource;
+    private float jingleVolumeMultiplier = 1f;
 
     private readonly List<RaycastResult> _uiRaycastResults = new List<RaycastResult>();
     private PointerEventData _uiPointerEventData;
@@ -100,6 +104,11 @@ public class AudioManager : MonoBehaviour
             sfxSources[i] = src;
         }
 
+        jingleSource = gameObject.AddComponent<AudioSource>();
+        jingleSource.loop         = false;
+        jingleSource.playOnAwake  = false;
+        jingleSource.spatialBlend = 0f;
+
         SceneManager.sceneLoaded += HandleSceneLoaded;
     }
 
@@ -134,6 +143,8 @@ public class AudioManager : MonoBehaviour
 
     private void HandleSceneLoaded(Scene scene, LoadSceneMode mode)
     {
+        StopJingle(); // 씬을 벗어나면 게임오버 음악 등은 끊는다
+
         foreach (var entry in sceneBgmMap)
         {
             if (entry == null || entry.sceneName != scene.name) continue;
@@ -236,6 +247,26 @@ public class AudioManager : MonoBehaviour
         src.PlayOneShot(entry.clip, sfxVolume * entry.volumeMultiplier);
     }
 
+    /// <summary>중간에 끊을 수 있는 2D 효과음 (게임오버 음악 등) — SFX 목록의 키를 사용하며,
+    /// 한 번에 하나만 재생된다. StopJingle()로 정지, 씬이 바뀌면 자동 정지</summary>
+    public void PlayJingle(string key)
+    {
+        if (!sfxDict.TryGetValue(key, out var entry))
+        {
+            Debug.LogWarning($"[AudioManager] SFX 키 '{key}'를 찾을 수 없습니다.");
+            return;
+        }
+        jingleVolumeMultiplier = entry.volumeMultiplier;
+        jingleSource.clip   = entry.clip;
+        jingleSource.volume = sfxVolume * jingleVolumeMultiplier;
+        jingleSource.Play();
+    }
+
+    public void StopJingle()
+    {
+        if (jingleSource != null && jingleSource.isPlaying) jingleSource.Stop();
+    }
+
     // ─────────────────────────────────────────────────────────────────
     // 볼륨 (설정 UI 연동용)
     // ─────────────────────────────────────────────────────────────────
@@ -251,5 +282,9 @@ public class AudioManager : MonoBehaviour
         if (bgmSource != null) bgmSource.volume = bgmVolume * currentBgmVolumeMultiplier;
     }
 
-    public void SetSfxVolume(float volume) => sfxVolume = Mathf.Clamp01(volume);
+    public void SetSfxVolume(float volume)
+    {
+        sfxVolume = Mathf.Clamp01(volume);
+        if (jingleSource != null) jingleSource.volume = sfxVolume * jingleVolumeMultiplier;
+    }
 }
