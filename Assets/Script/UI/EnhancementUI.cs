@@ -61,6 +61,12 @@ public class EnhancementUI : MonoBehaviour
     [Header("등급 스프라이트 (0:일반 ~ 4:신화)")]
     [SerializeField] Sprite[] gradeSprites;
 
+    [Header("강화 성공 이펙트 (선택 — 비워두면 없음)")]
+    [Tooltip("강화 성공 시 강화 대상 아이콘 위에 띄울 파티클 프리팹 (일반 ParticleSystem 프리팹 그대로)")]
+    [SerializeField] GameObject successEffectPrefab;
+    [Tooltip("이펙트 크기 — 파티클 1 유닛을 몇 픽셀로 그릴지 (1920x1080 기준)")]
+    [SerializeField] float      successEffectScale = 60f;
+
     // ─────────────────────────────────────────────────────────────────
     // 런타임 상태
     // ─────────────────────────────────────────────────────────────────
@@ -82,6 +88,7 @@ public class EnhancementUI : MonoBehaviour
     private SlotCache[] _slots;
     private Coroutine   _enhRoutine;
     private Coroutine   _resultRoutine;
+    private Coffee.UIExtensions.UIParticle _successFx; // 처음 성공할 때 만들어 재사용
 
     private const float PROGRESS_DURATION = 1f;
 
@@ -300,6 +307,8 @@ public class EnhancementUI : MonoBehaviour
         RefreshScrollSlot();
         RefreshInventory();
 
+        if (result == EnhanceResult.Success) PlaySuccessEffect();
+
         yield return new WaitForSecondsRealtime(0.3f);
         if (progressBar != null) progressBar.value = 0f;
 
@@ -321,6 +330,15 @@ public class EnhancementUI : MonoBehaviour
 
         if (_resultRoutine != null) StopCoroutine(_resultRoutine);
         _resultRoutine = StartCoroutine(HideResultAfter(2.5f));
+    }
+
+    // 강화 대상 아이콘의 자식으로 띄움 — 아이콘 바로 위에, 아이콘과 같은 캔버스 순서로 그려진다
+    private void PlaySuccessEffect()
+    {
+        if (successEffectPrefab == null || equipIcon == null) return;
+        if (_successFx == null)
+            _successFx = UIParticleUtil.Create(successEffectPrefab, equipIcon.rectTransform, successEffectScale, "EnhanceSuccessFX");
+        UIParticleUtil.Replay(_successFx);
     }
 
     private void HideResult()

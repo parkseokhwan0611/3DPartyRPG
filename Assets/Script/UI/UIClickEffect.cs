@@ -68,29 +68,8 @@ public class UIClickEffect : MonoBehaviour
 
     private (RectTransform rect, UIParticle particle) CreateEntry()
     {
-        var holder = new GameObject("ClickFX", typeof(RectTransform));
-        holder.layer = _canvasRect.gameObject.layer;
-        var rect = (RectTransform)holder.transform;
-        rect.SetParent(_canvasRect, false);
-        rect.anchorMin = rect.anchorMax = new Vector2(0.5f, 0.5f);
-
-        var particle = holder.AddComponent<UIParticle>();
-        particle.raycastTarget   = false;
-        particle.autoScalingMode = UIParticle.AutoScalingMode.UIParticle;
-        particle.scale           = effectScale;
-
-        var fx = Instantiate(effectPrefab);
-        // 인벤토리·설정 창이 게임을 멈춘 상태(timeScale 0)에서도 재생되도록 실제 시간 기준으로
-        foreach (var ps in fx.GetComponentsInChildren<ParticleSystem>(true))
-        {
-            var main = ps.main;
-            main.useUnscaledTime = true;
-            main.playOnAwake     = false;
-        }
-        particle.SetParticleSystemInstance(fx);
-        particle.Stop();
-
-        return (rect, particle);
+        var particle = UIParticleUtil.Create(effectPrefab, _canvasRect, effectScale, "ClickFX");
+        return ((RectTransform)particle.transform, particle);
     }
 
     private void Spawn(Vector2 screenPos)
@@ -103,8 +82,6 @@ public class UIClickEffect : MonoBehaviour
         _next = (_next + 1) % poolSize;
 
         entry.rect.anchoredPosition = local + positionOffset;
-        entry.rect.SetAsLastSibling(); // 가장 최근 클릭이 위에 보이도록
-        entry.particle.Clear();
-        entry.particle.Play();
+        UIParticleUtil.Replay(entry.particle); // 맨 위로 올려 가장 최근 클릭이 위에 보이도록
     }
 }

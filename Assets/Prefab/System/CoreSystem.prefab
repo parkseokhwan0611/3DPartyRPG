@@ -97,8 +97,10 @@ MonoBehaviour:
   - sceneName: Dungeon_1_3
     displayName: "\uACE0\uBE14\uB9B0 \uC131 \uC785\uAD6C"
   - sceneName: Dungeon_1_4
-    displayName: "\uACE0\uBE14\uB9B0 \uC8FC\uC220\uC0AC\uC758 \uD68C\uB791"
+    displayName: "\uACE0\uBE14\uB9B0 \uC8FC\uC220\uC0AC\uC758 \uD68C\uB791 1"
   - sceneName: Dungeon_Boss
+    displayName: "\uACE0\uBE14\uB9B0 \uB300\uC7A5\uC758 \uBB34\uB364"
+  - sceneName: Dungeon_Boss2
     displayName: "\uACE0\uBE14\uB9B0 \uC8FC\uC220\uC0AC\uC758 \uC601\uC5ED"
   currentLeaderIndex: 0
   autoSkillEnabled: 1
@@ -417,7 +419,7 @@ MonoBehaviour:
     volumeMultiplier: 0.7
   - name: SkeletonAggro
     clip: {fileID: 8300000, guid: fc325b3f26b7002409ff9e3ccea4d91f, type: 3}
-    volumeMultiplier: 0.7
+    volumeMultiplier: 0.5
   - name: SkeletonArcherAtk
     clip: {fileID: 8300000, guid: 8b820bdace7c2144b9d5639ae74849d8, type: 3}
     volumeMultiplier: 0.7
@@ -467,7 +469,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c4a67e84ad994dd7bae41d86ca7b5299, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  effectPrefab: {fileID: 2356458678794947540, guid: 534f5dbce28d3ba4fb9aad480d8de63f, type: 3}
+  effectPrefab: {fileID: 2356458678794947540, guid: 534f5dbce28d3ba4fb9aad480d8de63f,
+    type: 3}
   effectScale: 15
   positionOffset: {x: 0, y: 0}
   sortingOrder: 30000
