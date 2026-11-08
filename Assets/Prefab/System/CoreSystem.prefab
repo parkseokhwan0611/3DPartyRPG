@@ -17,6 +17,7 @@ GameObject:
   - component: {fileID: 2911264311777437961}
   - component: {fileID: 5554503942166689792}
   - component: {fileID: 3977090485056006170}
+  - component: {fileID: 7364019528841736211}
   m_Layer: 0
   m_Name: CoreSystem
   m_TagString: Untagged
@@ -454,3 +455,21 @@ MonoBehaviour:
     bgmKey: ForestBGM
   enableGlobalUiClick: 1
   uiClickSfxKey: UIClick
+--- !u!114 &7364019528841736211
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2114802944394787709}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c4a67e84ad994dd7bae41d86ca7b5299, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  effectPrefab: {fileID: 2356458678794947540, guid: 534f5dbce28d3ba4fb9aad480d8de63f, type: 3}
+  effectScale: 15
+  positionOffset: {x: 0, y: 0}
+  sortingOrder: 30000
+  poolSize: 6
+  includeNonUI: 0
