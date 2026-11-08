@@ -15,6 +15,11 @@ public abstract class MonsterAttackBase : AttackBase
     public float recoveryDuration = 0.5f;
     [Tooltip("체크하면 마법 피해(마법저항력으로 경감), 해제하면 물리 피해(방어력으로 경감)")]
     public bool isMagicAttack = false;
+    [Tooltip("후딜레이가 끝났는데 애니메이터가 아직 공격 모션 중이면 이 상태로 강제 전환 — 그 뒤 이동하면 " +
+             "isWalking으로 걷기 모션으로 넘어간다. 비워두면 강제 전환 안 함(Exit Time까지 재생)")]
+    public string recoveryEndState = "Idle";
+    [Tooltip("위 상태로 넘어갈 때 블렌딩 시간(초)")]
+    public float recoveryEndFade = 0.15f;
 
     [Header("# 치명타")]
     [Tooltip("치명타 확률 (0~1)")]
@@ -101,6 +106,9 @@ public abstract class MonsterAttackBase : AttackBase
 
         yield return new WaitForSeconds(damageDelay);
 
+        // 판정 시점엔 애니메이터가 공격 상태에 들어가 있음 — 후딜 종료 때 아직 이 상태인지 비교용
+        int attackStateHash = MonsterAnimUtil.CurrentStateHash(anim);
+
         ExecuteAttackPayload();
 
         // 공격 지속시간 나머지 대기
@@ -109,6 +117,9 @@ public abstract class MonsterAttackBase : AttackBase
         bool isStunned = statusHandler != null && statusHandler.HasDebuff(StatusEffectType.Stun);
         if (!isStunned && agent != null && agent.isOnNavMesh)
             agent.isStopped = false;
+
+        // 후딜이 끝났는데 공격 모션이 아직 재생 중이면 끊어서, 공격 자세로 미끄러지며 이동하지 않게 함
+        if (!isStunned) MonsterAnimUtil.ExitStateIfStill(anim, attackStateHash, recoveryEndState, recoveryEndFade);
 
         IsAttacking     = false;
         attackCoroutine = null;

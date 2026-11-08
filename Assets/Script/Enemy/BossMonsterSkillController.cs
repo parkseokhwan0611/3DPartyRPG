@@ -31,7 +31,15 @@ public class BossMonsterSkillController : MonoBehaviour, ISkillCaster
     [Tooltip("AudioManager에 등록한 SFX 키. 광폭화 진입 시 1회 재생 (비워두면 재생 안 함)")]
     public string enrageSfxKey;
 
-    private AttackBase          _attackBase;
+    [Header("# 후딜레이 종료")]
+    [Tooltip("후딜레이(스킬의 recoveryDuration)가 끝났는데 애니메이터가 아직 스킬 모션 중이면 이 상태로 강제 전환 — " +
+             "그 뒤 이동하면 평소처럼 isWalking으로 걷기 모션으로 넘어간다. 스킬 모션이 후딜보다 길어도 " +
+             "'후딜이 끝나는 순간 = 모션이 끝나는 순간'이 되도록. 비워두면 강제 전환 안 함(Exit Time까지 재생)")]
+    public string recoveryEndState = "Idle";
+    [Tooltip("위 상태로 넘어갈 때 블렌딩 시간(초)")]
+    public float recoveryEndFade = 0.15f;
+
+    private AttackBase         _attackBase;
     private NavMeshAgent         _agent;
     private Animator             _animator;
     private StatusEffectHandler  _statusHandler;
@@ -158,6 +166,9 @@ public class BossMonsterSkillController : MonoBehaviour, ISkillCaster
 
         yield return new WaitForSeconds(skill.windupDuration);
 
+        // 예고가 끝난 시점엔 애니메이터가 스킬 상태에 들어가 있음 — 후딜 종료 때 아직 이 상태인지 비교용
+        int skillStateHash = string.IsNullOrEmpty(skill.animTrigger) ? 0 : MonsterAnimUtil.CurrentStateHash(_animator);
+
         // 예고 시간 동안 타겟이 죽거나 사라졌을 수 있음
         if (target != null)
             skill.ExecuteSkill(target);
@@ -176,6 +187,9 @@ public class BossMonsterSkillController : MonoBehaviour, ISkillCaster
         bool isStunned = _statusHandler != null && _statusHandler.HasDebuff(StatusEffectType.Stun);
         if (!isStunned && _agent != null && _agent.enabled && _agent.isOnNavMesh)
             _agent.isStopped = false;
+
+        // 후딜이 끝났는데 스킬 모션이 아직 재생 중이면 끊어서, 공격 자세로 미끄러지며 이동하지 않게 함
+        if (!isStunned) MonsterAnimUtil.ExitStateIfStill(_animator, skillStateHash, recoveryEndState, recoveryEndFade);
 
         _attackBase.IsCastingSkill = false;
         _activeSkill = null;
