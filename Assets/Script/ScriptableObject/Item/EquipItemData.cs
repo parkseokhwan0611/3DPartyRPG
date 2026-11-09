@@ -77,6 +77,14 @@ public class SubOption
 {
     public SubOptionType type;
     public float         value;
+
+    // 비율로 저장되는 옵션(0.02 = 2%) — UI에는 %로 표시
+    public bool IsPercent => type == SubOptionType.CritRate      || type == SubOptionType.CritDmg
+                          || type == SubOptionType.SkillCDReduce || type == SubOptionType.MpCostReduce
+                          || type == SubOptionType.PhysDmgBonus  || type == SubOptionType.MagicDmgBonus;
+
+    /// <summary>툴팁 표시용 값 — "+20" 또는 "+2%"</summary>
+    public string FormatValue() => IsPercent ? $"+{value * 100f:0.##}%" : $"+{value:0.##}";
 }
 
 // ─────────────────────────────────────────────────────────────────

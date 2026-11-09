@@ -564,7 +564,7 @@ public class EnhancementUI : MonoBehaviour
             bool show = equip != null && i < equip.subOptions.Count && i < maxSub;
             popupSubTexts[i].gameObject.SetActive(show);
             if (show) popupSubTexts[i].text =
-                $"{GetSubOptionLabel(equip.subOptions[i].type)}: +{equip.subOptions[i].value}";
+                $"{GetSubOptionLabel(equip.subOptions[i].type)}: {equip.subOptions[i].FormatValue()}";
         }
 
         if (popupDescText  != null) popupDescText.text  = item.data.description;

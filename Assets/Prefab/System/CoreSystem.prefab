@@ -115,13 +115,28 @@ MonoBehaviour:
   - item: {fileID: 11400000, guid: 090f952f171e2c04f8363455e384f321, type: 2}
     count: 5
   itemRegistry:
-  - {fileID: 11400000, guid: 36657b2da32665f48bf1a71953ff4595, type: 2}
+  - {fileID: 11400000, guid: b4295f6ddfec4164fa5042dd8c07180b, type: 2}
   - {fileID: 11400000, guid: 878cba199bb78484f9d630b7dfbe1010, type: 2}
   - {fileID: 11400000, guid: 0799803fcb2a9d24bb52bbc08134a184, type: 2}
   - {fileID: 11400000, guid: 8f1e9adfca2c5504a94cb60eeec75fc5, type: 2}
   - {fileID: 11400000, guid: e36bccf9c35bc0646b992d87ac713c29, type: 2}
+  - {fileID: 11400000, guid: ce23546016ebda14f9437bed2de44a76, type: 2}
+  - {fileID: 11400000, guid: f40b75917a5bbf04cad01e9f1f819671, type: 2}
+  - {fileID: 11400000, guid: 680b6e101691ff04f875ca0178da5a4e, type: 2}
+  - {fileID: 11400000, guid: 36657b2da32665f48bf1a71953ff4595, type: 2}
   - {fileID: 11400000, guid: e587ba44103c84043bccfd06406dc4fe, type: 2}
   - {fileID: 11400000, guid: 57c11217df5de9f4e8f0143176dc21fc, type: 2}
+  - {fileID: 11400000, guid: f09f8519745a7454186cc555c50cccd5, type: 2}
+  - {fileID: 11400000, guid: 8ad2f6c5e5a447f489d14fed516dda4c, type: 2}
+  - {fileID: 11400000, guid: 82cb561857261bb478650d3b830cadf1, type: 2}
+  - {fileID: 11400000, guid: 3fe85995edcb6dd45983198d221f3c66, type: 2}
+  - {fileID: 11400000, guid: dc676ccf3fa87c24bb3108bfdae6001d, type: 2}
+  - {fileID: 11400000, guid: 521242ef747186f4da46acbb2a644668, type: 2}
+  - {fileID: 11400000, guid: f7f424a5608427b45936b0354a9d58ff, type: 2}
+  - {fileID: 11400000, guid: 2cb69bff8d72abb46adeba04a89a9ada, type: 2}
+  - {fileID: 11400000, guid: 446809bf2e9d8e44db6862d27482a0ac, type: 2}
+  - {fileID: 11400000, guid: 683dffd517ef4fa499ebe37f2e4521bd, type: 2}
+  - {fileID: 11400000, guid: db55f7c4fa90f8b4d9c9fb6e3f4972b5, type: 2}
   - {fileID: 11400000, guid: 9022e3a27e6b96144983138f931fa959, type: 2}
   - {fileID: 11400000, guid: c72b9d38248f14f40a0c7b9a7aedc9ad, type: 2}
   - {fileID: 11400000, guid: 54d7dee9a0d8e8c4999df667fad79c6b, type: 2}
@@ -129,17 +144,12 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 780180cf1b0df8945a2df703d6f54460, type: 2}
   - {fileID: 11400000, guid: 9946e955b34c79b4a9778eb045bbf4e4, type: 2}
   - {fileID: 11400000, guid: 090f952f171e2c04f8363455e384f321, type: 2}
+  - {fileID: 11400000, guid: 7a84f96a625f87e4cabd56da2bf5dc5c, type: 2}
+  - {fileID: 11400000, guid: c41ebeb116e7d0944850da6e2442c593, type: 2}
+  - {fileID: 11400000, guid: 509e3dc6997dab648a69a75c54a40b73, type: 2}
   - {fileID: 11400000, guid: fd23787e5d867214a8000ae17c9bea2d, type: 2}
   - {fileID: 11400000, guid: 360ee5c4417b22a47b5f196268d678de, type: 2}
   - {fileID: 11400000, guid: c48a38f824323894e972bbdd7e025ce7, type: 2}
-  - {fileID: 11400000, guid: b4295f6ddfec4164fa5042dd8c07180b, type: 2}
-  - {fileID: 11400000, guid: 8ad2f6c5e5a447f489d14fed516dda4c, type: 2}
-  - {fileID: 11400000, guid: 82cb561857261bb478650d3b830cadf1, type: 2}
-  - {fileID: 11400000, guid: 3fe85995edcb6dd45983198d221f3c66, type: 2}
-  - {fileID: 11400000, guid: dc676ccf3fa87c24bb3108bfdae6001d, type: 2}
-  - {fileID: 11400000, guid: 446809bf2e9d8e44db6862d27482a0ac, type: 2}
-  - {fileID: 11400000, guid: 683dffd517ef4fa499ebe37f2e4521bd, type: 2}
-  - {fileID: 11400000, guid: db55f7c4fa90f8b4d9c9fb6e3f4972b5, type: 2}
   - {fileID: 11400000, guid: 35644b1ed1baa864dbe0ce5cc2c466d8, type: 2}
   baseExp: 50
   expGrowthRate: 8
@@ -432,7 +442,7 @@ MonoBehaviour:
   - name: SkeletonBossSkill1
     clip: {fileID: 8300000, guid: 4b40fe32fd069834f990bffd23bff31b, type: 3}
     volumeMultiplier: 0.8
-  - name: SkeletonBossSkill1
+  - name: SkeletonBossSkill2
     clip: {fileID: 8300000, guid: 52a54358be7566d45bbfab7449b932ce, type: 3}
     volumeMultiplier: 0.8
   sfxVolume: 0.5

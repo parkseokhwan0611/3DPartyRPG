@@ -422,7 +422,7 @@ public class InventoryUI : MonoBehaviour
             subOptionTexts[i].gameObject.SetActive(show);
             if (show)
                 subOptionTexts[i].text =
-                    $"{GetSubOptionName(equip.subOptions[i].type)}: +{equip.subOptions[i].value}";
+                    $"{GetSubOptionName(equip.subOptions[i].type)}: {equip.subOptions[i].FormatValue()}";
         }
 
         // 설명
