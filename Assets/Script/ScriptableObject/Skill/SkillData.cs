@@ -45,6 +45,16 @@ public class SkillData : ScriptableObject
     public int maxLevel = 5;
     public int requiredCharLevel;
 
+    [Header("선행 스킬")]
+    [Tooltip("이 스킬을 배우려면 먼저 습득해야 하는 스킬 (비우면 조건 없음)")]
+    public SkillData requiredSkill;
+    [Tooltip("선행 스킬의 최소 레벨")]
+    [Min(1)] public int requiredSkillLevel = 1;
+
+    // 선행 스킬 조건을 만족하는지 — 습득(TryLevelUpSkill)과 스킬 창 버튼·안내가 같은 기준을 쓴다
+    public bool MeetsRequiredSkill(CharacterStatus status)
+        => requiredSkill == null || (status != null && status.GetSkillLevel(requiredSkill) >= requiredSkillLevel);
+
     [Header("공통 수치 (레벨별)")]
     public float[] mpCost;
     public float[] cooldown;

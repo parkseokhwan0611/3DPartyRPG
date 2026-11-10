@@ -192,7 +192,9 @@ public partial class CharacterStat
         SpawnProcEffect(passive, target.transform);
     }
 
-    // 치명타 번개 — procSkill이 있으면 그 스킬의 데미지 공식(배운 레벨, 최소 1)으로, 없으면 마법 공격력 × 발동 수치
+    // 치명타 번개 — procSkill이 있으면 그 스킬의 데미지 공식(배운 레벨, 최소 1)으로, 없으면 마법 공격력 × 발동 수치.
+    // procSkill이 장판형이면 그 스킬을 시전한 것과 똑같이 대상 위치에 장판(이펙트·범위·판정 딜레이·적마다 치명타)을 깔고
+    // 효과음도 같은 타이밍으로 낸다 (시전 모션·마나·쿨타임·연계 보너스만 없음)
     private void CastProcLightning(EnemyHp target, PassiveSkillData passive, int level)
     {
         float damage;
@@ -200,8 +202,10 @@ public partial class CharacterStat
         if (passive.procSkill != null)
         {
             int skillLevel = Mathf.Max(1, GetSkillLevel(passive.procSkill));
-            damage  = passive.procSkill.GetRawDamage(skillLevel, this);
+            damage  = passive.procSkill.GetRawDamage(skillLevel, this, includeMainBonus: false);
             isMagic = passive.procSkill.useAp;
+
+            if (TryCastProcZone(passive.procSkill, skillLevel, damage, target.transform.position)) return;
         }
         else
         {
@@ -216,6 +220,59 @@ public partial class CharacterStat
         SpawnProcEffect(passive, target.transform);
         if (isMagic) target.TakeMagicDamage(damage, gameObject, isCrit);
         else         target.TakeDamage(damage, gameObject, isCrit);
+    }
+
+    // 장판형 발동 스킬 — DamageSkill.SpawnZone과 같은 방식으로 대상 위치에 장판을 깐다.
+    // 수류탄·투사체형이거나 장판 이펙트를 못 꺼내면 false (호출 쪽이 단일 대상 즉시 데미지로 대신 처리)
+    private bool TryCastProcZone(DamageSkillData skill, int skillLevel, float damage, Vector3 targetPos)
+    {
+        if (!skill.spawnAtTarget || skill.throwGrenade || skill.fireProjectile) return false;
+        if (damage <= 0f || string.IsNullOrEmpty(skill.effectPoolKey) || ObjectPoolManager.instance == null) return false;
+
+        GameObject fx = ObjectPoolManager.instance.GetGo(skill.effectPoolKey);
+        if (fx == null) return false;
+
+        fx.transform.position = targetPos + skill.effectSpawnOffset;
+        fx.transform.rotation = Quaternion.Euler(skill.effectSpawnRotation);
+
+        if (fx.TryGetComponent(out SkillZone zone))
+        {
+            zone.Setup(damage, skill.GetRange(skillLevel), skill.zoneDamageInterval, skill.zoneActivationDelay,
+                       skill.zoneHitOnce, gameObject, skill.useAp, skill.zoneDuration,
+                       TotalCritRate, TotalCritDamage);
+        }
+        else
+        {
+            Debug.LogWarning($"[CharacterStat] 발동 스킬 '{skill.effectPoolKey}' 오브젝트에 SkillZone 컴포넌트가 없습니다.");
+        }
+
+        PlayProcSkillSfx(skill);
+        return true;
+    }
+
+    // 발동 스킬 효과음 — 원래 스킬은 시전 후 effectSpawnDelay 뒤에 장판이 깔리지만 발동형은 바로 깔리므로,
+    // 효과음 딜레이에서 그만큼 빼서 장판 기준 타이밍을 원래 스킬과 같게 맞춘다
+    private void PlayProcSkillSfx(SkillData skill)
+    {
+        if (skill.sfxEntries == null || AudioManager.instance == null) return;
+
+        float shift = skill is DamageSkillData dmg ? dmg.effectSpawnDelay : 0f;
+        foreach (var entry in skill.sfxEntries)
+        {
+            if (entry == null || string.IsNullOrEmpty(entry.sfxKey)) continue;
+            StartCoroutine(ProcSfxRoutine(entry.sfxKey, entry.delay - shift, entry.PlayCount, entry.repeatInterval));
+        }
+    }
+
+    private System.Collections.IEnumerator ProcSfxRoutine(string key, float delay, int count, float interval)
+    {
+        // 딜레이가 음수면(원래 스킬에서 장판보다 먼저 나던 소리) 바로 재생
+        if (delay > 0f) yield return new WaitForSeconds(delay);
+        for (int i = 0; i < count; i++)
+        {
+            AudioManager.instance?.PlaySFX(key);
+            if (i < count - 1 && interval > 0f) yield return new WaitForSeconds(interval);
+        }
     }
 
     private static void SpawnProcEffect(PassiveSkillData passive, Transform target)

@@ -62,7 +62,15 @@ public class SkillDetailPanelUI : MonoBehaviour
 
         SetTextSafe(skillNameText, skill.skillName);
         SetTextSafe(skillLvText,   currentLevel > 0 ? $"현재 레벨: LV {currentLevel}" : "현재 레벨: 미습득");
-        SetTextSafe(skillDescText, skill.description);
+        // 선행 스킬이 있으면 습득 전에 조건 안내 — 아직 못 채웠으면 빨간색
+        bool meetsRequiredSkill = skill.MeetsRequiredSkill(status);
+        string desc = skill.description;
+        if (skill.requiredSkill != null && currentLevel == 0)
+        {
+            string req = $"선행 스킬: {skill.requiredSkill.skillName} LV {skill.requiredSkillLevel} 이상 습득 필요";
+            desc += meetsRequiredSkill ? $"\n\n{req}" : $"\n\n<color=#FF6464>{req}</color>";
+        }
+        SetTextSafe(skillDescText, desc);
 
         // ── 현재 레벨 수치 ──
         if (currentLevel > 0)
@@ -117,7 +125,7 @@ public class SkillDetailPanelUI : MonoBehaviour
                 SetTextSafe(requiredSkillPointText, $"필요 스킬 포인트: {cost}");
                 SetTextSafe(levelConditionText, $"필요 레벨: {requiredLevel}");
                 if (learnButton != null)
-                    learnButton.interactable = status.skillPoint >= cost && partyLevel >= requiredLevel;
+                    learnButton.interactable = status.skillPoint >= cost && partyLevel >= requiredLevel && meetsRequiredSkill;
             }
             else
             {

@@ -34,8 +34,9 @@ public class BuffSkill : SkillBase
         if (data.effectSpawnDelay > 0f)
             yield return new WaitForSeconds(data.effectSpawnDelay);
 
-        // 3. 시전자 이펙트 스폰 (OneShot만 풀에서 꺼냄)
-        if (data.effectStyle == BuffSkillData.EffectStyle.OneShot)
+        // 3. 시전자 이펙트 스폰 (OneShot 파티 버프만 — 개인 버프는 BuffPresentationRoutine이 대상 위치에 스폰하므로
+        //    여기서도 꺼내면 같은 이펙트가 두 번 겹쳐 나왔음)
+        if (data.effectStyle == BuffSkillData.EffectStyle.OneShot && data.isPartyBuff)
             SpawnEffect(data);
 
         // 4. 버프 적용
@@ -229,6 +230,11 @@ public class BuffSkill : SkillBase
             case BuffSkillData.BuffEffectType.AtkSpeedBonus: return StatusEffectType.AtkSpeedUp;
             case BuffSkillData.BuffEffectType.DmgReduction:  return StatusEffectType.DmgReductionUp;
             case BuffSkillData.BuffEffectType.Invulnerable:  return StatusEffectType.Invulnerable;
+            case BuffSkillData.BuffEffectType.MoveSpeedPenalty: return StatusEffectType.MoveSpeedPenalty;
+            case BuffSkillData.BuffEffectType.PhysDmgBonus:  return StatusEffectType.PhysDmgUp;
+            case BuffSkillData.BuffEffectType.MagicDmgBonus: return StatusEffectType.MagicDmgUp;
+            case BuffSkillData.BuffEffectType.MainSkillDmgBonus: return StatusEffectType.MainSkillDmgUp;
+            case BuffSkillData.BuffEffectType.MpCostIncrease:    return StatusEffectType.MpCostUp;
             default:                                         return null;
         }
     }

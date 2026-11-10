@@ -61,8 +61,13 @@ public abstract class SkillBase : MonoBehaviour
     public const float MaxMpCostReduce   = 0.5f;
 
     // 장비 감소를 반영한 실제 마나·쿨타임 — 스킬 사용과 설명창(SkillDetailPanelUI·CombatDetailPopupUI)이 같은 값을 쓰도록 공개
+    // 마나는 마나 소모 증가 버프와 합산 (감소 10% + 증가 50% = +40%)
     public static float ReducedMpCost(float baseCost, CharacterStat caster)
-        => baseCost * (1f - Mathf.Clamp(caster != null ? caster.TotalMpReduce : 0f, 0f, MaxMpCostReduce));
+    {
+        float reduce   = Mathf.Clamp(caster != null ? caster.TotalMpReduce : 0f, 0f, MaxMpCostReduce);
+        float increase = caster != null ? Mathf.Max(0f, caster.MpCostIncrease) : 0f;
+        return baseCost * (1f - reduce + increase);
+    }
     public static float ReducedCooldown(float baseCooldown, CharacterStat caster)
         => baseCooldown * (1f - Mathf.Clamp(caster != null ? caster.TotalCDReduce : 0f, 0f, MaxCooldownReduce));
 

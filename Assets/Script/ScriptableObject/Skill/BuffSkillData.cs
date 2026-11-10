@@ -57,7 +57,11 @@ public class BuffSkillData : SkillData
                  "ManaRegen·HpRegen: 5 = 초당 +5 / HpOnHit: 10 = 적중 시 +10 / Shield: 보호막 수치\n" +
                  "Invulnerable: 수치 안 씀 (지속시간 동안 데미지·디버프 무시)\n" +
                  "CooldownReset: 초기화할 스킬 개수, 0 = 전부 (즉시 발동, 쿨 초기화 스킬은 제외)\n" +
-                 "OnHitDamage: 20 = 기본 공격 적중 시 추가 피해 +20 (치명타 미적용, 물리/마법은 아래 '적중 시 추가 피해' 설정)")]
+                 "OnHitDamage: 20 = 기본 공격 적중 시 추가 피해 +20 (치명타 미적용, 물리/마법은 아래 '적중 시 추가 피해' 설정)\n" +
+                 "MoveSpeedPenalty: 0.3 = 이동 속도 30% 감소 (디버프가 아니라 면역·해제 대상 아님, 파티 버프면 파티원 전원에게 걸림)\n" +
+                 "PhysDmgBonus·MagicDmgBonus: 0.3 = 최종 물리/마법 데미지 +30% (패시브·장비 보너스와 합산, 소환수 데미지에도 적용)\n" +
+                 "MainSkillDmgBonus: 0.3 = 메인 데미지 스킬 피해 +30% (물리/마법 데미지 증가와 합산, 서브 스킬·치명타 번개 패시브는 제외)\n" +
+                 "MpCostIncrease: 0.5 = 모든 스킬 마나 소모 +50% (장비 마나 소모 감소와 합산, 디버프가 아님)")]
         public BuffEffectType effectType;
 
         [Tooltip("AtkBonus/ApBonus/DefBonus/MagicResBonus/MaxHpBonus, DmgReduction에서만 사용.\n" +
@@ -120,6 +124,11 @@ public class BuffSkillData : SkillData
         Invulnerable,   // 무적 — 지속시간 동안 데미지·디버프 무시 (수치 칸은 쓰지 않음)
         CooldownReset,  // 즉시 스킬 쿨타임 초기화 — 수치 = 초기화할 스킬 개수 (0 이하면 전부)
         OnHitDamage,    // 기본 공격 적중 시 추가 피해 — 평타와 별개 데미지, 치명타 미적용 (물리/마법은 아래 설정)
+        MoveSpeedPenalty, // 이동 속도 감소 (0.3 = 30% 감속) — 강화의 대가용, 디버프가 아니라 면역·해제에 안 걸림
+        PhysDmgBonus,     // 최종 물리 데미지 증가 (0.3 = +30%)
+        MagicDmgBonus,    // 최종 마법 데미지 증가 (0.3 = +30%)
+        MainSkillDmgBonus, // 메인 데미지 스킬 피해 증가 (0.3 = +30%)
+        MpCostIncrease,    // 마나 소모 증가 (0.5 = +50%, 모든 스킬) — 강화의 대가용
     }
 
     [Header("적중 시 추가 피해 (OnHitDamage 효과 전용)")]

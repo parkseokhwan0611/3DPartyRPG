@@ -479,8 +479,10 @@ public class PartyStatusEffectHandler : MonoBehaviour
 
             // 이동 속도 감소 (value = 0.3 → 30% 감속)
             // value가 1(100% 감속)이면 해제 시 0으로 나누게 되어 버그가 나므로 0.99로 클램프
+            // 자신 이동 속도 감소 버프(대가)도 같은 배율 방식 — 타입만 달라서 디버프 면역·해제에 걸리지 않는다
             case StatusEffectType.Slow:
             case StatusEffectType.MoveSpeedDown:
+            case StatusEffectType.MoveSpeedPenalty:
                 float safeValue = Mathf.Clamp(effect.value, 0f, 0.99f);
                 if (apply)
                     status.moveSpeedMultiplier *= (1f - safeValue);
@@ -502,6 +504,19 @@ public class PartyStatusEffectHandler : MonoBehaviour
                 break;
             case StatusEffectType.OnHitMagicDamageUp:
                 status.buffOnHitMagicDamage += effect.value * multiplier;
+                break;
+            // 최종 피해 증가 (0.3 = +30%) — 패시브·장비 보너스와 합산되어 평타·스킬·소환수 데미지에 모두 적용
+            case StatusEffectType.PhysDmgUp:
+                status.buffPhysDmgBonus += effect.value * multiplier;
+                break;
+            case StatusEffectType.MagicDmgUp:
+                status.buffMagicDmgBonus += effect.value * multiplier;
+                break;
+            case StatusEffectType.MainSkillDmgUp:
+                status.buffMainSkillDmgBonus += effect.value * multiplier;
+                break;
+            case StatusEffectType.MpCostUp:
+                status.buffMpCostIncrease += effect.value * multiplier;
                 break;
 
             // 공격력/방어력 감소 (value = 0.3 → 30% 감소) — Slow와 동일하게 곱연산 배율로 적용하고

@@ -51,9 +51,14 @@ public static class SkillDescriptionBuilder
                 expr.Append($" + {StatName(s.stat)}({statVal:F0})×{coeff * 100f:F0}%");
             }
             expr.Append($") × {mult * 100f:F1}%");
-            float dmgBonus = dmg.useAp ? caster.MagicDmgBonus : caster.PhysDmgBonus;
-            if (dmgBonus != 0f)
+            float dmgBonus  = dmg.useAp ? caster.MagicDmgBonus : caster.PhysDmgBonus;
+            float mainBonus = dmg.GetMainSkillDmgBonus(caster);
+            if (dmgBonus != 0f && mainBonus != 0f)
+                expr.Append($" × (1 + {(dmg.useAp ? "마법" : "물리")} 데미지 증가 {dmgBonus * 100f:0.#}% + 메인 스킬 데미지 증가 {mainBonus * 100f:0.#}%)");
+            else if (dmgBonus != 0f)
                 expr.Append($" × (1 + {(dmg.useAp ? "마법" : "물리")} 데미지 증가 {dmgBonus * 100f:0.#}%)");
+            else if (mainBonus != 0f)
+                expr.Append($" × (1 + 메인 스킬 데미지 증가 {mainBonus * 100f:0.#}%)");
             sb.Append($"데미지: {expr} = {dmg.GetRawDamage(level, caster):F0}");
         }
         else
@@ -152,7 +157,10 @@ public static class SkillDescriptionBuilder
         string amount = pct ? $"{val * 100f:0.#}%" : $"{val:F0}";
         // 공격 속도·치명타처럼 원래 비율(0.2 = 20%)인 효과는 스탯 비례분도 % 단위로 표기
         bool ratio = pct || b.effectType is StatusEffectType.AtkSpeedUp or StatusEffectType.CritRateUp
-                                         or StatusEffectType.CritDamageUp or StatusEffectType.MoveSpeedUp;
+                                         or StatusEffectType.CritDamageUp or StatusEffectType.MoveSpeedUp
+                                         or StatusEffectType.MoveSpeedPenalty
+                                         or StatusEffectType.PhysDmgUp or StatusEffectType.MagicDmgUp
+                                         or StatusEffectType.MainSkillDmgUp or StatusEffectType.MpCostUp;
         string note   = GetCastBuffScalingNote(b, level, flat, scaling, ratio, caster);
 
         return b.effectType switch
@@ -168,6 +176,11 @@ public static class SkillDescriptionBuilder
             StatusEffectType.CritDamageUp   => $"치명타 데미지 +{val * 100f:0.#}%{note}{dur}",
             StatusEffectType.DmgReductionUp => $"받는 데미지 {amount} 감소{note}{dur}",
             StatusEffectType.MoveSpeedUp    => $"이동 속도 +{val * 100f:0.#}%{note}{dur}",
+            StatusEffectType.MoveSpeedPenalty => $"이동 속도 -{val * 100f:0.#}%{note}{dur}",
+            StatusEffectType.PhysDmgUp      => $"물리 데미지 +{val * 100f:0.#}%{note}{dur}",
+            StatusEffectType.MagicDmgUp     => $"마법 데미지 +{val * 100f:0.#}%{note}{dur}",
+            StatusEffectType.MainSkillDmgUp => $"메인 스킬 데미지 +{val * 100f:0.#}%{note}{dur}",
+            StatusEffectType.MpCostUp       => $"마나 소모량 +{val * 100f:0.#}%{note}{dur}",
             StatusEffectType.Invulnerable   => $"무적{dur}",
             StatusEffectType.DebuffImmune   => $"디버프 면역{dur}",
             _                               => "",
@@ -487,6 +500,11 @@ public static class SkillDescriptionBuilder
             BuffSkillData.BuffEffectType.AtkSpeedBonus => $"공격 속도 +{total * 100f:0.#}%",
             BuffSkillData.BuffEffectType.DmgReduction  => $"받는 데미지 {amount} 감소",
             BuffSkillData.BuffEffectType.Invulnerable  => "무적 (데미지·디버프 무시)",
+            BuffSkillData.BuffEffectType.MoveSpeedPenalty => $"이동 속도 -{total * 100f:0.#}%",
+            BuffSkillData.BuffEffectType.PhysDmgBonus  => $"물리 데미지 +{total * 100f:0.#}%",
+            BuffSkillData.BuffEffectType.MagicDmgBonus => $"마법 데미지 +{total * 100f:0.#}%",
+            BuffSkillData.BuffEffectType.MainSkillDmgBonus => $"메인 스킬 데미지 +{total * 100f:0.#}%",
+            BuffSkillData.BuffEffectType.MpCostIncrease    => $"마나 소모량 +{total * 100f:0.#}%",
             BuffSkillData.BuffEffectType.CooldownReset => Mathf.RoundToInt(total) > 0
                 ? $"스킬 {Mathf.RoundToInt(total)}개 쿨타임 즉시 초기화 (남은 쿨타임이 긴 순, 쿨 초기화 스킬 제외)"
                 : "모든 스킬 쿨타임 즉시 초기화 (쿨 초기화 스킬 제외)",

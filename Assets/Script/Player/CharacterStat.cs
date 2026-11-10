@@ -69,6 +69,9 @@ public partial class CharacterStat : MonoBehaviour, IDamageable
     // 스킬 쿨타임·마나 소모 감소
     public float TotalCDReduce => myStatus != null ? myStatus.TotalCDReduce : 0f;
     public float TotalMpReduce => myStatus != null ? myStatus.TotalMpReduce : 0f;
+    // 마나 소모 증가 버프 (0.5 = +50%) / 메인 데미지 스킬 피해 증가 버프 (0.3 = +30%)
+    public float MpCostIncrease    => myStatus != null ? myStatus.buffMpCostIncrease    : 0f;
+    public float MainSkillDmgBonus => myStatus != null ? myStatus.buffMainSkillDmgBonus : 0f;
 
     // 스킬 레벨 조회 (SkillManager가 SkillBase.skillLevel 동기화에 사용)
     public int GetSkillLevel(SkillData skill) => myStatus != null ? myStatus.GetSkillLevel(skill) : 0;

@@ -199,16 +199,22 @@ public class DamageSkillData : SkillData
         return total;
     }
 
-    // 치명타·연계 보너스 적용 전 데미지 = (공격력 + 스탯 배율) × 스킬 계수 × (1 + 물리/마법 데미지 증가)
-    // DamageSkill 시전과 치명타 번개 패시브(procSkill)가 같은 공식을 쓰도록 여기로 모음
-    public float GetRawDamage(int level, CharacterStat caster)
+    // 치명타·연계 보너스 적용 전 데미지 = (공격력 + 스탯 배율) × 스킬 계수 × (1 + 물리/마법 데미지 증가 [+ 메인 스킬 데미지 증가])
+    // DamageSkill 시전과 치명타 번개 패시브(procSkill)가 같은 공식을 쓰도록 여기로 모음.
+    // 치명타 번개는 패시브 발동이라 메인 스킬 데미지 증가 버프를 받지 않는다 (includeMainBonus = false)
+    public float GetRawDamage(int level, CharacterStat caster, bool includeMainBonus = true)
     {
         if (caster == null) return 0f;
         float baseStat  = useAp ? caster.TotalAp : caster.TotalAtk;
         float statBonus = GetTotalStatBonus(level, s => GetCasterStat(caster, s));
-        float dmgBonus  = useAp ? caster.MagicDmgBonus : caster.PhysDmgBonus;
+        float dmgBonus  = (useAp ? caster.MagicDmgBonus : caster.PhysDmgBonus)
+                        + (includeMainBonus ? GetMainSkillDmgBonus(caster) : 0f);
         return (baseStat + statBonus) * GetDamageMultiplier(level) * (1f + dmgBonus);
     }
+
+    // 메인 스킬일 때만 받는 메인 스킬 데미지 증가 버프 수치
+    public float GetMainSkillDmgBonus(CharacterStat caster)
+        => caster != null && skillCategory == SkillCategory.Main ? caster.MainSkillDmgBonus : 0f;
 
     public static float GetCasterStat(CharacterStat caster, ScalingStat stat)
     {

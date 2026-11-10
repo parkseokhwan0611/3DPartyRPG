@@ -128,9 +128,9 @@ public string charName;
     public float BaseMagicRes  => classData.baseMagicRes + equipMagicRes;
     public float TotalMagicRes => ApplySkillModifiers(ModifierStat.MagicRes, BaseMagicRes);
 
-    // 피해 증가 합산 (패시브 + 장비)
-    public float TotalPhysDmgBonus  => physDmgBonus  + equipPhysDmg;
-    public float TotalMagicDmgBonus => magicDmgBonus + equipMagicDmg;
+    // 피해 증가 합산 (패시브 + 장비 + 버프)
+    public float TotalPhysDmgBonus  => physDmgBonus  + equipPhysDmg  + buffPhysDmgBonus;
+    public float TotalMagicDmgBonus => magicDmgBonus + equipMagicDmg + buffMagicDmgBonus;
 
     // 스킬 쿨타임·마나 소모 감소 (현재는 장비만, 추후 패시브 확장 가능)
     public float TotalCDReduce => equipCDReduce;
@@ -148,6 +148,13 @@ public string charName;
     // 기본 공격 적중 시 추가 피해 (버프 전용, 세이브 대상 아님) — 치명타 없이 별도 데미지로 들어감
     public float buffOnHitPhysDamage  = 0f;
     public float buffOnHitMagicDamage = 0f;
+    // 최종 피해 증가 버프 (버프 전용, 세이브 대상 아님) — 0.3 = +30%, 패시브·장비 보너스와 합산
+    public float buffPhysDmgBonus  = 0f;
+    public float buffMagicDmgBonus = 0f;
+    // 메인 데미지 스킬 피해 증가 버프 (0.3 = +30%, 물리/마법 피해 증가와 합산) — 버프 전용, 세이브 대상 아님
+    public float buffMainSkillDmgBonus = 0f;
+    // 마나 소모 증가 버프 (0.5 = +50%, 장비 마나 소모 감소와 합산) — 버프 전용, 세이브 대상 아님
+    public float buffMpCostIncrease = 0f;
 
     // 받는 데미지 감소 — 패시브 전용, 세이브 대상 아님 (로드 시 패시브 재적용으로 복원)
     // 퍼센트(0.1 = 10%)는 합산, 고정은 방어력·퍼센트 감소 뒤에 한 대마다 뺀다
@@ -216,6 +223,7 @@ public string charName;
 
         if (currentLevel >= skill.maxLevel) return false;
         if (skill.skillPointCost == null || skill.skillPointCost.Length == 0) return false;
+        if (!skill.MeetsRequiredSkill(this)) return false; // 선행 스킬 미습득
 
         // maxLevel과 skillPointCost 배열 길이가 어긋나 있어도 크래시 없이 마지막 유효값으로 대체
         int costIdx = Mathf.Clamp(currentLevel, 0, skill.skillPointCost.Length - 1);

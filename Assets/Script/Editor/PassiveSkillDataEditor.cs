@@ -89,7 +89,9 @@ public class PassiveSkillDataEditor : Editor
             case PassiveSkillData.PassiveEffectType.OnHitPoison:
                 return "평타 적중 시 발동.\nProc Chance: 1 = 100%\nProc Value: 0.1 = 초당 (근접: 물리 공격력 / 원거리: 마법 공격력)의 10% 마법 데미지\nProc Duration: 독 지속시간(초)";
             case PassiveSkillData.PassiveEffectType.OnCritLightning:
-                return "평타가 치명타일 때 발동.\nProc Chance: 1 = 100%\nProc Skill: 이 데미지 스킬의 공식으로 데미지 (비우면 마법 공격력 × Proc Value)\nProc Effect Pool Key: 대상 위치 이펙트";
+                return "평타가 치명타일 때 발동.\nProc Chance: 1 = 100%\nProc Skill: 이 데미지 스킬의 공식으로 데미지 (비우면 마법 공격력 × Proc Value)\n" +
+                       "  장판형 스킬이면 그 스킬과 똑같이 대상 위치에 장판(이펙트·범위·판정 딜레이·효과음) 발동 — 이때 Proc Effect Pool Key는 안 씀\n" +
+                       "Proc Effect Pool Key: 대상 위치 이펙트 (장판형이 아닐 때)";
             case PassiveSkillData.PassiveEffectType.OnHitCooldownReset:
                 return "평타 적중 시 발동.\nProc Chance: 0.05 = 5%\n퀵슬롯 스킬 쿨타임을 전부 초기화 (쿨 초기화 효과가 있는 스킬은 제외)";
             case PassiveSkillData.PassiveEffectType.OnHitShield:
