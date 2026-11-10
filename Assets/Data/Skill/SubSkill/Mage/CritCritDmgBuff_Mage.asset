@@ -21,24 +21,28 @@ MonoBehaviour:
   skillType: 1
   skillCategory: 1
   sfxEntries:
-  - sfxKey: Tanker_Sub1
+  - sfxKey: Mage_Sub1
     delay: 0
     repeatCount: 1
     repeatInterval: 0.5
   skillPriority: 0
-  maxLevel: 4
-  requiredCharLevel: 28
+  maxLevel: 5
+  requiredCharLevel: 18
+  requiredSkill: {fileID: 0}
+  requiredSkillLevel: 1
   mpCost:
   - 30
-  - 33
+  - 32
+  - 34
   - 37
   - 40
   cooldown:
   - 30
+  - 29
   - 28
-  - 26
+  - 27
   - 25
-  skillPointCost: 04000000030000000300000002000000
+  skillPointCost: 0200000002000000020000000300000003000000
   isPartyBuff: 0
   effectStyle: 1
   effectPoolKey: 
@@ -53,14 +57,14 @@ MonoBehaviour:
   buffEffects:
   - effectType: 4
     valueMode: 1
-    baseValue: 0.15
+    baseValue: 0.1
     valuePerLevel: 0.025
     scalingStat: 0
     scalingCoeff: 0
     scalingPerLevel: 0
   - effectType: 5
     valueMode: 1
-    baseValue: 0.3
+    baseValue: 0.2
     valuePerLevel: 0.05
     scalingStat: 0
     scalingCoeff: 0
