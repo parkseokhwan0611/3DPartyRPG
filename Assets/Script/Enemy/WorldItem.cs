@@ -56,7 +56,8 @@ public class WorldItem : MonoBehaviour
         if (_inside.Count > 0)
             _inside.RemoveWhere(m => m == null || !m.isActiveAndEnabled || m.CurrentState == PartyMemberScript.MemberState.Dead);
 
-        bool anyUiOpen = MenuTabUI.IsOpen || ShopUI.IsOpen || DialogueUI.IsOpen || EnhancementUI.IsOpen || SceneLoader.IsLoading;
+        bool anyUiOpen = MenuTabUI.IsOpen || ShopUI.IsOpen || DialogueUI.IsOpen || EnhancementUI.IsOpen || SceneLoader.IsLoading
+                      || DamageSkill.IsAnyVanishing; // 은신 스킬 중엔 아이템 줍기 불가
         if (_inside.Count > 0 && !anyUiOpen && Input.GetKeyDown(KeyCode.F))
             TryPickup();
     }

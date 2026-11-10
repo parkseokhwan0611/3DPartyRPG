@@ -105,7 +105,8 @@ public class NpcInteractable : MonoBehaviour
         UpdateProximity();
 
         // 인벤토리·상점·대화 UI가 열려있으면 F키 차단
-        bool anyUiOpen = MenuTabUI.IsOpen || ShopUI.IsOpen || DialogueUI.IsOpen || EnhancementUI.IsOpen || SceneLoader.IsLoading;
+        bool anyUiOpen = MenuTabUI.IsOpen || ShopUI.IsOpen || DialogueUI.IsOpen || EnhancementUI.IsOpen || SceneLoader.IsLoading
+                      || DamageSkill.IsAnyVanishing; // 은신 스킬 중엔 대화(퀘스트·상점·강화) 불가
         if (_playerInRange && !_isDialogueActive && !anyUiOpen && Input.GetKeyDown(KeyCode.F))
             StartDialogue();
     }

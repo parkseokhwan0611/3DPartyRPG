@@ -208,6 +208,9 @@ public class PartyManager : MonoBehaviour
 
     void HandleLeaderChangeInput()
     {
+        // 은신 스킬 중엔 교체 불가 — 숨은 캐릭터가 팔로워가 되면서 연출·무적이 꼬임
+        if (DamageSkill.IsAnyVanishing) return;
+
         // 죽은 캐릭터는 ChangeLeader 내부에서 걸러짐
         if (Input.GetKeyDown(KeyCode.Alpha1)) ChangeLeader(0);
         if (Input.GetKeyDown(KeyCode.Alpha2)) ChangeLeader(1);

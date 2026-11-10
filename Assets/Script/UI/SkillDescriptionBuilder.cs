@@ -134,7 +134,7 @@ public static class SkillDescriptionBuilder
             lines.AppendLine($"[어그로] 주변 {dmg.aggroRange:F0}m 적에게 {dmg.aggroAmount:F0} 어그로");
 
         if (dmg.vanishCaster)
-            lines.AppendLine($"[은신] 시전 중 {dmg.vanishDuration:0.##}초 동안 모습을 감추고 무적");
+            lines.AppendLine($"[무적] 시전 중 {dmg.VanishEndTime:0.##}초 동안 무적");
 
         return lines.ToString().TrimEnd('\n', '\r');
     }

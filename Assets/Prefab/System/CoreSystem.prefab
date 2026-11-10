@@ -81,7 +81,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: ce29ad0ab4947ff448997a7db3175de5, type: 2}
   - {fileID: 11400000, guid: c6af59a8b0f2a424ea7b78d92785ff19, type: 2}
   startWithSecondClass: 000000
-  partyLevel: 1
+  partyLevel: 30
   partyExp: 0
   gold: 0
   selectedPartyIndex: 0
@@ -108,7 +108,7 @@ MonoBehaviour:
   partyQuickSlots: []
   hpPotionSlotItemId: 
   mpPotionSlotItemId: 
-  startSkillPoint: 1
+  startSkillPoint: 30
   startItems:
   - item: {fileID: 11400000, guid: 780180cf1b0df8945a2df703d6f54460, type: 2}
     count: 5
@@ -444,6 +444,9 @@ MonoBehaviour:
     volumeMultiplier: 0.8
   - name: SkeletonBossSkill2
     clip: {fileID: 8300000, guid: 52a54358be7566d45bbfab7449b932ce, type: 3}
+    volumeMultiplier: 0.8
+  - name: Tanker_Main4
+    clip: {fileID: 8300000, guid: d7cb632881a407a4681f55496cf66297, type: 3}
     volumeMultiplier: 0.8
   sfxVolume: 0.5
   sfxSourceCount: 8

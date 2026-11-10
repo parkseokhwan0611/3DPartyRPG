@@ -114,7 +114,8 @@ public class Portal : MonoBehaviour
             RefreshPrompt();
         }
 
-        bool anyUiOpen = MenuTabUI.IsOpen || ShopUI.IsOpen || DialogueUI.IsOpen || EnhancementUI.IsOpen;
+        bool anyUiOpen = MenuTabUI.IsOpen || ShopUI.IsOpen || DialogueUI.IsOpen || EnhancementUI.IsOpen
+                      || DamageSkill.IsAnyVanishing; // 은신 스킬 중엔 포탈 이동 불가
         if (_inside.Count > 0 && !anyUiOpen && !SceneLoader.IsLoading && Input.GetKeyDown(KeyCode.F))
             UsePortal();
     }

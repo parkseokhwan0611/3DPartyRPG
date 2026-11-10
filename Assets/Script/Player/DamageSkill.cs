@@ -55,6 +55,7 @@ public class DamageSkill : SkillBase
         if (data.vanishCaster)
         {
             CancelVanish();
+            SetVanishing(true);
             _vanishRoutine = StartCoroutine(VanishRoutine(data, target, targetPos));
         }
 
@@ -114,6 +115,9 @@ public class DamageSkill : SkillBase
             : data.animDuration - data.effectSpawnDelay - FiringTime(data);
         if (remaining > 0f)
             yield return new WaitForSeconds(remaining);
+
+        // 교체·포탈·NPC 차단은 나타난 뒤 마무리 모션까지 — 스킬이 완전히 끝날 때 해제
+        if (data.vanishCaster) SetVanishing(false);
     }
 
     // ─────────────────────────────────────────────────────────────────
@@ -122,21 +126,37 @@ public class DamageSkill : SkillBase
 
     private Coroutine _vanishRoutine;
     private StatusEffect _vanishInvuln;
+
+    // 파티원 중 누군가 은신(무적) 스킬을 쓰는 중인지 — 시전부터 스킬이 끝날 때까지 파티원 교체·포탈·NPC·아이템 줍기를 막는다
+    private static int _vanishingCount;
+    private bool _isVanishing;
+    public static bool IsAnyVanishing => _vanishingCount > 0;
+
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+    private static void ResetVanishingCount() => _vanishingCount = 0; // 도메인 리로드 없이 플레이 모드 재진입 대비
+
+    private void SetVanishing(bool on)
+    {
+        if (_isVanishing == on) return;
+        _isVanishing = on;
+        _vanishingCount = Mathf.Max(0, _vanishingCount + (on ? 1 : -1));
+    }
     private readonly System.Collections.Generic.List<Renderer> _hiddenRenderers = new System.Collections.Generic.List<Renderer>();
 
     private IEnumerator VanishRoutine(DamageSkillData data, Transform target, Vector3 lastTargetPos)
     {
+        // 무적 스킬 — 시전 순간부터 다시 나타날 때까지 무적 (숨는 건 모션 연출일 뿐, 몬스터 어그로는 그대로 유지).
+        // 기존 상태 효과로 데미지·디버프(스턴 포함) 무시. 나타날 때 이 효과만 직접 지운다
+        if (statusHandler != null)
+        {
+            _vanishInvuln = new StatusEffect(StatusEffectType.Invulnerable, 0f, data.VanishEndTime + 0.5f, gameObject);
+            statusHandler.ApplyBuff(_vanishInvuln);
+        }
+
         if (data.vanishStartTime > 0f)
             yield return new WaitForSeconds(data.vanishStartTime);
 
         SetCasterHidden(true);
-
-        // 무적은 기존 상태 효과로 — 데미지·디버프(스턴 포함) 무시. 나타날 때 이 효과만 직접 지운다
-        if (statusHandler != null)
-        {
-            _vanishInvuln = new StatusEffect(StatusEffectType.Invulnerable, 0f, data.vanishDuration + 0.5f, gameObject);
-            statusHandler.ApplyBuff(_vanishInvuln);
-        }
 
         // 숨어 있는 동안 대상 위치를 계속 기억 (대상이 죽어 사라져도 마지막 위치 기준으로 나타남)
         float t = 0f;
@@ -226,6 +246,7 @@ public class DamageSkill : SkillBase
             _vanishRoutine = null;
         }
         EndVanish();
+        SetVanishing(false);
     }
 
     protected override void OnForceStopped() => CancelVanish();
