@@ -184,6 +184,7 @@ public abstract class SkillBase : MonoBehaviour
         }
         // 아직 안 나간 지연·반복 효과음도 취소 — 끊긴 스킬의 소리가 뒤늦게 나지 않게
         StopSkillSfx();
+        OnForceStopped();
 
         // IsCastingSkill 즉시 해제
         if (attackBase != null) attackBase.IsCastingSkill = false;
@@ -255,6 +256,9 @@ public abstract class SkillBase : MonoBehaviour
     }
 
     protected abstract IEnumerator ExecuteSkill(Transform target);
+
+    // 스킬이 중간에 끊겼을 때 스킬별 정리 (숨긴 캐릭터 되돌리기 등) — ExecuteSkill의 나머지가 실행되지 않으므로
+    protected virtual void OnForceStopped() { }
 
     // ─────────────────────────────────────────────────────────────────
     // 스킬 SFX 재생 (애니메이션 시작 시점 기준, 항목별 delay 뒤에 재생)

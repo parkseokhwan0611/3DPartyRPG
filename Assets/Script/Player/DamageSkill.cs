@@ -50,6 +50,14 @@ public class DamageSkill : SkillBase
         // 시전 딜레이 동안 대상이 죽어 사라질 수 있으므로 위치를 미리 기억 (장판·수류탄은 그 자리에 떨어진다)
         Vector3 targetPos = target.position;
 
+        // 은신형 — 모션 시작 기준 타이밍으로 따로 돌린다 (이펙트 스폰 타이밍과 독립)
+        float castStartTime = Time.time;
+        if (data.vanishCaster)
+        {
+            CancelVanish();
+            _vanishRoutine = StartCoroutine(VanishRoutine(data, target, targetPos));
+        }
+
         // 3. 이펙트 스폰 타이밍 대기
         if (data.effectSpawnDelay > 0f)
             yield return new WaitForSeconds(data.effectSpawnDelay);
@@ -91,14 +99,138 @@ public class DamageSkill : SkillBase
         if (data.hasNextSkillBuff)
             myStat.ApplyNextSkillBuff(data.nextSkillDamageBonus, data.nextSkillBuffDuration);
 
+        // 은신형은 다시 나타날 때까지 다른 스킬로 끊지 못하게 발동 상태 유지
+        if (data.vanishCaster)
+        {
+            while (_vanishRoutine != null) yield return null;
+        }
+
         // ★ 판정 완료 → 후딜 캔슬 허용
         ReleaseActivating();
 
-        // 8. 후딜 대기 — 연사에 쓴 시간만큼은 이미 지났으므로 뺀다
-        float remaining = data.animDuration - data.effectSpawnDelay - FiringTime(data);
+        // 8. 후딜 대기 — 연사에 쓴 시간만큼은 이미 지났으므로 뺀다 (은신형은 나타날 때까지 기다린 시간도 뺀다)
+        float remaining = data.vanishCaster
+            ? data.animDuration - (Time.time - castStartTime)
+            : data.animDuration - data.effectSpawnDelay - FiringTime(data);
         if (remaining > 0f)
             yield return new WaitForSeconds(remaining);
     }
+
+    // ─────────────────────────────────────────────────────────────────
+    // 은신 연출 (검기 난무형) — 숨는 동안 무적, 끝나면 지정 위치에 다시 나타남
+    // ─────────────────────────────────────────────────────────────────
+
+    private Coroutine _vanishRoutine;
+    private StatusEffect _vanishInvuln;
+    private readonly System.Collections.Generic.List<Renderer> _hiddenRenderers = new System.Collections.Generic.List<Renderer>();
+
+    private IEnumerator VanishRoutine(DamageSkillData data, Transform target, Vector3 lastTargetPos)
+    {
+        if (data.vanishStartTime > 0f)
+            yield return new WaitForSeconds(data.vanishStartTime);
+
+        SetCasterHidden(true);
+
+        // 무적은 기존 상태 효과로 — 데미지·디버프(스턴 포함) 무시. 나타날 때 이 효과만 직접 지운다
+        if (statusHandler != null)
+        {
+            _vanishInvuln = new StatusEffect(StatusEffectType.Invulnerable, 0f, data.vanishDuration + 0.5f, gameObject);
+            statusHandler.ApplyBuff(_vanishInvuln);
+        }
+
+        // 숨어 있는 동안 대상 위치를 계속 기억 (대상이 죽어 사라져도 마지막 위치 기준으로 나타남)
+        float t = 0f;
+        while (t < data.vanishDuration)
+        {
+            if (target != null && target.gameObject.activeInHierarchy) lastTargetPos = target.position;
+            t += Time.deltaTime;
+            yield return null;
+        }
+
+        MoveToReappearPosition(data, lastTargetPos);
+        EndVanish();
+
+        if (anim != null && !string.IsNullOrEmpty(data.reappearAnimTrigger))
+        {
+            anim.ResetTrigger(data.reappearAnimTrigger);
+            anim.SetTrigger(data.reappearAnimTrigger);
+        }
+
+        _vanishRoutine = null;
+    }
+
+    private void MoveToReappearPosition(DamageSkillData data, Vector3 targetPos)
+    {
+        Vector3 toCaster = transform.position - targetPos;
+        toCaster.y = 0f;
+        toCaster = toCaster.sqrMagnitude > 0.0001f ? toCaster.normalized : -transform.forward;
+
+        if (data.reappearPosition != DamageSkillData.ReappearPosition.Origin)
+        {
+            Vector3 dest = data.reappearPosition == DamageSkillData.ReappearPosition.FrontOfTarget
+                ? targetPos + toCaster * data.reappearDistance
+                : targetPos - toCaster * data.reappearDistance;
+
+            // 벽 너머·낭떠러지로 나타나지 않게 가까운 NavMesh 위로 보정 (못 찾으면 제자리)
+            if (UnityEngine.AI.NavMesh.SamplePosition(dest, out var hit, 2f, UnityEngine.AI.NavMesh.AllAreas))
+            {
+                if (agent != null && agent.enabled) agent.Warp(hit.position);
+                else                                transform.position = hit.position;
+            }
+        }
+
+        // 나타나면서 대상을 바라봄
+        Vector3 look = targetPos - transform.position;
+        look.y = 0f;
+        if (look.sqrMagnitude > 0.0001f) transform.rotation = Quaternion.LookRotation(look);
+    }
+
+    // 렌더러만 끈다 — 오브젝트를 끄면 Animator·NavMeshAgent·스탯 스크립트까지 멈추고, 천 시뮬레이션이 튐.
+    // 원래 꺼져 있던 렌더러는 건드리지 않도록 이번에 끈 것만 기억했다가 되돌린다
+    private void SetCasterHidden(bool hidden)
+    {
+        if (hidden)
+        {
+            if (_hiddenRenderers.Count > 0) return;
+            foreach (var r in GetComponentsInChildren<Renderer>())
+            {
+                if (!r.enabled) continue;
+                r.enabled = false;
+                _hiddenRenderers.Add(r);
+            }
+        }
+        else
+        {
+            foreach (var r in _hiddenRenderers)
+                if (r != null) r.enabled = true;
+            _hiddenRenderers.Clear();
+        }
+    }
+
+    private void EndVanish()
+    {
+        SetCasterHidden(false);
+        if (_vanishInvuln != null)
+        {
+            statusHandler?.RemoveBuffEffect(_vanishInvuln);
+            _vanishInvuln = null;
+        }
+    }
+
+    // 끊기거나(파티원 교체·장비 변경 등) 비활성화되면 그 자리에서 바로 다시 보이게
+    private void CancelVanish()
+    {
+        if (_vanishRoutine != null)
+        {
+            StopCoroutine(_vanishRoutine);
+            _vanishRoutine = null;
+        }
+        EndVanish();
+    }
+
+    protected override void OnForceStopped() => CancelVanish();
+
+    private void OnDisable() => CancelVanish();
 
     // ─────────────────────────────────────────────────────────────────
     // 데미지 계산

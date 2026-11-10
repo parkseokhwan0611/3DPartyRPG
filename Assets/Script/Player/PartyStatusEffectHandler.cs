@@ -313,6 +313,12 @@ public class PartyStatusEffectHandler : MonoBehaviour
             RemoveBuffInstance(effect);
     }
 
+    // 특정 효과 하나만 제거 — 같은 타입의 다른 출처 효과(예: 힐러가 걸어준 무적)는 그대로 둔다
+    public void RemoveBuffEffect(StatusEffect effect)
+    {
+        if (effect != null) RemoveBuffInstance(effect);
+    }
+
     private void RemoveBuffInstance(StatusEffect effect)
     {
         if (!activeBuffs.Remove(effect)) return;

@@ -139,6 +139,32 @@ public class DamageSkillData : SkillData
              "위의 사운드(Sfx Entries)는 모션 시작 기준으로 한 번만 나므로, 총소리는 여기에 넣고 Sfx Entries에서는 빼기")]
     public string projectileShotSfxKey;
 
+    public enum ReappearPosition
+    {
+        Origin,        // 숨었던 자리 그대로
+        FrontOfTarget, // 대상 앞 (시전자가 있던 쪽)
+        BehindTarget,  // 대상 뒤 (관통해서 지나간 느낌)
+    }
+
+    [Header("은신 연출 (선택 — 검기 난무형)")]
+    [Tooltip("true = 이펙트가 나오는 동안 시전자를 숨기고 무적으로 만든 뒤, 끝나면 다시 나타남\n" +
+             "· 숨는 시점 = 모션 시작 후 Vanish Start Time초, 나타나는 시점 = 그로부터 Vanish Duration초 뒤\n" +
+             "· 숨어 있는 동안 무적(데미지·디버프·스턴 무시)이고, 다른 스킬로 끊을 수 없음\n" +
+             "· 시전자 아래 렌더러(몸·무기·그림자·아우라)를 전부 끔 — 스크립트·애니메이터는 계속 동작\n" +
+             "· 데미지는 위의 장판 설정(Spawn At Target + 틱 간격)으로 여러 번 주는 걸 권장\n" +
+             "· Anim Duration(전체 길이)은 나타난 뒤 모션까지 포함한 길이로 — 나타나기 전엔 끝나지 않음")]
+    public bool  vanishCaster   = false;
+    [Min(0f)] public float vanishStartTime = 0.2f;
+    [Min(0f)] public float vanishDuration  = 1.5f;
+    [Tooltip("다시 나타날 위치. 대상이 사라졌으면 마지막으로 본 대상 위치 기준")]
+    public ReappearPosition reappearPosition = ReappearPosition.Origin;
+    [Tooltip("FrontOfTarget / BehindTarget일 때 대상 중심에서 떨어진 거리 (m)")]
+    [Min(0f)] public float reappearDistance = 1.5f;
+    [Tooltip("나타나는 순간 재생할 애니메이터 트리거 (마무리 베기 등). 비우면 없음")]
+    public string reappearAnimTrigger;
+
+    public float VanishEndTime => vanishStartTime + vanishDuration;
+
     // 범위 판정 스킬인지 (설명문 [광역] 표기용) — 수류탄형은 항상 범위 폭발, 장판형은 범위 안의 적 전부 판정
     // (투사체·수류탄이 장판형보다 우선하므로 그 경우의 장판 설정은 무시)
     public bool IsZone       => spawnAtTarget && !throwGrenade && !fireProjectile;
