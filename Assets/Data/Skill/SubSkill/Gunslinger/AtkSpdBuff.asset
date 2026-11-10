@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   skillId: AtkSpdBuff
   skillName: "\uC0AC\uB0E5 \uBCF8\uB2A5"
-  description: "\uC9C0\uC18D\uC2DC\uAC04 \uB3D9\uC548 \uC790\uC2E0\uC758 \uACF5\uACA9\uC18D\uB3C4\uAC00
-    \uC99D\uAC00\uD569\uB2C8\uB2E4."
+  description: "\uC9C0\uC18D\uC2DC\uAC04 \uB3D9\uC548 \uC790\uC2E0\uC758 \uACF5\uACA9
+    \uC18D\uB3C4\uAC00 \uC99D\uAC00\uD569\uB2C8\uB2E4."
   icon: {fileID: 21300000, guid: 75d5412a2f16669458c6c1ba0c4fe52c, type: 3}
   requiredClass: 3
   skillType: 1
@@ -60,6 +60,7 @@ MonoBehaviour:
     scalingStat: 0
     scalingCoeff: 0
     scalingPerLevel: 0
+  onHitDamageIsMagic: 0
   thornsIsMagic: 1
   thornsScalings: []
   thornsAggroPerHit: 15

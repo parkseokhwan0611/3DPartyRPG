@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   skillId: SummonerShield
   skillName: "\uC545\uB839\uC758 \uAC00\uD638"
-  description: "\uD30C\uD2F0\uC6D0 \uBAA8\uB450\uC5D0\uAC8C \uBCF4\uD638\uB9C9\uC744
-    \uC90D\uB2C8\uB2E4."
+  description: "\uC9C0\uC18D\uC2DC\uAC04\uB3D9\uC548 \uD30C\uD2F0\uC6D0\uC5D0\uAC8C
+    \uBCF4\uD638\uB9C9\uC744 \uBD80\uC5EC\uD569\uB2C8\uB2E4."
   icon: {fileID: 21300000, guid: 56c641bf550598942ad82a77fcd1d7a3, type: 3}
   requiredClass: 5
   skillType: 1
@@ -60,6 +60,7 @@ MonoBehaviour:
     scalingStat: 4
     scalingCoeff: 3
     scalingPerLevel: 0.5
+  onHitDamageIsMagic: 0
   thornsIsMagic: 1
   thornsScalings: []
   thornsAggroPerHit: 15

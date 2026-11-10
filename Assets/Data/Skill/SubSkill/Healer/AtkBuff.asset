@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   skillId: AtkBuff
   skillName: "\uCD95\uBCF5\uC758 \uAC00\uD638"
-  description: "\uD30C\uD2F0\uC6D0\uC758 \uBB3C\uB9AC \uACF5\uACA9\uB825\uACFC \uB9C8\uBC95
-    \uACF5\uACA9\uB825\uC774 \uC99D\uAC00\uD569\uB2C8\uB2E4."
+  description: "\uC9C0\uC18D\uC2DC\uAC04 \uB3D9\uC548 \uD30C\uD2F0\uC6D0\uC758 \uBB3C\uB9AC
+    \uACF5\uACA9\uB825\uACFC \uB9C8\uBC95 \uACF5\uACA9\uB825\uC774 \uC99D\uAC00\uD569\uB2C8\uB2E4."
   icon: {fileID: 21300000, guid: 918887f1aacb71b4cb34e86339c92e1b, type: 3}
   requiredClass: 4
   skillType: 1
@@ -23,6 +23,8 @@ MonoBehaviour:
   sfxEntries:
   - sfxKey: Healer_Sub2
     delay: 0
+    repeatCount: 1
+    repeatInterval: 0.5
   skillPriority: 2
   maxLevel: 5
   requiredCharLevel: 8
@@ -65,6 +67,7 @@ MonoBehaviour:
     scalingStat: 4
     scalingCoeff: 0.2
     scalingPerLevel: 0.05
+  onHitDamageIsMagic: 0
   thornsIsMagic: 1
   thornsScalings: []
   thornsAggroPerHit: 15

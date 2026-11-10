@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   skillId: DefMresUp
   skillName: "\uC218\uD638\uC790\uC758 \uACB0\uC758"
-  description: "\uC9C0\uC18D\uC2DC\uAC04 \uB3D9\uC548 \uBC29\uC5B4\uB825\uACFC \uB9C8\uBC95 \uC800\uD56D\uB825\uC774
-    \uC99D\uAC00\uD569\uB2C8\uB2E4."
+  description: "\uC9C0\uC18D\uC2DC\uAC04 \uB3D9\uC548 \uD30C\uD2F0\uC6D0\uC758 \uBC29\uC5B4\uB825\uACFC
+    \uB9C8\uBC95 \uC800\uD56D\uB825\uC774 \uC99D\uAC00\uD569\uB2C8\uB2E4."
   icon: {fileID: 21300000, guid: 6402e62a7d64d494ca6f3fd91f490099, type: 3}
   requiredClass: 0
   skillType: 1
@@ -23,6 +23,8 @@ MonoBehaviour:
   sfxEntries:
   - sfxKey: Tanker_Sub1
     delay: 0
+    repeatCount: 1
+    repeatInterval: 0.5
   skillPriority: 0
   maxLevel: 5
   requiredCharLevel: 1
@@ -52,14 +54,21 @@ MonoBehaviour:
   durationPerLevel: 1
   buffEffects:
   - effectType: 2
+    valueMode: 0
     baseValue: 20
     valuePerLevel: 5
     scalingStat: 2
     scalingCoeff: 0.05
     scalingPerLevel: 0.005
   - effectType: 3
+    valueMode: 0
     baseValue: 20
     valuePerLevel: 5
     scalingStat: 2
     scalingCoeff: 0.05
     scalingPerLevel: 0.005
+  onHitDamageIsMagic: 0
+  thornsIsMagic: 1
+  thornsScalings: []
+  thornsAggroPerHit: 15
+  thornsHitEffectPoolKey: 

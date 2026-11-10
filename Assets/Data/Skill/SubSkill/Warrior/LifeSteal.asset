@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   skillId: LifeSteal
   skillName: "\uC0DD\uBA85 \uD761\uC218"
-  description: "\uC9C0\uC18D\uC2DC\uAC04 \uB3D9\uC548 \uAE30\uBCF8 \uACF5\uACA9\uC2DC
-    \uCCB4\uB825\uC744 \uD68C\uBCF5\uD569\uB2C8\uB2E4."
+  description: "\uC9C0\uC18D\uC2DC\uAC04 \uB3D9\uC548 \uC790\uC2E0\uC758 \uAE30\uBCF8
+    \uACF5\uACA9\uC774 \uCCB4\uB825\uC744 \uD68C\uBCF5\uD569\uB2C8\uB2E4."
   icon: {fileID: 21300000, guid: 8604be6b210bbfe4da50f28820993dc9, type: 3}
   requiredClass: 1
   skillType: 1
@@ -23,6 +23,8 @@ MonoBehaviour:
   sfxEntries:
   - sfxKey: Tanker_Sub2
     delay: 0
+    repeatCount: 1
+    repeatInterval: 0.5
   skillPriority: 0
   maxLevel: 5
   requiredCharLevel: 8
@@ -58,6 +60,7 @@ MonoBehaviour:
     scalingStat: 1
     scalingCoeff: 0.01
     scalingPerLevel: 0.002
+  onHitDamageIsMagic: 0
   thornsIsMagic: 1
   thornsScalings: []
   thornsAggroPerHit: 15

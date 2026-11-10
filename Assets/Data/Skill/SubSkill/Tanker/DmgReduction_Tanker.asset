@@ -1,0 +1,65 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a70ac1c355a5a5a49b0f39626fc9e2be, type: 3}
+  m_Name: DmgReduction_Tanker
+  m_EditorClassIdentifier: 
+  skillId: DmgReduction_Tanker
+  skillName: "\uC2E0\uC131\uD55C \uC218\uD638"
+  description: "\uC9C0\uC18D\uC2DC\uAC04 \uB3D9\uC548 \uC544\uAD70\uC5D0\uAC8C \uD53C\uD574
+    \uAC10\uC18C\uB97C \uBD80\uC5EC\uD569\uB2C8\uB2E4."
+  icon: {fileID: 21300000, guid: 513d2090ba754a7438ffc867ebc2e8f2, type: 3}
+  requiredClass: 0
+  skillType: 1
+  skillCategory: 1
+  sfxEntries:
+  - sfxKey: Tanker_Sub1
+    delay: 0
+    repeatCount: 1
+    repeatInterval: 0.5
+  skillPriority: 0
+  maxLevel: 4
+  requiredCharLevel: 28
+  mpCost:
+  - 20
+  - 23
+  - 26
+  - 30
+  cooldown:
+  - 30
+  - 28
+  - 26
+  - 25
+  skillPointCost: 04000000030000000300000020000000
+  isPartyBuff: 1
+  effectStyle: 1
+  effectPoolKey: DefBuff
+  auraIndex: 3
+  animTriggerName: doBuffSkill
+  animDuration: 1.2
+  effectSpawnDelay: 0.6
+  effectSpawnOffset: {x: 0, y: 1, z: 0}
+  effectSpawnRotation: {x: 0, y: 0, z: 0}
+  baseDuration: 6
+  durationPerLevel: 1
+  buffEffects:
+  - effectType: 16
+    valueMode: 1
+    baseValue: 0.15
+    valuePerLevel: 0.05
+    scalingStat: 0
+    scalingCoeff: 0
+    scalingPerLevel: 0
+  onHitDamageIsMagic: 0
+  thornsIsMagic: 1
+  thornsScalings: []
+  thornsAggroPerHit: 15
+  thornsHitEffectPoolKey: 
