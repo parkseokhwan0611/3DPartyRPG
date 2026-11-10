@@ -1,0 +1,88 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e5e45a76e89a01947a92e73bf3f3bb4e, type: 3}
+  m_Name: IceSlash
+  m_EditorClassIdentifier: 
+  skillId: IceSlash
+  skillName: "\uD639\uD55C\uC758 \uAC80\uACA9"
+  description: "\uC7A0\uC2DC \uBB34\uC801\uC774 \uB418\uC5B4 \uC801\uB4E4\uC5D0\uAC8C
+    \uD53C\uD574\uB97C \uC785\uD799\uB2C8\uB2E4."
+  icon: {fileID: 21300000, guid: d520463c6ea6a9340811452d2a5cfe83, type: 3}
+  requiredClass: 0
+  skillType: 0
+  skillCategory: 0
+  sfxEntries:
+  - sfxKey: Tanker_Main6
+    delay: -0.2
+    repeatCount: 4
+    repeatInterval: 0.15
+  skillPriority: 2
+  maxLevel: 4
+  requiredCharLevel: 30
+  mpCost:
+  - 30
+  - 33
+  - 36
+  - 40
+  cooldown:
+  - 20
+  - 18
+  - 16
+  - 14
+  skillPointCost: 04000000030000000300000002000000
+  baseDamageMultiplier: 2
+  damageMultiplierPerLevel: 0.5
+  useAp: 0
+  statScalings:
+  - stat: 1
+    coeff: 0.5
+    coeffPerLevel: 0.15
+  - stat: 2
+    coeff: 1.5
+    coeffPerLevel: 0.3
+  castRange: 2
+  baseRange: 3
+  rangePerLevel: 0
+  isAoe: 1
+  onHitDebuffs: []
+  onCastBuffs: []
+  hasNextSkillBuff: 0
+  nextSkillDamageBonus: 0.2
+  nextSkillBuffDuration: 4
+  hasAggroEffect: 0
+  aggroAmount: 50
+  aggroRange: 10
+  spawnAtTarget: 1
+  zoneHitOnce: 0
+  zoneActivationDelay: 0
+  zoneDamageInterval: 0.2
+  zoneDuration: 0.8
+  throwGrenade: 0
+  grenadeFlightDuration: 0.8
+  grenadeArcHeight: 3
+  fireProjectile: 0
+  projectileCount: 1
+  projectileInterval: 0
+  projectileSpreadAngle: 0
+  projectileShotSfxKey: 
+  vanishCaster: 1
+  vanishStartTime: 0.2
+  vanishDuration: 0.6
+  reappearPosition: 0
+  reappearDistance: 1.5
+  reappearAnimTrigger: 
+  animTriggerName: 
+  animDuration: 0
+  effectSpawnDelay: 0
+  effectPoolKey: IceSlash
+  effectSpawnOffset: {x: 0, y: 0, z: 0}
+  effectSpawnRotation: {x: 0, y: 0, z: 0}
