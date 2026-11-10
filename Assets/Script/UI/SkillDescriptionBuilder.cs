@@ -617,6 +617,15 @@ public static class SkillDescriptionBuilder
                 return $"힐 받은 대상 공격 속도 {passive.GetProcValue(level) * 100f:0.#}% 증가 ({passive.GetProcDuration(level):0.#}초)";
             case PassiveSkillData.PassiveEffectType.OnHitCooldownReset:
                 return $"평타 적중 시 {ChanceText(passive, level)}퀵슬롯 스킬 쿨타임 초기화 (쿨 초기화 스킬 제외)";
+            case PassiveSkillData.PassiveEffectType.OnHitShield:
+            {
+                // 보호막량 = 기본 수치 + 최대 체력 × 발동 수치 (CharacterStat.ApplyProcShield와 같은 공식)
+                float pct = passive.GetProcValue(level);
+                string amount = value > 0f && pct > 0f ? $"{value:0.#} + 최대 체력의 {pct * 100f:0.#}%"
+                              : pct > 0f              ? $"최대 체력의 {pct * 100f:0.#}%"
+                              :                         $"{value:0.#}";
+                return $"평타 적중 시 {ChanceText(passive, level)}보호막 {amount} ({passive.GetProcDuration(level):0.#}초)";
+            }
             case PassiveSkillData.PassiveEffectType.Revive:
             {
                 // 실제 부활 체력 — CharacterStat.TryRevive와 같은 기준 (값이 없으면 20%)

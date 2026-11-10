@@ -4,7 +4,7 @@ using Effect = PassiveSkillData.PassiveEffectType;
 // 발동형 패시브 처리 — CharacterStatus.activeTriggerPassives에 등록된 패시브를
 // 평타 적중·데미지 계산·적 처치·힐 시점에 확인해서 발동시킨다.
 //
-// 확률(procChance)을 굴리는 효과: 평타 공격 속도 증가, 독, 치명타 번개, 쿨 초기화
+// 확률(procChance)을 굴리는 효과: 평타 공격 속도 증가, 독, 치명타 번개, 쿨 초기화, 보호막
 // 확률 없이 항상 적용되는 효과: 디버프 걸린 적 추가 데미지, 처치 시 회복, 힐 치명타(치명타 확률로 판정), 힐 대상 공격 속도 증가
 public partial class CharacterStat
 {
@@ -45,6 +45,11 @@ public partial class CharacterStat
                 case Effect.OnHitCooldownReset:
                     if (RollProc(passive, level) && SkillManagerComp != null)
                         SkillManagerComp.ResetCooldowns(0); // 쿨 초기화 스킬은 ResetCooldowns가 알아서 제외
+                    break;
+
+                case Effect.OnHitShield:
+                    if (RollProc(passive, level))
+                        ApplyProcShield(passive, level);
                     break;
             }
         }
@@ -151,6 +156,19 @@ public partial class CharacterStat
         {
             refreshKey = passive,
         });
+    }
+
+    // 보호막 — 기본 수치(고정) + 최대 체력 × 발동 수치 (0.05 = 5%), 발동 지속시간 동안. 보호막 스킬과 같은 풀이라
+    // 이미 있는 보호막에 합산되고 전체 만료 시점이 이번 지속시간으로 갱신된다 (기존 보호막 규칙과 동일)
+    private void ApplyProcShield(PassiveSkillData passive, int level)
+    {
+        float amount   = passive.GetValue(level) + myStatus.MaxHp * passive.GetProcValue(level);
+        float duration = passive.GetProcDuration(level);
+        if (amount <= 0f || duration <= 0f) return;
+        if (!TryGetComponent(out PartyStatusEffectHandler handler)) return;
+
+        handler.ApplyShield(amount, duration, gameObject);
+        SpawnProcEffect(passive, transform);
     }
 
     // 독 — 1초마다 (평타 공격력 × 발동 수치)의 마법 데미지. 근접은 물리 공격력, 원거리는 마법 공격력 기준
