@@ -21,7 +21,8 @@ public class ObjectPoolManager : MonoBehaviour
     // 오브젝트풀 매니저 준비 완료표시
     public bool IsReady { get; private set; }
 
-    [SerializeField]
+    // 항목이 많아 ReorderableList로 그리면 스크롤할 때 높이 계산이 어긋나 위쪽에 빈 공간이 생기므로 일반 배열로 표시
+    [SerializeField, NonReorderable]
     private ObjectInfo[] objectInfos = null;
 
     [Tooltip("풀마다 반납된 오브젝트를 최대 몇 개까지 보관할지 (Count가 더 크면 Count). " +

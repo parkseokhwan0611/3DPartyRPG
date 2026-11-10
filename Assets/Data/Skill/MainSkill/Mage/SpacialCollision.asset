@@ -24,7 +24,7 @@ MonoBehaviour:
     delay: 0.3
     repeatCount: 1
     repeatInterval: 0.5
-  skillPriority: 1
+  skillPriority: 2
   maxLevel: 5
   requiredCharLevel: 6
   mpCost:
@@ -75,6 +75,12 @@ MonoBehaviour:
   projectileInterval: 0
   projectileSpreadAngle: 0
   projectileShotSfxKey: 
+  vanishCaster: 0
+  vanishStartTime: 0.2
+  vanishDuration: 1.5
+  reappearPosition: 0
+  reappearDistance: 1.5
+  reappearAnimTrigger: 
   animTriggerName: doZoneSkill
   animDuration: 1.3
   effectSpawnDelay: 0.3
