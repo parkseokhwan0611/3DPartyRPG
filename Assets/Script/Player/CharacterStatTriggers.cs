@@ -159,7 +159,10 @@ public partial class CharacterStat
     }
 
     // 보호막 — 기본 수치(고정) + 최대 체력 × 발동 수치 (0.05 = 5%), 발동 지속시간 동안. 보호막 스킬과 같은 풀이라
-    // 이미 있는 보호막에 합산되고 전체 만료 시점이 이번 지속시간으로 갱신된다 (기존 보호막 규칙과 동일)
+    // 이미 있는 보호막에 합산된다 (만료 시점은 더 늦은 쪽 유지). 계속 때리는 동안 끝없이 쌓이지 않도록
+    // 전체 보호막이 1회 발동량의 ProcShieldStackCap배가 될 때까지만 채운다
+    private const float ProcShieldStackCap = 3f;
+
     private void ApplyProcShield(PassiveSkillData passive, int level)
     {
         float amount   = passive.GetValue(level) + myStatus.MaxHp * passive.GetProcValue(level);
@@ -167,7 +170,7 @@ public partial class CharacterStat
         if (amount <= 0f || duration <= 0f) return;
         if (!TryGetComponent(out PartyStatusEffectHandler handler)) return;
 
-        handler.ApplyShield(amount, duration, gameObject);
+        handler.ApplyShield(amount, duration, gameObject, amount * ProcShieldStackCap);
         SpawnProcEffect(passive, transform);
     }
 

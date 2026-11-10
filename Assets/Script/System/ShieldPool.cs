@@ -1,13 +1,14 @@
 using System.Collections;
 using UnityEngine;
 
-// 보호막 수치 풀 — 중첩 시 수치는 합연산, 지속시간은 가장 최근에 건 스킬 기준으로 갱신되는
-// 단일 풀 + 단일 만료 타이머 방식. PartyStatusEffectHandler/StatusEffectHandler(Enemy)가 공용으로 사용.
+// 보호막 수치 풀 — 중첩 시 수치는 합연산, 만료 시점은 (남은 시간, 새 지속시간) 중 더 늦은 쪽으로 맞추는
+// 단일 풀 + 단일 만료 타이머 방식 (짧은 보호막이 걸려도 이미 걸린 긴 보호막이 일찍 사라지지 않음). PartyStatusEffectHandler/StatusEffectHandler(Enemy)가 공용으로 사용.
 // MonoBehaviour가 아니므로 코루틴 실행을 위해 호스트 컴포넌트를 필요로 한다.
 public class ShieldPool
 {
     private readonly MonoBehaviour _host;
     private Coroutine _routine;
+    private float     _expireAt; // 만료 예정 시각 (Time.time 기준)
 
     public float Current { get; private set; } = 0f;
     public System.Action OnChanged;
@@ -22,8 +23,13 @@ public class ShieldPool
         Current += amount;
         OnChanged?.Invoke();
 
+        // 이미 더 늦게 끝나는 보호막이 있으면 그 만료 시점을 유지
+        float expireAt = Time.time + duration;
+        if (_routine != null && _expireAt >= expireAt) return;
+
         if (_routine != null) _host.StopCoroutine(_routine);
-        _routine = _host.StartCoroutine(ExpireRoutine(duration));
+        _expireAt = expireAt;
+        _routine  = _host.StartCoroutine(ExpireRoutine(duration));
     }
 
     public float Absorb(float damage)
@@ -47,7 +53,8 @@ public class ShieldPool
     // 이미 죽으므로 핸들만 정리한다
     public void Clear()
     {
-        _routine = null;
+        _routine  = null;
+        _expireAt = 0f;
         Current  = 0f;
         OnChanged?.Invoke();
     }

@@ -568,6 +568,8 @@ public partial class CharacterStat : MonoBehaviour, IDamageable
     // 머리 위 상태 텍스트(CombatHpUi)에 잠깐 띄울 문구 요청 — (문구, 색, 표시 시간)
     public event System.Action<string, Color, float> OnStatusTextRequested;
 
+    private const float ReviveInvulnDuration = 1f;
+
     private bool TryRevive()
     {
         if (myStatus.reviveCooldownTimer > 0f) return false;
@@ -585,6 +587,9 @@ public partial class CharacterStat : MonoBehaviour, IDamageable
                 myStatus.currentHp           = 0f;
                 myStatus.reviveCooldownTimer = 600f; // 10분
                 HealHp(myStatus.MaxHp * ratio, showAura: false);
+
+                // 부활 직후 남은 독·연속 타격에 바로 다시 쓰러지지 않게 잠깐 무적 (디버프 면역 포함)
+                shieldHandler?.ApplyBuff(new StatusEffect(StatusEffectType.Invulnerable, 0f, ReviveInvulnDuration, gameObject));
 
                 // 부활 이펙트 1회 — 패시브 SO의 Proc Effect Pool Key
                 if (!string.IsNullOrEmpty(passive.procEffectPoolKey) && ObjectPoolManager.instance != null)

@@ -33,7 +33,7 @@ public class StatusEffectHandler : MonoBehaviour
     private bool  isStunned = false;
 
     // 보호막 수치 풀 — PartyStatusEffectHandler와 공용 로직인 ShieldPool에 위임 (스택 시 수치는
-    // 합연산, 지속시간은 최근에 건 스킬 기준으로 갱신되는 단일 풀 + 단일 만료 타이머)
+    // 합연산, 만료 시점은 남은 시간과 새 지속시간 중 더 늦은 쪽인 단일 풀 + 단일 만료 타이머)
     private ShieldPool _shield;
     public float CurrentShield => _shield.Current;
 

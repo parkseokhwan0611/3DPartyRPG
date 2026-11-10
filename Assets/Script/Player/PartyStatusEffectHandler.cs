@@ -14,7 +14,7 @@ public class PartyStatusEffectHandler : MonoBehaviour
     private PartyMemberScript partyMember;
 
     // 보호막 수치 풀 — Enemy StatusEffectHandler와 공용 로직인 ShieldPool에 위임 (중첩 시 수치는
-    // 합연산, 지속시간은 가장 최근에 건 스킬 기준으로 갱신)
+    // 합연산, 만료 시점은 남은 시간과 새 지속시간 중 더 늦은 쪽)
     private ShieldPool _shield;
     public float CurrentShield => _shield.Current;
 
@@ -276,13 +276,16 @@ public class PartyStatusEffectHandler : MonoBehaviour
         OnStunEnded?.Invoke();
     }
 
-    // 보호막 적용 — 수치는 기존 보호막에 합산하고, 만료 타이머는 이번 지속시간으로 새로 갱신한다
-    // (예: 5초짜리 보호막이 걸린 지 3초 지난 상태에서 8초짜리 보호막을 또 걸면, 수치는 합쳐지고
-    // 전체가 지금부터 8초 뒤에 함께 만료된다)
-    public void ApplyShield(float amount, float duration, GameObject source)
+    // 보호막 적용 — 수치는 기존 보호막에 합산하고, 만료 시점은 남은 시간과 이번 지속시간 중 더 늦은 쪽으로 맞춘다
+    // (예: 9초짜리 보호막이 걸린 지 2초 지난 상태에서 3초짜리 보호막을 걸면 수치는 합쳐지고 7초 뒤 함께 만료,
+    // 5초짜리가 3초 지난 상태에서 8초짜리를 걸면 지금부터 8초 뒤 함께 만료)
+    // maxTotal: 이 보호막으로는 전체 보호막을 이 값까지만 채운다 (평타 보호막 패시브의 누적 상한). 이미 넘었으면
+    // 수치는 더하지 않고 만료 시점만 연장
+    public void ApplyShield(float amount, float duration, GameObject source, float maxTotal = float.PositiveInfinity)
     {
         if (IsDead) return;
-        _shield.Apply(amount, duration);
+        float add = Mathf.Min(amount, Mathf.Max(0f, maxTotal - _shield.Current));
+        _shield.Apply(add, duration);
     }
 
     // ─────────────────────────────────────────────────────────────────

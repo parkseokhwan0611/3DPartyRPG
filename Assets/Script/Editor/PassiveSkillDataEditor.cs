@@ -95,7 +95,7 @@ public class PassiveSkillDataEditor : Editor
             case PassiveSkillData.PassiveEffectType.OnHitShield:
                 return "평타 적중 시 발동 (자신에게만). 보호막량 = Base Value + 최대 체력 × Proc Value\n" +
                        "Base Value (+Value Per Level): 고정 보호막 (30 = +30)\nProc Chance: 0.2 = 20%\nProc Value: 0.05 = 최대 체력의 5% 추가 (0이면 고정만)\nProc Duration: 보호막 지속시간(초)\n" +
-                       "기존 보호막에 합산되고, 전체 만료 시점이 이번 지속시간으로 갱신됨\nProc Effect Pool Key: 발동 시 자신 위치 이펙트";
+                       "기존 보호막에 합산되고, 만료 시점은 남은 시간과 이번 지속시간 중 더 늦은 쪽\nProc Effect Pool Key: 발동 시 자신 위치 이펙트";
             case PassiveSkillData.PassiveEffectType.OnKillHeal:
                 return "적 처치 시 항상 발동.\nProc Value: 0.05 = 최대 체력의 5% 회복";
             case PassiveSkillData.PassiveEffectType.HealCrit:

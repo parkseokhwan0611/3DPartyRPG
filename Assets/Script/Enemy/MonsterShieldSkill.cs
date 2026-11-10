@@ -8,7 +8,7 @@ public class MonsterShieldSkill : MonsterSkillBase
     [Header("# 보호막 설정")]
     [Tooltip("이번 시전으로 추가되는 보호막 수치 (기존 보호막에 합산됨)")]
     public float shieldAmount = 50f;
-    [Tooltip("보호막 지속시간(초). 중첩 시전 시 전체 보호막의 만료 시점이 이 값으로 갱신된다")]
+    [Tooltip("보호막 지속시간(초). 중첩 시전 시 수치는 합산되고, 만료 시점은 남은 시간과 이 값 중 더 늦은 쪽")]
     public float shieldDuration = 5f;
 
     [Header("# 보호막 VFX (선택 — 비워두면 표시 안 함)")]
