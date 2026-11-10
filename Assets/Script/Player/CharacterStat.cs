@@ -544,6 +544,30 @@ public partial class CharacterStat : MonoBehaviour, IDamageable
         PartyManager.instance?.OnMemberDied(myMember);
     }
 
+    private void PlayReviveSfx(PassiveSkillData passive)
+    {
+        if (passive.sfxEntries == null) return;
+        foreach (var entry in passive.sfxEntries)
+        {
+            if (entry == null || string.IsNullOrEmpty(entry.sfxKey)) continue;
+            if (entry.delay <= 0f && entry.PlayCount == 1) AudioManager.instance?.PlaySFX(entry.sfxKey);
+            else StartCoroutine(PlaySfxRoutine(entry.sfxKey, entry.delay, entry.PlayCount, entry.repeatInterval));
+        }
+    }
+
+    private IEnumerator PlaySfxRoutine(string key, float delay, int count, float interval)
+    {
+        if (delay > 0f) yield return new WaitForSeconds(delay);
+        for (int i = 0; i < count; i++)
+        {
+            if (i > 0 && interval > 0f) yield return new WaitForSeconds(interval);
+            AudioManager.instance?.PlaySFX(key);
+        }
+    }
+
+    // 머리 위 상태 텍스트(CombatHpUi)에 잠깐 띄울 문구 요청 — (문구, 색, 표시 시간)
+    public event System.Action<string, Color, float> OnStatusTextRequested;
+
     private bool TryRevive()
     {
         if (myStatus.reviveCooldownTimer > 0f) return false;
@@ -557,10 +581,23 @@ public partial class CharacterStat : MonoBehaviour, IDamageable
                 float ratio = passive.GetValue(kvp.Value);
                 if (ratio <= 0f) ratio = 0.2f; // SO에 값 미설정 시 기본 20%
 
-                myStatus.currentHp           = myStatus.MaxHp * ratio;
+                // 모션 없이 체력 0에서 바로 회복 — 회복량은 힐 텍스트로 표시 (힐 아우라는 띄우지 않고 부활 이펙트만)
+                myStatus.currentHp           = 0f;
                 myStatus.reviveCooldownTimer = 600f; // 10분
-                myStatus.RaiseHpChanged();
-                OnHpChanged?.Invoke();
+                HealHp(myStatus.MaxHp * ratio, showAura: false);
+
+                // 부활 이펙트 1회 — 패시브 SO의 Proc Effect Pool Key
+                if (!string.IsNullOrEmpty(passive.procEffectPoolKey) && ObjectPoolManager.instance != null)
+                {
+                    var fx = ObjectPoolManager.instance.GetGo(passive.procEffectPoolKey);
+                    if (fx != null) fx.transform.SetPositionAndRotation(transform.position, transform.rotation);
+                }
+
+                // 부활 사운드 — 패시브 SO의 사운드(Sfx Entries), 발동 순간 기준 delay·반복 적용
+                PlayReviveSfx(passive);
+
+                // 머리 위 상태 텍스트에 "부활" 2초
+                OnStatusTextRequested?.Invoke("부활", StatusTextColors.Revive, 2f);
                 return true;
             }
         }

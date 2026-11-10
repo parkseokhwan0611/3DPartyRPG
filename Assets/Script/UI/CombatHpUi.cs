@@ -25,12 +25,42 @@ public class CombatHpUi : HpMpBarUI
         base.OnEnable();
         if (statusHandler == null && stat != null) statusHandler = stat.GetComponent<PartyStatusEffectHandler>();
         if (statusHandler != null) statusHandler.OnBuffChanged += HandleBuffChanged;
+        if (stat != null) stat.OnStatusTextRequested += HandleStatusTextRequested;
     }
 
     protected override void OnDisable()
     {
         base.OnDisable();
         if (statusHandler != null) statusHandler.OnBuffChanged -= HandleBuffChanged;
+        if (stat != null) stat.OnStatusTextRequested -= HandleStatusTextRequested;
+        _tempUntil = 0f;
+    }
+
+    // ─────────────────────────────────────────────────────────────────
+    // 잠깐 띄우는 상태 텍스트 (부활 등) — 표시 시간 동안은 디버프 표시보다 우선
+    // ─────────────────────────────────────────────────────────────────
+
+    private string    _tempText;
+    private Color     _tempColor;
+    private float     _tempUntil;
+    private Coroutine _tempRoutine;
+
+    private void HandleStatusTextRequested(string text, Color color, float duration)
+    {
+        _tempText  = text;
+        _tempColor = color;
+        _tempUntil = Time.time + duration;
+        RefreshDebuffText();
+
+        if (_tempRoutine != null) StopCoroutine(_tempRoutine);
+        _tempRoutine = StartCoroutine(ClearTempTextAfter(duration));
+    }
+
+    private System.Collections.IEnumerator ClearTempTextAfter(float duration)
+    {
+        yield return new WaitForSeconds(duration);
+        _tempRoutine = null;
+        RefreshDebuffText();
     }
 
     void LateUpdate()
@@ -48,7 +78,16 @@ public class CombatHpUi : HpMpBarUI
 
     private void RefreshDebuffText()
     {
-        if (debuffText == null || statusHandler == null) return;
+        if (debuffText == null) return;
+
+        if (Time.time < _tempUntil)
+        {
+            debuffText.text  = _tempText;
+            debuffText.color = _tempColor;
+            return;
+        }
+
+        if (statusHandler == null) { debuffText.text = ""; return; }
 
         if (statusHandler.HasDebuff(StatusEffectType.Stun))
         {

@@ -5,4 +5,5 @@ public static class StatusTextColors
 {
     public static readonly Color Stun = Color.red;
     public static readonly Color Slow = Color.yellow;
+    public static readonly Color Revive = new Color(0.45f, 1f, 0.45f); // 부활 패시브 발동 (파티원 전용)
 }

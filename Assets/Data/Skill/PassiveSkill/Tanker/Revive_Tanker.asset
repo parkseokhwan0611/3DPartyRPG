@@ -1,0 +1,60 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 72fc38e46b28c16479c1fcb1332fbc1a, type: 3}
+  m_Name: Revive_Tanker
+  m_EditorClassIdentifier: 
+  skillId: Revive_Tanker
+  skillName: "\uBD88\uAD74\uC758 \uC758\uC9C0"
+  description: "\uC8FD\uC74C\uC5D0 \uC774\uB974\uB294 \uACF5\uACA9\uC744 \uBC1B\uC744
+    \uC2DC 1\uD68C \uBD80\uD65C\uD569\uB2C8\uB2E4. (\uCFE8\uD0C0\uC784 10\uBD84)"
+  icon: {fileID: 21300000, guid: e443a94203fa75c488576aef3f07c127, type: 3}
+  requiredClass: 0
+  skillType: 4
+  skillCategory: 2
+  sfxEntries:
+  - sfxKey: Tanker_Passive6
+    delay: 0
+    repeatCount: 1
+    repeatInterval: 0
+  skillPriority: 0
+  maxLevel: 4
+  requiredCharLevel: 30
+  mpCost:
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  cooldown:
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  skillPointCost: 04000000030000000300000002000000
+  effectType: 20
+  valueMode: 0
+  baseValue: 0.3
+  valuePerLevel: 0.05
+  hasSecondEffect: 0
+  secondEffectType: 8
+  secondValueMode: 0
+  secondBaseValue: 0
+  secondValuePerLevel: 0
+  baseProcChance: 0
+  procChancePerLevel: 0
+  baseProcValue: 0
+  procValuePerLevel: 0
+  baseProcDuration: 0
+  procDurationPerLevel: 0
+  procEffectPoolKey: Tanker_Passive6
+  procSkill: {fileID: 0}
