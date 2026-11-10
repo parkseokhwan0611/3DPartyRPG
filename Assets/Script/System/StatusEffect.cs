@@ -31,6 +31,8 @@ public enum StatusEffectType
     DmgReductionUp, // 받는 데미지 감소 (물리·마법 공통, mode Percent 0.2 = 20% / Flat 20 = 한 대당 -20)
     Invulnerable,   // 무적 — 데미지와 디버프를 모두 무시
     MoveSpeedUp,    // 이동 속도 증가 (0.2 = +20%)
+    OnHitPhysDamageUp,  // 기본 공격 적중 시 물리 추가 피해 (치명타 미적용)
+    OnHitMagicDamageUp, // 기본 공격 적중 시 마법 추가 피해 (치명타 미적용)
 }
 
 // 버프/패시브 능력치 증가 방식

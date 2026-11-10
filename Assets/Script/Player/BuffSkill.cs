@@ -195,7 +195,9 @@ public class BuffSkill : SkillBase
                 continue;
             }
 
-            StatusEffectType? mapped = MapToStatusEffectType(effect.effectType);
+            StatusEffectType? mapped = effect.effectType == BuffSkillData.BuffEffectType.OnHitDamage
+                ? (data.onHitDamageIsMagic ? StatusEffectType.OnHitMagicDamageUp : StatusEffectType.OnHitPhysDamageUp)
+                : MapToStatusEffectType(effect.effectType);
             if (mapped == null) continue;
 
             float flat    = effect.GetValue(level);

@@ -90,6 +90,7 @@ public class MeleeAttack : AttackBase
 
             if (isMagic) enemyStat.TakeMagicDamage(damage, gameObject, isCrit);
             else         enemyStat.TakeDamage(damage, gameObject, isCrit);
+            myStat.ApplyOnHitBonusDamage(enemyStat); // 버프 추가 피해 — 치명타 미적용
             if (primary == null || enemyStat == targetHealth) primary = enemyStat;
         }
 

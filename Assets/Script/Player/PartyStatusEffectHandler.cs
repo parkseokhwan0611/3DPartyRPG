@@ -485,6 +485,12 @@ public class PartyStatusEffectHandler : MonoBehaviour
             case StatusEffectType.HpOnHitUp:
                 status.hpOnHit += effect.value * multiplier;
                 break;
+            case StatusEffectType.OnHitPhysDamageUp:
+                status.buffOnHitPhysDamage += effect.value * multiplier;
+                break;
+            case StatusEffectType.OnHitMagicDamageUp:
+                status.buffOnHitMagicDamage += effect.value * multiplier;
+                break;
 
             // 공격력/방어력 감소 (value = 0.3 → 30% 감소) — Slow와 동일하게 곱연산 배율로 적용하고
             // 100% 감소 시 해제할 때 0으로 나누는 사고를 막기 위해 0.99로 클램프

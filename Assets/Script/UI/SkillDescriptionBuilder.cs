@@ -305,6 +305,12 @@ public static class SkillDescriptionBuilder
             float flat          = effect.GetValue(level);
             float scalingAmount = GetScalingAmount(effect, level, caster);
             float total         = flat + scalingAmount;
+
+            if (effect.effectType == BuffSkillData.BuffEffectType.OnHitDamage)
+            {
+                result += FormatOnHitDamageLine(buff, total) + GetScalingNote(effect, level, flat, scalingAmount, caster) + "\n";
+                continue;
+            }
             result += FormatBuffLine(effect, level, total, flat, scalingAmount, caster) + "\n";
         }
 
@@ -446,11 +452,17 @@ public static class SkillDescriptionBuilder
             }
 
             float total = effect.GetValue(level) + GetScalingAmount(effect, level, caster);
-            result += FormatBuffLineFinal(effect, total) + "\n";
+            result += (effect.effectType == BuffSkillData.BuffEffectType.OnHitDamage
+                ? FormatOnHitDamageLine(buff, total)
+                : FormatBuffLineFinal(effect, total)) + "\n";
         }
 
         return result.TrimEnd('\n');
     }
+
+    // 물리/마법 구분이 효과가 아니라 스킬(onHitDamageIsMagic)에 있어서 따로 만든다
+    private static string FormatOnHitDamageLine(BuffSkillData buff, float total)
+        => $"기본 공격 적중 시 {(buff.onHitDamageIsMagic ? "마법" : "물리")} 추가 피해 +{total:F0} (치명타 미적용)";
 
     private static string FormatBuffLineFinal(BuffSkillData.BuffEffect effect, float total)
     {

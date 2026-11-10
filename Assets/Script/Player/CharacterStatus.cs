@@ -145,6 +145,9 @@ public string charName;
     public float mpOnHit = 0f;
     // 소환수 공격 적중 시 주인 마나 회복 — 패시브 전용, 세이브 대상 아님
     public float summonHitMp = 0f;
+    // 기본 공격 적중 시 추가 피해 (버프 전용, 세이브 대상 아님) — 치명타 없이 별도 데미지로 들어감
+    public float buffOnHitPhysDamage  = 0f;
+    public float buffOnHitMagicDamage = 0f;
 
     // 받는 데미지 감소 — 패시브 전용, 세이브 대상 아님 (로드 시 패시브 재적용으로 복원)
     // 퍼센트(0.1 = 10%)는 합산, 고정은 방어력·퍼센트 감소 뒤에 한 대마다 뺀다

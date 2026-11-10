@@ -50,6 +50,15 @@ public partial class CharacterStat : MonoBehaviour, IDamageable
     public float TotalCritDamage => myStatus != null ? myStatus.TotalCritDamage : 0f;
     public float HpOnHit       => myStatus != null ? myStatus.hpOnHit      : 0f;
     public float MpOnHit       => myStatus != null ? myStatus.mpOnHit      : 0f;
+
+    // 기본 공격 적중 시 추가 피해 (버프) — 평타 데미지와 별개로, 치명타 없이 따로 들어간다.
+    // 물리/마법 피해 증가 %는 평타와 똑같이 곱한다. 평타 본 데미지를 먼저 넣은 뒤 맞은 적마다 호출 (본 데미지로 죽었으면 EnemyHp가 무시)
+    public void ApplyOnHitBonusDamage(EnemyHp enemy)
+    {
+        if (enemy == null || myStatus == null) return;
+        if (myStatus.buffOnHitPhysDamage  > 0f) enemy.TakeDamage(myStatus.buffOnHitPhysDamage * (1f + PhysDmgBonus), gameObject, isCrit: false);
+        if (myStatus.buffOnHitMagicDamage > 0f) enemy.TakeMagicDamage(myStatus.buffOnHitMagicDamage * (1f + MagicDmgBonus), gameObject, isCrit: false);
+    }
     // 패시브 + 장비 합산 (TotalPhysDmgBonus / TotalMagicDmgBonus 사용)
     public float PhysDmgBonus  => myStatus != null ? myStatus.TotalPhysDmgBonus  : 0f;
     public float MagicDmgBonus => myStatus != null ? myStatus.TotalMagicDmgBonus : 0f;

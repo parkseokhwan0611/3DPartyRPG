@@ -56,7 +56,8 @@ public class BuffSkillData : SkillData
                  "DmgReduction: valueMode에 따라 Flat 20 = 한 대당 -20 / Percent 0.2 = 20%\n" +
                  "ManaRegen·HpRegen: 5 = 초당 +5 / HpOnHit: 10 = 적중 시 +10 / Shield: 보호막 수치\n" +
                  "Invulnerable: 수치 안 씀 (지속시간 동안 데미지·디버프 무시)\n" +
-                 "CooldownReset: 초기화할 스킬 개수, 0 = 전부 (즉시 발동, 쿨 초기화 스킬은 제외)")]
+                 "CooldownReset: 초기화할 스킬 개수, 0 = 전부 (즉시 발동, 쿨 초기화 스킬은 제외)\n" +
+                 "OnHitDamage: 20 = 기본 공격 적중 시 추가 피해 +20 (치명타 미적용, 물리/마법은 아래 '적중 시 추가 피해' 설정)")]
         public BuffEffectType effectType;
 
         [Tooltip("AtkBonus/ApBonus/DefBonus/MagicResBonus/MaxHpBonus, DmgReduction에서만 사용.\n" +
@@ -118,7 +119,14 @@ public class BuffSkillData : SkillData
         DmgReduction,   // 받는 데미지 감소 — 물리·마법 공통 (valueMode: Flat 20 = 한 대당 -20 / Percent 0.2 = 20%)
         Invulnerable,   // 무적 — 지속시간 동안 데미지·디버프 무시 (수치 칸은 쓰지 않음)
         CooldownReset,  // 즉시 스킬 쿨타임 초기화 — 수치 = 초기화할 스킬 개수 (0 이하면 전부)
+        OnHitDamage,    // 기본 공격 적중 시 추가 피해 — 평타와 별개 데미지, 치명타 미적용 (물리/마법은 아래 설정)
     }
+
+    [Header("적중 시 추가 피해 (OnHitDamage 효과 전용)")]
+    [Tooltip("체크: 마법 추가 피해 (몬스터 마법 저항력으로 경감)\n해제: 물리 추가 피해 (몬스터 방어력으로 경감)\n" +
+             "수치 = OnHitDamage 효과의 기본 수치 + 스탯 비례 계수 (시전 시점 기준으로 고정).\n" +
+             "평타가 맞을 때마다 맞은 적 각각에게 따로 들어가고, 치명타는 적용되지 않음 (평타 본 데미지의 치명타는 그대로)")]
+    public bool onHitDamageIsMagic = false;
 
 
     // 쿨 초기화 효과가 있는 버프 스킬은 다른 쿨 초기화(스킬·패시브)의 대상에서 빠진다

@@ -160,6 +160,9 @@ public class RangedAttack : AttackBase
 
         if (isCrit) CinemachineShake.ShakeCrit();
 
+        // 버프 추가 피해 — 투사체 본 데미지가 들어간 뒤 호출됨, 치명타 미적용
+        myStat.ApplyOnHitBonusDamage(enemyStat);
+
         if (myStat.HpOnHit > 0f)
             myStat.HealHp(myStat.HpOnHit, showAura: false); // 흡혈은 생명 흡수 버프 아우라만 표시
 
