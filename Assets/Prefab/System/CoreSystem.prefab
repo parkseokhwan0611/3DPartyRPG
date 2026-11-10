@@ -80,7 +80,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: db5b648041af36d4cb1501cdfc9513a7, type: 2}
   - {fileID: 11400000, guid: ce29ad0ab4947ff448997a7db3175de5, type: 2}
   - {fileID: 11400000, guid: c6af59a8b0f2a424ea7b78d92785ff19, type: 2}
-  startWithSecondClass: 000000
+  startWithSecondClass: 010000
   partyLevel: 30
   partyExp: 0
   gold: 0
@@ -363,19 +363,19 @@ MonoBehaviour:
     volumeMultiplier: 1
   - name: GoblinBomb
     clip: {fileID: 8300000, guid: b017cb77b163cf64095bc55e6fd5742e, type: 3}
-    volumeMultiplier: 0.5
+    volumeMultiplier: 0.4
   - name: GoblinDeath
     clip: {fileID: 8300000, guid: c686370b87b644c41889c2edd625e1b3, type: 3}
     volumeMultiplier: 0.5
   - name: GoblinExplosion
     clip: {fileID: 8300000, guid: 3451839e5a7dc6f43a9584c7ea145181, type: 3}
-    volumeMultiplier: 0.6
+    volumeMultiplier: 0.4
   - name: GoblinThief
     clip: {fileID: 8300000, guid: 2e94b324b8a790242ac76895a9bf8547, type: 3}
     volumeMultiplier: 0.5
   - name: GoblinWarrior
     clip: {fileID: 8300000, guid: c22daa5fb00f3a540af486bf62e52cae, type: 3}
-    volumeMultiplier: 0.6
+    volumeMultiplier: 0.5
   - name: DarkExplosion
     clip: {fileID: 8300000, guid: 8880c0b4c3901494f8554d5a05c4847a, type: 3}
     volumeMultiplier: 1
@@ -429,7 +429,7 @@ MonoBehaviour:
     volumeMultiplier: 0.7
   - name: SkeletonAggro
     clip: {fileID: 8300000, guid: fc325b3f26b7002409ff9e3ccea4d91f, type: 3}
-    volumeMultiplier: 0.5
+    volumeMultiplier: 0.35
   - name: SkeletonArcherAtk
     clip: {fileID: 8300000, guid: 8b820bdace7c2144b9d5639ae74849d8, type: 3}
     volumeMultiplier: 0.7
@@ -453,7 +453,10 @@ MonoBehaviour:
     volumeMultiplier: 0.8
   - name: Tanker_Passive6
     clip: {fileID: 8300000, guid: cb67f749ddb7ec545a6693a640864b06, type: 3}
-    volumeMultiplier: 0.8
+    volumeMultiplier: 1.2
+  - name: Warrior_Main4
+    clip: {fileID: 8300000, guid: 4ad9eb217261271449578c92dd4e0798, type: 3}
+    volumeMultiplier: 1
   sfxVolume: 0.5
   sfxSourceCount: 8
   sceneBgmMap:

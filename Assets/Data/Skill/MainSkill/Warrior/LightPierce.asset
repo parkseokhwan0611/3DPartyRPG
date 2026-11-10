@@ -1,0 +1,101 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e5e45a76e89a01947a92e73bf3f3bb4e, type: 3}
+  m_Name: LightPierce
+  m_EditorClassIdentifier: 
+  skillId: LightPierce
+  skillName: "\uCC9C\uB465 \uAFF0\uB6AB\uAE30"
+  description: "\uC801\uC5D0\uAC8C \uD53C\uD574\uB97C \uC785\uD788\uACE0 \uC9C0\uC18D
+    \uC2DC\uAC04 \uB3D9\uC548 \uCE58\uBA85\uD0C0 \uB370\uBBF8\uC9C0\uAC00 \uC99D\uAC00\uD569\uB2C8."
+  icon: {fileID: 21300000, guid: 8e5a3df2309599d42a812baca6503547, type: 3}
+  requiredClass: 1
+  skillType: 0
+  skillCategory: 0
+  sfxEntries:
+  - sfxKey: Warrior_Main4
+    delay: 0
+    repeatCount: 1
+    repeatInterval: 0.5
+  skillPriority: 2
+  maxLevel: 5
+  requiredCharLevel: 18
+  mpCost:
+  - 20
+  - 22
+  - 24
+  - 27
+  - 30
+  cooldown:
+  - 10
+  - 9
+  - 8
+  - 7
+  - 6
+  skillPointCost: 0200000002000000020000000300000003000000
+  baseDamageMultiplier: 5
+  damageMultiplierPerLevel: 0.5
+  useAp: 0
+  statScalings:
+  - stat: 1
+    coeff: 1.2
+    coeffPerLevel: 0.2
+  - stat: 5
+    coeff: 1
+    coeffPerLevel: 0.1
+  castRange: 2.5
+  baseRange: 2
+  rangePerLevel: 0
+  isAoe: 0
+  onHitDebuffs: []
+  onCastBuffs:
+  - effectType: 15
+    valueMode: 1
+    baseValue: 0.2
+    valuePerLevel: 0.05
+    baseDuration: 3
+    durationPerLevel: 0.5
+    scalingStat: 0
+    scalingCoeff: 0
+    scalingPerLevel: 0
+    useAura: 1
+    auraIndex: 2
+  hasNextSkillBuff: 0
+  nextSkillDamageBonus: 0.2
+  nextSkillBuffDuration: 4
+  hasAggroEffect: 0
+  aggroAmount: 50
+  aggroRange: 10
+  spawnAtTarget: 0
+  zoneHitOnce: 0
+  zoneActivationDelay: 0
+  zoneDamageInterval: 0.5
+  zoneDuration: 5
+  throwGrenade: 0
+  grenadeFlightDuration: 0.8
+  grenadeArcHeight: 3
+  fireProjectile: 0
+  projectileCount: 1
+  projectileInterval: 0
+  projectileSpreadAngle: 0
+  projectileShotSfxKey: 
+  vanishCaster: 0
+  vanishStartTime: 0.2
+  vanishDuration: 1.5
+  reappearPosition: 0
+  reappearDistance: 1.5
+  reappearAnimTrigger: 
+  animTriggerName: doPierce
+  animDuration: 1.2
+  effectSpawnDelay: 0.6
+  effectPoolKey: LightPierce
+  effectSpawnOffset: {x: 0, y: 0, z: 0}
+  effectSpawnRotation: {x: 0, y: 0, z: 180}

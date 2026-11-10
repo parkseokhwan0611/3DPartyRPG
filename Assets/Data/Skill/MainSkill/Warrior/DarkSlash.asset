@@ -14,7 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   skillId: DarkSlash
   skillName: "\uC5B4\uB460 \uBCA0\uAE30"
-  description: "\uC801\uC744 \uBCA0\uC5B4 \uD53C\uD574\uB97C \uC785\uD799\uB2C8\uB2E4."
+  description: "\uC801\uC5D0\uAC8C \uD53C\uD574\uB97C \uC785\uD788\uACE0 \uC9C0\uC18D
+    \uC2DC\uAC04 \uB3D9\uC548 \uCE58\uBA85\uD0C0 \uD655\uB960\uC774 \uC99D\uAC00\uD569\uB2C8."
   icon: {fileID: 21300000, guid: f47342aef65088546b3a1daf13cb9ccb, type: 3}
   requiredClass: 1
   skillType: 0
@@ -86,6 +87,12 @@ MonoBehaviour:
   projectileInterval: 0
   projectileSpreadAngle: 0
   projectileShotSfxKey: 
+  vanishCaster: 0
+  vanishStartTime: 0.2
+  vanishDuration: 1.5
+  reappearPosition: 0
+  reappearDistance: 1.5
+  reappearAnimTrigger: 
   animTriggerName: doDarkSlash
   animDuration: 0.75
   effectSpawnDelay: 0.3

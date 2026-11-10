@@ -186,6 +186,15 @@ public class PartyStatusEffectHandler : MonoBehaviour
         OnBuffChanged?.Invoke(effect.effectType, true);
     }
 
+    // 같은 refreshKey·타입으로 걸려 있는 효과의 현재 수치 (없으면 0) — 중첩형 발동 효과가 다음 수치를 계산할 때 사용
+    public float GetRefreshBuffValue(object refreshKey, StatusEffectType type)
+    {
+        if (refreshKey == null) return 0f;
+        foreach (var e in activeBuffs)
+            if (e.refreshKey == refreshKey && e.effectType == type) return e.value;
+        return 0f;
+    }
+
     // 같은 refreshKey·타입의 기존 효과를 찾아 수치와 지속시간을 새 값으로 바꾼다. 없으면 false
     private bool TryRefreshBuff(StatusEffect effect)
     {

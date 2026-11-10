@@ -85,7 +85,7 @@ public class PassiveSkillDataEditor : Editor
 
             // 발동형 — 특수 효과 설정 칸 사용
             case PassiveSkillData.PassiveEffectType.OnHitAtkSpeedUp:
-                return "평타 적중 시 발동.\nProc Chance: 1 = 100%\nProc Value: 0.2 = 공격 속도 +20%\nProc Duration: 지속시간(초). 다시 발동하면 누적 없이 갱신";
+                return "평타 적중 시 발동.\nProc Chance: 1 = 100%\nProc Value: 0.2 = 1중첩당 공격 속도 +20%\nProc Duration: 지속시간(초). 다시 발동하면 최대 3중첩까지 쌓이고 지속시간은 갱신";
             case PassiveSkillData.PassiveEffectType.OnHitPoison:
                 return "평타 적중 시 발동.\nProc Chance: 1 = 100%\nProc Value: 0.1 = 초당 (근접: 물리 공격력 / 원거리: 마법 공격력)의 10% 마법 데미지\nProc Duration: 독 지속시간(초)";
             case PassiveSkillData.PassiveEffectType.OnCritLightning:

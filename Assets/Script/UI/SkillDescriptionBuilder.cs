@@ -462,7 +462,7 @@ public static class SkillDescriptionBuilder
 
     // 물리/마법 구분이 효과가 아니라 스킬(onHitDamageIsMagic)에 있어서 따로 만든다
     private static string FormatOnHitDamageLine(BuffSkillData buff, float total)
-        => $"기본 공격 적중 시 {(buff.onHitDamageIsMagic ? "마법" : "물리")} 추가 피해 +{total:F0} (치명타 미적용)";
+        => $"기본 공격 적중 시 추가 {(buff.onHitDamageIsMagic ? "마법" : "물리")} 피해 +{total:F0} (치명타 미적용)";
 
     private static string FormatBuffLineFinal(BuffSkillData.BuffEffect effect, float total)
     {
@@ -599,7 +599,7 @@ public static class SkillDescriptionBuilder
                     ? $"받는 마법 데미지 {value * 100f:F1}% 감소"
                     : $"받는 마법 데미지 {value:F0} 감소";
             case PassiveSkillData.PassiveEffectType.OnHitAtkSpeedUp:
-                return $"평타 적중 시 {ChanceText(passive, level)}공격 속도 {passive.GetProcValue(level) * 100f:0.#}% 증가 ({passive.GetProcDuration(level):0.#}초)";
+                return $"평타 적중 시 {ChanceText(passive, level)}공격 속도 {passive.GetProcValue(level) * 100f:0.#}% 증가 ({passive.GetProcDuration(level):0.#}초, 최대 3중첩)";
             case PassiveSkillData.PassiveEffectType.OnDebuffExtraDamage:
                 return $"디버프 걸린 적에게 주는 데미지 {value * 100f:0.#}% 증가";
             case PassiveSkillData.PassiveEffectType.OnCritLightning:

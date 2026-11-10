@@ -123,7 +123,7 @@ public class BuffSkillData : SkillData
     }
 
     [Header("적중 시 추가 피해 (OnHitDamage 효과 전용)")]
-    [Tooltip("체크: 마법 추가 피해 (몬스터 마법 저항력으로 경감)\n해제: 물리 추가 피해 (몬스터 방어력으로 경감)\n" +
+    [Tooltip("체크: 추가 마법 피해 (몬스터 마법 저항력으로 경감)\n해제: 추가 물리 피해 (몬스터 방어력으로 경감)\n" +
              "수치 = OnHitDamage 효과의 기본 수치 + 스탯 비례 계수 (시전 시점 기준으로 고정).\n" +
              "평타가 맞을 때마다 맞은 적 각각에게 따로 들어가고, 치명타는 적용되지 않음 (평타 본 데미지의 치명타는 그대로)")]
     public bool onHitDamageIsMagic = false;

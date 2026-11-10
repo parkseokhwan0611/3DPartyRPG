@@ -142,7 +142,8 @@ public class DamageSkill : SkillBase
         _vanishingCount = Mathf.Max(0, _vanishingCount + (on ? 1 : -1));
     }
     private readonly System.Collections.Generic.List<Renderer> _hiddenRenderers = new System.Collections.Generic.List<Renderer>();
-    private readonly System.Collections.Generic.List<Canvas>   _hiddenCanvases  = new System.Collections.Generic.List<Canvas>();
+    private readonly System.Collections.Generic.List<(CanvasGroup group, float alpha)> _hiddenCanvasGroups
+        = new System.Collections.Generic.List<(CanvasGroup group, float alpha)>();
 
     private IEnumerator VanishRoutine(DamageSkillData data, Transform target, Vector3 lastTargetPos)
     {
@@ -206,15 +207,17 @@ public class DamageSkill : SkillBase
         if (look.sqrMagnitude > 0.0001f) transform.rotation = Quaternion.LookRotation(look);
     }
 
-    // 렌더러·캔버스 컴포넌트만 끈다 — 오브젝트를 끄면 Animator·NavMeshAgent·스탯 스크립트까지 멈추고, 천 시뮬레이션이 튐.
+    // 렌더러만 끄고 캔버스는 투명하게 — 오브젝트를 끄면 Animator·NavMeshAgent·스탯 스크립트까지 멈추고, 천 시뮬레이션이 튐.
     // 꺼져 있는 자식(버프 아우라 등)의 렌더러까지 미리 꺼 둬서 숨어 있는 동안 아우라가 켜져도 안 보이게 하고,
-    // 머리 위 HP/MP 바(Canvas)와 상태 텍스트(TextMeshPro)도 같이 숨긴다.
-    // 원래 꺼져 있던 컴포넌트는 건드리지 않도록 이번에 끈 것만 기억했다가 되돌린다
+    // 머리 위 HP/MP 바(Canvas)와 상태 텍스트(TextMeshPro — MeshRenderer라 위 렌더러 처리로 숨음)도 같이 숨긴다.
+    // 캔버스는 Canvas.enabled를 끄고 켜면 그 아래 3D TextMeshPro(CanvasRenderer 없음)가 UI 레이캐스트 대상으로
+    // 잘못 등록돼 MissingComponentException이 나므로, CanvasGroup 알파만 0으로 내린다.
+    // 원래 꺼져 있던 렌더러는 건드리지 않도록 이번에 끈 것만 기억했다가 되돌린다
     private void SetCasterHidden(bool hidden)
     {
         if (hidden)
         {
-            if (_hiddenRenderers.Count > 0 || _hiddenCanvases.Count > 0) return;
+            if (_hiddenRenderers.Count > 0 || _hiddenCanvasGroups.Count > 0) return;
             foreach (var r in GetComponentsInChildren<Renderer>(true))
             {
                 if (!r.enabled) continue;
@@ -223,9 +226,9 @@ public class DamageSkill : SkillBase
             }
             foreach (var c in GetComponentsInChildren<Canvas>(true))
             {
-                if (!c.enabled) continue;
-                c.enabled = false;
-                _hiddenCanvases.Add(c);
+                if (!c.TryGetComponent(out CanvasGroup group)) group = c.gameObject.AddComponent<CanvasGroup>();
+                _hiddenCanvasGroups.Add((group, group.alpha));
+                group.alpha = 0f;
             }
         }
         else
@@ -233,9 +236,9 @@ public class DamageSkill : SkillBase
             foreach (var r in _hiddenRenderers)
                 if (r != null) r.enabled = true;
             _hiddenRenderers.Clear();
-            foreach (var c in _hiddenCanvases)
-                if (c != null) c.enabled = true;
-            _hiddenCanvases.Clear();
+            foreach (var (group, alpha) in _hiddenCanvasGroups)
+                if (group != null) group.alpha = alpha;
+            _hiddenCanvasGroups.Clear();
         }
     }
 

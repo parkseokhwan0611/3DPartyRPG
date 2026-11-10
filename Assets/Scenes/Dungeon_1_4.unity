@@ -84634,7 +84634,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\uD544\uC694 \uC2A4\uD0AC\uD3EC\uC778\uD2B8: "
+  m_text: "\uD544\uC694 \uC2A4\uD0AC \uD3EC\uC778\uD2B8: "
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 13e4e0ad888c53f4395a44590492ba3b, type: 2}
   m_sharedMaterial: {fileID: -726750342706656786, guid: 13e4e0ad888c53f4395a44590492ba3b,
@@ -150310,7 +150310,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\uD2B9\uC218\uB2A5\uB825"
+  m_text: "\uD2B9\uC218 \uB2A5\uB825"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 13e4e0ad888c53f4395a44590492ba3b, type: 2}
   m_sharedMaterial: {fileID: -726750342706656786, guid: 13e4e0ad888c53f4395a44590492ba3b,
@@ -178994,7 +178994,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\uAC15\uD654\uD655\uB960: 10%"
+  m_text: "\uAC15\uD654 \uD655\uB960: 10%"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 13e4e0ad888c53f4395a44590492ba3b, type: 2}
   m_sharedMaterial: {fileID: -726750342706656786, guid: 13e4e0ad888c53f4395a44590492ba3b,
@@ -228772,7 +228772,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\uD2B9\uC218\uB2A5\uB825"
+  m_text: "\uD2B9\uC218 \uB2A5\uB825"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 13e4e0ad888c53f4395a44590492ba3b, type: 2}
   m_sharedMaterial: {fileID: -726750342706656786, guid: 13e4e0ad888c53f4395a44590492ba3b,
@@ -346707,8 +346707,24 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3658099352949772778, guid: ebac0a97f89dbe04fb697cbc9770ee0c,
         type: 3}
-      propertyPath: objectInfos.Array.data[63].objectName
-      value: Tanker_Passive6
+      propertyPath: objectInfos.Array.size
+      value: 66
+      objectReference: {fileID: 0}
+    - target: {fileID: 3658099352949772778, guid: ebac0a97f89dbe04fb697cbc9770ee0c,
+        type: 3}
+      propertyPath: objectInfos.Array.data[65].count
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3658099352949772778, guid: ebac0a97f89dbe04fb697cbc9770ee0c,
+        type: 3}
+      propertyPath: objectInfos.Array.data[65].perfab
+      value: 
+      objectReference: {fileID: 6722783326954839095, guid: bf4ebffb8587c8a4e9a92a47bc189dac,
+        type: 3}
+    - target: {fileID: 3658099352949772778, guid: ebac0a97f89dbe04fb697cbc9770ee0c,
+        type: 3}
+      propertyPath: objectInfos.Array.data[65].objectName
+      value: DarknessSlash
       objectReference: {fileID: 0}
     - target: {fileID: 3879434152437783571, guid: ebac0a97f89dbe04fb697cbc9770ee0c,
         type: 3}
@@ -348066,6 +348082,11 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1069165368840630408, guid: 07e7d928f411eb34d97d77f873339039,
+        type: 3}
+      propertyPath: startWithSecondClass.Array.data[0]
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1314634815865661653, guid: 07e7d928f411eb34d97d77f873339039,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -348120,31 +348141,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: CoreSystem
-      objectReference: {fileID: 0}
-    - target: {fileID: 3977090485056006170, guid: 07e7d928f411eb34d97d77f873339039,
-        type: 3}
-      propertyPath: sfxClips.Array.data[39].volumeMultiplier
-      value: 0.4
-      objectReference: {fileID: 0}
-    - target: {fileID: 3977090485056006170, guid: 07e7d928f411eb34d97d77f873339039,
-        type: 3}
-      propertyPath: sfxClips.Array.data[41].volumeMultiplier
-      value: 0.4
-      objectReference: {fileID: 0}
-    - target: {fileID: 3977090485056006170, guid: 07e7d928f411eb34d97d77f873339039,
-        type: 3}
-      propertyPath: sfxClips.Array.data[43].volumeMultiplier
-      value: 0.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 3977090485056006170, guid: 07e7d928f411eb34d97d77f873339039,
-        type: 3}
-      propertyPath: sfxClips.Array.data[61].volumeMultiplier
-      value: 0.35
-      objectReference: {fileID: 0}
-    - target: {fileID: 3977090485056006170, guid: 07e7d928f411eb34d97d77f873339039,
-        type: 3}
-      propertyPath: sfxClips.Array.data[69].volumeMultiplier
-      value: 1.2
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

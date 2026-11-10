@@ -29,7 +29,7 @@ public partial class CharacterStat
             {
                 case Effect.OnHitAtkSpeedUp:
                     if (RollProc(passive, level))
-                        ApplyProcAtkSpeed(this, passive, level);
+                        ApplyProcAtkSpeed(this, passive, level, OnHitAtkSpeedMaxStacks);
                     break;
 
                 case Effect.OnHitPoison:
@@ -143,14 +143,21 @@ public partial class CharacterStat
 
     private static bool IsAlive(EnemyHp enemy) => enemy != null && !enemy.isDead;
 
-    // 공격 속도 증가 (발동 수치 0.2 = +20%, 발동 지속시간 동안). 같은 패시브로 다시 발동하면 누적 없이 갱신
-    private void ApplyProcAtkSpeed(CharacterStat target, PassiveSkillData passive, int level)
+    // 평타 적중 공격 속도 증가 패시브의 최대 중첩 수
+    private const int OnHitAtkSpeedMaxStacks = 3;
+
+    // 공격 속도 증가 (발동 수치 0.2 = 1중첩당 +20%, 발동 지속시간 동안). 같은 패시브로 다시 발동하면 maxStacks까지
+    // 한 중첩씩 쌓이고, 지속시간은 전체가 새로 갱신된다 (maxStacks 1 = 누적 없이 갱신만)
+    private void ApplyProcAtkSpeed(CharacterStat target, PassiveSkillData passive, int level, int maxStacks = 1)
     {
-        float value    = passive.GetProcValue(level);
+        float perStack = passive.GetProcValue(level);
         float duration = passive.GetProcDuration(level);
-        if (value <= 0f || duration <= 0f) return;
+        if (perStack <= 0f || duration <= 0f) return;
 
         if (!target.TryGetComponent(out PartyStatusEffectHandler handler)) return;
+
+        int stacks  = Mathf.RoundToInt(handler.GetRefreshBuffValue(passive, StatusEffectType.AtkSpeedUp) / perStack);
+        float value = perStack * Mathf.Clamp(stacks + 1, 1, Mathf.Max(1, maxStacks));
 
         handler.ApplyBuff(new StatusEffect(StatusEffectType.AtkSpeedUp, value, duration, gameObject)
         {
