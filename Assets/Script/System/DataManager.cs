@@ -105,6 +105,17 @@ public class DataManager : MonoBehaviour
     [Tooltip("게임 시작 시 각 캐릭터에게 지급할 스킬 포인트")]
     public int startSkillPoint = 1;
 
+    [Header("치트 (배포 빌드용)")]
+    [Tooltip("체크하면 게임 중 치트 키를 쓸 수 있음. 정식 배포 시 해제")]
+    public bool enableCheats = true;
+    [Tooltip("누르면 파티원 전원에게 스탯·스킬 포인트를 주고 파티 레벨을 올리는 키")]
+    public KeyCode cheatKey = KeyCode.C;
+    public int cheatStatPoint  = 150;
+    public int cheatSkillPoint = 100;
+    public int cheatLevelUp    = 30;
+    [Tooltip("치트로 오를 수 있는 최대 레벨 (만렙)")]
+    public int cheatMaxLevel   = 100;
+
     [Header("시작 아이템")]
     [Tooltip("게임 시작 시 인벤토리에 지급할 공용 아이템 목록 (count로 수량 설정).\n" +
              "캐릭터가 미리 장착할 장비는 클래스마다 다르므로 각 ClassData의 시작 장비에서 설정")]
@@ -447,6 +458,51 @@ public class DataManager : MonoBehaviour
         if (amount <= 0) return;
         foreach (var status in partyStatuses)
             if (status != null) status.skillPoint += amount;
+    }
+
+    // ─────────────────────────────────────────────────────────────────
+    // 치트 — enableCheats가 켜져 있을 때 cheatKey로 포인트·레벨 즉시 지급
+    // ─────────────────────────────────────────────────────────────────
+
+    void Update()
+    {
+        if (!enableCheats || !Input.GetKeyDown(cheatKey)) return;
+        if (IsTypingInInputField()) return; // 상점·인벤토리 수량 입력 중에 키가 눌린 건 무시
+        ApplyCheat();
+    }
+
+    private void ApplyCheat()
+    {
+        // 게임 시작 전(타이틀·클래스 선택)엔 파티 데이터가 없음
+        if (partyStatuses.Count == 0) return;
+
+        foreach (var status in partyStatuses)
+        {
+            if (status == null) continue;
+            status.statPoint  += cheatStatPoint;
+            status.skillPoint += cheatSkillPoint;
+        }
+
+        // 레벨만 직접 올림 — 레벨업 보상(스탯 5·스킬 1)은 위의 치트 포인트로 대신하므로 따로 주지 않는다
+        int newLevel = Mathf.Min(partyLevel + cheatLevelUp, Mathf.Max(partyLevel, cheatMaxLevel));
+        bool leveledUp = newLevel > partyLevel;
+        partyLevel = newLevel;
+
+        AudioManager.instance?.PlaySFX("LevelUp");
+        if (leveledUp) OnLevelUp?.Invoke();
+        OnExpGained?.Invoke(); // 레벨·경험치 바 갱신
+        Debug.Log($"[DataManager] 치트 사용 — 스탯 포인트 +{cheatStatPoint}, 스킬 포인트 +{cheatSkillPoint}, 레벨 {partyLevel}");
+    }
+
+    private static bool IsTypingInInputField()
+    {
+        var selected = UnityEngine.EventSystems.EventSystem.current != null
+            ? UnityEngine.EventSystems.EventSystem.current.currentSelectedGameObject
+            : null;
+        if (selected == null) return false;
+        if (selected.TryGetComponent(out TMPro.TMP_InputField tmp) && tmp.isFocused) return true;
+        if (selected.TryGetComponent(out UnityEngine.UI.InputField legacy) && legacy.isFocused) return true;
+        return false;
     }
 
     [Header("경험치 계산식")]

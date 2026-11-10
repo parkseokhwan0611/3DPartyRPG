@@ -81,7 +81,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: ce29ad0ab4947ff448997a7db3175de5, type: 2}
   - {fileID: 11400000, guid: c6af59a8b0f2a424ea7b78d92785ff19, type: 2}
   startWithSecondClass: 010000
-  partyLevel: 30
+  partyLevel: 1
   partyExp: 0
   gold: 0
   selectedPartyIndex: 0
@@ -108,7 +108,13 @@ MonoBehaviour:
   partyQuickSlots: []
   hpPotionSlotItemId: 
   mpPotionSlotItemId: 
-  startSkillPoint: 30
+  startSkillPoint: 1
+  enableCheats: 1
+  cheatKey: 99
+  cheatStatPoint: 150
+  cheatSkillPoint: 100
+  cheatLevelUp: 30
+  cheatMaxLevel: 100
   startItems:
   - item: {fileID: 11400000, guid: 780180cf1b0df8945a2df703d6f54460, type: 2}
     count: 5
@@ -465,6 +471,9 @@ MonoBehaviour:
     volumeMultiplier: 1
   - name: Mage_Main6
     clip: {fileID: 8300000, guid: b9789fe4abb41024b8de517e788847ce, type: 3}
+    volumeMultiplier: 1
+  - name: Mage_Sub4
+    clip: {fileID: 8300000, guid: dff16c1bae3cb0d4387a798911c0f259, type: 3}
     volumeMultiplier: 1
   sfxVolume: 0.5
   sfxSourceCount: 8
