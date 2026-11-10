@@ -1,6 +1,8 @@
 using System;
 using System.Collections;
 using UnityEngine;
+using UnityEngine.UI;
+using UnityEngine.EventSystems;
 using TMPro;
 
 /// <summary>
@@ -30,6 +32,10 @@ public class DialogueUI : MonoBehaviour
     [Tooltip("글자 1자당 출력 대기 시간 (초)")]
     [SerializeField] float charDelay = 0.03f;
 
+    [Header("대화 스킵")]
+    [Tooltip("퀘스트(Story) 대화에서만 보이는 스킵 버튼 — 누르면 남은 대사를 건너뛰고 대화 완료 처리")]
+    [SerializeField] Button skipButton;
+
     public static bool IsOpen { get; private set; }
     // 대화창이 마지막으로 닫힌 시각(unscaled) — 대사를 넘긴 스페이스바가 같은 프레임에 파티원 고정 키로도
     // 처리되지 않도록 PartyManager가 닫힌 직후 잠깐 고정 키를 잠그는 데 사용
@@ -48,6 +54,14 @@ public class DialogueUI : MonoBehaviour
         if (instance != null && instance != this) { Destroy(gameObject); return; }
         instance = this;
         panel?.SetActive(false);
+
+        if (skipButton != null)
+        {
+            skipButton.onClick.AddListener(Skip);
+            // 키보드 내비게이션으로 선택되면 Space/Enter(대사 진행 키)가 스킵 버튼 Submit으로도 처리됨
+            var nav = skipButton.navigation; nav.mode = Navigation.Mode.None; skipButton.navigation = nav;
+            skipButton.gameObject.SetActive(false);
+        }
     }
 
     void OnDestroy()
@@ -59,8 +73,19 @@ public class DialogueUI : MonoBehaviour
     {
         if (!IsOpen) return;
         if (_justOpened) { _justOpened = false; return; }
-        if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.Space) || Input.GetMouseButtonDown(0))
+        if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.Space))
             Advance();
+        // 스킵 버튼을 누르는 클릭은 대사 진행으로 처리하지 않음 (버튼 onClick이 따로 처리)
+        else if (Input.GetMouseButtonDown(0) && !IsPointerOverSkipButton())
+            Advance();
+    }
+
+    bool IsPointerOverSkipButton()
+    {
+        if (skipButton == null || !skipButton.gameObject.activeInHierarchy) return false;
+        var canvas = skipButton.GetComponentInParent<Canvas>();
+        Camera cam = (canvas == null || canvas.renderMode == RenderMode.ScreenSpaceOverlay) ? null : canvas.worldCamera;
+        return RectTransformUtility.RectangleContainsScreenPoint((RectTransform)skipButton.transform, Input.mousePosition, cam);
     }
 
     // ─────────────────────────────────────────────────────────────────
@@ -70,7 +95,8 @@ public class DialogueUI : MonoBehaviour
     /// <param name="npcName">NPC 대사 줄에 표시할 이름</param>
     /// <param name="lines">DialogueLine 배열 (NPC·플레이어 혼합 가능)</param>
     /// <param name="onComplete">모든 대사 완료 후 콜백 (상점/강화 UI 열기 등)</param>
-    public void Open(string npcName, DialogueLine[] lines, Action onComplete)
+    /// <param name="skippable">스킵 버튼 표시 여부 (퀘스트 대화만 true)</param>
+    public void Open(string npcName, DialogueLine[] lines, Action onComplete, bool skippable = false)
     {
         if (lines == null || lines.Length == 0) { onComplete?.Invoke(); return; }
 
@@ -82,6 +108,7 @@ public class DialogueUI : MonoBehaviour
         IsOpen      = true;
         _justOpened = true;
         panel.SetActive(true);
+        if (skipButton != null) skipButton.gameObject.SetActive(skippable);
         SetCombatUI(false);
         AudioManager.instance?.PlaySFX("UIOpen");
 
@@ -94,7 +121,17 @@ public class DialogueUI : MonoBehaviour
         LastClosedTime = Time.unscaledTime;
         StopTyping();
         panel?.SetActive(false);
+        if (skipButton != null) skipButton.gameObject.SetActive(false);
         SetCombatUI(true);
+    }
+
+    /// <summary>남은 대사를 건너뛰고 끝까지 본 것과 똑같이 완료 처리 (퀘스트 진행 포함)</summary>
+    public void Skip()
+    {
+        if (!IsOpen) return;
+        EventSystem.current?.SetSelectedGameObject(null);
+        Close();
+        _onComplete?.Invoke();
     }
 
     // ─────────────────────────────────────────────────────────────────

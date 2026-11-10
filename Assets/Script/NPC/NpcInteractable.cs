@@ -202,7 +202,8 @@ public class NpcInteractable : MonoBehaviour
                 : new[] { new DialogueLine { speaker = DialogueLine.Speaker.NPC, text = "어서 오세요." } };
         }
 
-        DialogueUI.instance.Open(npcName, lines, OnDialogueComplete);
+        // 상점·강화 NPC 대화는 짧은 인사라 스킵 버튼 없이, 퀘스트(Story) 대화만 스킵 가능
+        DialogueUI.instance.Open(npcName, lines, OnDialogueComplete, npcType == NpcType.Story);
     }
 
     void OnDialogueComplete()
