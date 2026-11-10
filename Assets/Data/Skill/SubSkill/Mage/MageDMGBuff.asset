@@ -26,9 +26,11 @@ MonoBehaviour:
     delay: 0
     repeatCount: 0
     repeatInterval: 0
-  skillPriority: 0
+  skillPriority: 1
   maxLevel: 4
   requiredCharLevel: 30
+  requiredSkill: {fileID: 0}
+  requiredSkillLevel: 1
   mpCost:
   - 20
   - 20
