@@ -52,6 +52,8 @@ public class ProjectileScript : PoolAble
     private bool           _hasHitConfig;
     private HitDamageMode  _configMode;
     private float          _configRadius;
+    private float          _debuffBonusPerStack; // 처형형 — 맞는 적의 디버프 1개당 데미지 증가 (스킬만, SetProjectileData가 0으로 초기화)
+    private int            _maxDebuffStacks;
 
     private static readonly Collider[] _explosionBuffer = new Collider[32];
 
@@ -118,6 +120,7 @@ public class ProjectileScript : PoolAble
     public void SetProjectileData(float dmg, GameObject attacker, bool isMagic = false, bool crit = false)
     {
         _hasHitConfig = false;
+        _debuffBonusPerStack = 0f;
         damage        = dmg;
         owner         = attacker;
         isMagicDamage = isMagic;
@@ -130,6 +133,7 @@ public class ProjectileScript : PoolAble
     public void SetProjectileData(float dmg, GameObject attacker, Action<EnemyHp> hitCallback, bool isMagic, bool crit = false)
     {
         _hasHitConfig = false;
+        _debuffBonusPerStack = 0f;
         damage        = dmg;
         owner         = attacker;
         onHitCallback = hitCallback;
@@ -143,6 +147,7 @@ public class ProjectileScript : PoolAble
     public void SetProjectileData(float dmg, GameObject attacker, bool isMagic, Action<GameObject> onAnyHit, bool crit = false)
     {
         _hasHitConfig = false;
+        _debuffBonusPerStack = 0f;
         damage        = dmg;
         owner         = attacker;
         isMagicDamage = isMagic;
@@ -153,11 +158,13 @@ public class ProjectileScript : PoolAble
 
     // 데미지 스킬이 SetProjectileData 다음에 호출 — 이번 발의 데미지 방식과 폭발 반경을 스킬 데이터대로 지정.
     // Projectile이 아니면 프리팹의 explodeOnHit이 꺼져 있어도 폭발 판정을 한다 (이펙트는 explosionPoolKey가 있을 때만)
-    public void ConfigureHitDamage(HitDamageMode mode, float radius)
+    public void ConfigureHitDamage(HitDamageMode mode, float radius, float debuffBonusPerStack = 0f, int maxDebuffStacks = 0)
     {
-        _hasHitConfig = true;
-        _configMode   = mode;
-        _configRadius = radius;
+        _hasHitConfig        = true;
+        _configMode          = mode;
+        _configRadius        = radius;
+        _debuffBonusPerStack = debuffBonusPerStack;
+        _maxDebuffStacks     = maxDebuffStacks;
     }
 
     private HitDamageMode EffectiveMode
@@ -264,8 +271,9 @@ public class ProjectileScript : PoolAble
         EnemyHp enemyStat = hitCollider.GetComponentInParent<EnemyHp>();
         if (enemyStat != null)
         {
-            if (isMagicDamage) enemyStat.TakeMagicDamage(damage, owner, isCrit);
-            else                enemyStat.TakeDamage(damage, owner, isCrit);
+            float dmg = damage * enemyStat.DebuffDamageMultiplier(_debuffBonusPerStack, _maxDebuffStacks);
+            if (isMagicDamage) enemyStat.TakeMagicDamage(dmg, owner, isCrit);
+            else                enemyStat.TakeDamage(dmg, owner, isCrit);
             onHitCallback?.Invoke(enemyStat);
             hitTarget = enemyStat.gameObject;
             damaged   = enemyStat;

@@ -206,6 +206,7 @@ public partial class CharacterStat
             isMagic = passive.procSkill.useAp;
 
             if (TryCastProcZone(passive.procSkill, skillLevel, damage, target.transform.position)) return;
+            damage *= passive.procSkill.GetDebuffMultiplier(skillLevel, target); // 장판이 아니면 단일 즉시 데미지에 처형 배율
         }
         else
         {
@@ -239,7 +240,8 @@ public partial class CharacterStat
         {
             zone.Setup(damage, skill.GetRange(skillLevel), skill.zoneDamageInterval, skill.zoneActivationDelay,
                        skill.zoneHitOnce, gameObject, skill.useAp, skill.zoneDuration,
-                       TotalCritRate, TotalCritDamage);
+                       TotalCritRate, TotalCritDamage,
+                       skill.GetDebuffBonusPerStack(skillLevel), skill.maxDebuffStacks);
         }
         else
         {

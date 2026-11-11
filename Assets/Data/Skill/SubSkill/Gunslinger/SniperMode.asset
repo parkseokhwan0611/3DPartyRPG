@@ -1,0 +1,77 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a70ac1c355a5a5a49b0f39626fc9e2be, type: 3}
+  m_Name: SniperMode
+  m_EditorClassIdentifier: 
+  skillId: SniperMode
+  skillName: "\uC815\uAD50\uD55C \uC870\uC900"
+  description: "\uC9C0\uC18D\uC2DC\uAC04 \uB3D9\uC548 \uC790\uC2E0\uC758 \uC774\uB3D9
+    \uC18D\uB3C4\uAC00 \uAC10\uC18C\uD558\uC9C0\uB9CC \uBB3C\uB9AC \uD53C\uD574\uB7C9\uC774
+    \uC99D\uAC00\uD569\uB2C8\uB2E4."
+  icon: {fileID: 21300000, guid: 619fbe1fc6dd3da4096b2e061321c2ff, type: 3}
+  requiredClass: 3
+  skillType: 1
+  skillCategory: 1
+  sfxEntries:
+  - sfxKey: Gunslinger_Sub4
+    delay: 0
+    repeatCount: 1
+    repeatInterval: 0.5
+  skillPriority: 0
+  maxLevel: 4
+  requiredCharLevel: 28
+  requiredSkill: {fileID: 0}
+  requiredSkillLevel: 1
+  mpCost:
+  - 30
+  - 30
+  - 30
+  - 30
+  cooldown:
+  - 30
+  - 28
+  - 27
+  - 25
+  skillPointCost: 04000000030000000300000002000000
+  isPartyBuff: 0
+  effectStyle: 1
+  effectPoolKey: 
+  auraIndex: 6
+  animTriggerName: doBuff
+  animDuration: 1
+  effectSpawnDelay: 0.3
+  effectSpawnOffset: {x: 0, y: 0, z: 0}
+  effectSpawnRotation: {x: 0, y: 0, z: 0}
+  baseDuration: 10
+  durationPerLevel: 2
+  buffEffects:
+  - effectType: 20
+    valueMode: 1
+    baseValue: 0.4
+    valuePerLevel: 0
+    scalingStat: 0
+    scalingCoeff: 0
+    scalingPerLevel: 0
+  - effectType: 21
+    valueMode: 1
+    baseValue: 0.35
+    valuePerLevel: 0.05
+    scalingStat: 0
+    scalingCoeff: 0
+    scalingPerLevel: 0
+  onHitDamageIsMagic: 0
+  basicAttackEffectKey: 
+  basicAttackEffectRotation: {x: 0, y: 0, z: 0}
+  thornsIsMagic: 1
+  thornsScalings: []
+  thornsAggroPerHit: 15
+  thornsHitEffectPoolKey: 

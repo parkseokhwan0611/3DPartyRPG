@@ -123,6 +123,16 @@ public class EnemyHp : MonoBehaviour, IDamageable
     // 걸려 있는 디버프 (독·슬로우 등) — 파티원의 "디버프 걸린 적 추가 데미지" 패시브가 확인
     public StatusEffectHandler StatusHandler => statusHandler;
 
+    // 처형형 스킬 배율 — 지금 걸린 디버프 1개당 perDebuff만큼 증가 (0.25 = +25%), maxStacks개까지 (0 = 제한 없음).
+    // 디버프 수는 종류 기준 (같은 디버프는 다시 걸어도 1개, 기절 포함). 맞는 순간 기준이라 이 스킬이 거는 디버프는 안 셈
+    public float DebuffDamageMultiplier(float perDebuff, int maxStacks)
+    {
+        if (perDebuff <= 0f || statusHandler == null) return 1f;
+        int count = statusHandler.DebuffCount;
+        if (maxStacks > 0) count = Mathf.Min(count, maxStacks);
+        return 1f + perDebuff * count;
+    }
+
     // 공격자가 파티원이면 그 CharacterStat — 한 번 맞을 때 한 번만 찾아서 데미지 보너스·처치 알림에 같이 쓴다
     private static CharacterStat GetPartyAttacker(GameObject attacker)
         => attacker != null && attacker.TryGetComponent(out CharacterStat stat) ? stat : null;

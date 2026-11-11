@@ -25,6 +25,8 @@ public class SkillZone : MonoBehaviour
     private float  duration;
     private float  critRate;       // 시전 시점 치명타 확률 — 판정마다(적마다) 새로 굴린다
     private float  critMultiplier; // 시전 시점 치명타 배율
+    private float  debuffBonusPerStack; // 처형형 — 맞는 적의 디버프 1개당 데미지 증가 (판정마다 그 순간의 디버프 수로)
+    private int    maxDebuffStacks;
 
     private int    enemyLayer;
     private Coroutine tickCoroutine;
@@ -35,8 +37,11 @@ public class SkillZone : MonoBehaviour
 
     public void Setup(float damage, float range, float interval, float activationDelay,
                       bool hitOnce, GameObject attacker, bool isMagicDamage, float duration,
-                      float critRate = 0f, float critMultiplier = 1f)
+                      float critRate = 0f, float critMultiplier = 1f,
+                      float debuffBonusPerStack = 0f, int maxDebuffStacks = 0)
     {
+        this.debuffBonusPerStack = debuffBonusPerStack;
+        this.maxDebuffStacks     = maxDebuffStacks;
         this.damage          = damage;
         this.range           = range;
         this.interval        = interval;
@@ -111,7 +116,8 @@ public class SkillZone : MonoBehaviour
             if (enemyHp == null || enemyHp.isDead) continue;
 
             bool  isCrit      = Random.value < critRate;
-            float finalDamage = isCrit ? damage * critMultiplier : damage;
+            float finalDamage = (isCrit ? damage * critMultiplier : damage)
+                              * enemyHp.DebuffDamageMultiplier(debuffBonusPerStack, maxDebuffStacks);
             if (isMagicDamage) enemyHp.TakeMagicDamage(finalDamage, attacker, isCrit);
             else                enemyHp.TakeDamage(finalDamage, attacker, isCrit);
             anyCrit |= isCrit;

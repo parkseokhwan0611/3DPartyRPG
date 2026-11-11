@@ -28,15 +28,19 @@ public class GrenadeProjectile : PoolAble
     private float _critChance;
     private float _critDamageMultiplier;
     private bool  _shakeOnCrit; // 파티원 스킬이 던진 경우만 — 몬스터 수류탄 치명타에는 흔들지 않음
+    private float _debuffBonusPerStack; // 처형형 — 맞는 적의 디버프 1개당 데미지 증가 (파티원 스킬만)
+    private int   _maxDebuffStacks;
 
     private static readonly Collider[] _hitBuffer = new Collider[16];
 
     public void Launch(Vector3 start, Vector3 landingPos, float duration, float arcHeight,
         float damage, float explosionRadius, LayerMask targetLayer, GameObject owner, bool isMagicDamage = false,
         System.Action<GameObject> onHitTarget = null, float critChance = 0f, float critDamageMultiplier = 1.5f,
-        bool shakeOnCrit = false)
+        bool shakeOnCrit = false, float debuffBonusPerStack = 0f, int maxDebuffStacks = 0)
     {
         _shakeOnCrit     = shakeOnCrit;
+        _debuffBonusPerStack = debuffBonusPerStack;
+        _maxDebuffStacks     = maxDebuffStacks;
         _start           = start;
         _landing         = landingPos;
         _duration        = Mathf.Max(0.01f, duration);
@@ -96,6 +100,8 @@ public class GrenadeProjectile : PoolAble
 
             bool isCrit = Random.value < _critChance;
             float finalDamage = isCrit ? _damage * _critDamageMultiplier : _damage;
+            if (_debuffBonusPerStack > 0f && damageable is EnemyHp enemyHp)
+                finalDamage *= enemyHp.DebuffDamageMultiplier(_debuffBonusPerStack, _maxDebuffStacks);
 
             if (_isMagicDamage) damageable.TakeMagicDamage(finalDamage, _owner, isCrit);
             else                 damageable.TakeDamage(finalDamage, _owner, isCrit);

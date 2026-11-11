@@ -341887,34 +341887,8 @@ PrefabInstance:
       propertyPath: m_Name
       value: Solaris
       objectReference: {fileID: 0}
-    - target: {fileID: 2191962620079254301, guid: 87bb6553ecc4d4c4a92cf1f11ba83263,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2316319645358573156, guid: 87bb6553ecc4d4c4a92cf1f11ba83263,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 3299156524974743758, guid: 87bb6553ecc4d4c4a92cf1f11ba83263,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3431159391997243998, guid: 87bb6553ecc4d4c4a92cf1f11ba83263,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7695139512255917016, guid: 87bb6553ecc4d4c4a92cf1f11ba83263,
-        type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0.5
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
-    m_RemovedGameObjects:
-    - {fileID: 3431159391997243998, guid: 87bb6553ecc4d4c4a92cf1f11ba83263, type: 3}
+    m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 5867533590550872686, guid: 87bb6553ecc4d4c4a92cf1f11ba83263,
@@ -348141,6 +348115,26 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: CoreSystem
+      objectReference: {fileID: 0}
+    - target: {fileID: 3977090485056006170, guid: 07e7d928f411eb34d97d77f873339039,
+        type: 3}
+      propertyPath: sfxClips.Array.size
+      value: 79
+      objectReference: {fileID: 0}
+    - target: {fileID: 3977090485056006170, guid: 07e7d928f411eb34d97d77f873339039,
+        type: 3}
+      propertyPath: sfxClips.Array.data[78].clip
+      value: 
+      objectReference: {fileID: 8300000, guid: a6caf8f18fb43a545b94659b923606e9, type: 3}
+    - target: {fileID: 3977090485056006170, guid: 07e7d928f411eb34d97d77f873339039,
+        type: 3}
+      propertyPath: sfxClips.Array.data[78].name
+      value: Gunslinger_Main6
+      objectReference: {fileID: 0}
+    - target: {fileID: 3977090485056006170, guid: 07e7d928f411eb34d97d77f873339039,
+        type: 3}
+      propertyPath: sfxClips.Array.data[78].volumeMultiplier
+      value: 0.8
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

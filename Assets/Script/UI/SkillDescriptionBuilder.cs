@@ -100,6 +100,15 @@ public static class SkillDescriptionBuilder
         else if (dmg.isAoe)
             lines.AppendLine($"[광역] 범위 {dmg.GetRange(level):F1}m"); // 장판 줄과 같은 형식
 
+        // 처형형 — 대상 디버프 수 비례 피해
+        if (dmg.HasDebuffBonus(level))
+        {
+            float per = dmg.GetDebuffBonusPerStack(level);
+            lines.AppendLine(dmg.maxDebuffStacks > 0
+                ? $"[처형] 대상의 디버프 1개당 데미지 +{per * 100f:0.#}% (최대 {dmg.maxDebuffStacks}개, +{per * dmg.maxDebuffStacks * 100f:0.#}%)"
+                : $"[처형] 대상의 디버프 1개당 데미지 +{per * 100f:0.#}%");
+        }
+
         if (dmg.onHitDebuffs != null && dmg.onHitDebuffs.Count > 0)
         {
             lines.AppendLine("[적중 시 디버프]");

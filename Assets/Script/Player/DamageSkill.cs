@@ -299,7 +299,7 @@ public class DamageSkill : SkillBase
         if (enemyHp == null) return;
 
         float comboBonus = myStat.ConsumeNextSkillBonus();
-        float damage = CalculateDamage(data, comboBonus, out bool isCrit);
+        float damage = CalculateDamage(data, comboBonus, out bool isCrit) * data.GetDebuffMultiplier(skillLevel, enemyHp);
         if (data.useAp) enemyHp.TakeMagicDamage(damage, gameObject, isCrit);
         else             enemyHp.TakeDamage(damage, gameObject, isCrit);
         ApplyOnHitDebuffs(data, target);
@@ -324,7 +324,7 @@ public class DamageSkill : SkillBase
             EnemyHp enemyHp = _hitBuffer[i].GetComponent<EnemyHp>();
             if (enemyHp == null) continue;
 
-            float damage = CalculateDamage(data, comboBonus, out bool isCrit);
+            float damage = CalculateDamage(data, comboBonus, out bool isCrit) * data.GetDebuffMultiplier(skillLevel, enemyHp);
             if (data.useAp) enemyHp.TakeMagicDamage(damage, gameObject, isCrit);
             else             enemyHp.TakeDamage(damage, gameObject, isCrit);
             ApplyOnHitDebuffs(data, _hitBuffer[i].transform);
@@ -451,7 +451,8 @@ public class DamageSkill : SkillBase
             float range  = data.GetRange(skillLevel);
             zone.Setup(damage, range, data.zoneDamageInterval, data.zoneActivationDelay,
                        data.zoneHitOnce, gameObject, data.useAp, data.zoneDuration,
-                       myStat.TotalCritRate, myStat.TotalCritDamage);
+                       myStat.TotalCritRate, myStat.TotalCritDamage,
+                       data.GetDebuffBonusPerStack(skillLevel), data.maxDebuffStacks);
         }
         else
         {
@@ -533,7 +534,8 @@ public class DamageSkill : SkillBase
             if (isCrit) CinemachineShake.ShakeCrit(); // 쏠 때가 아니라 맞는 순간에 흔든다
         }, data.useAp, isCrit);
         // 맞았을 때 데미지 방식 (투사체 / 폭발 범위 / 둘 다) — 폭발 반경은 스킬 범위
-        proj.ConfigureHitDamage(data.projectileHitDamage, data.GetRange(skillLevel));
+        proj.ConfigureHitDamage(data.projectileHitDamage, data.GetRange(skillLevel),
+                                data.GetDebuffBonusPerStack(skillLevel), data.maxDebuffStacks);
 
         // 풀에서 꺼낸 직후 Rigidbody가 이전 위치·속도를 들고 있으면 첫 물리 프레임에 엉뚱한 곳으로 튐 (RangedAttack과 동일)
         var rb = go.GetComponent<Rigidbody>();
@@ -575,7 +577,8 @@ public class DamageSkill : SkillBase
         grenade.Launch(start, landing, data.grenadeFlightDuration, data.grenadeArcHeight,
                        damage, data.GetRange(skillLevel), enemyLayer, gameObject, data.useAp,
                        hit => ApplyOnHitDebuffs(data, hit.transform),
-                       myStat.TotalCritRate, myStat.TotalCritDamage, shakeOnCrit: true);
+                       myStat.TotalCritRate, myStat.TotalCritDamage, shakeOnCrit: true,
+                       debuffBonusPerStack: data.GetDebuffBonusPerStack(skillLevel), maxDebuffStacks: data.maxDebuffStacks);
     }
 
     private void OnDrawGizmosSelected()

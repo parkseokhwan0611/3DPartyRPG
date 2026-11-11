@@ -44,7 +44,7 @@ MonoBehaviour:
   - 12
   - 10
   skillPointCost: 0200000002000000020000000300000003000000
-  baseDamageMultiplier: 3.5
+  baseDamageMultiplier: 4.5
   damageMultiplierPerLevel: 0.5
   useAp: 0
   statScalings:
@@ -52,7 +52,7 @@ MonoBehaviour:
     coeff: 1
     coeffPerLevel: 0.2
   - stat: 5
-    coeff: 1
+    coeff: 1.2
     coeffPerLevel: 0.2
   castRange: 6
   baseRange: 2
@@ -90,7 +90,7 @@ MonoBehaviour:
   projectileCount: 1
   projectileInterval: 0
   projectileSpreadAngle: 0
-  projectileShotSfxKey: NovaExplosion
+  projectileShotSfxKey: 
   projectileHitDamage: 1
   vanishCaster: 0
   vanishStartTime: 0.2
@@ -98,6 +98,9 @@ MonoBehaviour:
   reappearPosition: 0
   reappearDistance: 1.5
   reappearAnimTrigger: 
+  debuffBonusPerStack: 0
+  debuffBonusPerLevel: 0
+  maxDebuffStacks: 0
   animTriggerName: doNormalAttack
   animDuration: 1
   effectSpawnDelay: 0.33

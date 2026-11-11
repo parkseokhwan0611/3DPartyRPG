@@ -177,6 +177,21 @@ public class DamageSkillData : SkillData
     // (투사체·수류탄이 장판형보다 우선하므로 그 경우의 장판 설정은 무시)
     public bool IsZone       => spawnAtTarget && !throwGrenade && !fireProjectile;
     public bool IsAreaDamage => isAoe || throwGrenade || IsZone || IsExplodingProjectile;
+    [Header("디버프 비례 피해 (처형형)")]
+    [Tooltip("대상에게 걸린 디버프 1개당 데미지 증가 (0.25 = +25%, 0이면 없음).\n" +
+             "맞는 순간 그 대상의 디버프 수로 대상마다 따로 계산 — 단일·광역·장판(틱마다)·투사체·폭발·수류탄 모두 적용.\n" +
+             "디버프는 종류 기준으로 셈 (같은 디버프 중복은 1개, 기절 포함). 이 스킬이 거는 디버프는 데미지 뒤에 걸려서 안 셈")]
+    public float debuffBonusPerStack = 0f;
+    [Tooltip("레벨당 디버프 1개당 증가량 추가 (0.05 = 레벨마다 +5%p)")]
+    public float debuffBonusPerLevel = 0f;
+    [Tooltip("최대 몇 개까지 셀지 (0 = 제한 없음)")]
+    [Min(0)] public int maxDebuffStacks = 0;
+
+    public float GetDebuffBonusPerStack(int level) => Mathf.Max(0f, debuffBonusPerStack + debuffBonusPerLevel * (level - 1));
+    public bool  HasDebuffBonus(int level)         => GetDebuffBonusPerStack(level) > 0f;
+    public float GetDebuffMultiplier(int level, EnemyHp target)
+        => target != null ? target.DebuffDamageMultiplier(GetDebuffBonusPerStack(level), maxDebuffStacks) : 1f;
+
     // 맞으면 폭발 범위 판정을 하는 투사체 스킬인지 (수류탄형이 투사체형보다 우선)
     public bool IsExplodingProjectile
         => fireProjectile && !throwGrenade && projectileHitDamage != ProjectileScript.HitDamageMode.Projectile;

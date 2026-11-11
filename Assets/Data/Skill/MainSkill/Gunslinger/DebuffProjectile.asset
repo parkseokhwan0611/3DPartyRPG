@@ -1,0 +1,95 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e5e45a76e89a01947a92e73bf3f3bb4e, type: 3}
+  m_Name: DebuffProjectile
+  m_EditorClassIdentifier: 
+  skillId: DebuffProjectile
+  skillName: "\uBA78\uC545\uC758 \uD0C4\uD658"
+  description: "\uC801\uC774 \uAC00\uC9C4 \uB514\uBC84\uD504 \uAC1C\uC218\uC5D0 \uBE44\uB840\uD574
+    \uAC15\uD574\uC9C0\uB294 \uD22C\uC0AC\uCCB4\uB97C \uBC1C\uC0AC\uD574 \uD53C\uD574\uB97C
+    \uC785\uD799\uB2C8\uB2E4."
+  icon: {fileID: 21300000, guid: 4257e97330ae5bf468560bf1012e8c2a, type: 3}
+  requiredClass: 3
+  skillType: 0
+  skillCategory: 0
+  sfxEntries:
+  - sfxKey: Gunslinger_Main6
+    delay: 0.25
+    repeatCount: 0
+    repeatInterval: 0
+  skillPriority: 3
+  maxLevel: 4
+  requiredCharLevel: 30
+  requiredSkill: {fileID: 0}
+  requiredSkillLevel: 1
+  mpCost:
+  - 30
+  - 30
+  - 30
+  - 30
+  cooldown:
+  - 20
+  - 18
+  - 17
+  - 15
+  skillPointCost: 04000000030000000300000002000000
+  baseDamageMultiplier: 5
+  damageMultiplierPerLevel: 0.7
+  useAp: 0
+  statScalings:
+  - stat: 1
+    coeff: 0.5
+    coeffPerLevel: 0.1
+  - stat: 5
+    coeff: 1.5
+    coeffPerLevel: 0.3
+  castRange: 6
+  baseRange: 2
+  rangePerLevel: 0
+  isAoe: 0
+  onHitDebuffs: []
+  onCastBuffs: []
+  hasNextSkillBuff: 0
+  nextSkillDamageBonus: 0.2
+  nextSkillBuffDuration: 4
+  hasAggroEffect: 0
+  aggroAmount: 50
+  aggroRange: 10
+  spawnAtTarget: 0
+  zoneHitOnce: 0
+  zoneActivationDelay: 0
+  zoneDamageInterval: 0.5
+  zoneDuration: 5
+  throwGrenade: 0
+  grenadeFlightDuration: 0.8
+  grenadeArcHeight: 3
+  fireProjectile: 1
+  projectileCount: 1
+  projectileInterval: 0
+  projectileSpreadAngle: 0
+  projectileShotSfxKey: 
+  projectileHitDamage: 0
+  vanishCaster: 0
+  vanishStartTime: 0.2
+  vanishDuration: 1.5
+  reappearPosition: 0
+  reappearDistance: 1.5
+  reappearAnimTrigger: 
+  debuffBonusPerStack: 0.1
+  debuffBonusPerLevel: 0.05
+  maxDebuffStacks: 4
+  animTriggerName: doNormalAttack
+  animDuration: 1
+  effectSpawnDelay: 0.33
+  effectPoolKey: DebuffProjectile
+  effectSpawnOffset: {x: 0, y: 0, z: 0}
+  effectSpawnRotation: {x: 0, y: 0, z: 0}
