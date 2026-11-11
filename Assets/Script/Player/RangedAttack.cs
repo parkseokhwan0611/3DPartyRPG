@@ -107,9 +107,16 @@ public class RangedAttack : AttackBase
 
         // 발사 직전에 대상이 사라지면(죽음 등) 쏘지 않고 아직 안 나간 효과음도 취소하되,
         // 모션은 끝까지 재생한다 — 여기서 바로 끝내면 모션 도중에 이동이 시작돼 미끄러지듯 걸어감
-        var effect = currentTarget != null && ObjectPoolManager.instance != null
-            ? ObjectPoolManager.instance.GetGo(cls.projectilePoolKey)
-            : null;
+        // 평타 강화 버프 중이면 버프가 지정한 투사체로 교체 (풀에 없으면 클래스 기본)
+        GameObject effect = null;
+        if (currentTarget != null && ObjectPoolManager.instance != null)
+        {
+            string overrideKey = myStat != null ? myStat.BasicAttackEffectOverride : null;
+            if (!string.IsNullOrEmpty(overrideKey))
+                effect = ObjectPoolManager.instance.GetGo(overrideKey);
+            if (effect == null)
+                effect = ObjectPoolManager.instance.GetGo(cls.projectilePoolKey);
+        }
         if (effect == null)
         {
             StopAttackSfx();

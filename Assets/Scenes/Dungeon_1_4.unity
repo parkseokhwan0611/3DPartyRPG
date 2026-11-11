@@ -280502,12 +280502,6 @@ Transform:
   - {fileID: 142204260}
   m_Father: {fileID: 1663973184}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1856723234 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 2191962620079254301, guid: 87bb6553ecc4d4c4a92cf1f11ba83263,
-    type: 3}
-  m_PrefabInstance: {fileID: 6061750261282073022}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1856799020
 GameObject:
   m_ObjectHideFlags: 0
@@ -341898,21 +341892,21 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2316319645358573156, guid: 87bb6553ecc4d4c4a92cf1f11ba83263,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3299156524974743758, guid: 87bb6553ecc4d4c4a92cf1f11ba83263,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3431159391997243998, guid: 87bb6553ecc4d4c4a92cf1f11ba83263,
         type: 3}
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 7627949605701448386, guid: 87bb6553ecc4d4c4a92cf1f11ba83263,
-        type: 3}
-      propertyPath: buffAuras.Array.size
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 7627949605701448386, guid: 87bb6553ecc4d4c4a92cf1f11ba83263,
-        type: 3}
-      propertyPath: buffAuras.Array.data[4]
-      value: 
-      objectReference: {fileID: 1856723234}
     - target: {fileID: 7695139512255917016, guid: 87bb6553ecc4d4c4a92cf1f11ba83263,
         type: 3}
       propertyPath: m_LocalPosition.y
@@ -348329,6 +348323,7 @@ SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
   - {fileID: 4650753516144229888}
+  - {fileID: 1725524510}
   - {fileID: 1775155551}
   - {fileID: 1119228598}
   - {fileID: 529070368}
@@ -348352,4 +348347,3 @@ SceneRoots:
   - {fileID: 1632300468}
   - {fileID: 1140730946}
   - {fileID: 772166155}
-  - {fileID: 1725524510}

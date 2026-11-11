@@ -532,6 +532,8 @@ public class DamageSkill : SkillBase
             ApplyOnHitDebuffs(data, enemy.transform);
             if (isCrit) CinemachineShake.ShakeCrit(); // 쏠 때가 아니라 맞는 순간에 흔든다
         }, data.useAp, isCrit);
+        // 맞았을 때 데미지 방식 (투사체 / 폭발 범위 / 둘 다) — 폭발 반경은 스킬 범위
+        proj.ConfigureHitDamage(data.projectileHitDamage, data.GetRange(skillLevel));
 
         // 풀에서 꺼낸 직후 Rigidbody가 이전 위치·속도를 들고 있으면 첫 물리 프레임에 엉뚱한 곳으로 튐 (RangedAttack과 동일)
         var rb = go.GetComponent<Rigidbody>();

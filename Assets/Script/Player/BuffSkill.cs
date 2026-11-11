@@ -134,6 +134,10 @@ public class BuffSkill : SkillBase
 
     private void ShowBuffEffect(BuffSkillData data, CharacterStat stat)
     {
+        // 평타 이펙트 교체는 시전자 본인만 — 파티 버프여도 다른 클래스의 평타(근접/원거리)에 엉뚱한 키가 들어가지 않게
+        if (stat == myStat)
+            stat.PushBasicAttackEffect(data.basicAttackEffectKey, data.basicAttackEffectRotation);
+
         switch (data.effectStyle)
         {
             case BuffSkillData.EffectStyle.OneShot:
@@ -152,6 +156,8 @@ public class BuffSkill : SkillBase
     {
         if (data.effectStyle == BuffSkillData.EffectStyle.Aura)
             stat.ReleaseBuffAura(data.auraIndex);
+        if (stat == myStat)
+            stat.PopBasicAttackEffect(data.basicAttackEffectKey);
     }
 
     // 스탯 반영은 PartyStatusEffectHandler.ApplyBuff(StatusEffect)에 위임 — 적용/지속시간/원복을 한 곳에서 관리

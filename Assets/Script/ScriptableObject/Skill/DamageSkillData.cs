@@ -138,6 +138,12 @@ public class DamageSkillData : SkillData
     [Tooltip("발사할 때마다 재생할 AudioManager SFX 키 (비우면 없음). 연사면 한 발마다, 동시 발사면 한 번만 재생.\n" +
              "위의 사운드(Sfx Entries)는 모션 시작 기준으로 한 번만 나므로, 총소리는 여기에 넣고 Sfx Entries에서는 빼기")]
     public string projectileShotSfxKey;
+    [Tooltip("투사체가 맞았을 때 데미지를 누가 주는지\n" +
+             "· Projectile: 직접 맞은 대상 하나만 (기존 방식). 프리팹의 '맞으면 폭발'이 켜져 있으면 폭발 이펙트는 연출로만 나옴\n" +
+             "· Explosion: 맞은 지점의 폭발 범위(Base Range) 안 적 전부\n" +
+             "· Both: 직접 맞은 대상 + 폭발 범위 안 나머지 적 (직접 맞은 대상은 한 번만)\n" +
+             "폭발 이펙트는 투사체 프리팹(ProjectileScript)의 Explosion Pool Key — 비우면 이펙트 없이 판정만")]
+    public ProjectileScript.HitDamageMode projectileHitDamage = ProjectileScript.HitDamageMode.Projectile;
 
     public enum ReappearPosition
     {
@@ -170,7 +176,10 @@ public class DamageSkillData : SkillData
     // 범위 판정 스킬인지 (설명문 [광역] 표기용) — 수류탄형은 항상 범위 폭발, 장판형은 범위 안의 적 전부 판정
     // (투사체·수류탄이 장판형보다 우선하므로 그 경우의 장판 설정은 무시)
     public bool IsZone       => spawnAtTarget && !throwGrenade && !fireProjectile;
-    public bool IsAreaDamage => isAoe || throwGrenade || IsZone;
+    public bool IsAreaDamage => isAoe || throwGrenade || IsZone || IsExplodingProjectile;
+    // 맞으면 폭발 범위 판정을 하는 투사체 스킬인지 (수류탄형이 투사체형보다 우선)
+    public bool IsExplodingProjectile
+        => fireProjectile && !throwGrenade && projectileHitDamage != ProjectileScript.HitDamageMode.Projectile;
 
     [Header("애니메이션 / 이펙트")]
     public string animTriggerName;    // 애니메이터 트리거 이름

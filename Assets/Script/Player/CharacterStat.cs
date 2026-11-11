@@ -59,6 +59,26 @@ public partial class CharacterStat : MonoBehaviour, IDamageable
         if (myStatus.buffOnHitPhysDamage  > 0f) enemy.TakeDamage(myStatus.buffOnHitPhysDamage * (1f + PhysDmgBonus), gameObject, isCrit: false);
         if (myStatus.buffOnHitMagicDamage > 0f) enemy.TakeMagicDamage(myStatus.buffOnHitMagicDamage * (1f + MagicDmgBonus), gameObject, isCrit: false);
     }
+
+    // 평타 이펙트 교체 (평타 강화 버프 지속 중) — 근접은 검기 히트 이펙트, 원거리는 투사체 풀 키.
+    // 같은 버프를 겹쳐 쓰면 각자 끝날 때 하나씩 빠지도록 목록으로 들고, 가장 최근 것을 쓴다
+    // 회전 오프셋은 근접 검기 전용 (스폰 시 캐릭터 회전 뒤에 곱함 — 프리팹 루트 회전은 스폰할 때 덮어써지므로 여기서 지정)
+    private readonly List<(string key, Vector3 rotation)> _basicAttackEffectOverrides = new List<(string, Vector3)>();
+    public string BasicAttackEffectOverride
+        => _basicAttackEffectOverrides.Count > 0 ? _basicAttackEffectOverrides[_basicAttackEffectOverrides.Count - 1].key : null;
+    public Vector3 BasicAttackEffectRotation
+        => _basicAttackEffectOverrides.Count > 0 ? _basicAttackEffectOverrides[_basicAttackEffectOverrides.Count - 1].rotation : Vector3.zero;
+    public void PushBasicAttackEffect(string poolKey, Vector3 rotation)
+    {
+        if (!string.IsNullOrEmpty(poolKey)) _basicAttackEffectOverrides.Add((poolKey, rotation));
+    }
+    public void PopBasicAttackEffect(string poolKey)
+    {
+        if (string.IsNullOrEmpty(poolKey)) return;
+        int idx = _basicAttackEffectOverrides.FindIndex(o => o.key == poolKey);
+        if (idx >= 0) _basicAttackEffectOverrides.RemoveAt(idx);
+    }
+
     // 패시브 + 장비 합산 (TotalPhysDmgBonus / TotalMagicDmgBonus 사용)
     public float PhysDmgBonus  => myStatus != null ? myStatus.TotalPhysDmgBonus  : 0f;
     public float MagicDmgBonus => myStatus != null ? myStatus.TotalMagicDmgBonus : 0f;

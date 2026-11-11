@@ -1,0 +1,106 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e5e45a76e89a01947a92e73bf3f3bb4e, type: 3}
+  m_Name: NovaFlare
+  m_EditorClassIdentifier: 
+  skillId: NovaFlare
+  skillName: "\uC5F0\uC18D \uBC1C\uC0AC"
+  description: "\uC801\uC5D0\uAC8C \uB9DE\uC73C\uBA74 \uD3ED\uBC1C\uD558\uB294 \uD22C\uC0AC\uCCB4\uB97C
+    \uBC1C\uC0AC\uD558\uACE0 \uD3ED\uBC1C \uC2DC \uD53C\uD574\uB97C \uC8FC\uBA70
+    \uBC29\uC5B4\uB825\uACFC \uC774\uB3D9\uC18D\uB3C4\uB97C \uAC10\uC18C\uC2DC\uD0B5\uB2C8\uB2E4."
+  icon: {fileID: 21300000, guid: d16ef7e8333a7c34782f9d8e921931d2, type: 3}
+  requiredClass: 3
+  skillType: 0
+  skillCategory: 0
+  sfxEntries:
+  - sfxKey: NovaFlare
+    delay: 0
+    repeatCount: 1
+    repeatInterval: 0.1
+  skillPriority: 2
+  maxLevel: 5
+  requiredCharLevel: 24
+  requiredSkill: {fileID: 0}
+  requiredSkillLevel: 1
+  mpCost:
+  - 30
+  - 30
+  - 30
+  - 30
+  - 30
+  cooldown:
+  - 15
+  - 14
+  - 13
+  - 12
+  - 10
+  skillPointCost: 0200000002000000020000000300000003000000
+  baseDamageMultiplier: 3.5
+  damageMultiplierPerLevel: 0.5
+  useAp: 0
+  statScalings:
+  - stat: 1
+    coeff: 1
+    coeffPerLevel: 0.2
+  - stat: 5
+    coeff: 1
+    coeffPerLevel: 0.2
+  castRange: 6
+  baseRange: 2
+  rangePerLevel: 0
+  isAoe: 0
+  onHitDebuffs:
+  - effectType: 4
+    valueMode: 1
+    baseValue: 0.2
+    valuePerLevel: 0.05
+    baseDuration: 3
+    durationPerLevel: 0
+  - effectType: 3
+    valueMode: 1
+    baseValue: 0.2
+    valuePerLevel: 0.05
+    baseDuration: 3
+    durationPerLevel: 0
+  onCastBuffs: []
+  hasNextSkillBuff: 0
+  nextSkillDamageBonus: 0.2
+  nextSkillBuffDuration: 4
+  hasAggroEffect: 0
+  aggroAmount: 50
+  aggroRange: 10
+  spawnAtTarget: 0
+  zoneHitOnce: 0
+  zoneActivationDelay: 0
+  zoneDamageInterval: 0.5
+  zoneDuration: 5
+  throwGrenade: 0
+  grenadeFlightDuration: 0.8
+  grenadeArcHeight: 3
+  fireProjectile: 1
+  projectileCount: 1
+  projectileInterval: 0
+  projectileSpreadAngle: 0
+  projectileShotSfxKey: NovaExplosion
+  projectileHitDamage: 1
+  vanishCaster: 0
+  vanishStartTime: 0.2
+  vanishDuration: 1.5
+  reappearPosition: 0
+  reappearDistance: 1.5
+  reappearAnimTrigger: 
+  animTriggerName: doNormalAttack
+  animDuration: 1
+  effectSpawnDelay: 0.33
+  effectPoolKey: NovaFlare
+  effectSpawnOffset: {x: 0, y: 0, z: 0}
+  effectSpawnRotation: {x: 0, y: 0, z: 0}

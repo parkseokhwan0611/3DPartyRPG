@@ -80,7 +80,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: db5b648041af36d4cb1501cdfc9513a7, type: 2}
   - {fileID: 11400000, guid: ce29ad0ab4947ff448997a7db3175de5, type: 2}
   - {fileID: 11400000, guid: c6af59a8b0f2a424ea7b78d92785ff19, type: 2}
-  startWithSecondClass: 010000
+  startWithSecondClass: 000100
   partyLevel: 1
   partyExp: 0
   gold: 0
@@ -475,6 +475,12 @@ MonoBehaviour:
   - name: Mage_Sub4
     clip: {fileID: 8300000, guid: dff16c1bae3cb0d4387a798911c0f259, type: 3}
     volumeMultiplier: 1
+  - name: NovaFlare
+    clip: {fileID: 8300000, guid: 3c8ad75bf9bbb004f8143fb76745cbde, type: 3}
+    volumeMultiplier: 0.6
+  - name: NovaExplosion
+    clip: {fileID: 8300000, guid: 70b879318f3cf354ca287c34511db239, type: 3}
+    volumeMultiplier: 0.8
   sfxVolume: 0.5
   sfxSourceCount: 8
   sceneBgmMap:

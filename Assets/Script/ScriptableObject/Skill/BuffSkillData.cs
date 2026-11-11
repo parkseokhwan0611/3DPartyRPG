@@ -136,6 +136,12 @@ public class BuffSkillData : SkillData
              "수치 = OnHitDamage 효과의 기본 수치 + 스탯 비례 계수 (시전 시점 기준으로 고정).\n" +
              "평타가 맞을 때마다 맞은 적 각각에게 따로 들어가고, 치명타는 적용되지 않음 (평타 본 데미지의 치명타는 그대로)")]
     public bool onHitDamageIsMagic = false;
+    [Tooltip("버프 지속 중 시전자의 평타 이펙트를 이 풀 키로 바꾼다 (비우면 클래스 기본 그대로).\n" +
+             "근접 클래스: 평타 히트 이펙트(검기) / 원거리 클래스: 평타 투사체 — 투사체는 ProjectileScript가 붙은 프리팹이어야 데미지가 들어감.\n" +
+             "개인 버프에서만 동작 (파티 버프면 시전자 본인만 바뀜). 풀에 없는 키면 클래스 기본으로 대체")]
+    public string basicAttackEffectKey;
+    [Tooltip("근접 검기 전용 회전 오프셋 (오일러각, 캐릭터 기준). 예: (0, 0, 180) = 검기를 Z축으로 뒤집기")]
+    public Vector3 basicAttackEffectRotation;
 
 
     // 쿨 초기화 효과가 있는 버프 스킬은 다른 쿨 초기화(스킬·패시브)의 대상에서 빠진다

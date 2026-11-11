@@ -60,7 +60,10 @@ public class MeleeAttack : AttackBase
         // 2. 이펙트 생성 + 적중 시 체력 회복 (적을 한 명이라도 맞췄을 때)
         if (hitCount > 0)
         {
-            SpawnHitEffect(cls.meleeHitEffectKey, transform.position + (transform.forward * 0.3f) + Vector3.up);
+            // 평타 강화 버프 중이면 버프가 지정한 검기로 교체 (풀에 없으면 클래스 기본)
+            Vector3 fxPos = transform.position + (transform.forward * 0.3f) + Vector3.up;
+            if (!SpawnHitEffect(myStat.BasicAttackEffectOverride, fxPos, Quaternion.Euler(myStat.BasicAttackEffectRotation)))
+                SpawnHitEffect(cls.meleeHitEffectKey, fxPos, Quaternion.identity);
 
             if (myStat.HpOnHit > 0f)
                 myStat.HealHp(myStat.HpOnHit, showAura: false); // 흡혈은 생명 흡수 버프 아우라만 표시
@@ -100,13 +103,14 @@ public class MeleeAttack : AttackBase
     }
 
     // 캐릭터 정면 방향으로 히트 이펙트 스폰
-    private void SpawnHitEffect(string poolKey, Vector3 pos)
+    private bool SpawnHitEffect(string poolKey, Vector3 pos, Quaternion rotationOffset)
     {
-        if (string.IsNullOrEmpty(poolKey) || ObjectPoolManager.instance == null) return;
+        if (string.IsNullOrEmpty(poolKey) || ObjectPoolManager.instance == null) return false;
 
         var effect = ObjectPoolManager.instance.GetGo(poolKey);
-        if (effect != null)
-            effect.transform.SetPositionAndRotation(pos, transform.rotation);
+        if (effect == null) return false;
+        effect.transform.SetPositionAndRotation(pos, transform.rotation * rotationOffset);
+        return true;
     }
 
     // 플레이 중에만 판정 범위 표시 (범위 값이 클래스 SO에 있어서 편집 모드에서는 알 수 없음)

@@ -28,6 +28,8 @@ MonoBehaviour:
   skillPriority: 1
   maxLevel: 5
   requiredCharLevel: 24
+  requiredSkill: {fileID: 0}
+  requiredSkillLevel: 1
   mpCost:
   - 30
   - 30
@@ -61,6 +63,8 @@ MonoBehaviour:
     scalingCoeff: 0.5
     scalingPerLevel: 0.125
   onHitDamageIsMagic: 1
+  basicAttackEffectKey: WarriorNormalAtkBuffed
+  basicAttackEffectRotation: {x: 0, y: 0, z: 180}
   thornsIsMagic: 1
   thornsScalings: []
   thornsAggroPerHit: 15
