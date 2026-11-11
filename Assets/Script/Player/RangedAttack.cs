@@ -113,7 +113,17 @@ public class RangedAttack : AttackBase
         {
             string overrideKey = myStat != null ? myStat.BasicAttackEffectOverride : null;
             if (!string.IsNullOrEmpty(overrideKey))
+            {
                 effect = ObjectPoolManager.instance.GetGo(overrideKey);
+                // ProjectileScript가 없는 프리팹이면 데미지가 안 들어가므로 반납하고 클래스 기본 투사체로
+                if (effect != null && effect.GetComponent<ProjectileScript>() == null)
+                {
+                    Debug.LogWarning($"[RangedAttack] 평타 강화 투사체 '{overrideKey}'에 ProjectileScript가 없어 기본 투사체로 대체합니다.");
+                    var poolAble = effect.GetComponent<PoolAble>();
+                    if (poolAble != null) poolAble.ReleaseObject(); else effect.SetActive(false);
+                    effect = null;
+                }
+            }
             if (effect == null)
                 effect = ObjectPoolManager.instance.GetGo(cls.projectilePoolKey);
         }

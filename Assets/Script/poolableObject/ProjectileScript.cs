@@ -54,6 +54,8 @@ public class ProjectileScript : PoolAble
     private float          _configRadius;
     private float          _debuffBonusPerStack; // 처형형 — 맞는 적의 디버프 1개당 데미지 증가 (스킬만, SetProjectileData가 0으로 초기화)
     private int            _maxDebuffStacks;
+    // 쏜 쪽이 몬스터인지 — 발사 시점에 정해 둔다 (폭발 전에 쏜 몬스터가 죽어 사라져도 폭발이 아군 몬스터를 때리지 않게)
+    private bool           _ownerIsMonster;
 
     private static readonly Collider[] _explosionBuffer = new Collider[32];
 
@@ -121,6 +123,7 @@ public class ProjectileScript : PoolAble
     {
         _hasHitConfig = false;
         _debuffBonusPerStack = 0f;
+        _ownerIsMonster = attacker != null && attacker.GetComponentInParent<EnemyHp>() != null;
         damage        = dmg;
         owner         = attacker;
         isMagicDamage = isMagic;
@@ -134,6 +137,7 @@ public class ProjectileScript : PoolAble
     {
         _hasHitConfig = false;
         _debuffBonusPerStack = 0f;
+        _ownerIsMonster = attacker != null && attacker.GetComponentInParent<EnemyHp>() != null;
         damage        = dmg;
         owner         = attacker;
         onHitCallback = hitCallback;
@@ -148,6 +152,7 @@ public class ProjectileScript : PoolAble
     {
         _hasHitConfig = false;
         _debuffBonusPerStack = 0f;
+        _ownerIsMonster = attacker != null && attacker.GetComponentInParent<EnemyHp>() != null;
         damage        = dmg;
         owner         = attacker;
         isMagicDamage = isMagic;
@@ -312,8 +317,7 @@ public class ProjectileScript : PoolAble
 
         if (!dealDamage) return;
 
-        bool fromMonster = owner != null && owner.GetComponent<EnemyHp>() != null;
-        int  mask        = LayerMask.GetMask(fromMonster ? "Player" : "Enemy");
+        int  mask        = LayerMask.GetMask(_ownerIsMonster ? "Player" : "Enemy");
         int  count       = Physics.OverlapSphereNonAlloc(center, EffectiveRadius, _explosionBuffer, mask);
 
         var damagedSet = new System.Collections.Generic.HashSet<IDamageable>();
