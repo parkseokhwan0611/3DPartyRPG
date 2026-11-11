@@ -632,7 +632,9 @@ public static class SkillDescriptionBuilder
             case PassiveSkillData.PassiveEffectType.OnHitAtkSpeedUp:
                 return $"평타 적중 시 {ChanceText(passive, level)}공격 속도 {passive.GetProcValue(level) * 100f:0.#}% 증가 ({passive.GetProcDuration(level):0.#}초, 최대 3중첩)";
             case PassiveSkillData.PassiveEffectType.OnDebuffExtraDamage:
-                return $"디버프 걸린 적에게 주는 데미지 {value * 100f:0.#}% 증가";
+                return passive.maxDebuffStacks > 0
+                    ? $"적에게 걸린 디버프 1개당 주는 데미지 {value * 100f:0.#}% 증가 (최대 {passive.maxDebuffStacks}개, {value * passive.maxDebuffStacks * 100f:0.#}%)"
+                    : $"적에게 걸린 디버프 1개당 주는 데미지 {value * 100f:0.#}% 증가";
             case PassiveSkillData.PassiveEffectType.OnCritLightning:
                 return passive.procSkill != null
                     ? $"평타 치명타 시 {ChanceText(passive, level)}{passive.procSkill.skillName} 발동"

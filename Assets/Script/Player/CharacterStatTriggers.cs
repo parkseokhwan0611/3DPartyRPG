@@ -63,14 +63,17 @@ public partial class CharacterStat
     {
         if (myStatus == null || target == null || myStatus.activeTriggerPassives.Count == 0) return damage;
 
-        bool targetDebuffed = target.StatusHandler != null && target.StatusHandler.DebuffCount > 0;
-        if (!targetDebuffed) return damage;
+        int debuffCount = target.StatusHandler != null ? target.StatusHandler.DebuffCount : 0;
+        if (debuffCount <= 0) return damage;
 
+        // 디버프 1개당 증가 (0.05 = 1개당 +5%), 패시브마다 maxDebuffStacks개까지 (0 = 제한 없음)
         float bonus = 0f;
         foreach (var kvp in myStatus.activeTriggerPassives)
         {
-            if (kvp.Key != null && kvp.Value > 0 && kvp.Key.effectType == Effect.OnDebuffExtraDamage)
-                bonus += kvp.Key.GetValue(kvp.Value); // 0.1 = +10%
+            PassiveSkillData p = kvp.Key;
+            if (p == null || kvp.Value <= 0 || p.effectType != Effect.OnDebuffExtraDamage) continue;
+            int stacks = p.maxDebuffStacks > 0 ? Mathf.Min(debuffCount, p.maxDebuffStacks) : debuffCount;
+            bonus += p.GetValue(kvp.Value) * stacks;
         }
         return damage * (1f + bonus);
     }
@@ -233,8 +236,9 @@ public partial class CharacterStat
         GameObject fx = ObjectPoolManager.instance.GetGo(skill.effectPoolKey);
         if (fx == null) return false;
 
-        fx.transform.position = targetPos + skill.effectSpawnOffset;
-        fx.transform.rotation = Quaternion.Euler(skill.effectSpawnRotation);
+        Quaternion facing = skill.zoneFaceCaster ? DamageSkill.FlatFacing(transform) : Quaternion.identity;
+        fx.transform.position = targetPos + facing * skill.effectSpawnOffset;
+        fx.transform.rotation = facing * Quaternion.Euler(skill.effectSpawnRotation);
 
         if (fx.TryGetComponent(out SkillZone zone))
         {

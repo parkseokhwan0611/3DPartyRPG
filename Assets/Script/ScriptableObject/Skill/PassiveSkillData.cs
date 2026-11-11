@@ -39,6 +39,8 @@ public class PassiveSkillData : SkillData
     [Tooltip("OnCritLightning 전용: 발동할 데미지 스킬. 이 스킬의 데미지 공식을 캐릭터가 배운 레벨(최소 1)로 계산한다.\n" +
              "비우면 마법 공격력 × 발동 수치로 계산")]
     public DamageSkillData procSkill;
+    [Tooltip("OnDebuffExtraDamage 전용: 디버프를 최대 몇 개까지 셀지 (0 = 제한 없음)")]
+    [Min(0)] public int maxDebuffStacks = 0;
 
     public float GetValue(int level)      => baseValue + (valuePerLevel * (level - 1));
     public float GetProcChance(int level) => baseProcChance + (procChancePerLevel * (level - 1));

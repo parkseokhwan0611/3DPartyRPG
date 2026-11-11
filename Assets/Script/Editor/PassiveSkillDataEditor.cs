@@ -21,6 +21,7 @@ public class PassiveSkillDataEditor : Editor
             enterChildren = false;
 
             if (prop.name == "valueMode" && !supportsMode) continue;
+            if (prop.name == "maxDebuffStacks" && data.effectType != PassiveSkillData.PassiveEffectType.OnDebuffExtraDamage) continue;
 
             // 두 번째 효과 세부 항목은 토글이 켜져 있을 때만
             bool isSecondDetail = prop.name == "secondEffectType" || prop.name == "secondValueMode"
@@ -81,7 +82,8 @@ public class PassiveSkillDataEditor : Editor
             case PassiveSkillData.PassiveEffectType.SummonHitManaRestore:
                 return "기본 수치 칸: 소환수가 한 번 적중할 때마다 마나 고정 회복 (2 = +2)";
             case PassiveSkillData.PassiveEffectType.OnDebuffExtraDamage:
-                return "기본 수치 칸: 0.1 = 디버프가 1개 이상 걸린 적에게 데미지 +10% (확률 없음)";
+                return "기본 수치 칸: 0.05 = 적에게 걸린 디버프 1개당 데미지 +5% (확률 없음, 평타·스킬·장판·투사체·반사·독·소환수 등 모든 피해)\n" +
+                       "Max Debuff Stacks: 최대 몇 개까지 셀지 (0 = 제한 없음). 디버프는 종류 기준 (같은 디버프 중복은 1개, 기절 포함)";
 
             // 발동형 — 특수 효과 설정 칸 사용
             case PassiveSkillData.PassiveEffectType.OnHitAtkSpeedUp:

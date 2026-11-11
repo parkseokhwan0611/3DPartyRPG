@@ -1,0 +1,48 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 72fc38e46b28c16479c1fcb1332fbc1a, type: 3}
+  m_Name: NormalAtkSpd_Gunslinger
+  m_EditorClassIdentifier: 
+  skillId: NormalAtkSpd_Gunslinger
+  skillName: "\uC219\uB828\uB41C \uC0AC\uACA9"
+  description: "\uAE30\uBCF8 \uACF5\uACA9 \uC2DC \uACF5\uACA9 \uC18D\uB3C4\uAC00
+    \uC99D\uAC00\uD569\uB2C8\uB2E4.(\uCD5C\uB300 3\uC911\uCCA9)"
+  icon: {fileID: 21300000, guid: d33131a7918b3e346b987ecf3b80b505, type: 3}
+  requiredClass: 3
+  skillType: 4
+  skillCategory: 2
+  sfxEntries: []
+  skillPriority: 0
+  maxLevel: 5
+  requiredCharLevel: 24
+  requiredSkill: {fileID: 0}
+  requiredSkillLevel: 1
+  mpCost: []
+  cooldown: []
+  skillPointCost: 0200000002000000020000000300000003000000
+  effectType: 13
+  valueMode: 0
+  baseValue: 0.1
+  valuePerLevel: 0.025
+  hasSecondEffect: 0
+  secondEffectType: 8
+  secondValueMode: 0
+  secondBaseValue: 0
+  secondValuePerLevel: 0
+  baseProcChance: 1
+  procChancePerLevel: 0
+  baseProcValue: 0.1
+  procValuePerLevel: 0.025
+  baseProcDuration: 3
+  procDurationPerLevel: 0
+  procEffectPoolKey: 
+  procSkill: {fileID: 0}

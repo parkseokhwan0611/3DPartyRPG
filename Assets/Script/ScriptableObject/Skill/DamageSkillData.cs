@@ -108,6 +108,9 @@ public class DamageSkillData : SkillData
     public float zoneDamageInterval = 0.5f;
     [Tooltip("장판 최대 지속시간 (초). zoneHitOnce = false일 때, 이 시간이 지나면 SkillZone이 스스로 데미지 판정을 멈춤 (PoolableObject 설정 누락 시 무한 루프 방지용 안전장치)")]
     public float zoneDuration = 5f;
+    [Tooltip("체크하면 장판을 캐릭터가 바라보는 방향(수평)으로 돌려서 생성 — Effect Spawn Offset·Rotation도 그 방향 기준.\n" +
+             "해제(기본)면 지금처럼 월드 기준 (Effect Spawn Rotation만 적용)")]
+    public bool zoneFaceCaster = false;
 
     [Header("수류탄형 설정")]
     [Tooltip("true = 포물선으로 던져 대상의 발밑에 떨어진 뒤 범위 폭발 (몬스터 수류탄과 같은 GrenadeProjectile 사용). 장판형보다 우선\n" +

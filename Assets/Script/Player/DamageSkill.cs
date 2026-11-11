@@ -437,9 +437,10 @@ public class DamageSkill : SkillBase
         var effect = ObjectPoolManager.instance.GetGo(data.effectPoolKey);
         if (effect == null) return;
 
-        // 타겟 위치에 배치 (오프셋 적용)
-        effect.transform.position = targetPos + data.effectSpawnOffset;
-        effect.transform.rotation = Quaternion.Euler(data.effectSpawnRotation);
+        // 타겟 위치에 배치 (오프셋 적용). zoneFaceCaster면 캐릭터가 바라보는 방향(수평) 기준으로 오프셋·회전을 적용
+        Quaternion facing = data.zoneFaceCaster ? FlatFacing(transform) : Quaternion.identity;
+        effect.transform.position = targetPos + facing * data.effectSpawnOffset;
+        effect.transform.rotation = facing * Quaternion.Euler(data.effectSpawnRotation);
 
         // SkillZone에 판정 파라미터 전달
         var zone = effect.GetComponent<SkillZone>();
@@ -458,6 +459,14 @@ public class DamageSkill : SkillBase
         {
             Debug.LogWarning($"[DamageSkill] '{data.effectPoolKey}' 오브젝트에 SkillZone 컴포넌트가 없습니다.");
         }
+    }
+
+    // 캐릭터가 바라보는 수평 방향 (위아래 기울기는 뺌 — 장판이 비스듬히 눕지 않게)
+    public static Quaternion FlatFacing(Transform caster)
+    {
+        Vector3 fwd = caster.forward;
+        fwd.y = 0f;
+        return fwd.sqrMagnitude > 0.0001f ? Quaternion.LookRotation(fwd.normalized, Vector3.up) : Quaternion.identity;
     }
 
     // 투사체형 연사에 걸리는 시간 (첫 발은 즉시, 이후 간격마다 한 발)
