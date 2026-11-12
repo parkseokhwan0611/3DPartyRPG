@@ -61,7 +61,8 @@ public class BuffSkillData : SkillData
                  "MoveSpeedPenalty: 0.3 = 이동 속도 30% 감소 (디버프가 아니라 면역·해제 대상 아님, 파티 버프면 파티원 전원에게 걸림)\n" +
                  "PhysDmgBonus·MagicDmgBonus: 0.3 = 최종 물리/마법 데미지 +30% (패시브·장비 보너스와 합산, 소환수 데미지에도 적용)\n" +
                  "MainSkillDmgBonus: 0.3 = 메인 데미지 스킬 피해 +30% (물리/마법 데미지 증가와 합산, 서브 스킬·치명타 번개 패시브는 제외)\n" +
-                 "MpCostIncrease: 0.5 = 모든 스킬 마나 소모 +50% (장비 마나 소모 감소와 합산, 디버프가 아님)")]
+                 "MpCostIncrease: 0.5 = 모든 스킬 마나 소모 +50% (장비 마나 소모 감소와 합산, 디버프가 아님)\n" +
+                 "ReviveDead: 0.3 = 쓰러진 파티원을 최대 체력 30%로 즉시 부활 (Is Party Buff 체크 필요). 부활한 파티원도 같은 스킬의 다른 효과(무적 등)를 받음")]
         public BuffEffectType effectType;
 
         [Tooltip("AtkBonus/ApBonus/DefBonus/MagicResBonus/MaxHpBonus, DmgReduction에서만 사용.\n" +
@@ -129,6 +130,7 @@ public class BuffSkillData : SkillData
         MagicDmgBonus,    // 최종 마법 데미지 증가 (0.3 = +30%)
         MainSkillDmgBonus, // 메인 데미지 스킬 피해 증가 (0.3 = +30%)
         MpCostIncrease,    // 마나 소모 증가 (0.5 = +50%, 모든 스킬) — 강화의 대가용
+        ReviveDead,        // 즉시 쓰러진 파티원 부활 — 수치 = 부활 체력 비율 (0.3 = 최대 체력 30%). 파티 버프에서만 동작
     }
 
     [Header("적중 시 추가 피해 (OnHitDamage 효과 전용)")]
@@ -164,10 +166,26 @@ public class BuffSkillData : SkillData
             foreach (var effect in buffEffects)
                 if (effect != null
                     && effect.effectType != BuffEffectType.DispelDebuff
-                    && effect.effectType != BuffEffectType.CooldownReset) return true;
+                    && effect.effectType != BuffEffectType.CooldownReset
+                    && effect.effectType != BuffEffectType.ReviveDead) return true;
             return false;
         }
     }
+
+    // 쓰러진 파티원 부활 효과가 있는지 (팔로워 AI는 쓰러진 파티원이 있을 때만 사용)
+    public bool HasRevive
+    {
+        get
+        {
+            foreach (var effect in buffEffects)
+                if (effect != null && effect.effectType == BuffEffectType.ReviveDead) return true;
+            return false;
+        }
+    }
+
+    [Header("부활 (ReviveDead 효과 전용)")]
+    [Tooltip("부활한 파티원 위치에 띄울 이펙트 풀 키 (비우면 없음)")]
+    public string reviveEffectPoolKey;
 
     // ─────────────────────────────────────────────────────────────────
     // 가시 반사 (Thorns 효과 전용)

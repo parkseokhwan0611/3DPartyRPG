@@ -1,0 +1,103 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e5e45a76e89a01947a92e73bf3f3bb4e, type: 3}
+  m_Name: HolySword
+  m_EditorClassIdentifier: 
+  skillId: HolySword
+  skillName: "\uCC9C\uBC8C\uC758 \uAC80"
+  description: "\uBC94\uC704 \uB0B4\uC758 \uC801\uC5D0\uAC8C \uD53C\uD574\uB97C \uC785\uD788\uACE0
+    \uAE30\uC808\uC2DC\uD0B5\uB2C8\uB2E4."
+  icon: {fileID: 21300000, guid: 18b2b41b127ec2e48b64f05a7abafc11, type: 3}
+  requiredClass: 4
+  skillType: 0
+  skillCategory: 0
+  sfxEntries:
+  - sfxKey: Healer_Main4
+    delay: 0.3
+    repeatCount: 1
+    repeatInterval: 0.5
+  skillPriority: 2
+  maxLevel: 5
+  requiredCharLevel: 18
+  requiredSkill: {fileID: 0}
+  requiredSkillLevel: 1
+  mpCost:
+  - 30
+  - 30
+  - 30
+  - 30
+  - 30
+  cooldown:
+  - 15
+  - 15
+  - 15
+  - 15
+  - 15
+  skillPointCost: 0200000002000000020000000300000003000000
+  baseDamageMultiplier: 4
+  damageMultiplierPerLevel: 0.5
+  useAp: 1
+  statScalings:
+  - stat: 3
+    coeff: 1
+    coeffPerLevel: 0.1
+  - stat: 4
+    coeff: 1.2
+    coeffPerLevel: 0.2
+  castRange: 7.5
+  baseRange: 2
+  rangePerLevel: 0
+  isAoe: 1
+  onHitDebuffs:
+  - effectType: 0
+    valueMode: 0
+    baseValue: 0
+    valuePerLevel: 0
+    baseDuration: 2
+    durationPerLevel: 0.25
+  onCastBuffs: []
+  hasNextSkillBuff: 0
+  nextSkillDamageBonus: 0.2
+  nextSkillBuffDuration: 4
+  hasAggroEffect: 0
+  aggroAmount: 50
+  aggroRange: 10
+  spawnAtTarget: 1
+  zoneHitOnce: 1
+  zoneActivationDelay: 0.5
+  zoneDamageInterval: 0
+  zoneDuration: 0
+  zoneFaceCaster: 1
+  throwGrenade: 0
+  grenadeFlightDuration: 0.8
+  grenadeArcHeight: 3
+  fireProjectile: 0
+  projectileCount: 1
+  projectileInterval: 0
+  projectileSpreadAngle: 0
+  projectileShotSfxKey: 
+  projectileHitDamage: 0
+  vanishCaster: 0
+  vanishStartTime: 0.2
+  vanishDuration: 1.5
+  reappearPosition: 0
+  reappearDistance: 1.5
+  reappearAnimTrigger: 
+  debuffBonusPerStack: 0
+  debuffBonusPerLevel: 0
+  maxDebuffStacks: 0
+  animTriggerName: doZoneSkill
+  animDuration: 1.3
+  effectSpawnDelay: 0.2
+  effectPoolKey: HolySword
+  effectSpawnOffset: {x: 0, y: 0, z: 0}
+  effectSpawnRotation: {x: 0, y: 0, z: 0}

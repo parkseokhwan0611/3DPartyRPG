@@ -521,13 +521,52 @@ public class PartyMemberScript : MonoBehaviour
 
         if (leaderVFX != null) leaderVFX.SetActive(false);
 
-        StartCoroutine(HideAfterDeath());
+        _hideRoutine = StartCoroutine(HideAfterDeath());
     }
+
+    private Coroutine _hideRoutine;
 
     private IEnumerator HideAfterDeath()
     {
         yield return new WaitForSecondsRealtime(deathHideDelay);
+        _hideRoutine = null;
         gameObject.SetActive(false);
+    }
+
+    // 쓰러진 파티원 부활 (부활 스킬) — 숨겨졌으면 다시 켜고, position 근처 NavMesh 위로 옮겨 일어선 상태로 되돌린다.
+    // 체력 회복·체인 재구성은 호출자(CharacterStat.ReviveFromDeath / PartyManager.OnMemberRevived)가 한다
+    public bool Revive(Vector3 position)
+    {
+        if (CurrentState != MemberState.Dead) return false;
+
+        if (_hideRoutine != null)
+        {
+            StopCoroutine(_hideRoutine); // 사망 연출 중(아직 안 숨겨짐)에 부활하면 숨김 예약 취소
+            _hideRoutine = null;
+        }
+        if (!gameObject.activeSelf) gameObject.SetActive(true);
+
+        if (NavMesh.SamplePosition(position, out NavMeshHit hit, 3f, NavMesh.AllAreas))
+            position = hit.position;
+
+        if (agent != null)
+        {
+            agent.enabled = true;
+            agent.Warp(position);
+            agent.ResetPath();
+            agent.velocity = Vector3.zero;
+        }
+        else transform.position = position;
+
+        // 사망 모션에서 기본 상태로 — 숨겨졌다 켜진 경우엔 이미 초기화돼 있지만, 연출 중 부활은 쓰러진 포즈가 남아 있음
+        if (anim != null)
+        {
+            anim.Rebind();
+            anim.Update(0f);
+        }
+
+        ChangeState(MemberState.Idle);
+        return true;
     }
 
     // 이전 씬에서 쓰러진 채(체력 0) 넘어온 파티원 — 사망 연출·사운드·게임오버 판정 없이 바로 쓰러진 상태로 둔다.

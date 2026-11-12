@@ -604,6 +604,13 @@ public class PartyManager : MonoBehaviour
         }
     }
 
+    // 부활 스킬로 다시 일어난 파티원을 따라가기 체인에 다시 넣는다 (리더는 그대로)
+    public void OnMemberRevived(PartyMemberScript member)
+    {
+        if (member == null) return;
+        RebuildChain();
+    }
+
     private void RebuildChain()
     {
         if (currentLeader == null) return;

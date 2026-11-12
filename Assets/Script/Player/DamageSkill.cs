@@ -453,7 +453,8 @@ public class DamageSkill : SkillBase
             zone.Setup(damage, range, data.zoneDamageInterval, data.zoneActivationDelay,
                        data.zoneHitOnce, gameObject, data.useAp, data.zoneDuration,
                        myStat.TotalCritRate, myStat.TotalCritDamage,
-                       data.GetDebuffBonusPerStack(skillLevel), data.maxDebuffStacks);
+                       data.GetDebuffBonusPerStack(skillLevel), data.maxDebuffStacks,
+                       enemy => ApplyOnHitDebuffs(data, enemy.transform)); // 장판도 적중 디버프(기절·둔화 등)를 건다
         }
         else
         {

@@ -593,6 +593,20 @@ public partial class CharacterStat : MonoBehaviour, IDamageable
 
     private const float ReviveInvulnDuration = 1f;
 
+    // 부활 스킬 — 쓰러진(Dead) 파티원을 position 근처에서 일으켜 최대 체력 × hpRatio로 회복.
+    // 부활 직후의 무적 등은 스킬이 이어서 거는 버프가 담당. 쓰러진 상태가 아니면 false
+    public bool ReviveFromDeath(float hpRatio, Vector3 position)
+    {
+        if (myStatus == null || myMember == null) return false;
+        if (!myMember.Revive(position)) return false;
+
+        myStatus.currentHp = 0f;
+        HealHp(myStatus.MaxHp * Mathf.Clamp(hpRatio, 0.01f, 1f), showAura: false);
+        OnStatusTextRequested?.Invoke("부활", StatusTextColors.Revive, 2f);
+        PartyManager.instance?.OnMemberRevived(myMember);
+        return true;
+    }
+
     private bool TryRevive()
     {
         if (myStatus.reviveCooldownTimer > 0f) return false;

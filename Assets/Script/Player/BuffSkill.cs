@@ -63,6 +63,9 @@ public class BuffSkill : SkillBase
     {
         if (PartyManager.instance == null) return;
 
+        // 부활을 먼저 — 그래야 아래 버프(무적 등)가 방금 일어난 파티원에게도 걸린다
+        ReviveDeadMembers(data);
+
         foreach (var member in PartyManager.instance.partyMembers)
         {
             if (member == null) continue;
@@ -78,6 +81,41 @@ public class BuffSkill : SkillBase
         {
             var summon = SummonUnit.All[i];
             if (summon != null && summon.IsAlive) ApplyBuffEffectsToSummon(data, skillLevel, myStat, summon);
+        }
+    }
+
+    // ReviveDead 효과 — 쓰러진 파티원을 시전자 양옆·뒤쪽에 일으켜 세운다 (수치 = 부활 체력 비율)
+    private void ReviveDeadMembers(BuffSkillData data)
+    {
+        float ratio = 0f;
+        bool  has   = false;
+        foreach (var effect in data.buffEffects)
+        {
+            if (effect == null || effect.effectType != BuffSkillData.BuffEffectType.ReviveDead) continue;
+            has   = true;
+            ratio = Mathf.Max(ratio, effect.GetValue(skillLevel) + GetScalingValue(effect, skillLevel, myStat));
+        }
+        if (!has) return;
+        if (ratio <= 0f) ratio = 0.3f; // 수치 미설정 시 기본 30%
+
+        int revived = 0;
+        foreach (var member in PartyManager.instance.partyMembers)
+        {
+            if (member == null || member.CurrentState != PartyMemberScript.MemberState.Dead) continue;
+            CharacterStat stat = member.StatComp;
+            if (stat == null) continue;
+
+            // 시전자 기준 오른쪽·왼쪽 번갈아, 살짝 뒤에 (겹쳐 서지 않게)
+            float side   = (revived % 2 == 0 ? 1f : -1f) * (1.2f + 0.6f * (revived / 2));
+            Vector3 spot = transform.position + transform.right * side - transform.forward * 0.5f;
+            if (!stat.ReviveFromDeath(ratio, spot)) continue;
+            revived++;
+
+            if (!string.IsNullOrEmpty(data.reviveEffectPoolKey) && ObjectPoolManager.instance != null)
+            {
+                var fx = ObjectPoolManager.instance.GetGo(data.reviveEffectPoolKey);
+                if (fx != null) fx.transform.SetPositionAndRotation(member.transform.position, member.transform.rotation);
+            }
         }
     }
 

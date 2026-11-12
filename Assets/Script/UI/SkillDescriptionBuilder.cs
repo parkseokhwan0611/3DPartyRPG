@@ -518,6 +518,7 @@ public static class SkillDescriptionBuilder
             BuffSkillData.BuffEffectType.MagicDmgBonus => $"마법 데미지 +{total * 100f:0.#}%",
             BuffSkillData.BuffEffectType.MainSkillDmgBonus => $"메인 스킬 데미지 +{total * 100f:0.#}%",
             BuffSkillData.BuffEffectType.MpCostIncrease    => $"마나 소모량 +{total * 100f:0.#}%",
+            BuffSkillData.BuffEffectType.ReviveDead        => $"쓰러진 파티원 즉시 부활 (최대 체력 {(total > 0f ? total : 0.3f) * 100f:0.#}%)",
             BuffSkillData.BuffEffectType.CooldownReset => Mathf.RoundToInt(total) > 0
                 ? $"스킬 {Mathf.RoundToInt(total)}개 쿨타임 즉시 초기화 (남은 쿨타임이 긴 순, 쿨 초기화 스킬 제외)"
                 : "모든 스킬 쿨타임 즉시 초기화 (쿨 초기화 스킬 제외)",

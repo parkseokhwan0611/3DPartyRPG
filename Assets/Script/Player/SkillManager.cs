@@ -381,6 +381,9 @@ public class SkillManager : MonoBehaviour
             // DispelDebuff 효과가 있는 스킬은 파티원에 디버프가 있을 때만 후보에 포함
             if (IsDispelSkill(slot.skillData) && !AnyMemberHasDebuff()) continue;
 
+            // 부활 효과가 있는 스킬은 쓰러진 파티원이 있을 때만 (무적 등 다른 효과만 보고 아껴둔 부활을 낭비하지 않게)
+            if (slot.skillData is BuffSkillData reviveData && reviveData.HasRevive && !AnyMemberDead()) continue;
+
             // 자기 자신 쿨 초기화 스킬은 초기화할 스킬이 쿨타임 중일 때만 사용 (파티 대상은 다른 파티원 상황을 모르므로 그대로)
             if (slot.skillData.IsCooldownResetSkill && slot.skillData is BuffSkillData resetData
                 && !resetData.isPartyBuff && !HasResettableCooldown()) continue;
@@ -462,6 +465,14 @@ public class SkillManager : MonoBehaviour
         {
             if (effect.effectType == BuffSkillData.BuffEffectType.DispelDebuff) return true;
         }
+        return false;
+    }
+
+    private bool AnyMemberDead()
+    {
+        if (PartyManager.instance == null) return false;
+        foreach (var member in PartyManager.instance.partyMembers)
+            if (member != null && member.CurrentState == PartyMemberScript.MemberState.Dead) return true;
         return false;
     }
 

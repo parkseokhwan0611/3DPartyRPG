@@ -27,6 +27,7 @@ public class SkillZone : MonoBehaviour
     private float  critMultiplier; // 시전 시점 치명타 배율
     private float  debuffBonusPerStack; // 처형형 — 맞는 적의 디버프 1개당 데미지 증가 (판정마다 그 순간의 디버프 수로)
     private int    maxDebuffStacks;
+    private System.Action<EnemyHp> onHitEnemy; // 판정마다 맞은 적 각각 — 스킬의 적중 디버프(기절·둔화 등)용
 
     private int    enemyLayer;
     private Coroutine tickCoroutine;
@@ -38,8 +39,10 @@ public class SkillZone : MonoBehaviour
     public void Setup(float damage, float range, float interval, float activationDelay,
                       bool hitOnce, GameObject attacker, bool isMagicDamage, float duration,
                       float critRate = 0f, float critMultiplier = 1f,
-                      float debuffBonusPerStack = 0f, int maxDebuffStacks = 0)
+                      float debuffBonusPerStack = 0f, int maxDebuffStacks = 0,
+                      System.Action<EnemyHp> onHitEnemy = null)
     {
+        this.onHitEnemy          = onHitEnemy;
         this.debuffBonusPerStack = debuffBonusPerStack;
         this.maxDebuffStacks     = maxDebuffStacks;
         this.damage          = damage;
@@ -120,6 +123,8 @@ public class SkillZone : MonoBehaviour
                               * enemyHp.DebuffDamageMultiplier(debuffBonusPerStack, maxDebuffStacks);
             if (isMagicDamage) enemyHp.TakeMagicDamage(finalDamage, attacker, isCrit);
             else                enemyHp.TakeDamage(finalDamage, attacker, isCrit);
+            // 데미지 뒤에 적중 디버프 — 이번 판정으로 죽었으면 걸지 않음 (반복 장판이면 판정마다 다시 걸려 지속시간 갱신)
+            if (!enemyHp.isDead) onHitEnemy?.Invoke(enemyHp);
             anyCrit |= isCrit;
         }
         return anyCrit;
