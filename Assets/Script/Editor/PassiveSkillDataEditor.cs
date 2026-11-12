@@ -4,6 +4,7 @@ using UnityEditor;
 // 패시브 스킬 인스펙터 — 다른 스킬 데이터와 같은 형식(섹션 + "기본 / 레벨당" 한 줄)으로, 칸은 하나도 숨기지 않는다.
 // 효과 타입마다 실제로 쓰는 칸과 단위를 안내 상자로 알려준다
 [CustomEditor(typeof(PassiveSkillData))]
+[CanEditMultipleObjects]
 public class PassiveSkillDataEditor : GroupedSkillDataEditor
 {
     protected override void DrawSpecific()

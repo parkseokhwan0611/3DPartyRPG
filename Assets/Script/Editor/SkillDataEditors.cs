@@ -106,6 +106,7 @@ public abstract class GroupedSkillDataEditor : Editor
 // 데미지 스킬
 // ─────────────────────────────────────────────────────────────────
 [CustomEditor(typeof(DamageSkillData))]
+[CanEditMultipleObjects]
 public class DamageSkillDataEditor : GroupedSkillDataEditor
 {
     protected override void DrawSpecific()
@@ -165,6 +166,7 @@ public class DamageSkillDataEditor : GroupedSkillDataEditor
 // 버프 스킬
 // ─────────────────────────────────────────────────────────────────
 [CustomEditor(typeof(BuffSkillData))]
+[CanEditMultipleObjects]
 public class BuffSkillDataEditor : GroupedSkillDataEditor
 {
     protected override void DrawSpecific()
@@ -193,6 +195,7 @@ public class BuffSkillDataEditor : GroupedSkillDataEditor
 // 힐 스킬
 // ─────────────────────────────────────────────────────────────────
 [CustomEditor(typeof(HealSkillData))]
+[CanEditMultipleObjects]
 public class HealSkillDataEditor : GroupedSkillDataEditor
 {
     protected override void DrawSpecific()
@@ -217,6 +220,7 @@ public class HealSkillDataEditor : GroupedSkillDataEditor
 // 소환 스킬
 // ─────────────────────────────────────────────────────────────────
 [CustomEditor(typeof(SummonSkillData))]
+[CanEditMultipleObjects]
 public class SummonSkillDataEditor : GroupedSkillDataEditor
 {
     protected override void DrawSpecific()
@@ -284,6 +288,9 @@ public static class InlineRow
     private static void Field(Rect r, SerializedProperty p, GUIContent content)
     {
         EditorGUI.BeginProperty(r, content, p);
+        // 여러 에셋을 같이 선택했을 때 값이 다르면 "—"로 표시 (PropertyField가 해주던 것)
+        bool prevMixed = EditorGUI.showMixedValue;
+        EditorGUI.showMixedValue = p.hasMultipleDifferentValues;
         EditorGUI.BeginChangeCheck();
         switch (p.propertyType)
         {
@@ -313,6 +320,7 @@ public static class InlineRow
                 EditorGUI.PropertyField(r, p, GUIContent.none, true);
                 break;
         }
+        EditorGUI.showMixedValue = prevMixed;
         EditorGUI.EndProperty();
     }
 }
