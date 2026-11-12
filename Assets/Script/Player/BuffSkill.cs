@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class BuffSkill : SkillBase
 {
@@ -54,6 +55,7 @@ public class BuffSkill : SkillBase
 
     private void ApplySelfBuff(BuffSkillData data)
     {
+        _revivedThisCast.Clear();
         // PartyManager에서 코루틴 실행: 시전자가 죽어 SetActive(false)되어도 코루틴 유지
         if (PartyManager.instance != null)
             PartyManager.instance.StartCoroutine(BuffPresentationRoutine(myStat, data));
@@ -64,6 +66,7 @@ public class BuffSkill : SkillBase
         if (PartyManager.instance == null) return;
 
         // 부활을 먼저 — 그래야 아래 버프(무적 등)가 방금 일어난 파티원에게도 걸린다
+        _revivedThisCast.Clear(); // 이전 시전 기록은 비움 (같은 캐릭터의 다른 무적 스킬에서 "무적"이 빠지지 않게)
         ReviveDeadMembers(data);
 
         foreach (var member in PartyManager.instance.partyMembers)
@@ -82,6 +85,16 @@ public class BuffSkill : SkillBase
             var summon = SummonUnit.All[i];
             if (summon != null && summon.IsAlive) ApplyBuffEffectsToSummon(data, skillLevel, myStat, summon);
         }
+    }
+
+    // 이번 시전으로 부활한 파티원 — 상태 텍스트를 "부활"만 띄우려고 기억 (다음 부활 시전 때 비움)
+    private readonly HashSet<CharacterStat> _revivedThisCast = new HashSet<CharacterStat>();
+
+    private static bool HasInvulnerable(BuffSkillData data)
+    {
+        foreach (var effect in data.buffEffects)
+            if (effect != null && effect.effectType == BuffSkillData.BuffEffectType.Invulnerable) return true;
+        return false;
     }
 
     // ReviveDead 효과 — 쓰러진 파티원을 시전자 양옆·뒤쪽에 일으켜 세운다 (수치 = 부활 체력 비율)
@@ -110,6 +123,7 @@ public class BuffSkill : SkillBase
             Vector3 spot = transform.position + transform.right * side - transform.forward * 0.5f;
             if (!stat.ReviveFromDeath(ratio, spot)) continue;
             revived++;
+            _revivedThisCast.Add(stat);
 
             if (!string.IsNullOrEmpty(data.reviveEffectPoolKey) && ObjectPoolManager.instance != null)
             {
@@ -146,6 +160,10 @@ public class BuffSkill : SkillBase
 
         var handler = stat.GetComponent<PartyStatusEffectHandler>();
         ApplyBuffEffects(data, skillLevel, myStat, handler);
+
+        // 무적 스킬 — 머리 위에 "무적" (이번 시전으로 부활한 파티원은 "부활"만 보이게 생략)
+        if (HasInvulnerable(data) && !_revivedThisCast.Contains(stat) && handler != null && handler.IsInvulnerable)
+            stat.ShowStatusText("무적", StatusTextColors.Invulnerable, Mathf.Min(2f, data.GetDuration(skillLevel)));
 
         // 디버프 해제·쿨 초기화만 있는 즉시 발동 스킬은 시전 이펙트만 내고, 버프 타이머 UI·아우라는 띄우지 않는다
         if (!data.HasDurationEffect)

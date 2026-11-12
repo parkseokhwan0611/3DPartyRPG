@@ -590,6 +590,7 @@ public partial class CharacterStat : MonoBehaviour, IDamageable
 
     // 머리 위 상태 텍스트(CombatHpUi)에 잠깐 띄울 문구 요청 — (문구, 색, 표시 시간)
     public event System.Action<string, Color, float> OnStatusTextRequested;
+    public void ShowStatusText(string text, Color color, float duration) => OnStatusTextRequested?.Invoke(text, color, duration);
 
     private const float ReviveInvulnDuration = 1f;
 

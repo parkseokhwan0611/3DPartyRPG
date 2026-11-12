@@ -63,6 +63,21 @@ public class BasicMonsterScript : MonoBehaviour
     // 평소엔 파티원만 노리고 소환수는 도발로만 노림
     private bool _includeSummonsInNearest;
 
+    // 전투 중인지 — 어그로 사운드는 비전투 → 전투로 넘어갈 때 한 번만. 전투 중 대상이 죽어 새 대상을 찾거나,
+    // 공격 도중이라 대상 변경이 대기 중(currentTarget이 잠깐 비어 보임)일 때는 다시 재생하지 않는다
+    private bool _inCombat;
+    // 여러 몬스터가 같은 순간 어그로가 끌려도 같은 사운드는 짧은 간격 안에 한 번만
+    private static readonly Dictionary<string, float> _lastAggroSfxTime = new Dictionary<string, float>();
+    private const float AggroSfxMinInterval = 0.3f;
+
+    private void PlayAggroSfx()
+    {
+        if (string.IsNullOrEmpty(aggroSfxKey)) return;
+        if (_lastAggroSfxTime.TryGetValue(aggroSfxKey, out float last) && Time.time - last < AggroSfxMinInterval) return;
+        _lastAggroSfxTime[aggroSfxKey] = Time.time;
+        AudioManager.instance?.PlaySFX(aggroSfxKey);
+    }
+
     // ─────────────────────────────────────────────────────────────────
     // Unity 생명주기
     // ─────────────────────────────────────────────────────────────────
@@ -320,6 +335,7 @@ public class BasicMonsterScript : MonoBehaviour
         {
             attackModule.SetTargetImmediate(null);
             _includeSummonsInNearest = false; // 전투 종료
+            _inCombat = false;
             return;
         }
 
@@ -341,9 +357,9 @@ public class BasicMonsterScript : MonoBehaviour
                 // isStopped 해제는 SetTargetImmediate가 담당 — 공격 도중이라 변경이 대기됐다면
                 // (아직 공격 애니메이션이 안 끝났다면) 여기서 강제로 풀면 안 되기 때문에 건드리지 않음
 
-                // 완전히 새로 발견한 경우(무타겟→유타겟)에만 어그로 사운드 재생
-                if (!string.IsNullOrEmpty(aggroSfxKey))
-                    AudioManager.instance?.PlaySFX(aggroSfxKey);
+                // 비전투 상태에서 처음 발견한 경우에만 어그로 사운드 재생
+                if (!_inCombat) PlayAggroSfx();
+                _inCombat = true;
             }
             else if (attackModule.currentTarget != target)
             {
@@ -372,6 +388,7 @@ public class BasicMonsterScript : MonoBehaviour
             }
             attackModule.SetTargetImmediate(null);
             _includeSummonsInNearest = false; // 추격 범위 밖 = 전투 종료
+            _inCombat = false;
         }
     }
 
@@ -451,6 +468,7 @@ public class BasicMonsterScript : MonoBehaviour
         _tauntUntil.Clear();
         _forceRetarget = false;
         _includeSummonsInNearest = false;
+        _inCombat = false;
 
         if (navAgent.enabled)
         {

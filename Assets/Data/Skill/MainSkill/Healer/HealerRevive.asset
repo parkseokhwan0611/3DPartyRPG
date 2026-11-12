@@ -1,0 +1,77 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a70ac1c355a5a5a49b0f39626fc9e2be, type: 3}
+  m_Name: HealerRevive
+  m_EditorClassIdentifier: 
+  skillId: HealerRevive
+  skillName: "\uAD6C\uC6D0\uC758 \uAD8C\uB2A5"
+  description: "\uC8FD\uC740 \uD30C\uD2F0\uC6D0\uC744 \uBAA8\uB450 \uBD80\uD65C\uC2DC\uD0A4\uACE0
+    \uBAA8\uB4E0 \uD30C\uD2F0\uC6D0\uC774 \uC7A0\uC2DC \uBB34\uC801\uC774 \uB429\uB2C8\uB2E4."
+  icon: {fileID: 21300000, guid: b3cbc16c8393ff54e9580adf3fcf6987, type: 3}
+  requiredClass: 4
+  skillType: 1
+  skillCategory: 0
+  sfxEntries:
+  - sfxKey: Tanker_Passive6
+    delay: 0.2
+    repeatCount: 0
+    repeatInterval: 0
+  skillPriority: 0
+  maxLevel: 5
+  requiredCharLevel: 30
+  requiredSkill: {fileID: 0}
+  requiredSkillLevel: 1
+  mpCost:
+  - 50
+  - 50
+  - 50
+  - 50
+  cooldown:
+  - 180
+  - 170
+  - 160
+  - 150
+  skillPointCost: 04000000030000000300000002000000
+  isPartyBuff: 1
+  effectStyle: 1
+  effectPoolKey: 
+  auraIndex: 3
+  animTriggerName: doZoneSkill
+  animDuration: 1.3
+  effectSpawnDelay: 0.2
+  effectSpawnOffset: {x: 0, y: 0, z: 0}
+  effectSpawnRotation: {x: 0, y: 0, z: 0}
+  baseDuration: 1.5
+  durationPerLevel: 0.5
+  buffEffects:
+  - effectType: 25
+    valueMode: 1
+    baseValue: 0.25
+    valuePerLevel: 0.5
+    scalingStat: 0
+    scalingCoeff: 0
+    scalingPerLevel: 0
+  - effectType: 17
+    valueMode: 0
+    baseValue: 0
+    valuePerLevel: 0
+    scalingStat: 0
+    scalingCoeff: 0
+    scalingPerLevel: 0
+  onHitDamageIsMagic: 0
+  basicAttackEffectKey: 
+  basicAttackEffectRotation: {x: 0, y: 0, z: 0}
+  reviveEffectPoolKey: Tanker_Passive6
+  thornsIsMagic: 1
+  thornsScalings: []
+  thornsAggroPerHit: 15
+  thornsHitEffectPoolKey: 
