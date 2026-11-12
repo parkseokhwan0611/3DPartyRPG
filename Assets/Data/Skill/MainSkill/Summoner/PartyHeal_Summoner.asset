@@ -1,0 +1,68 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a873e38277a453e4a9645a30b21e0645, type: 3}
+  m_Name: PartyHeal_Summoner
+  m_EditorClassIdentifier: 
+  skillId: PartyHeal_Summoner
+  skillName: "\uADF8\uB987\uB41C \uCE58\uC720"
+  description: "\uC544\uAD70 \uC804\uCCB4\uC758 \uCCB4\uB825\uC744 \uD68C\uBCF5\uC2DC\uD0B5\uB2C8\uB2E4."
+  icon: {fileID: 21300000, guid: 63659ea75aa571241a1c798ea8114b43, type: 3}
+  requiredClass: 5
+  skillType: 2
+  skillCategory: 0
+  sfxEntries:
+  - sfxKey: Healer_Main3
+    delay: 0
+    repeatCount: 1
+    repeatInterval: 0.5
+  skillPriority: 0
+  maxLevel: 5
+  requiredCharLevel: 18
+  requiredSkill: {fileID: 0}
+  requiredSkillLevel: 1
+  mpCost:
+  - 100
+  - 100
+  - 100
+  - 100
+  - 100
+  cooldown:
+  - 10
+  - 10
+  - 10
+  - 10
+  - 10
+  skillPointCost: 0200000002000000020000000300000003000000
+  targetType: 1
+  useApRatio: 1
+  baseHealMultiplier: 3
+  healMultiplierPerLevel: 0.5
+  statScalings:
+  - stat: 3
+    coeff: 1
+    coeffPerLevel: 0.1
+  - stat: 4
+    coeff: 0.7
+    coeffPerLevel: 0.1
+  isDotHeal: 0
+  dotInterval: 1
+  baseDotDuration: 5
+  dotDurationPerLevel: 0
+  animTriggerName: doBuff
+  animDuration: 1
+  effectSpawnDelay: 0.3
+  effectPoolKey: PartyHeal
+  effectSpawnOffset: {x: 0, y: 0, z: 0}
+  effectSpawnRotation: {x: 0, y: 0, z: 0}
+  targetEffectPoolKey: 
+  targetEffectSpawnOffset: {x: 0, y: 0, z: 0}
+  targetEffectSpawnRotation: {x: 0, y: 0, z: 0}

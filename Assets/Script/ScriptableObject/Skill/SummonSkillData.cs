@@ -1,7 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-// 소환사 스킬 — 소환수를 부르는 스킬(Summon)과, 불러둔 소환수에게 명령하는 스킬(Taunt)을 하나의 SO로 다룬다.
+// 소환사 스킬 — 소환수를 부르는 스킬(Summon)과, 불러둔 소환수에게 명령하는 스킬(Taunt·Strike)을 하나의 SO로 다룬다.
 // 소환수 능력치는 시전자(루나리스) 능력치 × 비율이라 장비·버프·패시브가 자연스럽게 반영된다
 [CreateAssetMenu(fileName = "SummonSkill", menuName = "Scriptable Object/SummonSkillData")]
 public class SummonSkillData : SkillData
@@ -10,9 +10,13 @@ public class SummonSkillData : SkillData
     {
         Summon, // 소환수 소환 (같은 스킬로 부른 소환수가 있으면 교체)
         Taunt,  // 지정 종류의 소환수 주변 몬스터 어그로를 소환수에게 끌어옴 (해당 소환수가 1기 이상 있어야 사용 가능)
+        Strike, // 지정 종류의 소환수 주변 몬스터에게 데미지만 줌 — 어그로 없음 (해당 소환수가 1기 이상 있어야 사용 가능)
     }
 
     public SummonAction action = SummonAction.Summon;
+
+    // 소환수에게 내리는 명령(도발·공격)인지 — 명령은 해당 종류 소환수가 있어야 쓸 수 있다
+    public bool IsCommand => action == SummonAction.Taunt || action == SummonAction.Strike;
 
     [Tooltip("소환할 프리팹 — SummonUnit 컴포넌트가 붙어 있어야 함")]
     public SummonUnit summonPrefab;
@@ -33,25 +37,53 @@ public class SummonSkillData : SkillData
     public float baseDefRatio     = 1f;
     public float defRatioPerLevel = 0f;
 
-    [Tooltip("명령을 받을 소환수 종류")]
+    // ── 명령 공통 (Taunt·Strike) — 필드 이름은 기존 에셋 호환을 위해 taunt* 그대로 유지 ──
+    [Tooltip("명령을 받을 소환수 종류 (도발·공격 공통)")]
     public SummonUnit.Kind tauntKind = SummonUnit.Kind.Melee;
-    [Tooltip("각 소환수 주변 이 반경(m) 안의 몬스터가 대상")]
+    [Tooltip("각 소환수 주변 이 반경(m) 안의 몬스터가 대상 (도발·공격 공통)")]
     public float tauntRadius = 6f;
-    [Tooltip("몬스터에게 더할 어그로 수치 — 다른 어그로(탱커 도발 등)와 우선순위를 겨룰 때만 쓰인다. " +
+    [Tooltip("명령 데미지 = (시전자 마법 공격력(Use Ap 끄면 물리 공격력) + 스탯 비례) × 이 값 (0.5 = 50%). " +
+             "범위 안의 몬스터마다 한 번 (소환수가 여럿이라 범위가 겹쳐도 몬스터당 한 번만). " +
+             "도발은 0이면 데미지 없이 어그로만, 공격(Strike)은 0이면 아무 효과 없음")]
+    public float baseTauntDamageRatio     = 0f;
+    public float tauntDamageRatioPerLevel = 0f;
+    [Tooltip("명령 데미지에 더할 시전자 스탯 비례 (데미지 스킬의 Stat Scalings와 같은 방식). 예: 지능 × 0.5")]
+    public List<DamageSkillData.StatScaling> tauntStatScalings = new List<DamageSkillData.StatScaling>();
+    [Tooltip("명령을 받은 소환수 위치에 스폰할 이펙트 풀 키 (비우면 없음, 도발·공격 공통). 모션이 있으면 타격 시점에 스폰")]
+    public string tauntEffectPoolKey;
+
+    // ── 명령 모션 (소환수가 직접 동작) ──
+    [Tooltip("명령을 받은 소환수가 재생할 애니메이터 Trigger (예: skill1). 비우면 모션 없이 시전 즉시 효과. " +
+             "소환수 컨트롤러에 없는 트리거면 모션만 생략하고 타이밍은 그대로")]
+    public string commandAnimTrigger;
+    [Tooltip("모션 시작부터 이펙트·효과음까지 걸리는 시간 (초) — 보스 몬스터 스킬의 Windup Duration")]
+    public float commandHitDelay = 0f;
+    [Tooltip("이펙트·효과음 뒤 데미지가 들어가기까지의 시간 (초) — 보스 몬스터 스킬의 Attack Duration")]
+    public float commandDamageDelay = 0f;
+    [Tooltip("모션 전체 길이 (초) — 이 시간 동안 소환수는 이동·평타를 멈춘다. " +
+             "보스 몬스터 스킬의 Windup + Attack + Recovery Duration 합")]
+    public float commandMotionDuration = 0f;
+    [Tooltip("모션이 끝났는데 아직 스킬 모션 중이면 이 상태로 끊어서 넘김 (보스 몬스터의 Recovery End State). 비우면 애니메이터 전이에 맡김")]
+    public string commandEndState = "Idle";
+    [Tooltip("이펙트 시점에 재생할 효과음 키 — 소환수가 여럿이어도 시전당 한 번 (비우면 없음)")]
+    public string commandHitSfxKey;
+    [Tooltip("이 소환 스킬로 부른 소환수에게만 명령 (비우면 받을 소환수 종류가 같은 소환수 전부). " +
+             "같은 근접이라도 특정 소환수(예: 스켈레톤 보스)만 쓰게 할 때")]
+    public SummonSkillData commandSourceSkill;
+
+    // 이 소환수가 명령을 받을 대상인지 (종류 + 소환 스킬 제한)
+    public bool IsCommandTarget(SummonUnit s, CharacterStat owner)
+        => s != null && s.IsAlive && s.Owner == owner && s.kind == tauntKind
+           && (commandSourceSkill == null || s.SourceSkill == commandSourceSkill);
+
+    // ── 도발 전용 (Taunt) ──
+    [Tooltip("[도발 전용] 몬스터에게 더할 어그로 수치 — 다른 어그로(탱커 도발 등)와 우선순위를 겨룰 때만 쓰인다. " +
              "도발이 얼마나 가는지는 아래 Taunt Duration이 정함")]
     public float baseTauntAggro     = 100f;
     public float tauntAggroPerLevel = 0f;
-    [Tooltip("도발 지속시간 (초). 끝나면 도발로 준 어그로가 사라지고 몬스터는 원래 대상(가장 가까운 파티원 등)으로 돌아간다")]
+    [Tooltip("[도발 전용] 도발 지속시간 (초). 끝나면 도발로 준 어그로가 사라지고 몬스터는 원래 대상(가장 가까운 파티원 등)으로 돌아간다")]
     public float baseTauntDuration     = 5f;
     public float tauntDurationPerLevel = 0f;
-    [Tooltip("도발 데미지 = (시전자 마법 공격력(Use Ap 끄면 물리 공격력) + 스탯 비례) × 이 값 (0.5 = 50%). " +
-             "0이면 데미지 없이 어그로만. 도발 범위 안의 몬스터마다 한 번 (소환수가 여럿이라 범위가 겹쳐도 몬스터당 한 번만)")]
-    public float baseTauntDamageRatio     = 0f;
-    public float tauntDamageRatioPerLevel = 0f;
-    [Tooltip("도발 데미지에 더할 시전자 스탯 비례 (데미지 스킬의 Stat Scalings와 같은 방식). 예: 지능 × 0.5")]
-    public List<DamageSkillData.StatScaling> tauntStatScalings = new List<DamageSkillData.StatScaling>();
-    [Tooltip("도발한 소환수 위치에 스폰할 이펙트 풀 키 (비우면 없음)")]
-    public string tauntEffectPoolKey;
 
     public string  animTriggerName;
     public float   animDuration;

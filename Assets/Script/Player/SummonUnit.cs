@@ -66,8 +66,12 @@ public class SummonUnit : MonoBehaviour, IDamageable
     [Header("연출")]
     [Tooltip("소환될 때 스폰할 이펙트 풀 키")]
     public string spawnEffectPoolKey;
+    [Tooltip("소환 이펙트 크기 배율 (1 = 원본). 큰 소환수용 — 풀에 반납되면 원래 크기로 돌아간다")]
+    [Min(0.01f)] public float spawnEffectScale = 1f;
     [Tooltip("사라질 때(사망·시간 종료 등) 스폰할 이펙트 풀 키 — 사망 모션이 시작되는 순간 소환수 발밑에 스폰")]
     public string despawnEffectPoolKey;
+    [Tooltip("사라짐 이펙트 크기 배율 (1 = 원본). 큰 소환수용 — 풀에 반납되면 원래 크기로 돌아간다")]
+    [Min(0.01f)] public float despawnEffectScale = 1f;
     [Tooltip("사라질 때 효과음 — 사망 모션이 시작되는 순간 기준으로 Delay 뒤 재생 (0이면 이펙트와 동시). 반복 재생도 가능")]
     public List<SkillSfxEntry> despawnSfx = new List<SkillSfxEntry>();
     [Tooltip("피격 데미지 텍스트 풀 키")]
@@ -121,18 +125,20 @@ public class SummonUnit : MonoBehaviour, IDamageable
     private const float StuckCheckInterval = 1f;
     private const float StuckMinProgress   = 0.15f;
 
-    // 끼임 탈출 — 소환수는 파티원에게 길을 양보하는데(회피 우선순위 최하), 캐릭터와 벽 사이처럼
-    // 양보할 공간이 없으면 제자리에 멈춘다. 가려는 곳이 있는데 잠깐 못 움직이면 회피를 잠시 꺼서 통과시킨다
-    private ObstacleAvoidanceType _defaultAvoidance;
-    private float _blockedTimer;
-    private float _avoidanceOffUntil = -1f;
-    private const float BlockedTimeToEscape = 0.6f;
-    private const float EscapeDuration      = 1.5f;
-
     // 공격
     private float _attackCooldown;
     private float _pendingHitTimer = -1f;
     private int   _spawnIndex;
+
+    // 소환사 명령 스킬 모션 (SummonSkill의 Taunt·Strike) — 보스 몬스터 스킬(BossMonsterSkillController)과 같은 흐름:
+    // 모션 시작 → 이펙트 시점(이펙트·효과음) → 데미지 시점 → 모션 끝(아직 스킬 모션이면 끝 상태로 끊음). 그동안 이동·평타 정지
+    private bool  _commanding;
+    private float _commandElapsed, _commandEffectAt, _commandDamageAt, _commandEndAt;
+    private Action<SummonUnit> _commandEffect, _commandDamage;
+    private int    _commandHash, _commandStateHash;
+    private string _commandEndState;
+    private const float CommandEndFade = 0.15f; // 보스 몬스터 recoveryEndFade와 같은 값
+    public bool IsCommanding => _commanding;
 
     // 버프 (파티 버프가 소환수에게도 걸림)
     private class Buff { public StatusEffectType type; public float value; public ModifierMode mode; public float remaining; }
@@ -160,7 +166,9 @@ public class SummonUnit : MonoBehaviour, IDamageable
         _anim   = GetComponentInChildren<Animator>();
         _shield = new ShieldPool(this);
         _baseSpeed = _agent.speed;
-        _defaultAvoidance = _agent.obstacleAvoidanceType;
+        // 소환수는 파티원·다른 소환수·적을 비켜 가지 않고 통과한다 (회피는 레이어로 대상을 고를 수 없어 통째로 끔).
+        // 파티원 쪽은 회피 우선순위가 더 높아(숫자가 작아) 원래 소환수를 피하지 않는다
+        _agent.obstacleAvoidanceType = ObstacleAvoidanceType.NoObstacleAvoidance;
 
         // 회전은 파티원처럼 직접 — 에이전트 기본 회전(초당 120도)은 방향 전환이 굼뜨다
         _agent.updateRotation = false;
@@ -226,12 +234,11 @@ public class SummonUnit : MonoBehaviour, IDamageable
         Duration      = Mathf.Max(0.1f, data.GetDuration(level));
         RemainingTime = Duration;
 
-        // 캐릭터는 소환수를 무시하고 지나가고(우선순위가 낮은 에이전트는 높은 쪽이 피하지 않음),
-        // 소환수는 같은 우선순위인 소환수끼리와 적을 비켜 간다
+        // 캐릭터는 소환수를 무시하고 지나간다 (우선순위가 낮은 에이전트는 높은 쪽이 피하지 않음)
         _agent.avoidancePriority = 99;
         _agent.stoppingDistance  = 0f;
 
-        SpawnFx(spawnEffectPoolKey, transform.position);
+        SpawnFx(spawnEffectPoolKey, transform.position, spawnEffectScale);
         OnHpChanged?.Invoke(Hp, MaxHp);
     }
 
@@ -246,7 +253,7 @@ public class SummonUnit : MonoBehaviour, IDamageable
         _dead = true;
         // 이펙트와 효과음은 사망 모션이 시작되는 순간에 (사라지는 순간이 아니라)
         PlayDespawnSfx();
-        SpawnFx(despawnEffectPoolKey, transform.position);
+        SpawnFx(despawnEffectPoolKey, transform.position, despawnEffectScale);
 
         if (deathDuration <= 0f)
         {
@@ -256,6 +263,7 @@ public class SummonUnit : MonoBehaviour, IDamageable
 
         _pendingHitTimer = -1f;
         _stunTimer = 0f;
+        CancelCommand();
         StopAttackSfx(); // 쓰러지는 중에 휘두르는 소리가 나지 않게
 
         if (_agent.enabled && _agent.isOnNavMesh)
@@ -310,6 +318,26 @@ public class SummonUnit : MonoBehaviour, IDamageable
             return;
         }
 
+        // 명령 스킬 모션 중 — 끝날 때까지 이동·평타·대상 변경 없음 (기절·사망이면 취소됨)
+        if (_commanding)
+        {
+            _commandElapsed += dt;
+            if (_commandEffect != null && _commandElapsed >= _commandEffectAt)
+            {
+                // 이 시점엔 애니메이터가 스킬 상태에 들어가 있음 — 모션 끝에 아직 이 상태인지 비교용 (보스와 같은 방식)
+                if (_commandHash != NoHash) _commandStateHash = MonsterAnimUtil.CurrentStateHash(_anim);
+                var cb = _commandEffect; _commandEffect = null; cb(this);
+            }
+            if (_commandDamage != null && _commandElapsed >= _commandDamageAt)
+            {
+                var cb = _commandDamage; _commandDamage = null; cb(this);
+            }
+            if (_commandElapsed >= _commandEndAt) EndCommand();
+            else FaceTarget();
+            UpdateWalkAnim();
+            return;
+        }
+
         // 타격 대기 중(공격 모션) — 끝날 때까지 이동·대상 변경 없음
         if (_pendingHitTimer >= 0f)
         {
@@ -319,8 +347,6 @@ public class SummonUnit : MonoBehaviour, IDamageable
             UpdateWalkAnim();
             return;
         }
-
-        UpdateBlockedEscape(dt);
 
         // 주인에게서 너무 멀어지면 곁으로 순간이동 (포탈·대시 등)
         if ((transform.position - Owner.transform.position).sqrMagnitude > leashDistance * leashDistance)
@@ -497,33 +523,6 @@ public class SummonUnit : MonoBehaviour, IDamageable
         else if (!_agent.pathPending && _agent.hasPath && _agent.remainingDistance < 0.3f) StopMoving();
     }
 
-    private void UpdateBlockedEscape(float dt)
-    {
-        if (!_agent.enabled || !_agent.isOnNavMesh) return;
-
-        // 탈출 중 — 시간이 지나면 원래 회피 설정으로 복구
-        if (_avoidanceOffUntil >= 0f)
-        {
-            if (Time.time >= _avoidanceOffUntil)
-            {
-                _agent.obstacleAvoidanceType = _defaultAvoidance;
-                _avoidanceOffUntil = -1f;
-            }
-            return;
-        }
-
-        bool wantsToMove = _agent.hasPath && !_agent.pathPending && !_agent.isStopped
-                        && _agent.remainingDistance > _agent.stoppingDistance + 0.3f;
-        bool notMoving   = _agent.velocity.sqrMagnitude < 0.01f;
-
-        _blockedTimer = wantsToMove && notMoving ? _blockedTimer + dt : 0f;
-        if (_blockedTimer < BlockedTimeToEscape) return;
-
-        _blockedTimer = 0f;
-        _agent.obstacleAvoidanceType = ObstacleAvoidanceType.NoObstacleAvoidance;
-        _avoidanceOffUntil = Time.time + EscapeDuration;
-    }
-
     private void MoveTo(Vector3 dest)
     {
         if (!_agent.enabled || !_agent.isOnNavMesh) return;
@@ -551,6 +550,63 @@ public class SummonUnit : MonoBehaviour, IDamageable
         dir.y = 0f;
         if (dir.sqrMagnitude < 0.0001f) return;
         transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(dir), Time.deltaTime * 10f);
+    }
+
+    // ─────────────────────────────────────────────────────────────────
+    // 소환사 명령 스킬 모션
+    // ─────────────────────────────────────────────────────────────────
+
+    // 명령 모션 시작 — 하던 평타는 끊고 trigger 모션 재생.
+    //   effectDelay 뒤 onEffect(이펙트·효과음), 그 뒤 damageDelay 뒤 onDamage(데미지), motionDuration이 지나면 모션 종료 —
+    //   종료 때 아직 스킬 모션이면 endState로 끊는다(보스 몬스터 후딜 종료와 같음). 그동안 이동·평타 정지.
+    // 트리거가 컨트롤러에 없으면 모션 없이 타이밍만 지킨다. 기절·사망 중이면 거절(false), 도중에 기절·사망하면 남은 효과 취소
+    public bool StartCommand(string trigger, float effectDelay, float damageDelay, float motionDuration, string endState,
+                             Action<SummonUnit> onEffect, Action<SummonUnit> onDamage)
+    {
+        if (!IsAlive || IsStunned) return false;
+
+        _pendingHitTimer = -1f;
+        StopAttackSfx();
+        StopMoving();
+
+        _commandHash = FindParam(trigger, AnimatorControllerParameterType.Trigger);
+        if (_anim != null)
+        {
+            if (_walkHash    != NoHash) _anim.SetBool(_walkHash, false);
+            if (_attackHash  != NoHash) _anim.ResetTrigger(_attackHash);
+            if (_commandHash != NoHash) _anim.SetTrigger(_commandHash);
+        }
+
+        // 가장 가까운 적을 바라보며 시전 (싸우던 대상이 없을 때)
+        if (_target == null) SetTarget(NearestEnemy(transform.position, searchRadius, null));
+
+        _commanding       = true;
+        _commandElapsed   = 0f;
+        _commandEffectAt  = Mathf.Max(0f, effectDelay);
+        _commandDamageAt  = _commandEffectAt + Mathf.Max(0f, damageDelay);
+        _commandEndAt     = Mathf.Max(_commandDamageAt, motionDuration);
+        _commandEffect    = onEffect;
+        _commandDamage    = onDamage;
+        _commandEndState  = endState;
+        _commandStateHash = 0;
+        return true;
+    }
+
+    private void EndCommand()
+    {
+        _commanding    = false;
+        _commandEffect = null;
+        _commandDamage = null;
+        // 모션 클립이 모션 길이보다 길면 공격 자세로 미끄러지며 이동하지 않게 끊는다
+        MonsterAnimUtil.ExitStateIfStill(_anim, _commandStateHash, _commandEndState, CommandEndFade);
+    }
+
+    private void CancelCommand()
+    {
+        _commanding    = false;
+        _commandEffect = null;
+        _commandDamage = null;
+        if (_anim != null && _commandHash != NoHash) _anim.ResetTrigger(_commandHash);
     }
 
     private void StartAttack()
@@ -795,6 +851,7 @@ public class SummonUnit : MonoBehaviour, IDamageable
     private void BeginStun()
     {
         _pendingHitTimer = -1f; // 하던 공격(타격 대기)은 취소
+        CancelCommand();        // 명령 모션도 취소 (아직 안 들어간 명령 데미지 포함)
         StopAttackSfx();
         StopMoving();
         if (_anim != null)
@@ -903,11 +960,14 @@ public class SummonUnit : MonoBehaviour, IDamageable
         go.GetComponent<HealText>()?.Setup(amount, healTextColor, isCrit);
     }
 
-    private static void SpawnFx(string key, Vector3 pos)
+    private static void SpawnFx(string key, Vector3 pos, float scale = 1f)
     {
         if (string.IsNullOrEmpty(key) || ObjectPoolManager.instance == null) return;
         var go = ObjectPoolManager.instance.GetGo(key);
-        if (go != null) go.transform.position = pos;
+        if (go == null) return;
+        go.transform.position = pos;
+        // 같은 풀 키를 다른 곳(몬스터 등)도 쓰므로, 키운 이펙트는 반납될 때 원래 크기로 되돌린다
+        if (!Mathf.Approximately(scale, 1f)) PooledFxScale.Apply(go, scale);
     }
 
     private int FindParam(string name, AnimatorControllerParameterType type)

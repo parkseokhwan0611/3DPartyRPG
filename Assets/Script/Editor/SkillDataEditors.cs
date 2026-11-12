@@ -235,12 +235,17 @@ public class SummonSkillDataEditor : GroupedSkillDataEditor
         Pair("공격력 비율",       "baseAtkRatio", "기본", "atkRatioPerLevel", "레벨당");
         Pair("방어력 비율",       "baseDefRatio", "기본", "defRatioPerLevel", "레벨당");
 
-        Section("도발 (Action = Taunt)");
+        Section("명령 공통 (Action = Taunt / Strike)");
         Props("tauntKind", "tauntRadius");
+        Pair("명령 데미지 비율",  "baseTauntDamageRatio", "기본", "tauntDamageRatioPerLevel", "레벨당");
+        Props("tauntStatScalings", "tauntEffectPoolKey", "commandSourceSkill");
+
+        Section("  명령 모션 (소환수가 직접 동작 — 트리거 비우면 즉시)");
+        Props("commandAnimTrigger", "commandHitDelay", "commandDamageDelay", "commandMotionDuration", "commandEndState", "commandHitSfxKey");
+
+        Section("  도발 전용 (Action = Taunt)");
         Pair("도발 어그로",       "baseTauntAggro",       "기본", "tauntAggroPerLevel",       "레벨당");
         Pair("도발 지속시간",     "baseTauntDuration",    "기본", "tauntDurationPerLevel",    "레벨당");
-        Pair("도발 데미지 비율",  "baseTauntDamageRatio", "기본", "tauntDamageRatioPerLevel", "레벨당");
-        Props("tauntStatScalings", "tauntEffectPoolKey");
 
         Section("애니메이션 / 이펙트 (시전자)");
         Props("animTriggerName", "animDuration", "effectSpawnDelay",

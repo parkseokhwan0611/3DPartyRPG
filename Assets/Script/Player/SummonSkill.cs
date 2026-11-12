@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.AI;
 using System.Collections;
 
-// 소환사 스킬 실행 — SummonSkillData.action에 따라 소환수를 부르거나(Summon), 소환수에게 도발을 시킨다(Taunt)
+// 소환사 스킬 실행 — SummonSkillData.action에 따라 소환수를 부르거나(Summon), 소환수에게 도발(Taunt)·공격(Strike)을 명령한다
 public class SummonSkill : SkillBase
 {
     private static readonly Collider[] _hitBuffer = new Collider[32];
@@ -27,35 +27,35 @@ public class SummonSkill : SkillBase
         return summonData;
     }
 
-    // 도발은 명령할 소환수가 1기 이상 있어야 사용 가능 (없으면 마나·쿨타임을 쓰지 않고 거절)
+    // 명령(도발·공격)은 명령할 소환수가 1기 이상 있어야 사용 가능 (없으면 마나·쿨타임을 쓰지 않고 거절)
     public override bool CanUseNow
     {
         get
         {
             var data = GetSummonData();
             if (data == null) return false;
-            if (data.action == SummonSkillData.SummonAction.Taunt)
-                return SummonUnit.CountFor(myStat, data.tauntKind) > 0;
+            if (data.IsCommand)
+                return CommandTargetCount(data) > 0;
             if (data.action == SummonSkillData.SummonAction.Summon)
                 return data.summonPrefab != null;
             return true;
         }
     }
 
-    // 지금 못 쓰는 이유 (스킬 상태 텍스트용) — 도발할 소환수가 없을 때
+    // 지금 못 쓰는 이유 (스킬 상태 텍스트용) — 명령할 소환수가 없을 때
     public override string CannotUseMessage
     {
         get
         {
             var data = GetSummonData();
-            if (data != null && data.action == SummonSkillData.SummonAction.Taunt && !CanUseNow)
+            if (data != null && data.IsCommand && !CanUseNow)
                 return "소환수가 존재하지 않습니다.";
             return null;
         }
     }
 
     // 팔로워 자동 사용 판단 — 소환수가 이미 다 있고 시간이 넉넉하면 재소환하지 않고,
-    // 도발은 소환수 주변에 몬스터가 있을 때만
+    // 명령(도발·공격)은 소환수 주변에 몬스터가 있을 때만
     public override bool IsWorthAutoUsing
     {
         get
@@ -79,7 +79,7 @@ public class SummonSkill : SkillBase
 
             foreach (var s in SummonUnit.All)
             {
-                if (s == null || !s.IsAlive || s.Owner != myStat || s.kind != data.tauntKind) continue;
+                if (!data.IsCommandTarget(s, myStat)) continue;
                 if (Physics.OverlapSphereNonAlloc(s.transform.position, data.tauntRadius, _hitBuffer, enemyLayer) > 0) return true;
             }
             return false;
@@ -107,7 +107,7 @@ public class SummonSkill : SkillBase
         // 3. 시전자 이펙트 + 효과
         SpawnCasterEffect(data);
         if (data.action == SummonSkillData.SummonAction.Summon) DoSummon(data);
-        else                                                   DoTaunt(data);
+        else                                                   DoCommand(data);
 
         // 효과 적용 완료 → 후딜 캔슬 허용
         ReleaseActivating();
@@ -141,52 +141,104 @@ public class SummonSkill : SkillBase
     }
 
     // ─────────────────────────────────────────────────────────────────
-    // 도발 — 지정 종류 소환수마다 주변 몬스터의 어그로를 그 소환수에게 몰아준다
+    // 명령 — 지정 종류 소환수마다 주변 몬스터에게
+    //   도발(Taunt): 어그로를 그 소환수에게 몰아주고 (데미지 비율이 있으면 데미지도)
+    //   공격(Strike): 어그로 없이 데미지만
     // ─────────────────────────────────────────────────────────────────
 
-    private readonly System.Collections.Generic.HashSet<EnemyHp> _tauntHit = new System.Collections.Generic.HashSet<EnemyHp>();
-
-    private void DoTaunt(SummonSkillData data)
+    // 시전 1회분 상태 — 소환수마다 타격 시점이 달라도(모션) 몬스터당 데미지 한 번·효과음 한 번·화면 흔들림 한 번
+    private class CommandCast
     {
-        float aggro    = data.GetTauntAggro(skillLevel);
-        float duration = data.GetTauntDuration(skillLevel);
+        public SummonSkillData data;
+        public float aggro, duration, baseDamage;
+        public readonly System.Collections.Generic.HashSet<EnemyHp> hit = new System.Collections.Generic.HashSet<EnemyHp>();
+        public bool sfxPlayed, shaken;
+    }
 
-        // 도발 데미지 — (공격력 + 스탯 비례) × 비율 × (1 + 물리/마법 데미지 증가). 치명타는 몬스터마다 굴림
-        float baseDamage = data.GetTauntRawDamage(skillLevel, myStat);
+    private int CommandTargetCount(SummonSkillData data)
+    {
+        int n = 0;
+        foreach (var s in SummonUnit.All) if (data.IsCommandTarget(s, myStat)) n++;
+        return n;
+    }
 
-        _tauntHit.Clear();
-        bool anyCrit = false;
+    private void DoCommand(SummonSkillData data)
+    {
+        bool isTaunt = data.action == SummonSkillData.SummonAction.Taunt;
+        var cast = new CommandCast
+        {
+            data       = data,
+            aggro      = isTaunt ? data.GetTauntAggro(skillLevel) : 0f,
+            duration   = data.GetTauntDuration(skillLevel),
+            // 명령 데미지 — (공격력 + 스탯 비례) × 비율 × (1 + 물리/마법 데미지 증가). 치명타는 몬스터마다 굴림
+            baseDamage = data.GetTauntRawDamage(skillLevel, myStat),
+        };
+
+        // 모션 설정이 있으면 보스 몬스터 스킬과 같은 흐름(모션 → 이펙트·효과음 → 데미지 → 모션 종료), 없으면 즉시
+        bool useMotion = !string.IsNullOrEmpty(data.commandAnimTrigger) || data.commandHitDelay > 0f || data.commandDamageDelay > 0f;
 
         foreach (var s in SummonUnit.All.ToArray())
         {
-            if (s == null || !s.IsAlive || s.Owner != myStat || s.kind != data.tauntKind) continue;
-
-            int hitCount = Physics.OverlapSphereNonAlloc(s.transform.position, data.tauntRadius, _hitBuffer, enemyLayer);
-            for (int i = 0; i < hitCount; i++)
+            if (!data.IsCommandTarget(s, myStat)) continue;
+            if (useMotion)
+                s.StartCommand(data.commandAnimTrigger, data.commandHitDelay, data.commandDamageDelay, data.commandMotionDuration,
+                               data.commandEndState, u => CommandEffect(cast, u), u => CommandDamage(cast, u));
+            else
             {
-                var monster = _hitBuffer[i].GetComponentInParent<BasicMonsterScript>();
-                // 도발 범위 안 몬스터는 공격 중이라도 거리와 상관없이 바로 소환수를 노린다
-                if (monster != null && aggro > 0f) monster.Taunt(s.transform, aggro, duration);
-
-                // 소환수 여럿의 범위가 겹쳐도 몬스터당 데미지는 한 번만
-                if (baseDamage <= 0f) continue;
-                var enemyHp = _hitBuffer[i].GetComponentInParent<EnemyHp>();
-                if (enemyHp == null || enemyHp.isDead || !_tauntHit.Add(enemyHp)) continue;
-
-                bool  isCrit = Random.value < myStat.TotalCritRate;
-                float damage = isCrit ? baseDamage * myStat.TotalCritDamage : baseDamage;
-                if (data.useAp) enemyHp.TakeMagicDamage(damage, gameObject, isCrit);
-                else            enemyHp.TakeDamage(damage, gameObject, isCrit);
-                anyCrit |= isCrit;
+                CommandEffect(cast, s);
+                CommandDamage(cast, s);
             }
-
-            SpawnEffectAt(data.tauntEffectPoolKey, s.transform.position);
         }
-
-        // 다른 스킬과 같이 치명타가 하나라도 있으면 한 번 흔든다
-        if (anyCrit) CinemachineShake.ShakeCrit();
     }
 
+    // 이펙트 시점 — 소환수 위치 이펙트 + 효과음(시전당 한 번)
+    private void CommandEffect(CommandCast cast, SummonUnit s)
+    {
+        if (this == null || s == null) return; // 시전자가 사라진 경우 (클래스 변경 등)
+        var data = cast.data;
+
+        SpawnEffectAt(data.tauntEffectPoolKey, s.transform.position);
+
+        if (!cast.sfxPlayed && !string.IsNullOrEmpty(data.commandHitSfxKey))
+        {
+            AudioManager.instance?.PlaySFX(data.commandHitSfxKey);
+            cast.sfxPlayed = true;
+        }
+    }
+
+    // 데미지 시점 — 소환수 주변 몬스터에게 도발 어그로(Taunt만)·데미지
+    private void CommandDamage(CommandCast cast, SummonUnit s)
+    {
+        if (this == null || myStat == null || s == null) return; // 시전자가 사라진 경우 (클래스 변경 등)
+        var data = cast.data;
+
+        int hitCount = Physics.OverlapSphereNonAlloc(s.transform.position, data.tauntRadius, _hitBuffer, enemyLayer);
+        bool anyCrit = false;
+        for (int i = 0; i < hitCount; i++)
+        {
+            var monster = _hitBuffer[i].GetComponentInParent<BasicMonsterScript>();
+            // 도발 범위 안 몬스터는 공격 중이라도 거리와 상관없이 바로 소환수를 노린다
+            if (monster != null && cast.aggro > 0f) monster.Taunt(s.transform, cast.aggro, cast.duration);
+
+            // 소환수 여럿의 범위가 겹쳐도 몬스터당 데미지는 한 번만
+            if (cast.baseDamage <= 0f) continue;
+            var enemyHp = _hitBuffer[i].GetComponentInParent<EnemyHp>();
+            if (enemyHp == null || enemyHp.isDead || !cast.hit.Add(enemyHp)) continue;
+
+            bool  isCrit = Random.value < myStat.TotalCritRate;
+            float damage = isCrit ? cast.baseDamage * myStat.TotalCritDamage : cast.baseDamage;
+            if (data.useAp) enemyHp.TakeMagicDamage(damage, gameObject, isCrit);
+            else            enemyHp.TakeDamage(damage, gameObject, isCrit);
+            anyCrit |= isCrit;
+        }
+
+        // 다른 스킬과 같이 치명타가 하나라도 있으면 시전당 한 번 흔든다
+        if (anyCrit && !cast.shaken)
+        {
+            CinemachineShake.ShakeCrit();
+            cast.shaken = true;
+        }
+    }
     // ─────────────────────────────────────────────────────────────────
     // 이펙트
     // ─────────────────────────────────────────────────────────────────

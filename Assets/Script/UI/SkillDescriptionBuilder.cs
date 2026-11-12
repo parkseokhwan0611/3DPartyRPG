@@ -735,11 +735,19 @@ public static class SkillDescriptionBuilder
     {
         var sb = new StringBuilder();
 
-        if (s.action == SummonSkillData.SummonAction.Taunt)
+        if (s.IsCommand)
         {
             string kindName = s.tauntKind == SummonUnit.Kind.Melee ? "근접" : "원거리";
-            sb.AppendLine($"[도발] {kindName} 소환수 주변 {s.tauntRadius:0.#}m 내의 몬스터 도발");
-            sb.AppendLine($"도발 시간: {s.GetTauntDuration(level):0.#}초");
+            string who = s.commandSourceSkill != null ? $"'{s.commandSourceSkill.skillName}' 소환수" : $"{kindName} 소환수";
+            if (s.action == SummonSkillData.SummonAction.Taunt)
+            {
+                sb.AppendLine($"[도발] {who} 주변 {s.tauntRadius:0.#}m 내의 몬스터 도발");
+                sb.AppendLine($"도발 시간: {s.GetTauntDuration(level):0.#}초");
+            }
+            else
+            {
+                sb.AppendLine($"[공격 명령] {who} 주변 {s.tauntRadius:0.#}m 내의 몬스터에게 피해");
+            }
             float ratio = s.GetTauntDamageRatio(level);
             if (ratio > 0f)
             {
@@ -772,7 +780,7 @@ public static class SkillDescriptionBuilder
                     sb.AppendLine($"데미지: {expr}");
                 }
             }
-            sb.Append($"{kindName} 소환수가 1기 이상 있어야 사용 가능");
+            sb.Append($"{who}가 1기 이상 있어야 사용 가능");
             return sb.ToString();
         }
 

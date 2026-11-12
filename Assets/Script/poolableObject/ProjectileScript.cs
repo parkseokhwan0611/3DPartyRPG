@@ -317,7 +317,8 @@ public class ProjectileScript : PoolAble
 
         if (!dealDamage) return;
 
-        int  mask        = LayerMask.GetMask(_ownerIsMonster ? "Player" : "Enemy");
+        // 몬스터 폭발은 파티원(Player)과 소환수(Summon) 모두 맞는다
+        int  mask        = _ownerIsMonster ? LayerMask.GetMask("Player", "Summon") : LayerMask.GetMask("Enemy");
         int  count       = Physics.OverlapSphereNonAlloc(center, EffectiveRadius, _explosionBuffer, mask);
 
         var damagedSet = new System.Collections.Generic.HashSet<IDamageable>();

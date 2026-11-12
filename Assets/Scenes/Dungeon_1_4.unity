@@ -281931,17 +281931,17 @@ PrefabInstance:
     - target: {fileID: 287185657419625512, guid: 015e5c8646bd0c34d82d38ae51a8ba04,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 524.49347
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 287185657419625512, guid: 015e5c8646bd0c34d82d38ae51a8ba04,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 256.40488
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 287185657419625512, guid: 015e5c8646bd0c34d82d38ae51a8ba04,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 31.035677
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 287185657419625512, guid: 015e5c8646bd0c34d82d38ae51a8ba04,
         type: 3}
@@ -281982,21 +281982,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: SceneLoader
-      objectReference: {fileID: 0}
-    - target: {fileID: 945928093153045648, guid: 015e5c8646bd0c34d82d38ae51a8ba04,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 3944515772201278365, guid: 015e5c8646bd0c34d82d38ae51a8ba04,
-        type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 8431540331600255197, guid: 015e5c8646bd0c34d82d38ae51a8ba04,
-        type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -348056,6 +348041,11 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1069165368840630408, guid: 07e7d928f411eb34d97d77f873339039,
+        type: 3}
+      propertyPath: startWithSecondClass.Array.data[2]
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1314634815865661653, guid: 07e7d928f411eb34d97d77f873339039,
         type: 3}
       propertyPath: m_LocalPosition.x

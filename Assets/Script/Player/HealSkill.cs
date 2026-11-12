@@ -52,15 +52,9 @@ public class HealSkill : SkillBase
             yield return new WaitForSeconds(remaining);
     }
 
+    // 단일 힐은 파티원 전용 (소환수는 아군 전체 힐에서만 회복)
     private void ApplySingleHeal(HealSkillData data, Transform target)
     {
-        // 대상이 소환수면 소환수에게
-        if (target != null && target.TryGetComponent(out SummonUnit summon))
-        {
-            if (summon.IsAlive) ApplyHeal(summon, CalculateHeal(data), data);
-            return;
-        }
-
         CharacterStat targetStat = target != null
             ? target.GetComponent<CharacterStat>()
             : myStat;
