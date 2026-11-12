@@ -6,16 +6,13 @@ public class HealSkillData : SkillData
 {
     public enum HealTargetType { Single, Party }
 
-    [Header("힐 설정")]
     public HealTargetType targetType = HealTargetType.Single;
     public bool useApRatio = true;       // AP 비례 힐 여부
     public float baseHealMultiplier = 1f;
     public float healMultiplierPerLevel = 0.1f;
 
-    [Header("스탯 배율 (선택, 최대 2개)")]
     public List<DamageSkillData.StatScaling> statScalings = new List<DamageSkillData.StatScaling>();
 
-    [Header("도트 힐 설정")]
     public bool isDotHeal = false;            // 도트 힐 여부
     public float dotInterval = 1f;            // 틱 간격 (초)
     public float baseDotDuration    = 5f;     // 1레벨 지속시간 (초)
@@ -23,7 +20,6 @@ public class HealSkillData : SkillData
 
     public float GetDotDuration(int level) => baseDotDuration + dotDurationPerLevel * (level - 1);
 
-    [Header("애니메이션 / 이펙트")]
     public string animTriggerName;
     public float animDuration;
     public float effectSpawnDelay;

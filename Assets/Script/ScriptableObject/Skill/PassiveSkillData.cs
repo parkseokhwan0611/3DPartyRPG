@@ -3,7 +3,6 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "PassiveSkill", menuName = "Scriptable Object/PassiveSkillData")]
 public class PassiveSkillData : SkillData
 {
-    [Header("패시브 효과 타입")]
     public PassiveEffectType effectType;
 
     [Tooltip("Atk/Ap/Def/MagicRes/MaxHp, PhysDmgReduction/MagicDmgReduction 타입에서만 사용.\n" +
@@ -11,13 +10,11 @@ public class PassiveSkillData : SkillData
              "Percent: 능력치는 스탯·장비 기본 수치 기준 증가, 데미지 감소는 받는 데미지 비율 감소 (0.1 = 10%)")]
     public ModifierMode valueMode = ModifierMode.Flat;
 
-    [Header("수치 설정")]
     public float baseValue     = 0f;
     public float valuePerLevel = 0f;
 
     // 두 번째 효과 — 방어력 + 마법 저항력처럼 능력치 두 개를 함께 올리는 패시브용.
     // 부활·발동형 효과는 첫 번째 효과 타입만 보고 동작하므로 여기엔 수치 증가형만 허용한다
-    [Header("두 번째 효과 (선택, 수치 증가형만)")]
     public bool hasSecondEffect = false;
     public PassiveEffectType secondEffectType = PassiveEffectType.MagicRes;
     [Tooltip("Atk/Ap/Def/MagicRes/MaxHp, PhysDmgReduction/MagicDmgReduction 타입에서만 사용. Flat: 20 = 20 / Percent: 0.1 = 10%")]
@@ -25,7 +22,6 @@ public class PassiveSkillData : SkillData
     public float secondBaseValue     = 0f;
     public float secondValuePerLevel = 0f;
 
-    [Header("특수 효과 설정 (트리거 기반)")]
     [Tooltip("발동 확률 (1 = 100%, 0.2 = 20%)")]
     public float baseProcChance     = 0f;
     public float procChancePerLevel = 0f;
@@ -50,6 +46,39 @@ public class PassiveSkillData : SkillData
 
     // 두 번째 효과가 켜져 있고, 허용된 수치 증가형 타입일 때만 적용한다
     public bool HasValidSecondEffect => hasSecondEffect && IsValueEffect(secondEffectType);
+
+    // 효과 타입마다 실제로 읽는 칸 — 인스펙터(PassiveSkillDataEditor)가 안 쓰는 칸을 숨기는 데 사용.
+    // 발동 코드(CharacterStatTriggers / CharacterStat.TryRevive / CharacterStatus.ApplyPassiveEffect)와 맞춰 둘 것
+    [System.Flags]
+    public enum UsedField
+    {
+        None            = 0,
+        Value           = 1 << 0, // Base Value / Value Per Level
+        ProcChance      = 1 << 1,
+        ProcValue       = 1 << 2,
+        ProcDuration    = 1 << 3,
+        ProcEffect      = 1 << 4, // Proc Effect Pool Key
+        ProcSkill       = 1 << 5,
+        MaxDebuffStacks = 1 << 6,
+    }
+
+    public static UsedField GetUsedFields(PassiveEffectType type)
+    {
+        switch (type)
+        {
+            case PassiveEffectType.OnHitAtkSpeedUp:     return UsedField.ProcChance | UsedField.ProcValue | UsedField.ProcDuration;
+            case PassiveEffectType.OnDebuffExtraDamage: return UsedField.Value | UsedField.MaxDebuffStacks;
+            case PassiveEffectType.OnCritLightning:     return UsedField.ProcChance | UsedField.ProcValue | UsedField.ProcEffect | UsedField.ProcSkill;
+            case PassiveEffectType.OnKillHeal:          return UsedField.ProcValue;
+            case PassiveEffectType.OnHitPoison:         return UsedField.ProcChance | UsedField.ProcValue | UsedField.ProcDuration | UsedField.ProcEffect;
+            case PassiveEffectType.HealCrit:            return UsedField.None;
+            case PassiveEffectType.OnHealAtkSpeedUp:    return UsedField.ProcValue | UsedField.ProcDuration;
+            case PassiveEffectType.Revive:              return UsedField.Value | UsedField.ProcEffect;
+            case PassiveEffectType.OnHitCooldownReset:  return UsedField.ProcChance;
+            case PassiveEffectType.OnHitShield:         return UsedField.Value | UsedField.ProcChance | UsedField.ProcValue | UsedField.ProcDuration | UsedField.ProcEffect;
+            default:                                    return UsedField.Value; // 수치 증가형
+        }
+    }
 
     // 두 번째 효과로 쓸 수 있는 수치 증가형 타입 (레벨별 수치를 더하기만 하는 효과)
     public static bool IsValueEffect(PassiveEffectType type)
@@ -122,41 +151,45 @@ public class PassiveSkillData : SkillData
         }
     }
 
-    // 세이브/에셋에는 정수로 저장되므로 기존 항목의 순서(값)는 바꾸지 말 것
+    // 세이브/에셋에는 정수로 저장되므로 번호는 고정 — 선언 순서는 인스펙터 목록 순서(종류별 묶음)일 뿐.
+    // 새 타입은 지금 가장 큰 번호(26) 다음 번호로 추가하고, 어울리는 묶음 안에 넣을 것
     public enum PassiveEffectType
     {
-        // 수치 증가형 — Atk/Ap/Def/MaxHp/MagicRes는 valueMode로 고정/퍼센트 선택
-        Atk,                 // 물리 공격력 증가
-        Ap,                  // 마법 공격력 증가
-        Def,                 // 방어력 증가
-        PhysDmgBonus,        // 최종 물리 피해 % 증가
-        MagicDmgBonus,       // 최종 마법 피해 % 증가
-        CritRate,            // 치명타 확률 증가
-        CritDamage,          // 치명타 배율 증가
-        MaxHp,               // 최대 체력 증가
-        MagicRes,            // 마법 저항력 증가
-        HealPercent,         // 힐량 % 증가
-        FaithToHp,           // 신앙 스탯 비례 체력 증가
-        MaxMpBonus,          // 최대 마나 고정 증가 (퍼센트 없음)
+        // 공격 (수치 증가형) — Atk/Ap는 valueMode로 고정/퍼센트 선택
+        Atk                  = 0,  // 물리 공격력 증가
+        Ap                   = 1,  // 마법 공격력 증가
+        PhysDmgBonus         = 3,  // 최종 물리 피해 % 증가
+        MagicDmgBonus        = 4,  // 최종 마법 피해 % 증가
+        CritRate             = 5,  // 치명타 확률 증가
+        CritDamage           = 6,  // 치명타 배율 증가
+        AtkSpeed             = 23, // 공격 속도 증가 (0.1 = +10%)
 
-        // 트리거형
-        OnHitManaRestore,    // 평타 적중 시 마나 회복
-        OnHitAtkSpeedUp,     // 평타 적중 시 공격 속도 증가
-        OnDebuffExtraDamage, // 디버프 걸린 적에게 추가 데미지
-        OnCritLightning,     // 치명타 시 번개 발동
-        OnKillHeal,          // 적 처치 시 체력 회복
-        OnHitPoison,         // 공격 시 독 발동
-        HealCrit,            // 힐에 치명타 적용
-        OnHealAtkSpeedUp,    // 힐 받은 대상 공격 속도 증가
-        Revive,              // 1회 부활 (쿨타임 10분)
+        // 방어 (수치 증가·감소형) — Def/MaxHp/MagicRes·데미지 감소는 valueMode로 고정/퍼센트 선택
+        Def                  = 2,  // 방어력 증가
+        MagicRes             = 8,  // 마법 저항력 증가
+        MaxHp                = 7,  // 최대 체력 증가
+        FaithToHp            = 10, // 신앙 스탯 비례 체력 증가
+        PhysDmgReduction     = 21, // 받는 물리 데미지 감소
+        MagicDmgReduction    = 22, // 받는 마법 데미지 감소
 
-        // 수치 감소형 — valueMode로 고정/퍼센트 선택 (기존 값 보존을 위해 맨 뒤에 추가)
-        PhysDmgReduction,    // 받는 물리 데미지 감소
-        MagicDmgReduction,   // 받는 마법 데미지 감소
+        // 회복 / 마나 (수치 증가형)
+        HealPercent          = 9,  // 힐량 % 증가
+        MaxMpBonus           = 11, // 최대 마나 고정 증가 (퍼센트 없음)
+        OnHitManaRestore     = 12, // 평타 적중 시 마나 회복
+        SummonHitManaRestore = 25, // 소환수가 공격을 적중시킬 때마다 주인 마나 고정 회복
 
-        AtkSpeed,            // 공격 속도 증가 (0.1 = +10%)
-        OnHitCooldownReset,  // 평타 적중 시 확률로 퀵슬롯 스킬 쿨타임 초기화 (쿨 초기화 스킬은 제외)
-        SummonHitManaRestore, // 소환수가 공격을 적중시킬 때마다 주인 마나 고정 회복
-        OnHitShield,         // 평타 적중 시 확률로 자신에게 보호막 (최대 체력 비례)
+        // 발동형 — 평타 적중 시
+        OnHitAtkSpeedUp      = 13, // 평타 적중 시 공격 속도 증가
+        OnHitPoison          = 17, // 공격 시 독 발동
+        OnHitShield          = 26, // 평타 적중 시 확률로 자신에게 보호막 (최대 체력 비례)
+        OnHitCooldownReset   = 24, // 평타 적중 시 확률로 퀵슬롯 스킬 쿨타임 초기화 (쿨 초기화 스킬은 제외)
+        OnCritLightning      = 15, // 치명타 시 번개 발동
+
+        // 발동형 — 그 외
+        OnDebuffExtraDamage  = 14, // 디버프 걸린 적에게 추가 데미지
+        OnKillHeal           = 16, // 적 처치 시 체력 회복
+        HealCrit             = 18, // 힐에 치명타 적용
+        OnHealAtkSpeedUp     = 19, // 힐 받은 대상 공격 속도 증가
+        Revive               = 20, // 1회 부활 (쿨타임 10분)
     }
 }

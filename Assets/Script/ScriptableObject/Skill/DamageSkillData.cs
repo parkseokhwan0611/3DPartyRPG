@@ -16,7 +16,6 @@ public class DamageSkillData : SkillData
         Fth  = 4, // 신앙
     }
 
-    [Header("데미지 설정")]
     public float baseDamageMultiplier = 1.0f;  // 기본 배율
     public float damageMultiplierPerLevel = 0.1f; // 레벨당 증가 배율
     public bool useAp; //True면 AP, False면 AD
@@ -34,17 +33,13 @@ public class DamageSkillData : SkillData
         public float GetScaling(int level) => coeff + (coeffPerLevel * (level - 1));
     }
 
-    [Header("스탯 배율 (선택, 최대 2개)")]
     public List<StatScaling> statScalings = new List<StatScaling>();
-    [Header("사거리 설정")]
     public float castRange = 3f;  
     public float baseRange = 3f;
     public float rangePerLevel = 0f;
     public bool isAoe;
-    [Header("부가 디버프 효과 (선택)")]
     public List<DebuffSkillData.DebuffEffect> onHitDebuffs = new List<DebuffSkillData.DebuffEffect>();
 
-    [Header("부가 버프 효과 (선택 — 시전자 자신에게 적용)")]
     public List<CastBuffEffect> onCastBuffs = new List<CastBuffEffect>();
 
     [System.Serializable]
@@ -88,16 +83,13 @@ public class DamageSkillData : SkillData
                                             or StatusEffectType.DmgReductionUp;
     }
 
-    [Header("다음 스킬 연계 버프 (선택)")]
     public bool hasNextSkillBuff       = false;
     public float nextSkillDamageBonus  = 0.2f;  // 20% 증가
     public float nextSkillBuffDuration = 4f;    // 4초
-    [Header("어그로 설정")]
     public bool  hasAggroEffect = false;
     public float aggroAmount    = 50f;
     public float aggroRange     = 10f;
 
-    [Header("장판 설정")]
     [Tooltip("true = 타겟 위치에 이펙트 스폰, 풀 오브젝트의 SkillZone이 직접 데미지 판정")]
     public bool spawnAtTarget = false;
     [Tooltip("true = 한 번만 판정 / false = zoneDamageInterval마다 반복 판정")]
@@ -112,7 +104,6 @@ public class DamageSkillData : SkillData
              "해제(기본)면 지금처럼 월드 기준 (Effect Spawn Rotation만 적용)")]
     public bool zoneFaceCaster = false;
 
-    [Header("수류탄형 설정")]
     [Tooltip("true = 포물선으로 던져 대상의 발밑에 떨어진 뒤 범위 폭발 (몬스터 수류탄과 같은 GrenadeProjectile 사용). 장판형보다 우선\n" +
              "· Effect Pool Key = 던질 투척물 프리팹의 풀 키 (GrenadeProjectile 컴포넌트 필요)\n" +
              "· 폭발 이펙트·효과음 = 그 프리팹의 GrenadeProjectile에 있는 Explosion Pool Key / Explosion Sfx Key\n" +
@@ -125,7 +116,6 @@ public class DamageSkillData : SkillData
     [Tooltip("포물선 최고 높이 (m)")]
     public float grenadeArcHeight      = 3f;
 
-    [Header("투사체형 설정")]
     [Tooltip("true = 투사체를 날려서 맞는 순간 데미지 (수류탄형 다음, 장판형보다 우선)\n" +
              "· Effect Pool Key = 투사체 프리팹의 풀 키 (ProjectileScript + Rigidbody + Collider 필요 — 평타 총알 프리팹 그대로 써도 됨)\n" +
              "· 발사 위치 = 평타 총구(RangedAttack의 클래스별 발사 위치), 없으면 Effect Spawn Offset\n" +
@@ -155,7 +145,6 @@ public class DamageSkillData : SkillData
         BehindTarget,  // 대상 뒤 (관통해서 지나간 느낌)
     }
 
-    [Header("무적 + 사라지는 연출 (선택 — 검기 난무형)")]
     [Tooltip("true = 시전 순간부터 무적, 이펙트가 나오는 동안 시전자 모습을 감췄다가 끝나면 다시 나타남\n" +
              "· 숨는 시점 = 모션 시작 후 Vanish Start Time초, 나타나는 시점 = 그로부터 Vanish Duration초 뒤\n" +
              "· 시전~다시 나타날 때까지 무적(데미지·디버프·스턴 무시)이고, 다른 스킬로 끊을 수 없음\n" +
@@ -180,7 +169,6 @@ public class DamageSkillData : SkillData
     // (투사체·수류탄이 장판형보다 우선하므로 그 경우의 장판 설정은 무시)
     public bool IsZone       => spawnAtTarget && !throwGrenade && !fireProjectile;
     public bool IsAreaDamage => isAoe || throwGrenade || IsZone || IsExplodingProjectile;
-    [Header("디버프 비례 피해 (처형형)")]
     [Tooltip("대상에게 걸린 디버프 1개당 데미지 증가 (0.25 = +25%, 0이면 없음).\n" +
              "맞는 순간 그 대상의 디버프 수로 대상마다 따로 계산 — 단일·광역·장판(틱마다)·투사체·폭발·수류탄 모두 적용.\n" +
              "디버프는 종류 기준으로 셈 (같은 디버프 중복은 1개, 기절 포함). 이 스킬이 거는 디버프는 데미지 뒤에 걸려서 안 셈")]
@@ -199,7 +187,6 @@ public class DamageSkillData : SkillData
     public bool IsExplodingProjectile
         => fireProjectile && !throwGrenade && projectileHitDamage != ProjectileScript.HitDamageMode.Projectile;
 
-    [Header("애니메이션 / 이펙트")]
     public string animTriggerName;    // 애니메이터 트리거 이름
     public float animDuration;        // 애니메이션 전체 길이
     public float effectSpawnDelay;    // 이펙트 생성 타이밍 (선딜)

@@ -11,28 +11,23 @@ public class BuffSkillData : SkillData
         Aura,    // 버프 지속 중 캐릭터 아우라를 켜고, 만료 시 끔
     }
 
-    [Header("버프 대상")]
     public bool isPartyBuff = false;
 
-    [Header("이펙트 스타일")]
     public EffectStyle effectStyle = EffectStyle.OneShot;
     [Tooltip("OneShot 전용: 오브젝트 풀 키")]
     public string effectPoolKey;
     [Tooltip("Aura 전용: CharacterStat.buffAuras 배열의 인덱스")]
     public int auraIndex = 0;
 
-    [Header("애니메이션 / 이펙트")]
     public string animTriggerName;
     public float animDuration;
     public float effectSpawnDelay;
     public Vector3 effectSpawnOffset;   // 스폰 위치 오프셋 (로컬 스페이스)
     public Vector3 effectSpawnRotation; // 스폰 회전 오프셋 (오일러각, 로컬 스페이스)
 
-    [Header("버프 지속시간 (레벨별)")]
     public float baseDuration = 5f;
     public float durationPerLevel = 1f;
 
-    [Header("버프 효과 (최대 3개)")]
     public List<BuffEffect> buffEffects = new List<BuffEffect>();
 
     public float GetDuration(int level) => baseDuration + (durationPerLevel * (level - 1));
@@ -103,37 +98,49 @@ public class BuffSkillData : SkillData
         }
     }
 
+    // 에셋에 정수로 저장되므로 번호는 고정 — 선언 순서는 인스펙터 목록 순서(종류별 묶음)일 뿐.
+    // 새 타입은 지금 가장 큰 번호(25) 다음 번호로 추가하고, 어울리는 묶음 안에 넣을 것
     public enum BuffEffectType
     {
-        AtkBonus,
-        ApBonus,
-        DefBonus,
-        MagicResBonus,  // 마법 저항력 증가
-        CritRate,
-        CritDamage,
-        MaxHpBonus,
-        SpeedBonus,
-        Shield,
-        ManaRegen,
-        HpRegen,
-        HpOnHit,        // 기본 공격 적중 시 체력 회복
-        DebuffImmune,
-        DispelDebuff,   // 즉시 디버프 전체 제거
-        Thorns,         // 가시 반사 — 지속시간 동안 피격 시 공격자에게 데미지 (시전자 자신에게만 적용)
-        AtkSpeedBonus,  // 공격 속도 증가 (0.2 = +20%)
-        DmgReduction,   // 받는 데미지 감소 — 물리·마법 공통 (valueMode: Flat 20 = 한 대당 -20 / Percent 0.2 = 20%)
-        Invulnerable,   // 무적 — 지속시간 동안 데미지·디버프 무시 (수치 칸은 쓰지 않음)
-        CooldownReset,  // 즉시 스킬 쿨타임 초기화 — 수치 = 초기화할 스킬 개수 (0 이하면 전부)
-        OnHitDamage,    // 기본 공격 적중 시 추가 피해 — 평타와 별개 데미지, 치명타 미적용 (물리/마법은 아래 설정)
-        MoveSpeedPenalty, // 이동 속도 감소 (0.3 = 30% 감속) — 강화의 대가용, 디버프가 아니라 면역·해제에 안 걸림
-        PhysDmgBonus,     // 최종 물리 데미지 증가 (0.3 = +30%)
-        MagicDmgBonus,    // 최종 마법 데미지 증가 (0.3 = +30%)
-        MainSkillDmgBonus, // 메인 데미지 스킬 피해 증가 (0.3 = +30%)
-        MpCostIncrease,    // 마나 소모 증가 (0.5 = +50%, 모든 스킬) — 강화의 대가용
-        ReviveDead,        // 즉시 쓰러진 파티원 부활 — 수치 = 부활 체력 비율 (0.3 = 최대 체력 30%). 파티 버프에서만 동작
+        // 공격
+        AtkBonus          = 0,
+        ApBonus           = 1,
+        PhysDmgBonus      = 21, // 최종 물리 데미지 증가 (0.3 = +30%)
+        MagicDmgBonus     = 22, // 최종 마법 데미지 증가 (0.3 = +30%)
+        MainSkillDmgBonus = 23, // 메인 데미지 스킬 피해 증가 (0.3 = +30%)
+        CritRate          = 4,
+        CritDamage        = 5,
+        AtkSpeedBonus     = 15, // 공격 속도 증가 (0.2 = +20%)
+        OnHitDamage       = 19, // 기본 공격 적중 시 추가 피해 — 평타와 별개 데미지, 치명타 미적용 (물리/마법은 아래 설정)
+
+        // 방어
+        DefBonus          = 2,
+        MagicResBonus     = 3,  // 마법 저항력 증가
+        MaxHpBonus        = 6,
+        Shield            = 8,
+        DmgReduction      = 16, // 받는 데미지 감소 — 물리·마법 공통 (valueMode: Flat 20 = 한 대당 -20 / Percent 0.2 = 20%)
+        Thorns            = 14, // 가시 반사 — 지속시간 동안 피격 시 공격자에게 데미지 (시전자 자신에게만 적용)
+        Invulnerable      = 17, // 무적 — 지속시간 동안 데미지·디버프 무시 (수치 칸은 쓰지 않음)
+        DebuffImmune      = 12,
+
+        // 회복 / 자원
+        HpRegen           = 10,
+        ManaRegen         = 9,
+        HpOnHit           = 11, // 기본 공격 적중 시 체력 회복
+
+        // 이동
+        SpeedBonus        = 7,
+
+        // 즉시 발동
+        DispelDebuff      = 13, // 즉시 디버프 전체 제거
+        CooldownReset     = 18, // 즉시 스킬 쿨타임 초기화 — 수치 = 초기화할 스킬 개수 (0 이하면 전부)
+        ReviveDead        = 25, // 즉시 쓰러진 파티원 부활 — 수치 = 부활 체력 비율 (0.3 = 최대 체력 30%). 파티 버프에서만 동작
+
+        // 대가 (강화 스킬의 단점)
+        MoveSpeedPenalty  = 20, // 이동 속도 감소 (0.3 = 30% 감속) — 디버프가 아니라 면역·해제에 안 걸림
+        MpCostIncrease    = 24, // 마나 소모 증가 (0.5 = +50%, 모든 스킬)
     }
 
-    [Header("적중 시 추가 피해 (OnHitDamage 효과 전용)")]
     [Tooltip("체크: 추가 마법 피해 (몬스터 마법 저항력으로 경감)\n해제: 추가 물리 피해 (몬스터 방어력으로 경감)\n" +
              "수치 = OnHitDamage 효과의 기본 수치 + 스탯 비례 계수 (시전 시점 기준으로 고정).\n" +
              "평타가 맞을 때마다 맞은 적 각각에게 따로 들어가고, 치명타는 적용되지 않음 (평타 본 데미지의 치명타는 그대로)")]
@@ -183,7 +190,6 @@ public class BuffSkillData : SkillData
         }
     }
 
-    [Header("부활 (ReviveDead 효과 전용)")]
     [Tooltip("부활한 파티원 위치에 띄울 이펙트 풀 키 (비우면 없음)")]
     public string reviveEffectPoolKey;
 
@@ -218,7 +224,6 @@ public class BuffSkillData : SkillData
         public float GetCoeff(int level) => coeff + (coeffPerLevel * (level - 1));
     }
 
-    [Header("가시 반사 (Thorns 효과 전용)")]
     [Tooltip("체크: 마법 데미지 (몬스터 마법 저항력으로 경감)\n해제: 물리 데미지 (몬스터 방어력으로 경감)")]
     public bool thornsIsMagic = true;
     [Tooltip("반사 데미지 = Thorns 효과의 기본 수치 + Σ(능력치 × 계수)\n" +

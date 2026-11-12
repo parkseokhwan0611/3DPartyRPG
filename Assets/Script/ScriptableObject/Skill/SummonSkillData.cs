@@ -12,10 +12,8 @@ public class SummonSkillData : SkillData
         Taunt,  // 지정 종류의 소환수 주변 몬스터 어그로를 소환수에게 끌어옴 (해당 소환수가 1기 이상 있어야 사용 가능)
     }
 
-    [Header("동작")]
     public SummonAction action = SummonAction.Summon;
 
-    [Header("소환 (Action = Summon)")]
     [Tooltip("소환할 프리팹 — SummonUnit 컴포넌트가 붙어 있어야 함")]
     public SummonUnit summonPrefab;
     [Tooltip("레벨별 소환 수 (0번 칸 = 1레벨). 레벨이 배열보다 높으면 마지막 값 사용. 예: [1, 1, 2, 2, 2]")]
@@ -35,7 +33,6 @@ public class SummonSkillData : SkillData
     public float baseDefRatio     = 1f;
     public float defRatioPerLevel = 0f;
 
-    [Header("도발 (Action = Taunt)")]
     [Tooltip("명령을 받을 소환수 종류")]
     public SummonUnit.Kind tauntKind = SummonUnit.Kind.Melee;
     [Tooltip("각 소환수 주변 이 반경(m) 안의 몬스터가 대상")]
@@ -56,7 +53,6 @@ public class SummonSkillData : SkillData
     [Tooltip("도발한 소환수 위치에 스폰할 이펙트 풀 키 (비우면 없음)")]
     public string tauntEffectPoolKey;
 
-    [Header("애니메이션 / 이펙트 (시전자)")]
     public string  animTriggerName;
     public float   animDuration;
     public float   effectSpawnDelay;

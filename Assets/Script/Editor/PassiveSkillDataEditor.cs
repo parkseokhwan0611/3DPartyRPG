@@ -1,51 +1,56 @@
+using System.Collections.Generic;
 using UnityEditor;
 
-// 패시브 효과 타입에 따라 Value Mode를 보여주거나 숨긴다.
-// Value Mode는 능력치 5종(Atk/Ap/Def/MagicRes/MaxHp)과 받는 데미지 감소 2종에서만 동작하므로,
-// 다른 타입에서 Flat을 골라도 무시되는 착각을 막기 위해 해당 타입에선 숨기고 단위 안내를 대신 띄운다.
+// 패시브 스킬 인스펙터 — 다른 스킬 데이터와 같은 형식(섹션 + "기본 / 레벨당" 한 줄)으로, 칸은 하나도 숨기지 않는다.
+// 효과 타입마다 실제로 쓰는 칸과 단위를 안내 상자로 알려준다
 [CustomEditor(typeof(PassiveSkillData))]
-public class PassiveSkillDataEditor : Editor
+public class PassiveSkillDataEditor : GroupedSkillDataEditor
 {
-    public override void OnInspectorGUI()
+    protected override void DrawSpecific()
     {
-        serializedObject.Update();
-
         var data = (PassiveSkillData)target;
-        bool supportsMode       = PassiveSkillData.SupportsValueMode(data.effectType);
-        bool secondSupportsMode = PassiveSkillData.SupportsValueMode(data.secondEffectType);
 
-        SerializedProperty prop = serializedObject.GetIterator();
-        bool enterChildren = true;
-        while (prop.NextVisible(enterChildren))
+        Section("패시브 효과");
+        Props("effectType");
+        DrawUsedFieldsNote(data.effectType);
+        DrawUnitNote(data.effectType);
+        Props("valueMode");
+        if (!PassiveSkillData.SupportsValueMode(data.effectType))
+            Note("Value Mode는 능력치 5종(Atk/Ap/Def/MagicRes/MaxHp)과 받는 데미지 감소 2종에서만 동작합니다.");
+        Pair("수치", "baseValue", "기본", "valuePerLevel", "레벨당");
+
+        Section("두 번째 효과 (선택, 수치 증가형만)");
+        Props("hasSecondEffect", "secondEffectType");
+        if (data.hasSecondEffect)
         {
-            enterChildren = false;
-
-            if (prop.name == "valueMode" && !supportsMode) continue;
-            if (prop.name == "maxDebuffStacks" && data.effectType != PassiveSkillData.PassiveEffectType.OnDebuffExtraDamage) continue;
-
-            // 두 번째 효과 세부 항목은 토글이 켜져 있을 때만
-            bool isSecondDetail = prop.name == "secondEffectType" || prop.name == "secondValueMode"
-                               || prop.name == "secondBaseValue"  || prop.name == "secondValuePerLevel";
-            if (isSecondDetail && !data.hasSecondEffect) continue;
-            if (prop.name == "secondValueMode" && !secondSupportsMode) continue;
-
-            using (new EditorGUI.DisabledScope(prop.name == "m_Script"))
-                EditorGUILayout.PropertyField(prop, true);
-
-            if (prop.name == "effectType")
-                DrawUnitNote(data.effectType);
-
-            if (prop.name == "secondEffectType")
-            {
-                if (!PassiveSkillData.IsValueEffect(data.secondEffectType))
-                    EditorGUILayout.HelpBox("두 번째 효과에는 수치 증가형 타입만 쓸 수 있습니다. 이 설정은 무시됩니다.",
-                                            MessageType.Warning);
-                else
-                    DrawUnitNote(data.secondEffectType);
-            }
+            if (!PassiveSkillData.IsValueEffect(data.secondEffectType))
+                EditorGUILayout.HelpBox("두 번째 효과에는 수치 증가형 타입만 쓸 수 있습니다. 이 설정은 무시됩니다.", MessageType.Warning);
+            else
+                DrawUnitNote(data.secondEffectType);
         }
+        Props("secondValueMode");
+        Pair("수치", "secondBaseValue", "기본", "secondValuePerLevel", "레벨당");
 
-        serializedObject.ApplyModifiedProperties();
+        Section("특수 효과 (발동형)");
+        Pair("발동 확률",   "baseProcChance",   "기본", "procChancePerLevel",   "레벨당");
+        Pair("발동 수치",   "baseProcValue",    "기본", "procValuePerLevel",    "레벨당");
+        Pair("발동 지속시간", "baseProcDuration", "기본", "procDurationPerLevel", "레벨당");
+        Props("procEffectPoolKey", "procSkill", "maxDebuffStacks");
+    }
+
+    // 이 효과 타입이 실제로 읽는 칸 안내 (숨기지는 않음)
+    private static void DrawUsedFieldsNote(PassiveSkillData.PassiveEffectType type)
+    {
+        var used  = PassiveSkillData.GetUsedFields(type);
+        var names = new List<string>();
+        if ((used & PassiveSkillData.UsedField.Value)           != 0) names.Add("수치");
+        if ((used & PassiveSkillData.UsedField.ProcChance)      != 0) names.Add("발동 확률");
+        if ((used & PassiveSkillData.UsedField.ProcValue)       != 0) names.Add("발동 수치");
+        if ((used & PassiveSkillData.UsedField.ProcDuration)    != 0) names.Add("발동 지속시간");
+        if ((used & PassiveSkillData.UsedField.ProcEffect)      != 0) names.Add("Proc Effect Pool Key");
+        if ((used & PassiveSkillData.UsedField.ProcSkill)       != 0) names.Add("Proc Skill");
+        if ((used & PassiveSkillData.UsedField.MaxDebuffStacks) != 0) names.Add("Max Debuff Stacks");
+        Note("이 효과가 쓰는 칸: " + (names.Count > 0 ? string.Join(", ", names) : "없음 (수치 칸 미사용)"));
     }
 
     private static void DrawUnitNote(PassiveSkillData.PassiveEffectType type)

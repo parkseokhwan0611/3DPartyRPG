@@ -6,38 +6,49 @@ public enum DamageType
     Magic,
 }
 
+// 에셋(스킬의 적중 디버프·시전 버프, PartyBuffVfx 등)에 정수로 저장되므로 번호는 고정 —
+// 선언 순서는 인스펙터 목록 순서(종류별 묶음)일 뿐. 새 타입은 지금 가장 큰 번호(29) 다음 번호로 추가할 것
 public enum StatusEffectType
 {
-    Stun,
-    Slow,
-    AtkDown,
-    MoveSpeedDown,
-    DefDown,
-    AtkUp,
-    DefUp,
-    MagicResUp,
-    AtkSpeedUp,
-    HpRegen,
-    ManaRegen,
-    Shield,
-    DebuffImmune,
-    ApUp,
-    CritRateUp,
-    CritDamageUp,
-    MaxHpUp,
-    HpOnHitUp,
-    Thorns,         // 가시 반사 — 수치 없이 시작/종료 알림용 (PartyBuffVfx 등에서 연출 매핑 가능)
-    Poison,         // 독 (몬스터 전용 디버프) — value = 1초마다 입히는 마법 데미지
-    DmgReductionUp, // 받는 데미지 감소 (물리·마법 공통, mode Percent 0.2 = 20% / Flat 20 = 한 대당 -20)
-    Invulnerable,   // 무적 — 데미지와 디버프를 모두 무시
-    MoveSpeedUp,    // 이동 속도 증가 (0.2 = +20%)
-    OnHitPhysDamageUp,  // 기본 공격 적중 시 물리 추가 피해 (치명타 미적용)
-    OnHitMagicDamageUp, // 기본 공격 적중 시 마법 추가 피해 (치명타 미적용)
-    MoveSpeedPenalty,   // 자신 이동 속도 감소 (0.3 = 30% 감속) — 버프 스킬의 대가용이라 디버프가 아님 (면역·해제 대상 아님)
-    PhysDmgUp,          // 최종 물리 데미지 증가 (0.3 = +30%, 패시브·장비 보너스와 합산)
-    MagicDmgUp,         // 최종 마법 데미지 증가 (0.3 = +30%, 패시브·장비 보너스와 합산)
-    MainSkillDmgUp,     // 메인 데미지 스킬 피해 증가 (0.3 = +30%, 물리/마법 데미지 증가와 합산)
-    MpCostUp,           // 마나 소모 증가 (0.5 = +50%, 모든 스킬) — 버프 스킬의 대가용이라 디버프가 아님
+    // 디버프
+    Stun               = 0,
+    Slow               = 1,
+    MoveSpeedDown      = 3,
+    AtkDown            = 2,
+    DefDown            = 4,
+    Poison             = 19, // 독 (몬스터 전용 디버프) — value = 1초마다 입히는 마법 데미지
+
+    // 버프 — 공격
+    AtkUp              = 5,
+    ApUp               = 13,
+    PhysDmgUp          = 26, // 최종 물리 데미지 증가 (0.3 = +30%, 패시브·장비 보너스와 합산)
+    MagicDmgUp         = 27, // 최종 마법 데미지 증가 (0.3 = +30%, 패시브·장비 보너스와 합산)
+    MainSkillDmgUp     = 28, // 메인 데미지 스킬 피해 증가 (0.3 = +30%, 물리/마법 데미지 증가와 합산)
+    CritRateUp         = 14,
+    CritDamageUp       = 15,
+    AtkSpeedUp         = 8,
+    OnHitPhysDamageUp  = 23, // 기본 공격 적중 시 물리 추가 피해 (치명타 미적용)
+    OnHitMagicDamageUp = 24, // 기본 공격 적중 시 마법 추가 피해 (치명타 미적용)
+
+    // 버프 — 방어
+    DefUp              = 6,
+    MagicResUp         = 7,
+    MaxHpUp            = 16,
+    Shield             = 11,
+    DmgReductionUp     = 20, // 받는 데미지 감소 (물리·마법 공통, mode Percent 0.2 = 20% / Flat 20 = 한 대당 -20)
+    Thorns             = 18, // 가시 반사 — 수치 없이 시작/종료 알림용 (PartyBuffVfx 등에서 연출 매핑 가능)
+    Invulnerable       = 21, // 무적 — 데미지와 디버프를 모두 무시
+    DebuffImmune       = 12,
+
+    // 버프 — 회복 / 이동
+    HpRegen            = 9,
+    ManaRegen          = 10,
+    HpOnHitUp          = 17,
+    MoveSpeedUp        = 22, // 이동 속도 증가 (0.2 = +20%)
+
+    // 대가 (강화 스킬의 단점 — 디버프가 아니라 면역·해제 대상 아님)
+    MoveSpeedPenalty   = 25, // 자신 이동 속도 감소 (0.3 = 30% 감속)
+    MpCostUp           = 29, // 마나 소모 증가 (0.5 = +50%, 모든 스킬)
 }
 
 // 버프/패시브 능력치 증가 방식
