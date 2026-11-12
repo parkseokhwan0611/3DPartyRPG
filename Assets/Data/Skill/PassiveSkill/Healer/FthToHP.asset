@@ -1,0 +1,49 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 72fc38e46b28c16479c1fcb1332fbc1a, type: 3}
+  m_Name: FthToHP
+  m_EditorClassIdentifier: 
+  skillId: FthToHP
+  skillName: "\uAD73\uAC74\uD55C \uC2E0\uC559"
+  description: "\uC2E0\uC559 \uC2A4\uD0EF\uC5D0 \uBE44\uB840\uD574 \uCD5C\uB300 \uCCB4\uB825\uC774
+    \uC0C1\uC2B9\uD569\uB2C8\uB2E4."
+  icon: {fileID: 21300000, guid: d98b775a6f3c03e43ba95a50dd259d3f, type: 3}
+  requiredClass: 4
+  skillType: 4
+  skillCategory: 2
+  sfxEntries: []
+  skillPriority: 0
+  maxLevel: 5
+  requiredCharLevel: 18
+  requiredSkill: {fileID: 0}
+  requiredSkillLevel: 1
+  mpCost: []
+  cooldown: []
+  skillPointCost: 0200000002000000020000000300000003000000
+  effectType: 10
+  valueMode: 0
+  baseValue: 40
+  valuePerLevel: 5
+  hasSecondEffect: 0
+  secondEffectType: 8
+  secondValueMode: 0
+  secondBaseValue: 0
+  secondValuePerLevel: 0
+  baseProcChance: 0
+  procChancePerLevel: 0
+  baseProcValue: 0
+  procValuePerLevel: 0
+  baseProcDuration: 0
+  procDurationPerLevel: 0
+  procEffectPoolKey: 
+  procSkill: {fileID: 0}
+  maxDebuffStacks: 0

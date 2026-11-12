@@ -103,20 +103,21 @@ public class HealSkill : SkillBase
     // 소환수 힐 — 힐 치명타 패시브는 똑같이 굴리고, 힐 받은 대상 공격 속도 증가 패시브는 파티원 전용이라 제외
     private void ApplyHeal(SummonUnit summon, float amount, HealSkillData data)
     {
-        if (myStat != null) amount = myStat.RollHealCrit(amount);
+        bool isCrit = false;
+        if (myStat != null) amount = myStat.RollHealCrit(amount, out isCrit);
 
         if (data.isDotHeal)
         {
             if (PartyManager.instance != null)
-                PartyManager.instance.StartCoroutine(SummonDotHealRoutine(summon, amount, data.dotInterval, data.GetDotDuration(skillLevel)));
+                PartyManager.instance.StartCoroutine(SummonDotHealRoutine(summon, amount, data.dotInterval, data.GetDotDuration(skillLevel), isCrit));
         }
         else
         {
-            summon.Heal(amount);
+            summon.Heal(amount, isCrit);
         }
     }
 
-    private IEnumerator SummonDotHealRoutine(SummonUnit summon, float amountPerTick, float interval, float duration)
+    private IEnumerator SummonDotHealRoutine(SummonUnit summon, float amountPerTick, float interval, float duration, bool isCrit = false)
     {
         if (summon == null || interval <= 0f) yield break;
         var wait = new WaitForSeconds(interval);
@@ -127,16 +128,17 @@ public class HealSkill : SkillBase
             yield return wait;
             elapsed += interval;
             if (summon == null || !summon.IsAlive) yield break; // 사라진 소환수(파괴됨)면 중단
-            summon.Heal(amountPerTick);
+            summon.Heal(amountPerTick, isCrit);
         }
     }
 
     private void ApplyHeal(CharacterStat stat, float amount, HealSkillData data)
     {
         // 힐 치명타 패시브 — 대상마다 따로 굴림 (지속 힐은 시전 시점에 한 번 굴려서 모든 틱에 적용)
+        bool isCrit = false;
         if (myStat != null)
         {
-            amount = myStat.RollHealCrit(amount);
+            amount = myStat.RollHealCrit(amount, out isCrit);
             myStat.NotifyHealed(stat); // 힐 받은 대상 공격 속도 증가 패시브
         }
 
@@ -144,15 +146,15 @@ public class HealSkill : SkillBase
         {
             // PartyManager에서 코루틴 실행: 시전자(힐러)가 죽어 SetActive(false)되어도 HoT가 유지되도록
             if (PartyManager.instance != null)
-                PartyManager.instance.StartCoroutine(DotHealRoutine(stat, amount, data.dotInterval, data.GetDotDuration(skillLevel)));
+                PartyManager.instance.StartCoroutine(DotHealRoutine(stat, amount, data.dotInterval, data.GetDotDuration(skillLevel), isCrit));
         }
         else
         {
-            HealTarget(stat, amount);
+            HealTarget(stat, amount, isCrit);
         }
     }
 
-    private IEnumerator DotHealRoutine(CharacterStat stat, float amountPerTick, float interval, float duration)
+    private IEnumerator DotHealRoutine(CharacterStat stat, float amountPerTick, float interval, float duration, bool isCrit = false)
     {
         if (stat == null || interval <= 0f) yield break; // 간격 0이면 한 프레임에 무한 반복되므로 차단
         var member = stat.GetComponent<PartyMemberScript>();
@@ -165,14 +167,14 @@ public class HealSkill : SkillBase
             elapsed += interval;
             if (stat == null) yield break;
             if (member != null && member.CurrentState == PartyMemberScript.MemberState.Dead) yield break;
-            HealTarget(stat, amountPerTick);
+            HealTarget(stat, amountPerTick, isCrit);
         }
     }
 
-    private void HealTarget(CharacterStat stat, float amount)
+    private void HealTarget(CharacterStat stat, float amount, bool isCrit = false)
     {
         if (stat == null) return;
-        stat.HealHp(amount);
+        stat.HealHp(amount, isCrit: isCrit);
     }
 
     private float CalculateHeal(HealSkillData data)

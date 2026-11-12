@@ -309,7 +309,7 @@ public partial class CharacterStat : MonoBehaviour, IDamageable
 
     // showAura: false — 흡혈(HpOnHit)처럼 자체 버프 아우라가 이미 켜져 있고 매 타격마다 터지는
     // 회복에는 힐 아우라를 겹쳐 띄우지 않기 위한 옵션 (RecoverMp의 showAura와 같은 용도)
-    public void HealHp(float amount, bool showAura = true)
+    public void HealHp(float amount, bool showAura = true, bool isCrit = false)
     {
         if (myStatus == null || amount <= 0f) return;
         // 쓰러진 파티원은 힐로 살아나지 않는다 — 시전 딜레이 동안 대상이 죽은 단일 힐 등 모든 힐 경로 공통
@@ -318,7 +318,7 @@ public partial class CharacterStat : MonoBehaviour, IDamageable
         myStatus.currentHp = Mathf.Clamp(myStatus.currentHp + amount, 0, myStatus.MaxHp);
         myStatus.RaiseHpChanged();
         OnHpChanged?.Invoke();
-        SpawnHealText(amount);
+        SpawnHealText(amount, isCrit);
         if (showAura) ShowHealAura();
     }
 
@@ -345,7 +345,7 @@ public partial class CharacterStat : MonoBehaviour, IDamageable
         healAuraCoroutine = null;
     }
 
-    private void SpawnHealText(float amount)
+    private void SpawnHealText(float amount, bool isCrit = false)
     {
         if (string.IsNullOrEmpty(healTextPoolKey)) return;
         if (ObjectPoolManager.instance == null || !ObjectPoolManager.instance.IsReady) return;
@@ -357,7 +357,7 @@ public partial class CharacterStat : MonoBehaviour, IDamageable
         go.transform.position = spawnPos;
         go.transform.rotation = Quaternion.Euler(60f, 0f, 0f);
 
-        go.GetComponent<HealText>()?.Setup(amount, healTextColor);
+        go.GetComponent<HealText>()?.Setup(amount, healTextColor, isCrit);
     }
 
     public void ShowManaAura()

@@ -1,0 +1,72 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a70ac1c355a5a5a49b0f39626fc9e2be, type: 3}
+  m_Name: HealerShield
+  m_EditorClassIdentifier: 
+  skillId: HealerShield
+  skillName: "\uC5EC\uC2E0\uC758 \uBCF4\uD638"
+  description: "\uC9C0\uC18D\uC2DC\uAC04 \uB3D9\uC548 \uD30C\uD2F0\uC6D0\uC5D0\uAC8C
+    \uBCF4\uD638\uB9C9\uC744 \uBD80\uC5EC\uD569\uB2C8\uB2E4."
+  icon: {fileID: 21300000, guid: 8124fde2ebe01954895333c53b755f61, type: 3}
+  requiredClass: 4
+  skillType: 1
+  skillCategory: 1
+  sfxEntries:
+  - sfxKey: Tanker_Sub1
+    delay: 0
+    repeatCount: 1
+    repeatInterval: 0
+  skillPriority: 0
+  maxLevel: 5
+  requiredCharLevel: 18
+  requiredSkill: {fileID: 0}
+  requiredSkillLevel: 1
+  mpCost:
+  - 30
+  - 30
+  - 30
+  - 30
+  - 30
+  cooldown:
+  - 20
+  - 19
+  - 18
+  - 17
+  - 15
+  skillPointCost: 0200000002000000020000000300000003000000
+  isPartyBuff: 1
+  effectStyle: 1
+  effectPoolKey: DefBuff
+  auraIndex: 3
+  animTriggerName: doHeal
+  animDuration: 1.2
+  effectSpawnDelay: 0.6
+  effectSpawnOffset: {x: 0, y: 0, z: 0}
+  effectSpawnRotation: {x: 0, y: 0, z: 0}
+  baseDuration: 5
+  durationPerLevel: 1
+  buffEffects:
+  - effectType: 8
+    valueMode: 0
+    baseValue: 200
+    valuePerLevel: 100
+    scalingStat: 4
+    scalingCoeff: 3.5
+    scalingPerLevel: 0.5
+  onHitDamageIsMagic: 0
+  basicAttackEffectKey: 
+  basicAttackEffectRotation: {x: 0, y: 0, z: 0}
+  reviveEffectPoolKey: 
+  thornsIsMagic: 1
+  thornsScalings: []
+  thornsAggroPerHit: 15
+  thornsHitEffectPoolKey: 

@@ -9,6 +9,10 @@ public class HealText : MonoBehaviour
     public float alphaSpeed = 1.5f;
     public float lifetime   = 1f;
 
+    [Header("# 치명타 아이콘 (선택 — 비워두면 표시 안 함, 데미지 텍스트와 같은 아이콘)")]
+    [SerializeField] SpriteRenderer critIcon;
+    private Color critIconColor;
+
     private TextMeshPro tmp;
     private PoolAble poolAble;
     private Color currentColor;
@@ -32,7 +36,7 @@ public class HealText : MonoBehaviour
         isActive = false;
     }
 
-    public void Setup(float amount, Color color)
+    public void Setup(float amount, Color color, bool isCrit = false)
     {
         if (tmp == null) tmp = GetComponent<TextMeshPro>();
 
@@ -40,6 +44,15 @@ public class HealText : MonoBehaviour
         currentColor = color;
         currentColor.a = 1f;
         tmp.color    = currentColor;
+
+        // 힐 치명타 — 데미지 텍스트와 같은 치명타 아이콘 (마나 회복 등은 항상 꺼짐)
+        if (critIcon != null)
+        {
+            critIcon.gameObject.SetActive(isCrit);
+            critIconColor   = critIcon.color;
+            critIconColor.a = 1f;
+            critIcon.color  = critIconColor;
+        }
 
         timer    = lifetime;
         isActive = true;
@@ -55,6 +68,12 @@ public class HealText : MonoBehaviour
         float t = 1f - Mathf.Clamp01(timer / lifetime);
         currentColor.a = Mathf.Lerp(1f, 0f, t);
         tmp.color      = currentColor;
+
+        if (critIcon != null && critIcon.gameObject.activeSelf)
+        {
+            critIconColor.a = currentColor.a;
+            critIcon.color  = critIconColor;
+        }
 
         if (timer <= 0f)
         {

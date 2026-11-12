@@ -728,12 +728,12 @@ public class SummonUnit : MonoBehaviour, IDamageable
         if (Hp <= 0f) Die();
     }
 
-    public void Heal(float amount)
+    public void Heal(float amount, bool isCrit = false)
     {
         if (_dead || amount <= 0f) return;
         Hp = Mathf.Min(MaxHp, Hp + amount);
         OnHpChanged?.Invoke(Hp, MaxHp);
-        SpawnHealText(amount);
+        SpawnHealText(amount, isCrit);
     }
 
     public void ApplyShield(float amount, float duration) => _shield.Apply(amount, duration);
@@ -892,7 +892,7 @@ public class SummonUnit : MonoBehaviour, IDamageable
         go.GetComponent<DamageText>()?.Setup(damage, color, showMinus: true, isCrit: isCrit);
     }
 
-    private void SpawnHealText(float amount)
+    private void SpawnHealText(float amount, bool isCrit = false)
     {
         if (string.IsNullOrEmpty(healTextPoolKey) || ObjectPoolManager.instance == null || !ObjectPoolManager.instance.IsReady) return;
         var go = ObjectPoolManager.instance.GetGo(healTextPoolKey);
@@ -900,7 +900,7 @@ public class SummonUnit : MonoBehaviour, IDamageable
 
         Vector3 pos = hudPos != null ? hudPos.position : transform.position + Vector3.up * 2f;
         go.transform.SetPositionAndRotation(pos, Quaternion.Euler(60f, 0f, 0f));
-        go.GetComponent<HealText>()?.Setup(amount, healTextColor);
+        go.GetComponent<HealText>()?.Setup(amount, healTextColor, isCrit);
     }
 
     private static void SpawnFx(string key, Vector3 pos)

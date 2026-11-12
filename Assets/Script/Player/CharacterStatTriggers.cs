@@ -101,10 +101,15 @@ public partial class CharacterStat
     // ─────────────────────────────────────────────────────────────────
 
     // 힐 치명타 패시브가 있으면 치명타 확률로 굴려서 치명타 데미지 배율만큼 힐량 증가
-    public float RollHealCrit(float amount)
+    public float RollHealCrit(float amount) => RollHealCrit(amount, out _);
+
+    // 치명타 여부도 돌려준다 — 힐 숫자에 치명타 아이콘을 띄울 때 사용
+    public float RollHealCrit(float amount, out bool isCrit)
     {
+        isCrit = false;
         if (myStatus == null || !HasTriggerPassive(Effect.HealCrit)) return amount;
-        return Random.value < TotalCritRate ? amount * TotalCritDamage : amount;
+        isCrit = Random.value < TotalCritRate;
+        return isCrit ? amount * TotalCritDamage : amount;
     }
 
     // 힐 받은 대상 공격 속도 증가 패시브
