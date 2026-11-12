@@ -133,7 +133,8 @@ public class HealSkill : SkillBase
         if (myStat != null)
         {
             amount = myStat.RollHealCrit(amount, out isCrit);
-            myStat.NotifyHealed(stat); // 힐 받은 대상 공격 속도 증가 패시브
+            // 힐 받은 대상 공격 속도 증가 패시브 — 즉시 힐만 (지속 힐은 힐 치명타만 적용)
+            if (!data.isDotHeal) myStat.NotifyHealed(stat);
         }
 
         if (data.isDotHeal)

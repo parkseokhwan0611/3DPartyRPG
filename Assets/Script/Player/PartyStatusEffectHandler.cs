@@ -143,8 +143,11 @@ public class PartyStatusEffectHandler : MonoBehaviour
         if (ObjectPoolManager.instance == null) return;
 
         GameObject fx = ObjectPoolManager.instance.GetGo(_thornsData.thornsHitEffectPoolKey);
-        if (fx != null) fx.transform.position = target.position;
+        // 몬스터 발밑이 아니라 몸통 높이에 (몬스터 콜라이더 중심이 대부분 y 1.1 전후)
+        if (fx != null) fx.transform.position = target.position + Vector3.up * ThornsHitEffectHeight;
     }
+
+    private const float ThornsHitEffectHeight = 1f;
 
     // ─────────────────────────────────────────────────────────────────
     // 버프 적용
