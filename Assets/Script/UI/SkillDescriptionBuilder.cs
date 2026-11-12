@@ -313,11 +313,26 @@ public static class SkillDescriptionBuilder
     // 버프 스킬
     // ─────────────────────────────────────────────────────────────────
 
+    private static string BuffHeader(BuffSkillData buff)
+    {
+        if (!buff.summonOnly) return buff.isPartyBuff ? "[파티 버프]\n" : "[개인 버프]\n";
+        return buff.summonSourceSkill != null ? $"[소환수 버프] '{buff.summonSourceSkill.skillName}' 소환수에게만 적용\n"
+                                              : "[소환수 버프] 내 소환수에게만 적용\n";
+    }
+
+    // 소환수 전용 버프는 물리/마법 공격력 증가가 모두 소환수 공격력 증가 — 문구를 맞추고 사용 조건을 덧붙인다
+    private static string SummonBuffText(BuffSkillData buff, string text)
+    {
+        if (!buff.summonOnly) return text;
+        text = text.Replace("물리 공격력 +", "소환수 공격력 +").Replace("마법 공격력 +", "소환수 공격력 +");
+        return text + "\n소환수가 1기 이상 있어야 사용 가능";
+    }
+
     public static string GetBuffDescription(BuffSkillData buff, int level, CharacterStat caster)
     {
         if (buff.buffEffects == null || buff.buffEffects.Count == 0) return "";
 
-        string result = buff.isPartyBuff ? "[파티 버프]\n" : "[개인 버프]\n";
+        string result = BuffHeader(buff);
         if (buff.HasDurationEffect) result += $"지속시간: {buff.GetDuration(level)}초\n";
 
         foreach (var effect in buff.buffEffects)
@@ -340,7 +355,7 @@ public static class SkillDescriptionBuilder
             result += FormatBuffLine(effect, level, total, flat, scalingAmount, caster) + "\n";
         }
 
-        return result.TrimEnd('\n');
+        return SummonBuffText(buff, result.TrimEnd('\n'));
     }
 
     private static float GetScalingAmount(BuffSkillData.BuffEffect effect, int level, CharacterStat caster)
@@ -466,7 +481,7 @@ public static class SkillDescriptionBuilder
     {
         if (buff.buffEffects == null || buff.buffEffects.Count == 0) return "";
 
-        string result = buff.isPartyBuff ? "[파티 버프]\n" : "[개인 버프]\n";
+        string result = BuffHeader(buff);
         if (buff.HasDurationEffect) result += $"지속시간: {buff.GetDuration(level)}초\n";
 
         foreach (var effect in buff.buffEffects)
@@ -483,7 +498,7 @@ public static class SkillDescriptionBuilder
                 : FormatBuffLineFinal(effect, total)) + "\n";
         }
 
-        return result.TrimEnd('\n');
+        return SummonBuffText(buff, result.TrimEnd('\n'));
     }
 
     // 물리/마법 구분이 효과가 아니라 스킬(onHitDamageIsMagic)에 있어서 따로 만든다
@@ -622,6 +637,18 @@ public static class SkillDescriptionBuilder
                 return $"평타 적중 시 마나 {value} 회복";
             case PassiveSkillData.PassiveEffectType.SummonHitManaRestore:
                 return $"소환수 공격 적중 시 마나 {value:0.#} 회복";
+            case PassiveSkillData.PassiveEffectType.SummonCritRate:
+                return $"소환수 치명타 확률 +{value * 100f:F1}%";
+            case PassiveSkillData.PassiveEffectType.SummonDmgBonus:
+                return $"소환수 피해 {value * 100f:0.#}% 증가";
+            case PassiveSkillData.PassiveEffectType.OnSkillSummonShield:
+            {
+                float ratio = passive.GetProcValue(level);
+                string amount = value > 0f && ratio > 0f ? $"{value:F0} + 소환수 최대 체력의 {ratio * 100f:0.#}%"
+                              : ratio > 0f ? $"소환수 최대 체력의 {ratio * 100f:0.#}%"
+                              : $"{value:F0}";
+                return $"스킬 사용 시 소환수 전원에게 보호막 {amount} ({passive.GetProcDuration(level):0.#}초, 최대 3회분까지 누적)";
+            }
             case PassiveSkillData.PassiveEffectType.PhysDmgReduction:
                 return mode == ModifierMode.Percent
                     ? $"받는 물리 데미지 {value * 100f:F1}% 감소"

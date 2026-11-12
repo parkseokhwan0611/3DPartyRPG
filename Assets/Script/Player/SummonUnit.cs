@@ -74,6 +74,9 @@ public class SummonUnit : MonoBehaviour, IDamageable
     [Min(0.01f)] public float despawnEffectScale = 1f;
     [Tooltip("사라질 때 효과음 — 사망 모션이 시작되는 순간 기준으로 Delay 뒤 재생 (0이면 이펙트와 동시). 반복 재생도 가능")]
     public List<SkillSfxEntry> despawnSfx = new List<SkillSfxEntry>();
+    [Tooltip("버프 아우라 — 평소엔 꺼 두고, 소환수 전용 버프 스킬(Effect Style = Aura)의 Aura Index 칸을 지속시간 동안 켠다. " +
+             "같은 칸을 쓰는 버프가 겹치면 더 늦게 끝나는 쪽까지 유지")]
+    public GameObject[] buffAuras;
     [Tooltip("피격 데미지 텍스트 풀 키")]
     public string damageTextPoolKey = "PlayerDamageText";
     [Tooltip("피격·회복 텍스트 위치 (비우면 머리 위 2m)")]
@@ -95,6 +98,7 @@ public class SummonUnit : MonoBehaviour, IDamageable
     public float Duration      { get; private set; }
     public float RemainingTime { get; private set; }
     public bool  IsAlive => !_dead && Owner != null;
+    public bool  UsesAp  => _useAp; // 공격력 기준 — true면 주인 마법 공격력·마법 피해, false면 물리
     public float CurrentShield => _shield != null ? _shield.Current : 0f;
     public event Action<float, float> OnHpChanged; // (현재, 최대) — 체력바 UI용
 
@@ -264,6 +268,7 @@ public class SummonUnit : MonoBehaviour, IDamageable
         _pendingHitTimer = -1f;
         _stunTimer = 0f;
         CancelCommand();
+        HideAllBuffAuras(); // 쓰러지는 동안 아우라가 남지 않게
         StopAttackSfx(); // 쓰러지는 중에 휘두르는 소리가 나지 않게
 
         if (_agent.enabled && _agent.isOnNavMesh)
@@ -307,6 +312,7 @@ public class SummonUnit : MonoBehaviour, IDamageable
         if (RemainingTime <= 0f) { Despawn(); return; }
 
         UpdateBuffs(dt);
+        UpdateBuffAuras();
         if (_attackCooldown > 0f) _attackCooldown -= dt;
 
         // 기절 중 — 제자리에 멈춰 아무것도 하지 않음
@@ -676,7 +682,7 @@ public class SummonUnit : MonoBehaviour, IDamageable
         if (_targetHp == null || _targetHp.isDead || Owner == null) return;
 
         bool  isMagic = _useAp;
-        float damage  = Attack * (1f + (isMagic ? Owner.MagicDmgBonus : Owner.PhysDmgBonus));
+        float damage  = Attack * (1f + (isMagic ? Owner.MagicDmgBonus : Owner.PhysDmgBonus)) * (1f + Owner.SummonDmgBonus);
         bool  isCrit  = UnityEngine.Random.value < CritRate;
         if (isCrit) damage *= CritDamage;
         if (damage <= 0f) return;
@@ -754,7 +760,8 @@ public class SummonUnit : MonoBehaviour, IDamageable
     }
     public float Def        => Owner != null ? Owner.TotalDef      * _defRatio : 0f;
     public float MagicRes   => Owner != null ? Owner.TotalMagicRes * _defRatio : 0f;
-    public float CritRate   => Mathf.Min(1f, (Owner != null ? Owner.TotalCritRate : 0f) + _buffCritRate);
+    // 주인 치명타 확률 + 소환수 전용 패시브(SummonCritRate) + 버프
+    public float CritRate   => Mathf.Min(1f, (Owner != null ? Owner.TotalCritRate + Owner.SummonCritRateBonus : 0f) + _buffCritRate);
     public float CritDamage => (Owner != null ? Owner.TotalCritDamage : 1.5f) + _buffCritDmg;
 
     // ─────────────────────────────────────────────────────────────────
@@ -793,6 +800,45 @@ public class SummonUnit : MonoBehaviour, IDamageable
     }
 
     public void ApplyShield(float amount, float duration) => _shield.Apply(amount, duration);
+
+    // 상한이 있는 보호막 (발동형 패시브용) — 전체 보호막이 cap을 넘지 않을 만큼만 채우고, 지속시간은 갱신
+    public void ApplyShield(float amount, float duration, float cap)
+    {
+        if (_dead) return;
+        if (cap > 0f) amount = Mathf.Min(amount, Mathf.Max(0f, cap - _shield.Current));
+        _shield.Apply(amount, duration);
+    }
+
+    // ─────────────────────────────────────────────────────────────────
+    // 버프 아우라 — 칸마다 끝나는 시각만 기억해 두고 매 프레임 켜고 끈다
+    // ─────────────────────────────────────────────────────────────────
+
+    private float[] _auraUntil;
+
+    public void ShowBuffAura(int index, float duration)
+    {
+        if (_dead || buffAuras == null || index < 0 || index >= buffAuras.Length || buffAuras[index] == null || duration <= 0f) return;
+        if (_auraUntil == null || _auraUntil.Length != buffAuras.Length) _auraUntil = new float[buffAuras.Length];
+        _auraUntil[index] = Mathf.Max(_auraUntil[index], Time.time + duration);
+        if (!buffAuras[index].activeSelf) buffAuras[index].SetActive(true);
+    }
+
+    private void UpdateBuffAuras()
+    {
+        if (_auraUntil == null) return;
+        for (int i = 0; i < _auraUntil.Length; i++)
+        {
+            var aura = buffAuras[i];
+            if (aura != null && aura.activeSelf && Time.time >= _auraUntil[i]) aura.SetActive(false);
+        }
+    }
+
+    private void HideAllBuffAuras()
+    {
+        if (buffAuras == null) return;
+        foreach (var aura in buffAuras) if (aura != null) aura.SetActive(false);
+        _auraUntil = null;
+    }
 
     // ─────────────────────────────────────────────────────────────────
     // 버프 — 파티 전체 버프(BuffSkill)가 소환수에게도 걸린다. 지원: 받는 피해 감소, 무적,

@@ -225,8 +225,10 @@ public class SummonSkill : SkillBase
             var enemyHp = _hitBuffer[i].GetComponentInParent<EnemyHp>();
             if (enemyHp == null || enemyHp.isDead || !cast.hit.Add(enemyHp)) continue;
 
-            bool  isCrit = Random.value < myStat.TotalCritRate;
+            // 소환수가 내는 피해라 소환수 치명타 확률 패시브(SummonCritRate)도 더함
+            bool  isCrit = Random.value < myStat.TotalCritRate + myStat.SummonCritRateBonus;
             float damage = isCrit ? cast.baseDamage * myStat.TotalCritDamage : cast.baseDamage;
+            damage *= 1f + myStat.SummonDmgBonus; // 소환수 피해 증가 패시브
             if (data.useAp) enemyHp.TakeMagicDamage(damage, gameObject, isCrit);
             else            enemyHp.TakeDamage(damage, gameObject, isCrit);
             anyCrit |= isCrit;

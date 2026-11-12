@@ -13,10 +13,22 @@ public class BuffSkillData : SkillData
 
     public bool isPartyBuff = false;
 
+    [Tooltip("켜면 시전자의 소환수에게만 버프 (시전자·파티원 제외, Is Party Buff는 무시). 대상 소환수가 없으면 사용 불가.\n" +
+             "소환수가 받는 효과: 공격력(AtkBonus·ApBonus 둘 다 소환수 공격력 증가 — 소환수의 물리/마법 기준을 따름), " +
+             "치명타 확률·치명타 데미지, 받는 데미지 감소, 무적, 보호막, 이동 속도. 그 외 효과는 무시됨.\n" +
+             "Effect Style이 Aura면 각 소환수의 buffAuras[Aura Index]를 지속시간 동안 켜고, OneShot이면 Effect Pool Key를 각 소환수 위치에 스폰")]
+    public bool summonOnly = false;
+    [Tooltip("소환수 전용: 이 소환 스킬로 부른 소환수만 (비우면 시전자의 모든 소환수)")]
+    public SummonSkillData summonSourceSkill;
+
+    // 소환수 전용 버프의 대상인지 — 시전자의 살아 있는 소환수 (+ 소환 스킬 제한)
+    public bool IsSummonBuffTarget(SummonUnit s, CharacterStat caster)
+        => s != null && s.IsAlive && s.Owner == caster && (summonSourceSkill == null || s.SourceSkill == summonSourceSkill);
+
     public EffectStyle effectStyle = EffectStyle.OneShot;
     [Tooltip("OneShot 전용: 오브젝트 풀 키")]
     public string effectPoolKey;
-    [Tooltip("Aura 전용: CharacterStat.buffAuras 배열의 인덱스")]
+    [Tooltip("Aura 전용: CharacterStat.buffAuras 배열의 인덱스 (Summon Only면 각 소환수 SummonUnit.buffAuras의 인덱스)")]
     public int auraIndex = 0;
 
     public string animTriggerName;

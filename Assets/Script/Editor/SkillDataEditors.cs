@@ -172,7 +172,7 @@ public class BuffSkillDataEditor : GroupedSkillDataEditor
     protected override void DrawSpecific()
     {
         Section("버프 효과");
-        Props("isPartyBuff");
+        Props("isPartyBuff", "summonOnly", "summonSourceSkill");
         Pair("지속시간", "baseDuration", "기본", "durationPerLevel", "레벨당");
         Props("buffEffects");
 

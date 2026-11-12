@@ -76,6 +76,7 @@ public class PassiveSkillData : SkillData
             case PassiveEffectType.Revive:              return UsedField.Value | UsedField.ProcEffect;
             case PassiveEffectType.OnHitCooldownReset:  return UsedField.ProcChance;
             case PassiveEffectType.OnHitShield:         return UsedField.Value | UsedField.ProcChance | UsedField.ProcValue | UsedField.ProcDuration | UsedField.ProcEffect;
+            case PassiveEffectType.OnSkillSummonShield: return UsedField.Value | UsedField.ProcValue | UsedField.ProcDuration | UsedField.ProcEffect;
             default:                                    return UsedField.Value; // 수치 증가형
         }
     }
@@ -102,6 +103,8 @@ public class PassiveSkillData : SkillData
             case PassiveEffectType.AtkSpeed:
             case PassiveEffectType.FaithToHp:
             case PassiveEffectType.SummonHitManaRestore:
+            case PassiveEffectType.SummonCritRate:
+            case PassiveEffectType.SummonDmgBonus:
                 return true;
             default:
                 return false;
@@ -122,6 +125,7 @@ public class PassiveSkillData : SkillData
             case PassiveEffectType.OnHealAtkSpeedUp:
             case PassiveEffectType.OnHitCooldownReset:
             case PassiveEffectType.OnHitShield:
+            case PassiveEffectType.OnSkillSummonShield:
                 return true;
             default:
                 return false;
@@ -152,7 +156,7 @@ public class PassiveSkillData : SkillData
     }
 
     // 세이브/에셋에는 정수로 저장되므로 번호는 고정 — 선언 순서는 인스펙터 목록 순서(종류별 묶음)일 뿐.
-    // 새 타입은 지금 가장 큰 번호(26) 다음 번호로 추가하고, 어울리는 묶음 안에 넣을 것
+    // 새 타입은 지금 가장 큰 번호(29) 다음 번호로 추가하고, 어울리는 묶음 안에 넣을 것
     public enum PassiveEffectType
     {
         // 공격 (수치 증가형) — Atk/Ap는 valueMode로 고정/퍼센트 선택
@@ -163,6 +167,8 @@ public class PassiveSkillData : SkillData
         CritRate             = 5,  // 치명타 확률 증가
         CritDamage           = 6,  // 치명타 배율 증가
         AtkSpeed             = 23, // 공격 속도 증가 (0.1 = +10%)
+        SummonCritRate       = 27, // 소환수 치명타 확률 증가 (0.04 = +4%) — 시전자 본인은 오르지 않음
+        SummonDmgBonus       = 28, // 소환수 피해 증가 (0.1 = +10%) — 소환수 평타·명령 스킬 피해에만
 
         // 방어 (수치 증가·감소형) — Def/MaxHp/MagicRes·데미지 감소는 valueMode로 고정/퍼센트 선택
         Def                  = 2,  // 방어력 증가
@@ -183,6 +189,9 @@ public class PassiveSkillData : SkillData
         OnHitPoison          = 17, // 공격 시 독 발동
         OnHitShield          = 26, // 평타 적중 시 확률로 자신에게 보호막 (최대 체력 비례)
         OnHitCooldownReset   = 24, // 평타 적중 시 확률로 퀵슬롯 스킬 쿨타임 초기화 (쿨 초기화 스킬은 제외)
+
+        // 발동형 — 스킬 사용 시
+        OnSkillSummonShield  = 29, // 본인이 스킬을 쓸 때마다 자기 소환수 전원에게 보호막 (소환수 최대 체력 비례)
         OnCritLightning      = 15, // 치명타 시 번개 발동
 
         // 발동형 — 그 외

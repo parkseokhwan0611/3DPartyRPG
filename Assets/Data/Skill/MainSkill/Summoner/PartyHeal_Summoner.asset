@@ -15,7 +15,7 @@ MonoBehaviour:
   skillId: PartyHeal_Summoner
   skillName: "\uADF8\uB987\uB41C \uCE58\uC720"
   description: "\uC544\uAD70 \uC804\uCCB4\uC758 \uCCB4\uB825\uC744 \uD68C\uBCF5\uC2DC\uD0B5\uB2C8\uB2E4."
-  icon: {fileID: 21300000, guid: 63659ea75aa571241a1c798ea8114b43, type: 3}
+  icon: {fileID: 21300000, guid: a71b2e9c23985684085032adc79415a7, type: 3}
   requiredClass: 5
   skillType: 2
   skillCategory: 0
@@ -31,10 +31,10 @@ MonoBehaviour:
   requiredSkillLevel: 1
   mpCost:
   - 100
-  - 100
-  - 100
-  - 100
-  - 100
+  - 95
+  - 90
+  - 85
+  - 80
   cooldown:
   - 10
   - 10
@@ -44,15 +44,15 @@ MonoBehaviour:
   skillPointCost: 0200000002000000020000000300000003000000
   targetType: 1
   useApRatio: 1
-  baseHealMultiplier: 3
+  baseHealMultiplier: 2.5
   healMultiplierPerLevel: 0.5
   statScalings:
   - stat: 3
-    coeff: 1
-    coeffPerLevel: 0.1
-  - stat: 4
     coeff: 0.7
     coeffPerLevel: 0.1
+  - stat: 4
+    coeff: 1
+    coeffPerLevel: 0.2
   isDotHeal: 0
   dotInterval: 1
   baseDotDuration: 5

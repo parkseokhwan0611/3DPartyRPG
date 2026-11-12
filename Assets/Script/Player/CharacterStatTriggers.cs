@@ -136,6 +136,38 @@ public partial class CharacterStat
     }
 
     // ─────────────────────────────────────────────────────────────────
+    // 스킬 사용 (SkillBase.TryUseSkill이 마나·쿨타임을 쓰고 시전을 시작할 때 한 번)
+    // ─────────────────────────────────────────────────────────────────
+
+    public void NotifySkillUsed(SkillData skill)
+    {
+        if (myStatus == null || myStatus.currentHp <= 0f || myStatus.activeTriggerPassives.Count == 0) return;
+
+        foreach (var kvp in myStatus.activeTriggerPassives)
+        {
+            if (kvp.Key == null || kvp.Value <= 0 || kvp.Key.effectType != Effect.OnSkillSummonShield) continue;
+            ApplySummonShield(kvp.Key, kvp.Value);
+        }
+    }
+
+    // 스킬 사용 시 소환수 보호막 — 자기 소환수 전원에게 기본 수치(고정) + 소환수 최대 체력 × 발동 수치 (0.1 = 10%),
+    // 발동 지속시간 동안. 스킬을 연달아 써도 끝없이 쌓이지 않게 1회분의 ProcShieldStackCap배까지만 채운다
+    private void ApplySummonShield(PassiveSkillData passive, int level)
+    {
+        float duration = passive.GetProcDuration(level);
+        if (duration <= 0f) return;
+
+        foreach (var s in SummonUnit.All.ToArray())
+        {
+            if (s == null || !s.IsAlive || s.Owner != this) continue;
+            float amount = passive.GetValue(level) + s.MaxHp * passive.GetProcValue(level);
+            if (amount <= 0f) continue;
+            s.ApplyShield(amount, duration, amount * ProcShieldStackCap);
+            SpawnProcEffect(passive, s.transform);
+        }
+    }
+
+    // ─────────────────────────────────────────────────────────────────
     // 발동 효과 구현
     // ─────────────────────────────────────────────────────────────────
 

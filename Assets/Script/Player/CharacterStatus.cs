@@ -145,6 +145,10 @@ public string charName;
     public float mpOnHit = 0f;
     // 소환수 공격 적중 시 주인 마나 회복 — 패시브 전용, 세이브 대상 아님
     public float summonHitMp = 0f;
+    // 소환수 치명타 확률 추가 — 패시브 전용, 세이브 대상 아님. 주인 치명타 확률에 더해져 소환수에게만 적용 (0.04 = +4%)
+    public float summonCritRate = 0f;
+    // 소환수 피해 증가 — 패시브 전용, 세이브 대상 아님. 소환수 평타·명령 스킬 피해에 곱해짐 (0.1 = +10%)
+    public float summonDmgBonus = 0f;
     // 기본 공격 적중 시 추가 피해 (버프 전용, 세이브 대상 아님) — 치명타 없이 별도 데미지로 들어감
     public float buffOnHitPhysDamage  = 0f;
     public float buffOnHitMagicDamage = 0f;
@@ -358,6 +362,12 @@ public string charName;
                 break;
             case PassiveSkillData.PassiveEffectType.SummonHitManaRestore:
                 summonHitMp += delta;
+                break;
+            case PassiveSkillData.PassiveEffectType.SummonCritRate:
+                summonCritRate += delta;
+                break;
+            case PassiveSkillData.PassiveEffectType.SummonDmgBonus:
+                summonDmgBonus += delta;
                 break;
 
             // 발동형 패시브 — 등록만 해두고 실제 발동은 CharacterStat(PassiveTriggers)이 공격·힐·처치 시점에 확인

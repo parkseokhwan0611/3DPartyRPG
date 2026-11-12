@@ -1,0 +1,58 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 72fc38e46b28c16479c1fcb1332fbc1a, type: 3}
+  m_Name: CritIncrease_Summoner
+  m_EditorClassIdentifier: 
+  skillId: CritIncrease_Summoner
+  skillName: "\uC815\uAD50\uD55C \uC0AC\uB839\uC220"
+  description: "\uC18C\uD658\uC218\uC758 \uCE58\uBA85\uD0C0 \uD655\uB960\uC774 \uC99D\uAC00\uD569\uB2C8\uB2E4."
+  icon: {fileID: 21300000, guid: 64bd6fcd22dcdb1488b50b0c02849b95, type: 3}
+  requiredClass: 5
+  skillType: 4
+  skillCategory: 2
+  sfxEntries: []
+  skillPriority: 0
+  maxLevel: 5
+  requiredCharLevel: 18
+  requiredSkill: {fileID: 0}
+  requiredSkillLevel: 1
+  mpCost:
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  cooldown:
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  skillPointCost: 0200000002000000020000000300000003000000
+  effectType: 27
+  valueMode: 1
+  baseValue: 0.1
+  valuePerLevel: 0.025
+  hasSecondEffect: 0
+  secondEffectType: 8
+  secondValueMode: 0
+  secondBaseValue: 0
+  secondValuePerLevel: 0
+  baseProcChance: 0
+  procChancePerLevel: 0
+  baseProcValue: 0
+  procValuePerLevel: 0
+  baseProcDuration: 0
+  procDurationPerLevel: 0
+  procEffectPoolKey: 
+  procSkill: {fileID: 0}
+  maxDebuffStacks: 0

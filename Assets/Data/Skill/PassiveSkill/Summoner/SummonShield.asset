@@ -1,0 +1,59 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 72fc38e46b28c16479c1fcb1332fbc1a, type: 3}
+  m_Name: SummonShield
+  m_EditorClassIdentifier: 
+  skillId: SummonShield
+  skillName: "\uBD88\uC0AC\uC758 \uAD70\uB2E8\uC7A5"
+  description: "\uC2A4\uD0AC \uC0AC\uC6A9 \uC2DC \uC18C\uD658\uC218\uC5D0\uAC8C \uBCF4\uD638\uB9C9\uC744
+    \uBD80\uC5EC\uD569\uB2C8\uB2E4."
+  icon: {fileID: 21300000, guid: cc4176fd72f0e7e4bb4602b08887a7d4, type: 3}
+  requiredClass: 5
+  skillType: 4
+  skillCategory: 2
+  sfxEntries: []
+  skillPriority: 0
+  maxLevel: 4
+  requiredCharLevel: 30
+  requiredSkill: {fileID: 0}
+  requiredSkillLevel: 1
+  mpCost:
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  cooldown:
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  skillPointCost: 04000000030000000300000002000000
+  effectType: 29
+  valueMode: 0
+  baseValue: 75
+  valuePerLevel: 25
+  hasSecondEffect: 0
+  secondEffectType: 8
+  secondValueMode: 0
+  secondBaseValue: 0
+  secondValuePerLevel: 0
+  baseProcChance: 1
+  procChancePerLevel: 0
+  baseProcValue: 0.05
+  procValuePerLevel: 0.025
+  baseProcDuration: 5
+  procDurationPerLevel: 1
+  procEffectPoolKey: 
+  procSkill: {fileID: 0}
+  maxDebuffStacks: 0

@@ -80,7 +80,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: db5b648041af36d4cb1501cdfc9513a7, type: 2}
   - {fileID: 11400000, guid: ce29ad0ab4947ff448997a7db3175de5, type: 2}
   - {fileID: 11400000, guid: c6af59a8b0f2a424ea7b78d92785ff19, type: 2}
-  startWithSecondClass: 000100
+  startWithSecondClass: 000101
   partyLevel: 1
   partyExp: 0
   gold: 0
@@ -493,6 +493,9 @@ MonoBehaviour:
   - name: Healer_Main5
     clip: {fileID: 8300000, guid: b0090f8bf73056c4b800170fa45dd3f0, type: 3}
     volumeMultiplier: 1
+  - name: Summoner_Sub4
+    clip: {fileID: 8300000, guid: 95368bfedb0dc5143b6e9ed0f1ab718f, type: 3}
+    volumeMultiplier: 0.8
   sfxVolume: 0.5
   sfxSourceCount: 8
   sceneBgmMap:

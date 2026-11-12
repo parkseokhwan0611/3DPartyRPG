@@ -87,6 +87,13 @@ public class PassiveSkillDataEditor : GroupedSkillDataEditor
                 return "기본 수치 칸: 신앙 1당 최대 체력 (2 = 신앙 30이면 +60)";
             case PassiveSkillData.PassiveEffectType.SummonHitManaRestore:
                 return "기본 수치 칸: 소환수가 한 번 적중할 때마다 마나 고정 회복 (2 = +2)";
+            case PassiveSkillData.PassiveEffectType.SummonDmgBonus:
+                return "기본 수치 칸: 소환수 피해 증가 (0.1 = +10%) — 소환수 평타·명령 스킬 피해에 곱해짐";
+            case PassiveSkillData.PassiveEffectType.OnSkillSummonShield:
+                return "스킬 사용 시 소환수 전원에게 보호막 = 기본 수치(고정) + 소환수 최대 체력 × 발동 수치 (0.1 = 10%). " +
+                       "지속시간 = 발동 지속시간, 이펙트 = 각 소환수 위치. 1회분의 3배까지만 누적";
+            case PassiveSkillData.PassiveEffectType.SummonCritRate:
+                return "기본 수치 칸: 소환수 치명타 확률 증가 (0.04 = +4%) — 시전자 본인 치명타 확률은 그대로";
             case PassiveSkillData.PassiveEffectType.OnDebuffExtraDamage:
                 return "기본 수치 칸: 0.05 = 적에게 걸린 디버프 1개당 데미지 +5% (확률 없음, 평타·스킬·장판·투사체·반사·독·소환수 등 모든 피해)\n" +
                        "Max Debuff Stacks: 최대 몇 개까지 셀지 (0 = 제한 없음). 디버프는 종류 기준 (같은 디버프 중복은 1개, 기절 포함)";

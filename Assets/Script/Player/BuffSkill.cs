@@ -35,14 +35,22 @@ public class BuffSkill : SkillBase
         if (data.effectSpawnDelay > 0f)
             yield return new WaitForSeconds(data.effectSpawnDelay);
 
-        // 3. 시전자 이펙트 스폰 (OneShot 파티 버프만 — 개인 버프는 BuffPresentationRoutine이 대상 위치에 스폰하므로
-        //    여기서도 꺼내면 같은 이펙트가 두 번 겹쳐 나왔음)
-        if (data.effectStyle == BuffSkillData.EffectStyle.OneShot && data.isPartyBuff)
-            SpawnEffect(data);
+        if (data.summonOnly)
+        {
+            // 3~4. 소환수 전용 — 이펙트는 각 소환수 위치에
+            ApplySummonOnlyBuff(data);
+        }
+        else
+        {
+            // 3. 시전자 이펙트 스폰 (OneShot 파티 버프만 — 개인 버프는 BuffPresentationRoutine이 대상 위치에 스폰하므로
+            //    여기서도 꺼내면 같은 이펙트가 두 번 겹쳐 나왔음)
+            if (data.effectStyle == BuffSkillData.EffectStyle.OneShot && data.isPartyBuff)
+                SpawnEffect(data);
 
-        // 4. 버프 적용
-        if (data.isPartyBuff) ApplyPartyBuff(data);
-        else                  ApplySelfBuff(data);
+            // 4. 버프 적용
+            if (data.isPartyBuff) ApplyPartyBuff(data);
+            else                  ApplySelfBuff(data);
+        }
 
         // 버프 적용 완료 → 후딜 캔슬 허용
         ReleaseActivating();
@@ -51,6 +59,77 @@ public class BuffSkill : SkillBase
         float remaining = data.animDuration - data.effectSpawnDelay;
         if (remaining > 0f)
             yield return new WaitForSeconds(remaining);
+    }
+
+    // ─────────────────────────────────────────────────────────────────
+    // 소환수 전용 버프 (BuffSkillData.summonOnly)
+    // ─────────────────────────────────────────────────────────────────
+
+    private bool HasSummonTarget(BuffSkillData data)
+    {
+        foreach (var s in SummonUnit.All)
+            if (data.IsSummonBuffTarget(s, myStat)) return true;
+        return false;
+    }
+
+    // 대상 소환수가 1기 이상 있어야 사용 가능 (없으면 마나·쿨타임을 쓰지 않고 거절)
+    public override bool CanUseNow
+    {
+        get
+        {
+            var data = GetBuffData();
+            if (data == null) return false;
+            return !data.summonOnly || HasSummonTarget(data);
+        }
+    }
+
+    public override string CannotUseMessage
+    {
+        get
+        {
+            var data = GetBuffData();
+            if (data != null && data.summonOnly && !HasSummonTarget(data))
+                return "소환수가 존재하지 않습니다.";
+            return null;
+        }
+    }
+
+    // 팔로워 자동 사용 — 소환수 전용 버프는 대상 소환수 근처에 적이 있을 때만 (전투 중일 때)
+    private const float SummonBuffEnemyRange = 10f;
+    public override bool IsWorthAutoUsing
+    {
+        get
+        {
+            var data = GetBuffData();
+            if (data == null || !data.summonOnly) return true;
+            float sqr = SummonBuffEnemyRange * SummonBuffEnemyRange;
+            foreach (var s in SummonUnit.All)
+            {
+                if (!data.IsSummonBuffTarget(s, myStat)) continue;
+                foreach (var e in EnemyHp.AllInstances)
+                    if (e != null && !e.isDead && (e.transform.position - s.transform.position).sqrMagnitude <= sqr) return true;
+            }
+            return false;
+        }
+    }
+
+    private void ApplySummonOnlyBuff(BuffSkillData data)
+    {
+        _revivedThisCast.Clear();
+        bool any = false;
+        for (int i = SummonUnit.All.Count - 1; i >= 0; i--)
+        {
+            var summon = SummonUnit.All[i];
+            if (!data.IsSummonBuffTarget(summon, myStat)) continue;
+            ApplyBuffEffectsToSummon(data, skillLevel, myStat, summon, anyAttackBonus: true);
+            // Aura: 소환수의 buffAuras[auraIndex]를 지속시간 동안 켬 / OneShot: 소환수 위치에 이펙트 한 번
+            if (data.effectStyle == BuffSkillData.EffectStyle.Aura) summon.ShowBuffAura(data.auraIndex, data.GetDuration(skillLevel));
+            else                                                    SpawnTargetEffect(data, summon.transform);
+            any = true;
+        }
+
+        // 스킬 슬롯 버프 남은 시간 표시
+        if (any && data.HasDurationEffect) StartBuffTimer(data.GetDuration(skillLevel));
     }
 
     private void ApplySelfBuff(BuffSkillData data)
@@ -133,7 +212,9 @@ public class BuffSkill : SkillBase
         }
     }
 
-    private void ApplyBuffEffectsToSummon(BuffSkillData data, int level, CharacterStat caster, SummonUnit summon)
+    // anyAttackBonus: 소환수 전용 버프 — AtkBonus·ApBonus 어느 쪽이든 소환수 공격력 기준(물리/마법)에 맞춰 적용.
+    // 파티 버프에서는 소환수 기준과 같은 쪽만 적용 (마법 소환수에게 물리 공격력 버프는 무시)
+    private void ApplyBuffEffectsToSummon(BuffSkillData data, int level, CharacterStat caster, SummonUnit summon, bool anyAttackBonus = false)
     {
         float duration = data.GetDuration(level);
         foreach (var effect in data.buffEffects)
@@ -146,6 +227,8 @@ public class BuffSkill : SkillBase
 
             StatusEffectType? mapped = MapToStatusEffectType(effect.effectType);
             if (mapped == null || !SummonUnit.SupportsBuff(mapped.Value)) continue;
+            if (anyAttackBonus && (mapped == StatusEffectType.AtkUp || mapped == StatusEffectType.ApUp))
+                mapped = summon.UsesAp ? StatusEffectType.ApUp : StatusEffectType.AtkUp;
 
             float value = effect.GetValue(level) + GetScalingValue(effect, level, caster);
             ModifierMode mode = effect.IsPercent ? ModifierMode.Percent : ModifierMode.Flat;

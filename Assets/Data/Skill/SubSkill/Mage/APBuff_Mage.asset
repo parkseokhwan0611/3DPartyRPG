@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a70ac1c355a5a5a49b0f39626fc9e2be, type: 3}
-  m_Name: APBuff
+  m_Name: APBuff_Mage
   m_EditorClassIdentifier: 
-  skillId: APBuff
+  skillId: APBuff_Mage
   skillName: "\uB9C8\uB825 \uD3ED\uC8FC"
   description: "\uC9C0\uC18D\uC2DC\uAC04 \uB3D9\uC548 \uD30C\uD2F0\uC6D0\uC758 \uB9C8\uBC95
     \uACF5\uACA9\uB825\uC774 \uC99D\uAC00\uD569\uB2C8\uB2E4."
@@ -28,6 +28,8 @@ MonoBehaviour:
   skillPriority: 0
   maxLevel: 5
   requiredCharLevel: 8
+  requiredSkill: {fileID: 0}
+  requiredSkillLevel: 1
   mpCost:
   - 30
   - 30
@@ -61,6 +63,9 @@ MonoBehaviour:
     scalingCoeff: 0.3
     scalingPerLevel: 0.05
   onHitDamageIsMagic: 0
+  basicAttackEffectKey: 
+  basicAttackEffectRotation: {x: 0, y: 0, z: 0}
+  reviveEffectPoolKey: 
   thornsIsMagic: 1
   thornsScalings: []
   thornsAggroPerHit: 15

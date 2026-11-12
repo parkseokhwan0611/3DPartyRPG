@@ -45,7 +45,7 @@ MonoBehaviour:
   action: 0
   summonPrefab: {fileID: 1007340031672407650, guid: fb9b961d5767f024db9954c6e68a4c99,
     type: 3}
-  summonCountByLevel: 0100000001000000010000000200000002000000
+  summonCountByLevel: 0100000001000000010000000100000001000000
   baseDuration: 15
   durationPerLevel: 1.25
   baseHpRatio: 0.5
@@ -57,14 +57,21 @@ MonoBehaviour:
   defRatioPerLevel: 0.1
   tauntKind: 0
   tauntRadius: 6
-  baseTauntAggro: 100
-  tauntAggroPerLevel: 0
-  baseTauntDuration: 5
-  tauntDurationPerLevel: 0
   baseTauntDamageRatio: 0
   tauntDamageRatioPerLevel: 0
   tauntStatScalings: []
   tauntEffectPoolKey: 
+  commandAnimTrigger: 
+  commandHitDelay: 0
+  commandDamageDelay: 0
+  commandMotionDuration: 0
+  commandEndState: Idle
+  commandHitSfxKey: 
+  commandSourceSkill: {fileID: 0}
+  baseTauntAggro: 100
+  tauntAggroPerLevel: 0
+  baseTauntDuration: 5
+  tauntDurationPerLevel: 0
   animTriggerName: doSummon
   animDuration: 1
   effectSpawnDelay: 0.3

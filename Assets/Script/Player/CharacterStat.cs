@@ -48,6 +48,8 @@ public partial class CharacterStat : MonoBehaviour, IDamageable
     public float TotalMagicRes   => myStatus != null ? myStatus.TotalMagicRes   : 0f;
     public float TotalCritRate   => myStatus != null ? myStatus.TotalCritRate   : 0f;
     public float TotalCritDamage => myStatus != null ? myStatus.TotalCritDamage : 0f;
+    public float SummonCritRateBonus => myStatus != null ? myStatus.summonCritRate : 0f; // 소환수에게만 더해지는 치명타 확률 (패시브)
+    public float SummonDmgBonus      => myStatus != null ? myStatus.summonDmgBonus : 0f; // 소환수 피해 증가 (패시브, 0.1 = +10%)
     public float HpOnHit       => myStatus != null ? myStatus.hpOnHit      : 0f;
     public float MpOnHit       => myStatus != null ? myStatus.mpOnHit      : 0f;
 

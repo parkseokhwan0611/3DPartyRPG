@@ -167,6 +167,10 @@ public abstract class SkillBase : MonoBehaviour
         skillCoroutine = StartCoroutine(SkillRoutine(target));
         cooldownTimer  = CooldownAt(skillLevel);
         cooldownTotal  = cooldownTimer;
+
+        // 스킬 사용 시 발동 패시브 (소환수 보호막 등)
+        if (skillData.skillType != SkillData.SkillType.Passive && myStat != null)
+            myStat.NotifySkillUsed(skillData);
         return true;
     }
 
