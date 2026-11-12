@@ -115,6 +115,8 @@ public class DataManager : MonoBehaviour
     public int cheatLevelUp    = 30;
     [Tooltip("치트로 오를 수 있는 최대 레벨 (만렙)")]
     public int cheatMaxLevel   = 100;
+    [Tooltip("치트를 쓸 수 없는 씬 이름 — 게임 시작 전 씬(타이틀·클래스 선택·프롤로그). 튜토리얼부터 사용 가능")]
+    public string[] cheatBlockedScenes = { "TitleScene", "ClassSelect", "PrologueScene" };
 
     [Header("시작 아이템")]
     [Tooltip("게임 시작 시 인벤토리에 지급할 공용 아이템 목록 (count로 수량 설정).\n" +
@@ -468,7 +470,17 @@ public class DataManager : MonoBehaviour
     {
         if (!enableCheats || !Input.GetKeyDown(cheatKey)) return;
         if (IsTypingInInputField()) return; // 상점·인벤토리 수량 입력 중에 키가 눌린 건 무시
+        if (IsCheatBlockedScene()) return;  // 타이틀·클래스 선택·프롤로그에서는 사용 불가 (튜토리얼부터)
         ApplyCheat();
+    }
+
+    private bool IsCheatBlockedScene()
+    {
+        if (cheatBlockedScenes == null) return false;
+        string current = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
+        foreach (var name in cheatBlockedScenes)
+            if (!string.IsNullOrEmpty(name) && name == current) return true;
+        return false;
     }
 
     private void ApplyCheat()

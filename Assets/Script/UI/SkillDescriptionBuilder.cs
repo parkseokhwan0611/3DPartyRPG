@@ -324,7 +324,8 @@ public static class SkillDescriptionBuilder
     private static string SummonBuffText(BuffSkillData buff, string text)
     {
         if (!buff.summonOnly) return text;
-        text = text.Replace("물리 공격력 +", "소환수 공격력 +").Replace("마법 공격력 +", "소환수 공격력 +");
+        text = text.Replace("물리 공격력 +", "소환수 공격력 +").Replace("마법 공격력 +", "소환수 공격력 +")
+                   .Replace("치명타 확률 +", "소환수 치명타 확률 +").Replace("치명타 데미지 +", "소환수 치명타 데미지 +");
         return text + "\n소환수가 1기 이상 있어야 사용 가능";
     }
 
