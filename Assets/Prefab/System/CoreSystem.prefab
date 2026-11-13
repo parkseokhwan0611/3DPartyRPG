@@ -100,6 +100,8 @@ MonoBehaviour:
     displayName: "\uACE0\uBE14\uB9B0 \uC8FC\uC220\uC0AC\uC758 \uD68C\uB791 1"
   - sceneName: Dungeon_Boss
     displayName: "\uACE0\uBE14\uB9B0 \uB300\uC7A5\uC758 \uBB34\uB364"
+  - sceneName: Dungeon_1_5
+    displayName: "\uACE0\uBE14\uB9B0 \uC8FC\uC220\uC0AC\uC758 \uD68C\uB791 2"
   - sceneName: Dungeon_Boss2
     displayName: "\uACE0\uBE14\uB9B0 \uC8FC\uC220\uC0AC\uC758 \uC601\uC5ED"
   currentLeaderIndex: 0
@@ -115,6 +117,10 @@ MonoBehaviour:
   cheatSkillPoint: 30
   cheatLevelUp: 30
   cheatMaxLevel: 120
+  cheatBlockedScenes:
+  - TitleScene
+  - ClassSelect
+  - PrologueScene
   startItems:
   - item: {fileID: 11400000, guid: 780180cf1b0df8945a2df703d6f54460, type: 2}
     count: 5
@@ -517,7 +523,9 @@ MonoBehaviour:
     bgmKey: ForestBGM
   - sceneName: Dungeon_Boss
     bgmKey: ForestBGM
-  - sceneName: Forest_Town
+  - sceneName: Dungeon_1_5
+    bgmKey: ForestBGM
+  - sceneName: Dungeon_Boss2
     bgmKey: ForestBGM
   enableGlobalUiClick: 1
   uiClickSfxKey: UIClick
