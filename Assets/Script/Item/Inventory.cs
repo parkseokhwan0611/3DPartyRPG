@@ -90,7 +90,7 @@ public class Inventory
     // ─────────────────────────────────────────────────────────────────
 
     /// <summary>
-    /// 소비 → 장비 → 재료 순.
+    /// 소비 → 장비 → 재료 → 퀘스트 아이템 순.
     /// 소비 아이템 내: HP물약 → MP물약 → 주문서.
     /// 같은 카테고리/타입 내에서는 등급 높은 순.
     /// </summary>
@@ -120,6 +120,7 @@ public class Inventory
             };
         }
         if (item.IsEquipment) return 4;
+        if (item.IsQuestItem) return 6;
         return 5; // Material
     }
 }

@@ -130606,9 +130606,98 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6239089683958884399, guid: d8c21dc94fc70e642bc5c79457bba33d,
         type: 3}
+      propertyPath: rewardItem
+      value: 
+      objectReference: {fileID: 11400000, guid: cbd72bbdbcaf44148a9f2ea96c466eaf,
+        type: 2}
+    - target: {fileID: 6239089683958884399, guid: d8c21dc94fc70e642bc5c79457bba33d,
+        type: 3}
+      propertyPath: speakerName
+      value: "\uC5B8\uB370\uB4DC \uACE0\uBE14\uB9B0 \uB300\uC7A5"
+      objectReference: {fileID: 0}
+    - target: {fileID: 6239089683958884399, guid: d8c21dc94fc70e642bc5c79457bba33d,
+        type: 3}
+      propertyPath: clearDialogue.Array.size
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 6239089683958884399, guid: d8c21dc94fc70e642bc5c79457bba33d,
+        type: 3}
       propertyPath: activateOnClear.Array.data[0]
       value: 
       objectReference: {fileID: 1395210492}
+    - target: {fileID: 6239089683958884399, guid: d8c21dc94fc70e642bc5c79457bba33d,
+        type: 3}
+      propertyPath: clearDialogue.Array.data[0].text
+      value: "\uC548...\uB3FC..."
+      objectReference: {fileID: 0}
+    - target: {fileID: 6239089683958884399, guid: d8c21dc94fc70e642bc5c79457bba33d,
+        type: 3}
+      propertyPath: clearDialogue.Array.data[1].text
+      value: "\uC78E\uC0AC\uADC0\uB97C \uAC00\uC838\uAC00\uC120 \uC548\uB3FC..."
+      objectReference: {fileID: 0}
+    - target: {fileID: 6239089683958884399, guid: d8c21dc94fc70e642bc5c79457bba33d,
+        type: 3}
+      propertyPath: clearDialogue.Array.data[2].text
+      value: "\uB9C8\uBB3C\uC774 \uB9D0\uC744 \uD574?"
+      objectReference: {fileID: 0}
+    - target: {fileID: 6239089683958884399, guid: d8c21dc94fc70e642bc5c79457bba33d,
+        type: 3}
+      propertyPath: clearDialogue.Array.data[3].text
+      value: "\uC774 \uC78E\uC0AC\uADC0\uB294 \uB108\uB124\uAC19\uC740 \uB9C8\uBB3C\uC744
+        \uB9CC\uB4E4\uC5B4 \uC138\uACC4\uC5D0 \uD63C\uB780\uC744 \uAC00\uC838\uC624\uACE0
+        \uC788\uB2E4."
+      objectReference: {fileID: 0}
+    - target: {fileID: 6239089683958884399, guid: d8c21dc94fc70e642bc5c79457bba33d,
+        type: 3}
+      propertyPath: clearDialogue.Array.data[4].text
+      value: "\uC6B0\uB9AC\uB294 \uC774 \uC78E\uC0AC\uADC0\uB85C \uC138\uACC4\uC218\uC758
+        \uC601\uAD11\uC744 \uB418\uCC3E\uC744 \uAC83\uC774\uB2E4."
+      objectReference: {fileID: 0}
+    - target: {fileID: 6239089683958884399, guid: d8c21dc94fc70e642bc5c79457bba33d,
+        type: 3}
+      propertyPath: clearDialogue.Array.data[5].text
+      value: "\uC138\uACC4\uC218\uB294 \uC885\uB9D0\uC744 \uBD80\uB978\uB2E4..."
+      objectReference: {fileID: 0}
+    - target: {fileID: 6239089683958884399, guid: d8c21dc94fc70e642bc5c79457bba33d,
+        type: 3}
+      propertyPath: clearDialogue.Array.data[6].text
+      value: "\uC2E0\uB4E4\uC744 \uBBFF\uC5B4\uC120 \uC548\uB41C\uB2E4..."
+      objectReference: {fileID: 0}
+    - target: {fileID: 6239089683958884399, guid: d8c21dc94fc70e642bc5c79457bba33d,
+        type: 3}
+      propertyPath: clearDialogue.Array.data[7].text
+      value: "\uC138\uACC4\uC218\uC758 \uC78E\uC0AC\uADC0\uB97C \uD68D\uB4DD\uD558\uC168\uC2B5\uB2C8\uB2E4."
+      objectReference: {fileID: 0}
+    - target: {fileID: 6239089683958884399, guid: d8c21dc94fc70e642bc5c79457bba33d,
+        type: 3}
+      propertyPath: clearDialogue.Array.data[1].speaker
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6239089683958884399, guid: d8c21dc94fc70e642bc5c79457bba33d,
+        type: 3}
+      propertyPath: clearDialogue.Array.data[2].speaker
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6239089683958884399, guid: d8c21dc94fc70e642bc5c79457bba33d,
+        type: 3}
+      propertyPath: clearDialogue.Array.data[3].speaker
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6239089683958884399, guid: d8c21dc94fc70e642bc5c79457bba33d,
+        type: 3}
+      propertyPath: clearDialogue.Array.data[4].speaker
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6239089683958884399, guid: d8c21dc94fc70e642bc5c79457bba33d,
+        type: 3}
+      propertyPath: clearDialogue.Array.data[7].speaker
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 6239089683958884399, guid: d8c21dc94fc70e642bc5c79457bba33d,
+        type: 3}
+      propertyPath: clearDialogue.Array.data[7].customSpeakerName
+      value: "\uC2DC\uC2A4\uD15C"
+      objectReference: {fileID: 0}
     - target: {fileID: 8000172883083836089, guid: d8c21dc94fc70e642bc5c79457bba33d,
         type: 3}
       propertyPath: m_LocalPosition.x

@@ -165,7 +165,9 @@ public class DialogueUI : MonoBehaviour
 
         // 발화자 이름 전환
         if (speakerNameText != null)
-            speakerNameText.text = ResolveSpeakerName(line.speaker);
+            speakerNameText.text = line.speaker == DialogueLine.Speaker.Custom
+                ? (line.customSpeakerName ?? "")
+                : ResolveSpeakerName(line.speaker);
 
         _typeRoutine = StartCoroutine(TypeLine(line.text));
     }

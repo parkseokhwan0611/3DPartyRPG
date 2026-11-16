@@ -457,12 +457,13 @@ public class InventoryUI : MonoBehaviour
         if (useButton != null)
             useButton.gameObject.SetActive(!isEquipSlotSelected && cd != null && cd.IsUsableFromInventory);
 
-        // 판매 가격 (단가 표시, 실제 합산은 수량 확정 시)
+        // 판매 가격 (단가 표시, 실제 합산은 수량 확정 시) — 퀘스트 아이템은 판매 불가
+        bool sellable = !item.IsQuestItem;
         if (sellPriceText != null)
-            sellPriceText.text = $"가격: {item.data.sellPrice:N0}원";
+            sellPriceText.text = sellable ? $"가격: {item.data.sellPrice:N0}원" : "판매 불가";
 
-        // 판매 버튼 (항상 표시)
-        sellButton.gameObject.SetActive(true);
+        // 판매 버튼 (퀘스트 아이템 제외 항상 표시)
+        sellButton.gameObject.SetActive(sellable);
         sellQuantityPanel?.SetActive(false);
     }
 
@@ -634,6 +635,7 @@ public class InventoryUI : MonoBehaviour
     {
         if (selectedItem == null || DataManager.instance == null) return;
         if (isEquipSlotSelected) return;
+        if (selectedItem.IsQuestItem) { ShowMessage("퀘스트 아이템은 판매할 수 없습니다."); return; }
 
         // 소비·재료는 수량 패널 열기
         if (!selectedItem.IsEquipment)
@@ -685,6 +687,7 @@ public class InventoryUI : MonoBehaviour
     void ExecuteSell(int qty)
     {
         if (selectedItem == null || DataManager.instance == null) return;
+        if (selectedItem.IsQuestItem) return; // 퀘스트 아이템 판매 불가
         var inv = DataManager.instance.sharedInventory;
 
         int totalPrice = selectedItem.data.sellPrice * qty;
@@ -799,6 +802,7 @@ public class InventoryUI : MonoBehaviour
         };
         if (item.IsConsumable) return "소비 아이템";
         if (item.IsMaterial)   return "재료";
+        if (item.IsQuestItem)  return "퀘스트 아이템";
         return "";
     }
 

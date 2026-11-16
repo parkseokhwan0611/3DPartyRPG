@@ -28,7 +28,24 @@ public class MonsterSummonSkill : MonsterSkillBase
              "프리팹 자체의 Y 위치는 스폰 시 덮어써지므로 무시됨")]
     public float summonVfxHeightOffset = 0f;
 
+    [Tooltip("체크하면, 소환한 보스가 죽을 때 살아있는 소환수도 함께 사망 처리 (보스 처치 후 대사 연출을 방해하지 않도록)")]
+    public bool killSummonsOnOwnerDeath = true;
+
     private readonly List<EnemyHp> _liveSummons = new List<EnemyHp>();
+    private EnemyHp _ownerHp;
+
+    void Awake()     { _ownerHp = GetComponentInParent<EnemyHp>(); }
+    void OnEnable()  { if (_ownerHp != null) _ownerHp.OnDied += HandleOwnerDeath; }
+    void OnDisable() { if (_ownerHp != null) _ownerHp.OnDied -= HandleOwnerDeath; }
+
+    private void HandleOwnerDeath()
+    {
+        if (!killSummonsOnOwnerDeath) return;
+        // Kill() → OnDied에서 _liveSummons.Remove가 호출되므로 복사본으로 순회
+        foreach (var hp in _liveSummons.ToArray())
+            if (hp != null) hp.Kill();
+        _liveSummons.Clear();
+    }
 
     public override bool IsReady(Vector3 selfPos, Vector3 targetPos)
     {

@@ -281,6 +281,13 @@ public class ShopUI : MonoBehaviour
             var cache = _shopSlots[i];
             var entry = i < entryCount ? entries[i] : null;
 
+            // 퀘스트 아이템은 상점에서 팔지 않음 — ShopData에 잘못 등록돼 있어도 빈 칸으로 표시
+            if (entry?.item is QuestItemData)
+            {
+                Debug.LogWarning($"[ShopUI] 퀘스트 아이템 '{entry.item.itemName}'은(는) 상점에서 판매할 수 없습니다 — ShopData에서 빼주세요.");
+                entry = null;
+            }
+
             if (entry?.item != null)
             {
                 cache.entryIndex = i;
@@ -462,11 +469,12 @@ public class ShopUI : MonoBehaviour
         }
 
         descriptionText.text = item.data.description;
-        priceText.text = isBuying ? $"구매가: {price:N0} G" : $"판매가: {price:N0} G";
+        bool questItem = item.IsQuestItem; // 퀘스트 아이템은 판매 불가
+        priceText.text = isBuying ? $"구매가: {price:N0} G" : (questItem ? "판매 불가" : $"판매가: {price:N0} G");
 
         // 구매 시: 구매 버튼 표시 / 판매 시: 판매 버튼 표시
         buyButton ?.gameObject.SetActive(isBuying);
-        sellButton?.gameObject.SetActive(!isBuying);
+        sellButton?.gameObject.SetActive(!isBuying && !questItem);
         cancelButton?.gameObject.SetActive(true);
 
         // 하나도 살 수 없는 골드량이면 구매 버튼 자체를 비활성화
@@ -612,8 +620,8 @@ public class ShopUI : MonoBehaviour
         int  totalCost = entry.item.buyPrice * qty;
         var  inv       = DataManager.instance.sharedInventory;
 
-        // 사전 검증 (판매 가능 여부 / 골드 / 재고 / 인벤토리 공간)
-        if (entry.item.buyPrice <= 0)
+        // 사전 검증 (판매 가능 여부 / 골드 / 재고 / 인벤토리 공간) — 퀘스트 아이템은 구매 불가
+        if (entry.item.buyPrice <= 0 || entry.item is QuestItemData)
         {
             ShowMessage("판매하지 않는 아이템입니다.");
             return;
@@ -659,6 +667,7 @@ public class ShopUI : MonoBehaviour
     void OnSellClicked()
     {
         if (_selectedInvItem == null || DataManager.instance == null) return;
+        if (_selectedInvItem.IsQuestItem) { ShowMessage("퀘스트 아이템은 판매할 수 없습니다."); return; }
 
         // 소비·재료는 판매 수량 패널 열기
         if (!_selectedInvItem.IsEquipment)
@@ -714,6 +723,7 @@ public class ShopUI : MonoBehaviour
     void ExecuteSell(int qty)
     {
         if (_selectedInvItem == null || DataManager.instance == null) return;
+        if (_selectedInvItem.IsQuestItem) return; // 퀘스트 아이템 판매 불가
         var      inv        = DataManager.instance.sharedInventory;
         int      totalPrice = _selectedInvItem.data.sellPrice * qty;
         ItemData soldData   = _selectedInvItem.data;
@@ -906,6 +916,7 @@ public class ShopUI : MonoBehaviour
         };
         if (item.IsConsumable) return "소비 아이템";
         if (item.IsMaterial)   return "재료";
+        if (item.IsQuestItem)  return "퀘스트 아이템";
         return "";
     }
 

@@ -47,6 +47,8 @@ public class EnemyHp : MonoBehaviour, IDamageable
     public float expReward    = 5f;
     public int   goldReward   = 10;
     public float destroyDelay = 2f;
+    // true인 동안은 destroyDelay가 지나도 시체를 파괴하지 않음 (BossClearActivator가 처치 대사 동안 사용)
+    [System.NonSerialized] public bool holdDestroy;
     [Tooltip("AudioManager에 등록한 SFX 키. 사망 시 재생 (비워두면 재생 안 함)")]
     public string deathSfxKey;
 
@@ -191,6 +193,15 @@ public class EnemyHp : MonoBehaviour, IDamageable
         if (dt != null) dt.Setup(damage, color, isCrit: isCrit); // 색상 전달
     }
 
+    /// <summary>피해 계산 없이 즉시 사망 처리 (보스가 죽을 때 남은 소환수 정리 등). 보상·드랍은 일반 사망과 동일.</summary>
+    public void Kill()
+    {
+        if (isDead) return;
+        hp = 0f;
+        OnHpChanged?.Invoke(hp, maxHp);
+        Die();
+    }
+
     private void Die()
     {
         if (isDead) return;
@@ -248,6 +259,9 @@ public class EnemyHp : MonoBehaviour, IDamageable
         }
 
         yield return new WaitForSeconds(destroyDelay);
+
+        // 보스 처치 대사 등 외부에서 시체를 붙잡아 둔 동안은 파괴를 미룸
+        while (holdDestroy) yield return null;
 
         Destroy(gameObject);
     }

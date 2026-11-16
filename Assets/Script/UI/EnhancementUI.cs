@@ -686,6 +686,7 @@ public class EnhancementUI : MonoBehaviour
             _ => ""
         };
         if (item.IsConsumable) return "소비 아이템";
+        if (item.IsQuestItem)  return "퀘스트 아이템";
         return "";
     }
 }

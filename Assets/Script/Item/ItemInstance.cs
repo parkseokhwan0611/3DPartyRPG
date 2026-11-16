@@ -40,6 +40,7 @@ public class ItemInstance
     public bool IsEquipment  => data is EquipItemData;
     public bool IsConsumable => data is ConsumableData;
     public bool IsMaterial   => data is MaterialData;
+    public bool IsQuestItem  => data is QuestItemData;
 
     /// <summary>소비·재료 아이템에 수량 추가. 장비는 무시.</summary>
     public void AddStack(int amount)

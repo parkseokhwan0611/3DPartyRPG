@@ -34,6 +34,27 @@ public class MonsterDropTable : ScriptableObject
     [Header("드랍 목록")]
     public List<DropEntry> entries = new List<DropEntry>();
 
+    /// <summary>확률 판정 없이 지정한 아이템 하나를 월드에 떨어뜨린다 (보스 확정 지급 아이템을
+    /// 인벤토리가 가득 차 못 넣었을 때 등). 등급 프리팹이 없으면 false.</summary>
+    public bool SpawnWorldItem(ItemInstance inst, Vector3 position)
+    {
+        if (inst?.data == null) return false;
+        int gradeIndex = (int)inst.data.grade;
+        if (gradeIndex >= gradePrefabs.Length || gradePrefabs[gradeIndex] == null) return false;
+
+        string poolKey = gradeIndex < gradePoolKeys.Length ? gradePoolKeys[gradeIndex] : null;
+        GameObject go = null;
+        if (!string.IsNullOrEmpty(poolKey) && ObjectPoolManager.instance != null)
+            go = ObjectPoolManager.instance.GetGo(poolKey);
+        if (go == null)
+            go = Instantiate(gradePrefabs[gradeIndex]);
+
+        go.transform.SetPositionAndRotation(GetDropPosition(position), Quaternion.identity);
+        go.GetComponent<WorldItem>()?.Setup(inst);
+        AudioManager.instance?.PlaySFX("ItemDrop");
+        return true;
+    }
+
     // 확률 판정 후 worldItemPrefab을 월드에 스폰
     public void SpawnDrops(Vector3 position)
     {
