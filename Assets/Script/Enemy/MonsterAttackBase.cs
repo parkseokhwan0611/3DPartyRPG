@@ -76,8 +76,15 @@ public abstract class MonsterAttackBase : AttackBase
             StopCoroutine(sfxCoroutine);
             sfxCoroutine = null;
         }
+        if (IsAttacking) OnAttackCancelled();
         IsAttacking = false;
     }
+
+    // 공격 모션 시작 직후(조준 직후) 호출 — 착지 지점 고정·예고 표시 등. 필요 없으면 비워 둠
+    protected virtual void OnAttackStart() { }
+
+    // 공격 도중 기절·사망 등으로 끊겼을 때 호출 — OnAttackStart에서 띄운 예고 표시 정리용
+    protected virtual void OnAttackCancelled() { }
 
     private IEnumerator AttackRoutine()
     {
@@ -94,6 +101,8 @@ public abstract class MonsterAttackBase : AttackBase
             if (dir != Vector3.zero)
                 transform.rotation = Quaternion.LookRotation(dir);
         }
+
+        OnAttackStart();
 
         if (anim != null)
         {

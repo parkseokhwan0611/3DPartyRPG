@@ -84,10 +84,17 @@ public abstract class MonsterSkillBase : MonoBehaviour
         // this == null: 화살·수류탄이 날아가는 동안 시전한 몬스터가 죽어 파괴된 경우 — 디버프 출처(gameObject)를
         // 읽을 수 없으므로 디버프만 건너뛴다 (데미지는 투사체가 이미 적용함)
         if (this == null) return;
-        if (debuff == MonsterSkillDebuff.None || target == null) return;
+        ApplyMonsterDebuff(gameObject, target, debuff, debuffValue, debuffDuration);
+    }
+
+    // 몬스터 디버프 적용 공용 헬퍼 — 스킬과 기본 공격(MonsterGrenadeAttack 등)이 같이 쓴다.
+    // 파티원은 PartyStatusEffectHandler, 소환수는 SummonUnit으로 전달
+    public static void ApplyMonsterDebuff(GameObject source, GameObject target, MonsterSkillDebuff debuff, float value, float duration)
+    {
+        if (debuff == MonsterSkillDebuff.None || target == null || source == null) return;
 
         StatusEffectType type = debuff == MonsterSkillDebuff.Stun ? StatusEffectType.Stun : StatusEffectType.Slow;
-        var effect = new StatusEffect(type, debuffValue, debuffDuration, gameObject);
+        var effect = new StatusEffect(type, value, duration, source);
 
         var status = target.GetComponent<PartyStatusEffectHandler>();
         if (status != null) { status.ApplyBuff(effect); return; }
