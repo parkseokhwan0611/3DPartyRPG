@@ -77017,17 +77017,17 @@ PrefabInstance:
     - target: {fileID: 6117105883450423558, guid: 7e9c1ab8fe9818144ac5522a50787aea,
         type: 3}
       propertyPath: portalId
-      value: Dungeon_1_1_to_Dungeon_1_2
+      value: Dungeon_Boss2_to_EndingScene
       objectReference: {fileID: 0}
     - target: {fileID: 6117105883450423558, guid: 7e9c1ab8fe9818144ac5522a50787aea,
         type: 3}
       propertyPath: destinationSpawnId
-      value: Dungeon_1_2_to_Dungeon_1_1
+      value: 
       objectReference: {fileID: 0}
     - target: {fileID: 6117105883450423558, guid: 7e9c1ab8fe9818144ac5522a50787aea,
         type: 3}
       propertyPath: destinationSceneName
-      value: Dungeon_1_2
+      value: EndingScene
       objectReference: {fileID: 0}
     - target: {fileID: 7347453802505551625, guid: 7e9c1ab8fe9818144ac5522a50787aea,
         type: 3}
@@ -101571,6 +101571,16 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2722949185961575665, guid: 04330b467fdc2ac4a954f0a66a8bd06e,
+        type: 3}
+      propertyPath: activateOnClear.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2722949185961575665, guid: 04330b467fdc2ac4a954f0a66a8bd06e,
+        type: 3}
+      propertyPath: activateOnClear.Array.data[0]
+      value: 
+      objectReference: {fileID: 1395210492}
     - target: {fileID: 1473683728507981117, guid: 04330b467fdc2ac4a954f0a66a8bd06e,
         type: 3}
       propertyPath: m_LocalPosition.x
