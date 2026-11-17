@@ -77084,6 +77084,12 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7e9c1ab8fe9818144ac5522a50787aea, type: 3}
+--- !u!1 &1395210492 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1558694104297233144, guid: 7e9c1ab8fe9818144ac5522a50787aea,
+    type: 3}
+  m_PrefabInstance: {fileID: 1395210491}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1395434853
 GameObject:
   m_ObjectHideFlags: 0
@@ -101615,6 +101621,22 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2722949185961575665, guid: 04330b467fdc2ac4a954f0a66a8bd06e,
+        type: 3}
+      propertyPath: rewardItem
+      value: 
+      objectReference: {fileID: 11400000, guid: cbd72bbdbcaf44148a9f2ea96c466eaf,
+        type: 2}
+    - target: {fileID: 2722949185961575665, guid: 04330b467fdc2ac4a954f0a66a8bd06e,
+        type: 3}
+      propertyPath: activateOnClear.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2722949185961575665, guid: 04330b467fdc2ac4a954f0a66a8bd06e,
+        type: 3}
+      propertyPath: activateOnClear.Array.data[0]
+      value: 
+      objectReference: {fileID: 1395210492}
     - target: {fileID: 5285157052835285592, guid: 04330b467fdc2ac4a954f0a66a8bd06e,
         type: 3}
       propertyPath: m_Name

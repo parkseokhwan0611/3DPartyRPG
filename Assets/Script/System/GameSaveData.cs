@@ -38,8 +38,7 @@ public class GameSaveData
     public List<string> completedQuestIds = new List<string>();
 
     // 1회만 지급하는 보상(보스 확정 퀘스트 아이템 등)을 이미 받은 아이템 ID — 이 값 추가 전 세이브는 빈 목록
-    public List<string> grantedOnceItemIds = new List<string>();
-}
+    public List<string> grantedOnceItemIds = new List<string>();}
 
 // ─────────────────────────────────────────────────────────────────
 // 스킬 퀵슬롯 세이브 데이터 (캐릭터 1명분)

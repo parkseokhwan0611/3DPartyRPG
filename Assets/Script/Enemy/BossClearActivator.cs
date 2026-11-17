@@ -28,6 +28,7 @@ public class BossClearActivator : MonoBehaviour
     [Tooltip("켜두면 첫 처치 때만 지급 (보스 반복 사냥 시 중복 지급 안 함 — 세이브에 기록됨). 대사는 매번 출력")]
     public bool rewardOnlyOnce = true;
 
+
     private EnemyHp _enemyHp;
     private bool _pending; // 사망했지만 아직 활성화 대기 중 (보스 자신에서 코루틴을 돌리는 경우)
     private Vector3 _deathPos;
