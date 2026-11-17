@@ -101571,16 +101571,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 2722949185961575665, guid: 04330b467fdc2ac4a954f0a66a8bd06e,
-        type: 3}
-      propertyPath: activateOnClear.Array.size
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2722949185961575665, guid: 04330b467fdc2ac4a954f0a66a8bd06e,
-        type: 3}
-      propertyPath: activateOnClear.Array.data[0]
-      value: 
-      objectReference: {fileID: 1395210492}
     - target: {fileID: 1473683728507981117, guid: 04330b467fdc2ac4a954f0a66a8bd06e,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -101639,6 +101629,16 @@ PrefabInstance:
         type: 2}
     - target: {fileID: 2722949185961575665, guid: 04330b467fdc2ac4a954f0a66a8bd06e,
         type: 3}
+      propertyPath: speakerName
+      value: "\uACE0\uBE14\uB9B0 \uC8FC\uC220\uC0AC"
+      objectReference: {fileID: 0}
+    - target: {fileID: 2722949185961575665, guid: 04330b467fdc2ac4a954f0a66a8bd06e,
+        type: 3}
+      propertyPath: clearDialogue.Array.size
+      value: 13
+      objectReference: {fileID: 0}
+    - target: {fileID: 2722949185961575665, guid: 04330b467fdc2ac4a954f0a66a8bd06e,
+        type: 3}
       propertyPath: activateOnClear.Array.size
       value: 1
       objectReference: {fileID: 0}
@@ -101647,10 +101647,133 @@ PrefabInstance:
       propertyPath: activateOnClear.Array.data[0]
       value: 
       objectReference: {fileID: 1395210492}
+    - target: {fileID: 2722949185961575665, guid: 04330b467fdc2ac4a954f0a66a8bd06e,
+        type: 3}
+      propertyPath: clearDialogue.Array.data[0].text
+      value: "\uC5B4\uC9F8\uC11C \uC6B0\uB9B4 \uBC29\uD574\uD558\uB294 \uAC83\uC774\uB0D0..."
+      objectReference: {fileID: 0}
+    - target: {fileID: 2722949185961575665, guid: 04330b467fdc2ac4a954f0a66a8bd06e,
+        type: 3}
+      propertyPath: clearDialogue.Array.data[1].text
+      value: "\uC5B4\uC774 \uB9C8\uBB3C."
+      objectReference: {fileID: 0}
+    - target: {fileID: 2722949185961575665, guid: 04330b467fdc2ac4a954f0a66a8bd06e,
+        type: 3}
+      propertyPath: clearDialogue.Array.data[2].text
+      value: "\uC5B4\uC9F8\uC11C \uC138\uACC4\uC218\uC758 \uC78E\uC0AC\uADC0\uB97C
+        \uC9C0\uD0A4\uB294\uAC70\uC57C?"
+      objectReference: {fileID: 0}
+    - target: {fileID: 2722949185961575665, guid: 04330b467fdc2ac4a954f0a66a8bd06e,
+        type: 3}
+      propertyPath: clearDialogue.Array.data[3].text
+      value: "\uC78E\uC0AC\uADC0\uB294 \uC138\uC0C1\uC744 \uD30C\uBA78\uB85C \uC774\uB048\uB2E4."
+      objectReference: {fileID: 0}
+    - target: {fileID: 2722949185961575665, guid: 04330b467fdc2ac4a954f0a66a8bd06e,
+        type: 3}
+      propertyPath: clearDialogue.Array.data[4].text
+      value: "\uC2E0\uC740 \uC778\uAC04\uC758 \uC801\uC774\uACE0 \uC138\uACC4\uC218\uB294
+        \uC7AC\uC559\uC758 \uADFC\uC6D0\uC774\uB2E4."
+      objectReference: {fileID: 0}
+    - target: {fileID: 2722949185961575665, guid: 04330b467fdc2ac4a954f0a66a8bd06e,
+        type: 3}
+      propertyPath: clearDialogue.Array.data[5].text
+      value: "\uC6B0\uB9AC\uB3C4 \uD55C\uB54C\uB294..."
+      objectReference: {fileID: 0}
+    - target: {fileID: 2722949185961575665, guid: 04330b467fdc2ac4a954f0a66a8bd06e,
+        type: 3}
+      propertyPath: clearDialogue.Array.data[6].text
+      value: ...
+      objectReference: {fileID: 0}
+    - target: {fileID: 2722949185961575665, guid: 04330b467fdc2ac4a954f0a66a8bd06e,
+        type: 3}
+      propertyPath: clearDialogue.Array.data[7].text
+      value: "\uC8FD\uC5C8\uAD70."
+      objectReference: {fileID: 0}
+    - target: {fileID: 2722949185961575665, guid: 04330b467fdc2ac4a954f0a66a8bd06e,
+        type: 3}
+      propertyPath: clearDialogue.Array.data[8].text
+      value: "\uC774\uC81C \uC5B4\uB5A1\uD560\uAC70\uC57C?"
+      objectReference: {fileID: 0}
+    - target: {fileID: 2722949185961575665, guid: 04330b467fdc2ac4a954f0a66a8bd06e,
+        type: 3}
+      propertyPath: clearDialogue.Array.data[9].text
+      value: "\uC800\uB140\uC11D\uC758 \uACBD\uACE0 \uBB34\uC2DC\uD560\uAC70\uC57C?"
+      objectReference: {fileID: 0}
+    - target: {fileID: 2722949185961575665, guid: 04330b467fdc2ac4a954f0a66a8bd06e,
+        type: 3}
+      propertyPath: clearDialogue.Array.data[10].text
+      value: "\uC6B0\uB9AC\uAC00 \uBAA8\uB974\uB294 \uC9C4\uC2E4\uC774 \uC788\uC744\uAE4C\uC694..."
+      objectReference: {fileID: 0}
+    - target: {fileID: 2722949185961575665, guid: 04330b467fdc2ac4a954f0a66a8bd06e,
+        type: 3}
+      propertyPath: clearDialogue.Array.data[11].text
+      value: "\uC0AC\uC81C\uC5D0\uAC8C \uC78E\uC0AC\uADC0\uB97C \uAC16\uB2E4\uC8FC\uBA74\uC11C
+        \uC0B4\uC9DD \uB5A0\uBCFC\uAE4C?"
+      objectReference: {fileID: 0}
+    - target: {fileID: 2722949185961575665, guid: 04330b467fdc2ac4a954f0a66a8bd06e,
+        type: 3}
+      propertyPath: clearDialogue.Array.data[12].text
+      value: "\uC88B\uC544\uC694 \uC77C\uB2E8 \uBCF5\uADC0\uD558\uC8E0."
+      objectReference: {fileID: 0}
+    - target: {fileID: 2722949185961575665, guid: 04330b467fdc2ac4a954f0a66a8bd06e,
+        type: 3}
+      propertyPath: clearDialogue.Array.data[1].speaker
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 2722949185961575665, guid: 04330b467fdc2ac4a954f0a66a8bd06e,
+        type: 3}
+      propertyPath: clearDialogue.Array.data[2].speaker
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 2722949185961575665, guid: 04330b467fdc2ac4a954f0a66a8bd06e,
+        type: 3}
+      propertyPath: clearDialogue.Array.data[3].speaker
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2722949185961575665, guid: 04330b467fdc2ac4a954f0a66a8bd06e,
+        type: 3}
+      propertyPath: clearDialogue.Array.data[6].speaker
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2722949185961575665, guid: 04330b467fdc2ac4a954f0a66a8bd06e,
+        type: 3}
+      propertyPath: clearDialogue.Array.data[7].speaker
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2722949185961575665, guid: 04330b467fdc2ac4a954f0a66a8bd06e,
+        type: 3}
+      propertyPath: clearDialogue.Array.data[8].speaker
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 2722949185961575665, guid: 04330b467fdc2ac4a954f0a66a8bd06e,
+        type: 3}
+      propertyPath: clearDialogue.Array.data[9].speaker
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 2722949185961575665, guid: 04330b467fdc2ac4a954f0a66a8bd06e,
+        type: 3}
+      propertyPath: clearDialogue.Array.data[10].speaker
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 2722949185961575665, guid: 04330b467fdc2ac4a954f0a66a8bd06e,
+        type: 3}
+      propertyPath: clearDialogue.Array.data[11].speaker
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 2722949185961575665, guid: 04330b467fdc2ac4a954f0a66a8bd06e,
+        type: 3}
+      propertyPath: clearDialogue.Array.data[12].speaker
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 5285157052835285592, guid: 04330b467fdc2ac4a954f0a66a8bd06e,
         type: 3}
       propertyPath: m_Name
       value: GoblinBoss
+      objectReference: {fileID: 0}
+    - target: {fileID: 7165683147454634721, guid: 04330b467fdc2ac4a954f0a66a8bd06e,
+        type: 3}
+      propertyPath: unlockHpRatio
+      value: 0.5
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

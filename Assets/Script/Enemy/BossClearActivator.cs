@@ -25,9 +25,9 @@ public class BossClearActivator : MonoBehaviour
              "인벤토리가 가득 차 있으면 보스 자리에 바닥 드랍으로 떨어뜨린다. DataManager.itemRegistry에 등록해야 저장된다")]
     public ItemData rewardItem;
     [Min(1)] public int rewardCount = 1;
-    [Tooltip("켜두면 첫 처치 때만 지급 (보스 반복 사냥 시 중복 지급 안 함 — 세이브에 기록됨). 대사는 매번 출력")]
+    [Tooltip("켜두면 이 보스의 첫 처치 때만 지급 (보스 반복 사냥 시 중복 지급 안 함 — 보스별로 세이브에 기록되므로 " +
+             "다른 보스가 같은 아이템을 줘도 각각 1회씩 지급됨). 대사는 매번 출력")]
     public bool rewardOnlyOnce = true;
-
 
     private EnemyHp _enemyHp;
     private bool _pending; // 사망했지만 아직 활성화 대기 중 (보스 자신에서 코루틴을 돌리는 경우)
@@ -59,7 +59,7 @@ public class BossClearActivator : MonoBehaviour
                 corpse     = _enemyHp,
                 reward     = rewardItem,
                 count      = rewardCount,
-                once       = rewardOnlyOnce,
+                onceKey    = OnceKey(),
                 dropTable= _enemyHp != null ? _enemyHp.dropTable : null,
                 dropPos    = _deathPos,
             };
@@ -85,7 +85,7 @@ public class BossClearActivator : MonoBehaviour
         public EnemyHp          corpse;
         public ItemData         reward;
         public int              count;
-        public bool             once;
+        public string           onceKey;
         public MonsterDropTable dropTable;
         public Vector3          dropPos;
     }
@@ -101,7 +101,7 @@ public class BossClearActivator : MonoBehaviour
         void Finish()
         {
             SetTargetsActive(clear.targets, true);
-            GrantReward(clear.reward, clear.count, clear.once, clear.dropTable, clear.dropPos);
+            GrantReward(clear.reward, clear.count, clear.onceKey, clear.dropTable, clear.dropPos);
             if (clear.corpse != null) clear.corpse.holdDestroy = false;
         }
 
@@ -128,19 +128,27 @@ public class BossClearActivator : MonoBehaviour
         if (!_pending) return;
         _pending = false;
         SetTargetsActive(activateOnClear, true);
-        GrantReward(rewardItem, rewardCount, rewardOnlyOnce, _enemyHp != null ? _enemyHp.dropTable : null, _deathPos);
+        GrantReward(rewardItem, rewardCount, OnceKey(), _enemyHp != null ? _enemyHp.dropTable : null, _deathPos);
+    }
+
+    // 보스당 1회 지급 기록 키 — "보스 monsterId:아이템 itemId". 1회 지급이 꺼져 있으면 null
+    private string OnceKey()
+    {
+        if (!rewardOnlyOnce || rewardItem == null) return null;
+        string bossId = _enemyHp != null && !string.IsNullOrEmpty(_enemyHp.monsterId) ? _enemyHp.monsterId : gameObject.name;
+        return $"{bossId}:{rewardItem.itemId}";
     }
 
     // 확정 아이템을 파티 인벤토리에 바로 넣는다 — 가득 차 있으면 보스 자리에 바닥 드랍 (스토리 아이템 유실 방지)
-    private static void GrantReward(ItemData item, int count, bool once, MonsterDropTable dropTable, Vector3 pos)
+    private static void GrantReward(ItemData item, int count, string onceKey, MonsterDropTable dropTable, Vector3 pos)
     {
         if (item == null || DataManager.instance == null) return;
 
-        // 1회 지급 — 이미 받은 기록이 있거나(이 기능 추가 전 세이브 대비) 인벤토리에 이미 있으면 지급하지 않음
-        if (once)
+        // 보스당 1회 지급 — 이 보스에게서 이미 받은 기록이 있으면 지급하지 않음
+        if (!string.IsNullOrEmpty(onceKey))
         {
-            if (DataManager.instance.HasGrantedOnce(item.itemId) || HasItem(item)) return;
-            DataManager.instance.MarkGrantedOnce(item.itemId);
+            if (DataManager.instance.HasGrantedOnce(onceKey)) return;
+            DataManager.instance.MarkGrantedOnce(onceKey);
         }
 
         if (DataManager.instance.FindItemById(item.itemId) == null)
@@ -157,13 +165,6 @@ public class BossClearActivator : MonoBehaviour
             Debug.Log($"[BossClear] 인벤토리가 가득 차 '{item.itemName}'을(를) 바닥에 떨어뜨렸습니다.");
         else
             Debug.LogWarning($"[BossClear] 인벤토리가 가득 차 '{item.itemName}'을(를) 지급하지 못했습니다.");
-    }
-
-    private static bool HasItem(ItemData item)
-    {
-        foreach (var inst in DataManager.instance.sharedInventory.Items)
-            if (inst != null && inst.data == item) return true;
-        return false;
     }
 
     private static void SetTargetsActive(GameObject[] targets, bool active)

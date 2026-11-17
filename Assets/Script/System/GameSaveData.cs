@@ -37,7 +37,7 @@ public class GameSaveData
     public int currentQuestProgress = 0;
     public List<string> completedQuestIds = new List<string>();
 
-    // 1회만 지급하는 보상(보스 확정 퀘스트 아이템 등)을 이미 받은 아이템 ID — 이 값 추가 전 세이브는 빈 목록
+    // 보스당 1회 지급 보상을 이미 받은 기록 ("보스 monsterId:아이템 itemId") — 이 값 추가 전 세이브는 빈 목록
     public List<string> grantedOnceItemIds = new List<string>();}
 
 // ─────────────────────────────────────────────────────────────────

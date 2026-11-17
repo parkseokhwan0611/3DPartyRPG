@@ -93,7 +93,7 @@ public class DataManager : MonoBehaviour
             && stocks.TryGetValue(entryIndex, out remaining);
     }
 
-    // 1회만 지급하는 보상을 이미 받은 아이템 ID — 보스 반복 처치 시 퀘스트 아이템 중복 지급 방지
+    // 보스당 1회 지급 보상을 이미 받은 기록 ("보스 monsterId:아이템 itemId") — 보스 반복 처치 시 중복 지급 방지
     private readonly HashSet<string> grantedOnceItemIds = new HashSet<string>();
 
     public bool HasGrantedOnce(string itemId) => !string.IsNullOrEmpty(itemId) && grantedOnceItemIds.Contains(itemId);
