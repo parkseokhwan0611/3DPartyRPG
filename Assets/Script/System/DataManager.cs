@@ -93,6 +93,12 @@ public class DataManager : MonoBehaviour
             && stocks.TryGetValue(entryIndex, out remaining);
     }
 
+    // 1회만 지급하는 보상을 이미 받은 아이템 ID — 보스 반복 처치 시 퀘스트 아이템 중복 지급 방지
+    private readonly HashSet<string> grantedOnceItemIds = new HashSet<string>();
+
+    public bool HasGrantedOnce(string itemId) => !string.IsNullOrEmpty(itemId) && grantedOnceItemIds.Contains(itemId);
+    public void MarkGrantedOnce(string itemId) { if (!string.IsNullOrEmpty(itemId)) grantedOnceItemIds.Add(itemId); }
+
     public void SetNpcStock(string npcId, int entryIndex, int remaining)
     {
         if (string.IsNullOrEmpty(npcId)) return;
@@ -187,6 +193,7 @@ public class DataManager : MonoBehaviour
         currentLeaderIndex = 0;
         autoSkillEnabled   = true;
         npcStocks.Clear();
+        grantedOnceItemIds.Clear();
         _skillCooldownEnds.Clear();
 
         // 시작 아이템 지급
@@ -300,6 +307,8 @@ public class DataManager : MonoBehaviour
             save.npcStocks.Add(stockSave);
         }
 
+        save.grantedOnceItemIds = new List<string>(grantedOnceItemIds);
+
         return save;
     }
 
@@ -339,6 +348,10 @@ public class DataManager : MonoBehaviour
                 foreach (var entry in npc.stocks)
                     SetNpcStock(npc.npcId, entry.entryIndex, entry.remaining);
             }
+
+        grantedOnceItemIds.Clear();
+        if (save.grantedOnceItemIds != null)
+            foreach (var id in save.grantedOnceItemIds) MarkGrantedOnce(id);
 
         // 캐릭터 복원
         for (int i = 0; i < baseDataList.Count && i < save.characters.Count; i++)

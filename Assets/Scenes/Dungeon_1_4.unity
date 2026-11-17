@@ -16847,20 +16847,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 23a6d0d6f97a13b40895c95e19a1e392, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  npcName: "\uC0AC\uB0E5\uAFBC \uC2DC\uB108"
-  npcId: NPC_Siner
+  npcName: "\uB8E8\uD06C"
+  npcId: NPC_Luke
   npcType: 2
   dialogueLines:
   - speaker: 0
-    text: "\uB2F9\uC2E0\uB4E4\uC774 \uC601\uC6C5\uB4E4\uC774\uC2DC\uAD70\uC694."
+    customSpeakerName: 
+    text: "\uC5B4\uC11C\uC624\uC138\uC694."
   - speaker: 0
-    text: "\uC774 \uC55E\uC758 \uACE0\uBE14\uB9B0 \uC8FC\uC220\uC0AC\uAC00 \uC138\uACC4\uC218\uC758
-      \uC78E\uC744 \uAC16\uACE0 \uC788\uC2B5\uB2C8\uB2E4."
+    customSpeakerName: 
+    text: "\uC774 \uC55E\uC5D0 \uAC15\uD55C \uB9C8\uB825\uC744 \uC9C0\uB2CC \uB9C8\uBB3C\uC774
+      \uC788\uC2B5\uB2C8\uB2E4."
   - speaker: 0
-    text: "\uACE0\uBE14\uB9B0 \uBB34\uB9AC\uB4E4\uC744 \uC9C0\uB098 \uACE0\uBE14\uB9B0
-      \uC8FC\uC220\uC0AC\uB97C \uCC98\uCE58\uD574\uC8FC\uC138\uC694."
+    customSpeakerName: 
+    text: "\uACE0\uBE14\uB9B0\uB4E4\uC774 \uAC15\uB825\uD55C \uC0AC\uB839\uC220\uB85C
+      \uC704\uD5D8\uD55C \uC874\uC7AC\uB97C \uBD80\uD65C\uC2DC\uD0A4\uB824 \uD569\uB2C8\uB2E4."
+  - speaker: 0
+    customSpeakerName: 
+    text: "\uADF8\uB4E4\uC744 \uB9C9\uC544\uC8FC\uC138\uC694."
   notReadyDialogueLines:
   - speaker: 0
+    customSpeakerName: 
     text: "\uC544\uC9C1\uC740 \uB54C\uAC00 \uC544\uB2D9\uB2C8\uB2E4."
   shopData: {fileID: 0}
   interactRange: 2
@@ -122978,7 +122985,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\uC0AC\uB0E5\uAFBC \uC2DC\uB108"
+  m_text: "\uB8E8\uD06C"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 13e4e0ad888c53f4395a44590492ba3b, type: 2}
   m_sharedMaterial: {fileID: -726750342706656786, guid: 13e4e0ad888c53f4395a44590492ba3b,
@@ -246280,7 +246287,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1632300468}
   m_Layer: 0
-  m_Name: QuestNPC_Siner
+  m_Name: QuestNPC_Luke
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

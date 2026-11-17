@@ -16847,20 +16847,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 23a6d0d6f97a13b40895c95e19a1e392, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  npcName: "\uC0AC\uB0E5\uAFBC \uC2DC\uB108"
-  npcId: NPC_Siner
+  npcName: "\uC9C0\uC624"
+  npcId: NPC_Zio
   npcType: 2
   dialogueLines:
   - speaker: 0
-    text: "\uB2F9\uC2E0\uB4E4\uC774 \uC601\uC6C5\uB4E4\uC774\uC2DC\uAD70\uC694."
+    customSpeakerName: 
+    text: "\uAC10\uC0AC\uD569\uB2C8\uB2E4 \uC6A9\uC0AC\uB2D8\uB4E4 \uB355\uBD84\uC5D0
+      \uB9C8\uB825\uC774 \uC0AC\uB77C\uC84C\uC2B5\uB2C8\uB2E4."
   - speaker: 0
-    text: "\uC774 \uC55E\uC758 \uACE0\uBE14\uB9B0 \uC8FC\uC220\uC0AC\uAC00 \uC138\uACC4\uC218\uC758
-      \uC78E\uC744 \uAC16\uACE0 \uC788\uC2B5\uB2C8\uB2E4."
-  - speaker: 0
-    text: "\uACE0\uBE14\uB9B0 \uBB34\uB9AC\uB4E4\uC744 \uC9C0\uB098 \uACE0\uBE14\uB9B0
-      \uC8FC\uC220\uC0AC\uB97C \uCC98\uCE58\uD574\uC8FC\uC138\uC694."
+    customSpeakerName: 
+    text: "\uC774\uC81C \uACE0\uBE14\uB9B0 \uC8FC\uC220\uC0AC\uB97C \uC9C0\uD0A4\uB294
+      \uACE0\uBE14\uB9B0\uB4E4\uC744 \uCC98\uCE58\uD574\uC8FC\uC138\uC694."
+  - speaker: 3
+    customSpeakerName: 
+    text: "(\uBB54\uAC00 \uC774\uC0C1\uD574.)"
+  - speaker: 3
+    customSpeakerName: 
+    text: "(\uC77C\uB2E8 \uC8FC\uC220\uC0AC\uB97C \uCC98\uCE58\uD558\uACE0 \uC0DD\uAC01\uD574\uBCF4\uC790.)"
   notReadyDialogueLines:
   - speaker: 0
+    customSpeakerName: 
     text: "\uC544\uC9C1\uC740 \uB54C\uAC00 \uC544\uB2D9\uB2C8\uB2E4."
   shopData: {fileID: 0}
   interactRange: 2
@@ -122978,7 +122985,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\uC0AC\uB0E5\uAFBC \uC2DC\uB108"
+  m_text: "\uC9C0\uC624"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 13e4e0ad888c53f4395a44590492ba3b, type: 2}
   m_sharedMaterial: {fileID: -726750342706656786, guid: 13e4e0ad888c53f4395a44590492ba3b,
@@ -131021,6 +131028,11 @@ PrefabInstance:
         type: 3}
       propertyPath: portalId
       value: Dungeon_1_5_to_Dungeon_Boss
+      objectReference: {fileID: 0}
+    - target: {fileID: 5822139004800782574, guid: 3d9c0427d76b8714ab057048ce42863b,
+        type: 3}
+      propertyPath: isBossStage
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5822139004800782574, guid: 3d9c0427d76b8714ab057048ce42863b,
         type: 3}
@@ -246280,7 +246292,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1632300468}
   m_Layer: 0
-  m_Name: QuestNPC_Siner
+  m_Name: QuestNPC_Zio
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

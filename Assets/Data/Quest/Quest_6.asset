@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4a4c602ee5d4f304899658fedf2a3ef4, type: 3}
+  m_Name: Quest_6
+  m_EditorClassIdentifier: 
+  questId: quest_6
+  questName: "\uAE30\uC0AC\uC758 \uB450 \uBC88\uC9F8 \uC758\uB8B0"
+  description: "\uACE0\uBE14\uB9B0 \uD22C\uCC99\uBCD1 4\uB9C8\uB9AC\uB97C \uCC98\uCE58\uD558\uACE0
+    \uACE0\uBE14\uB9B0 \uC8FC\uC220\uC0AC\uC758 \uD640\uB85C \uAC00\uC138\uC694."
+  objectiveType: 2
+  targetNpcId: 
+  targetNpcDisplayName: 
+  targetItem: {fileID: 0}
+  targetItemCount: 1
+  targetMonsterId: GoblinSlinger
+  targetMonsterDisplayName: "\uACE0\uBE14\uB9B0 \uB450\uBAA9"
+  targetMonsterCount: 4
+  reportNpcId: NPC_Jack
+  reportNpcDisplayName: "\uC7AC\uD06C"
+  rewardExp: 709
+  rewardGold: 140
+  rewardItems:
+  - item: {fileID: 11400000, guid: 780180cf1b0df8945a2df703d6f54460, type: 2}
+    count: 5
+  - item: {fileID: 11400000, guid: 090f952f171e2c04f8363455e384f321, type: 2}
+    count: 5
+  - item: {fileID: 11400000, guid: 35644b1ed1baa864dbe0ce5cc2c466d8, type: 2}
+    count: 1
