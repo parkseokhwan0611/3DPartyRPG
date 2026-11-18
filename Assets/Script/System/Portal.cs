@@ -116,7 +116,10 @@ public class Portal : MonoBehaviour
 
         bool anyUiOpen = MenuTabUI.IsOpen || ShopUI.IsOpen || DialogueUI.IsOpen || EnhancementUI.IsOpen
                       || DamageSkill.IsAnyVanishing; // 은신 스킬 중엔 포탈 이동 불가
-        if (_inside.Count > 0 && !anyUiOpen && !SceneLoader.IsLoading && Input.GetKeyDown(KeyCode.F))
+        // 리더가 NPC 대화 범위에 있으면 NPC가 우선 — 포탈 범위엔 파티원 누구든 걸치면 들어가므로,
+        // 포탈 옆 NPC와 대화하려고 F를 누르면 뒤따라온 파티원 때문에 포탈로 넘어가버렸음
+        if (_inside.Count > 0 && !anyUiOpen && !SceneLoader.IsLoading && !NpcInteractable.AnyLeaderInRange
+            && Input.GetKeyDown(KeyCode.F))
             UsePortal();
     }
 
@@ -145,7 +148,7 @@ public class Portal : MonoBehaviour
 
     private void RefreshPrompt()
     {
-        bool show = _inside.Count > 0;
+        bool show = _inside.Count > 0 && !NpcInteractable.AnyLeaderInRange; // NPC 대화가 우선일 땐 포탈 프롬프트 숨김
         if (show == _promptShown) return;
         _promptShown = show;
         if (promptObject != null) promptObject.SetActive(show);

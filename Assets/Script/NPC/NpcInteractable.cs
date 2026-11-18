@@ -62,6 +62,17 @@ public class NpcInteractable : MonoBehaviour
     // NPC 대화 퀘스트 등, 개별 NPC를 구독하기 어려운 전역 리스너용
     public static event System.Action<NpcInteractable> OnAnyDialogueComplete;
 
+    /// <summary>리더가 대화 범위 안에 있는 NPC가 하나라도 있는지 — 포탈·아이템 줍기보다 NPC 대화를 우선하기 위해 사용</summary>
+    public static bool AnyLeaderInRange
+    {
+        get
+        {
+            foreach (var n in AllInstances)
+                if (n != null && n._playerInRange) return true;
+            return false;
+        }
+    }
+
     // ─────────────────────────────────────────────────────────────────
     // 공개 접근자 (ShopUI / SaveManager에서 사용)
     // ─────────────────────────────────────────────────────────────────

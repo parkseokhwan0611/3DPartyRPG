@@ -58,7 +58,8 @@ public class WorldItem : MonoBehaviour
 
         bool anyUiOpen = MenuTabUI.IsOpen || ShopUI.IsOpen || DialogueUI.IsOpen || EnhancementUI.IsOpen || SceneLoader.IsLoading
                       || DamageSkill.IsAnyVanishing; // 은신 스킬 중엔 아이템 줍기 불가
-        if (_inside.Count > 0 && !anyUiOpen && Input.GetKeyDown(KeyCode.F))
+        // 리더가 NPC 대화 범위에 있으면 NPC 대화가 우선 (포탈과 동일)
+        if (_inside.Count > 0 && !anyUiOpen && !NpcInteractable.AnyLeaderInRange && Input.GetKeyDown(KeyCode.F))
             TryPickup();
     }
 

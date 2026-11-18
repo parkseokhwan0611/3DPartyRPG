@@ -161,9 +161,19 @@ public class QuestHudUI : MonoBehaviour
             if (_activeMarker == null) return;
         }
 
-        // NPC 발밑 높이 그대로 — 예전엔 y를 0으로 고정해서 바닥 높이가 0이 아닌 맵(홀 2층·지하 동굴 등)에선
-        // 마커가 바닥 속이나 공중에 떠 있었음
-        _activeMarker.transform.position = npc.transform.position;
+        // NPC 발밑 바닥 높이 — 예전엔 y를 0으로 고정해서 바닥 높이가 0이 아닌 맵(홀 2층·지하 동굴 등)에선
+        // 마커가 바닥 속이나 공중에 떠 있었고, NPC 피벗을 그대로 쓰면 피벗이 몸 중간에 있는 모델(1_1 알버트)은
+        // 마커가 몸 중간에 떴음 → 피벗 조금 위에서 아래로 바닥(groundLayer)을 쏴서 실제 바닥에 붙인다
+        _activeMarker.transform.position = GroundPointUnder(npc.transform.position);
+    }
+
+    private static Vector3 GroundPointUnder(Vector3 pos)
+    {
+        LayerMask mask = PartyManager.instance != null ? PartyManager.instance.groundLayer : (LayerMask)LayerMask.GetMask("Plane");
+        if (mask.value != 0 &&
+            Physics.Raycast(pos + Vector3.up * 0.5f, Vector3.down, out RaycastHit hit, 5f, mask, QueryTriggerInteraction.Ignore))
+            return hit.point;
+        return pos;
     }
 
     private static NpcInteractable FindTargetNpc(QuestData quest) => FindNpc(quest.targetNpcId);
