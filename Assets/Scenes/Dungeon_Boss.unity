@@ -10798,7 +10798,7 @@ MonoBehaviour:
   m_OverrideTileSize: 0
   m_TileSize: 256
   m_OverrideVoxelSize: 0
-  m_VoxelSize: 0.23333333
+  m_VoxelSize: 0.16666667
   m_MinRegionArea: 2
   m_NavMeshData: {fileID: 23800000, guid: 1e7996d6da1e9584fa6dbd666efc68bb, type: 2}
   m_BuildHeightMesh: 0
@@ -79977,6 +79977,7 @@ MonoBehaviour:
   cameraFollowTarget: {fileID: 2056592582}
   maxWalkableSnapHorizontal: 0.6
   maxWalkableSnapHeight: 0.5
+  maxGroundPierceDrop: 6
   partyHoldLockAfterDialogue: 0.3
   gameOverUI: {fileID: 920746052}
   titleSceneName: TitleScene
@@ -91601,13 +91602,6 @@ MonoBehaviour:
     GateFit: 2
     FocusDistance: 10
     m_SensorSize: {x: 1, y: 1}
-    Iso: 200
-    ShutterSpeed: 0.005
-    Aperture: 16
-    BladeCount: 5
-    Curvature: {x: 2, y: 11}
-    BarrelClipping: 0.25
-    Anamorphism: 0
   m_Transitions:
     m_BlendHint: 0
     m_InheritPosition: 0
@@ -124170,6 +124164,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Lunaris
       objectReference: {fileID: 0}
+    - target: {fileID: 1401794917289392688, guid: 2f33a4e6571441042aa45a63ffb1e21d,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1638296585788729073, guid: 2f33a4e6571441042aa45a63ffb1e21d,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -125241,6 +125240,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Varunius
+      objectReference: {fileID: 0}
+    - target: {fileID: 5943357817500116436, guid: ec4d99217f2f68444bf7290d29a074b3,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8113579044440472631, guid: ec4d99217f2f68444bf7290d29a074b3,
         type: 3}
@@ -127209,6 +127213,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Solaris
+      objectReference: {fileID: 0}
+    - target: {fileID: 2169059086056585671, guid: 87bb6553ecc4d4c4a92cf1f11ba83263,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -130604,6 +130613,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: SkeletonBoss
       objectReference: {fileID: 0}
+    - target: {fileID: 2246299689969667990, guid: d8c21dc94fc70e642bc5c79457bba33d,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6239089683958884399, guid: d8c21dc94fc70e642bc5c79457bba33d,
         type: 3}
       propertyPath: rewardItem
@@ -130952,5 +130966,5 @@ SceneRoots:
   - {fileID: 6061750261282073022}
   - {fileID: 4366866141389815708}
   - {fileID: 860982122}
-  - {fileID: 1395210491}
   - {fileID: 8788266458088635733}
+  - {fileID: 1395210491}
