@@ -25,6 +25,10 @@ public class PartyManager : MonoBehaviour
              "(경사·울퉁불퉁한 바닥) 너무 작으면 정상 바닥 클릭이 무시되고, 너무 크면 바위 등 장애물 위를 " +
              "클릭했을 때 그 가장자리로 '근처 이동'해버림 — 걸어서 오를 수 없는 높이(Step Height)보다 조금 크게")]
     public float maxWalkableSnapHeight = 0.5f;
+    [Tooltip("이동 클릭이 걸을 수 없는 바닥 레이어 면(다리 난간·줄, 기둥 위 등)에 먼저 맞았을 때, 그 면을 통과해서 " +
+             "뒤쪽 바닥을 다시 찾는 최대 깊이(m, 처음 맞은 지점 기준 아래로). 너무 크면 다리 위 빈 곳을 클릭했을 때 " +
+             "다리 밑 바닥까지 내려가 버림")]
+    public float maxGroundPierceDrop = 6f;
     [Tooltip("NPC 대화가 끝난 뒤 파티원 고정(Space) 키를 잠그는 시간(초) — 대사를 넘긴 스페이스바가 고정 키로 처리되는 것 방지")]
     public float partyHoldLockAfterDialogue = 0.3f;
     public static PartyManager instance;
@@ -255,14 +259,32 @@ public class PartyManager : MonoBehaviour
         }
 
         // 우선순위 2: 땅 클릭 → 이동 명령
-        if (TryGetGroundHit(ray, out RaycastHit groundHit))
-        {
-            // 바위 등 장애물 위(NavMesh가 없는 지점)를 클릭하면 명령 자체를 무시 —
-            // 그냥 보내면 NavMeshAgent가 장애물 근처까지 걸어가 버려서 "이동 불가"가 아니라
-            // "근처까지 감"처럼 보이는 문제가 있었음
-            if (!TryGetWalkablePoint(groundHit.point, out Vector3 walkablePoint)) return;
+        // 바위 등 장애물 위(NavMesh가 없는 지점)를 클릭하면 명령 자체를 무시 —
+        // 그냥 보내면 NavMeshAgent가 장애물 근처까지 걸어가 버려서 "이동 불가"가 아니라
+        // "근처까지 감"처럼 보이는 문제가 있었음
+        if (TryGetWalkableClickPoint(ray, out Vector3 walkablePoint))
             DispatchMoveCommand(walkablePoint);
+    }
+
+    // 클릭 레이가 처음 맞은 바닥 레이어 지점이 걸을 수 없는 곳이면(다리 난간·줄처럼 상판 위로 솟은 면 등 —
+    // 같은 콜라이더에 상판과 난간이 함께 들어 있어 카메라 쪽 난간이 상판을 가림) 그 면을 통과해 뒤쪽 바닥을 다시 찾는다.
+    // 메시 콜라이더는 뒷면을 맞히지 않으므로 바위 속을 지나 바위 밑바닥에 걸리는 일은 없고,
+    // 처음 맞은 지점보다 maxGroundPierceDrop 이상 아래(다리 밑 동굴 바닥 등)로는 내려가지 않는다
+    bool TryGetWalkableClickPoint(Ray ray, out Vector3 walkablePoint)
+    {
+        walkablePoint = default;
+        if (!TryGetGroundHit(ray, out RaycastHit hit)) return false;
+        if (TryGetWalkablePoint(hit.point, out walkablePoint)) return true;
+
+        float firstY = hit.point.y;
+        for (int i = 0; i < 4; i++)
+        {
+            Vector3 origin = hit.point + ray.direction * 0.02f;
+            if (!Physics.Raycast(origin, ray.direction, out hit, Mathf.Infinity, groundLayer, QueryTriggerInteraction.Ignore)) return false;
+            if (firstY - hit.point.y > maxGroundPierceDrop) return false;
+            if (TryGetWalkablePoint(hit.point, out walkablePoint)) return true;
         }
+        return false;
     }
 
     // 마우스가 "상호작용하는" 화면 UI(버튼·슬롯·슬라이더·스크롤·드래그·호버 툴팁 등) 위에 있는지.

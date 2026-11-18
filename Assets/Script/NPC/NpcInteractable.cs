@@ -23,6 +23,16 @@ public class NpcInteractable : MonoBehaviour
              "다 못 채웠을 때 Dialogue Lines 대신 보여줄 대사. 비워두면 기본 문구 사용")]
     [SerializeField] DialogueLine[] notReadyDialogueLines;
 
+    [Header("순서 전 대사 (선택)")]
+    [Tooltip("이 NPC가 지금 퀘스트가 아니라 체인의 다음 퀘스트(대화·보고 대상)에서 등장할 차례인데 먼저 찾아왔을 때 " +
+             "Dialogue Lines 대신 보여줄 대사 (앞 퀘스트를 건너뛴 경우). 비워두면 기본 문구 사용")]
+    [SerializeField] DialogueLine[] futureQuestDialogueLines;
+
+    [Header("퀘스트 완료 후 대사 (선택)")]
+    [Tooltip("이 NPC가 대화·보고 대상이었던 퀘스트를 끝낸 뒤 다시 말을 걸었을 때 Dialogue Lines 대신 보여줄 대사 " +
+             "(다음 퀘스트로 넘어간 뒤 돌아와서 말을 거는 경우). 비워두면 Dialogue Lines를 그대로 반복")]
+    [SerializeField] DialogueLine[] completedDialogueLines;
+
     [Header("상점 데이터 (Shop 타입만)")]
     [SerializeField] ShopData shopData;
 
@@ -177,6 +187,33 @@ public class NpcInteractable : MonoBehaviour
         return false;
     }
 
+    // 이 NPC가 지금 퀘스트의 대화 대상이거나 처치 보고 대상인지 (완료 후 대사로 바꾸면 안 되는 상태)
+    bool IsCurrentQuestTarget()
+    {
+        var quest = QuestManager.instance?.CurrentQuest;
+        if (quest == null) return false;
+        if (quest.objectiveType == QuestObjectiveType.NpcDialogue && quest.targetNpcId == NpcId) return true;
+        return quest.RequiresReport && quest.reportNpcId == NpcId;
+    }
+
+    // 체인에서 이미 끝낸 퀘스트(현재 퀘스트 이전) 중 이 NPC가 대화·보고 대상이었던 것이 있는지
+    bool HasCompletedQuestHere()
+    {
+        var qm = QuestManager.instance;
+        if (qm == null || qm.Chain == null) return false;
+
+        var quests = qm.Chain.quests;
+        int done = Mathf.Min(qm.CurrentQuestIndex, quests.Count);
+        for (int i = 0; i < done; i++)
+        {
+            var q = quests[i];
+            if (q == null) continue;
+            if (q.objectiveType == QuestObjectiveType.NpcDialogue && q.targetNpcId == NpcId) return true;
+            if (q.RequiresReport && q.reportNpcId == NpcId) return true;
+        }
+        return false;
+    }
+
     void StartDialogue()
     {
         if (DialogueUI.instance == null) return;
@@ -192,9 +229,14 @@ public class NpcInteractable : MonoBehaviour
         }
         else if (IsFutureQuestTarget())
         {
-            lines = (notReadyDialogueLines != null && notReadyDialogueLines.Length > 0)
-                ? notReadyDialogueLines
+            lines = (futureQuestDialogueLines != null && futureQuestDialogueLines.Length > 0)
+                ? futureQuestDialogueLines
                 : new[] { new DialogueLine { speaker = DialogueLine.Speaker.NPC, text = "아직은 때가 아닙니다." } };
+        }
+        else if (completedDialogueLines != null && completedDialogueLines.Length > 0
+                 && !IsCurrentQuestTarget() && HasCompletedQuestHere())
+        {
+            lines = completedDialogueLines;
         }
         else
         {

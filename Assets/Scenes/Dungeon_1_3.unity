@@ -822,7 +822,7 @@ MonoBehaviour:
   m_OverrideTileSize: 0
   m_TileSize: 256
   m_OverrideVoxelSize: 0
-  m_VoxelSize: 0.23333333
+  m_VoxelSize: 0.16666667
   m_MinRegionArea: 2
   m_NavMeshData: {fileID: 23800000, guid: 138d0bfa276bc534b807cfe989ce5881, type: 2}
   m_BuildHeightMesh: 0
@@ -124411,6 +124411,7 @@ MonoBehaviour:
   cameraFollowTarget: {fileID: 2056592582}
   maxWalkableSnapHorizontal: 0.6
   maxWalkableSnapHeight: 0.5
+  maxGroundPierceDrop: 6
   partyHoldLockAfterDialogue: 0.3
   gameOverUI: {fileID: 920746052}
   titleSceneName: TitleScene
@@ -127314,16 +127315,25 @@ MonoBehaviour:
     text: "\uB2F9\uC2E0\uB4E4\uC774 \uC601\uC6C5\uB4E4\uC774\uC2DC\uAD70\uC694."
   - speaker: 0
     customSpeakerName: 
-    text: "\uC774 \uC55E\uC758 \uACE0\uBE14\uB9B0 \uC8FC\uC220\uC0AC\uAC00 \uC138\uACC4\uC218\uC758
-      \uC78E\uC744 \uAC16\uACE0 \uC788\uC2B5\uB2C8\uB2E4."
+    text: "\uB3C4\uC640\uC8FC\uC154\uC11C \uAC10\uC0AC\uD569\uB2C8\uB2E4."
   - speaker: 0
     customSpeakerName: 
-    text: "\uACE0\uBE14\uB9B0 \uBB34\uB9AC\uB4E4\uC744 \uC9C0\uB098 \uACE0\uBE14\uB9B0
-      \uC8FC\uC220\uC0AC\uB97C \uCC98\uCE58\uD574\uC8FC\uC138\uC694."
+    text: "\uD68C\uB791\uC5D0 \uC81C \uB3D9\uB8CC \uB8E8\uD06C\uAC00 \uC788\uC2B5\uB2C8\uB2E4."
+  - speaker: 0
+    customSpeakerName: 
+    text: "\uB8E8\uD06C\uB97C \uAD6C\uD574\uC8FC\uC138\uC694."
   notReadyDialogueLines:
   - speaker: 0
     customSpeakerName: 
+    text: "\uC544\uC9C1 \uACE0\uBE14\uB9B0 \uD22C\uCC99\uBCD1\uC774 \uB0A8\uC544 \uC788\uC2B5\uB2C8\uB2E4. \uB0A8\uC740 \uD22C\uCC99\uBCD1\uC744 \uCC98\uCE58\uD558\uACE0 \uB2E4\uC2DC \uC640\uC8FC\uC138\uC694."
+  futureQuestDialogueLines:
+  - speaker: 0
+    customSpeakerName: 
     text: "\uC544\uC9C1\uC740 \uB54C\uAC00 \uC544\uB2D9\uB2C8\uB2E4."
+  completedDialogueLines:
+  - speaker: 0
+    customSpeakerName: 
+    text: "\uAC10\uC0AC\uD569\uB2C8\uB2E4 \uC601\uC6C5\uB2D8."
   shopData: {fileID: 0}
   interactRange: 2
   promptObject: {fileID: 142400298}
@@ -139894,13 +139904,6 @@ MonoBehaviour:
     GateFit: 2
     FocusDistance: 10
     m_SensorSize: {x: 1, y: 1}
-    Iso: 200
-    ShutterSpeed: 0.005
-    Aperture: 16
-    BladeCount: 5
-    Curvature: {x: 2, y: 11}
-    BarrelClipping: 0.25
-    Anamorphism: 0
   m_Transitions:
     m_BlendHint: 0
     m_InheritPosition: 0
@@ -187299,6 +187302,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Lunaris
       objectReference: {fileID: 0}
+    - target: {fileID: 1401794917289392688, guid: 2f33a4e6571441042aa45a63ffb1e21d,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1638296585788729073, guid: 2f33a4e6571441042aa45a63ffb1e21d,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -188344,6 +188352,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Varunius
+      objectReference: {fileID: 0}
+    - target: {fileID: 5943357817500116436, guid: ec4d99217f2f68444bf7290d29a074b3,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8113579044440472631, guid: ec4d99217f2f68444bf7290d29a074b3,
         type: 3}
@@ -190270,6 +190283,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Solaris
+      objectReference: {fileID: 0}
+    - target: {fileID: 2169059086056585671, guid: 87bb6553ecc4d4c4a92cf1f11ba83263,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

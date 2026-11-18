@@ -138,15 +138,16 @@ public class QuestHudUI : MonoBehaviour
         UpdateMarker(quest);
     }
 
+    // 마커를 띄울 NPC — 대화 퀘스트는 대화 대상, 보고형 처치 퀘스트는 목표 수량을 채운 뒤 보고 대상
     private void UpdateMarker(QuestData quest)
     {
-        if (quest.objectiveType != QuestObjectiveType.NpcDialogue)
-        {
-            ReleaseMarker();
-            return;
-        }
+        string markerNpcId = null;
+        if (quest.objectiveType == QuestObjectiveType.NpcDialogue)
+            markerNpcId = quest.targetNpcId;
+        else if (quest.RequiresReport && QuestManager.instance != null && QuestManager.instance.IsAwaitingReport)
+            markerNpcId = quest.reportNpcId;
 
-        NpcInteractable npc = FindTargetNpc(quest);
+        NpcInteractable npc = FindNpc(markerNpcId);
         if (npc == null)
         {
             ReleaseMarker();
@@ -160,14 +161,19 @@ public class QuestHudUI : MonoBehaviour
             if (_activeMarker == null) return;
         }
 
-        _activeMarker.transform.position = new Vector3(npc.transform.position.x, 0f, npc.transform.position.z);
+        // NPC 발밑 높이 그대로 — 예전엔 y를 0으로 고정해서 바닥 높이가 0이 아닌 맵(홀 2층·지하 동굴 등)에선
+        // 마커가 바닥 속이나 공중에 떠 있었음
+        _activeMarker.transform.position = npc.transform.position;
     }
 
-    private static NpcInteractable FindTargetNpc(QuestData quest)
+    private static NpcInteractable FindTargetNpc(QuestData quest) => FindNpc(quest.targetNpcId);
+
+    private static NpcInteractable FindNpc(string npcId)
     {
+        if (string.IsNullOrEmpty(npcId)) return null;
         foreach (var n in NpcInteractable.AllInstances)
         {
-            if (n.NpcId == quest.targetNpcId) return n;
+            if (n.NpcId == npcId) return n;
         }
         return null;
     }

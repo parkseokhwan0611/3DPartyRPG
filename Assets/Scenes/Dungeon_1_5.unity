@@ -1472,7 +1472,7 @@ MonoBehaviour:
   m_OverrideTileSize: 0
   m_TileSize: 256
   m_OverrideVoxelSize: 0
-  m_VoxelSize: 0.23333333
+  m_VoxelSize: 0.16666667
   m_MinRegionArea: 2
   m_NavMeshData: {fileID: 23800000, guid: 302fd1582dd50224cbce06fd2d9be397, type: 2}
   m_BuildHeightMesh: 0
@@ -16853,22 +16853,31 @@ MonoBehaviour:
   dialogueLines:
   - speaker: 0
     customSpeakerName: 
-    text: "\uAC10\uC0AC\uD569\uB2C8\uB2E4 \uC6A9\uC0AC\uB2D8\uB4E4 \uB355\uBD84\uC5D0
+    text: "\uAC10\uC0AC\uD569\uB2C8\uB2E4 \uC601\uC6C5\uB2D8\uB4E4 \uB355\uBD84\uC5D0
       \uB9C8\uB825\uC774 \uC0AC\uB77C\uC84C\uC2B5\uB2C8\uB2E4."
   - speaker: 0
     customSpeakerName: 
     text: "\uC774\uC81C \uACE0\uBE14\uB9B0 \uC8FC\uC220\uC0AC\uB97C \uC9C0\uD0A4\uB294
-      \uACE0\uBE14\uB9B0\uB4E4\uC744 \uCC98\uCE58\uD574\uC8FC\uC138\uC694."
+      \uACE0\uBE14\uB9B0 \uD22C\uCC99\uBCD1\uB4E4\uC744 \uCC98\uCE58\uD574\uC8FC\uC138\uC694."
   - speaker: 3
     customSpeakerName: 
     text: "(\uBB54\uAC00 \uC774\uC0C1\uD574.)"
   - speaker: 3
     customSpeakerName: 
-    text: "(\uC77C\uB2E8 \uC8FC\uC220\uC0AC\uB97C \uCC98\uCE58\uD558\uACE0 \uC0DD\uAC01\uD574\uBCF4\uC790.)"
+    text: "(\uC77C\uB2E8 \uACE0\uBE14\uB9B0\uB4E4\uC744 \uCC98\uCE58\uD558\uACE0
+      \uC0DD\uAC01\uD574\uBCF4\uC790.)"
   notReadyDialogueLines:
   - speaker: 0
     customSpeakerName: 
+    text: "\uC5B8\uB370\uB4DC \uACE0\uBE14\uB9B0 \uB300\uC7A5\uC758 \uB9C8\uB825\uC774 \uC544\uC9C1 \uB290\uAEF4\uC9D1\uB2C8\uB2E4. \uB300\uC7A5\uC744 \uCC98\uCE58\uD558\uACE0 \uB2E4\uC2DC \uC640\uC8FC\uC138\uC694."
+  futureQuestDialogueLines:
+  - speaker: 0
+    customSpeakerName: 
     text: "\uC544\uC9C1\uC740 \uB54C\uAC00 \uC544\uB2D9\uB2C8\uB2E4."
+  completedDialogueLines:
+  - speaker: 0
+    customSpeakerName: 
+    text: "\uAC10\uC0AC\uD569\uB2C8\uB2E4 \uC601\uC6C5\uB2D8."
   shopData: {fileID: 0}
   interactRange: 2
   promptObject: {fileID: 109119101}
@@ -219285,6 +219294,7 @@ MonoBehaviour:
   cameraFollowTarget: {fileID: 2056592582}
   maxWalkableSnapHorizontal: 0.6
   maxWalkableSnapHeight: 0.5
+  maxGroundPierceDrop: 6
   partyHoldLockAfterDialogue: 0.3
   gameOverUI: {fileID: 920746052}
   titleSceneName: TitleScene
@@ -247688,13 +247698,6 @@ MonoBehaviour:
     GateFit: 2
     FocusDistance: 10
     m_SensorSize: {x: 1, y: 1}
-    Iso: 200
-    ShutterSpeed: 0.005
-    Aperture: 16
-    BladeCount: 5
-    Curvature: {x: 2, y: 11}
-    BarrelClipping: 0.25
-    Anamorphism: 0
   m_Transitions:
     m_BlendHint: 0
     m_InheritPosition: 0

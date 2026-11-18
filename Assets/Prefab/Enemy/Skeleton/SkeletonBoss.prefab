@@ -5665,7 +5665,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: acd2eab4ef7c61747b38afe6622dbf8d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  attackDamage: 240
+  attackDamage: 310
   attackRange: 2
   attackSpeed: 1
   attackDuration: 1.4
@@ -5701,8 +5701,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: db5518911df8ae84da3b30d78b763b17, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hp: 12000
-  maxHp: 12000
+  hp: 15600
+  maxHp: 15600
   isDead: 0
   grade: 2
   level: 11
@@ -5758,6 +5758,7 @@ MonoBehaviour:
   range: 2
   useChance: 0.4
   windupDuration: 1
+  extraWindup: 0.5
   attackDuration: 0.15
   recoveryDuration: 0.75
   animTrigger: skill1
@@ -5766,7 +5767,7 @@ MonoBehaviour:
   debuff: 0
   debuffValue: 0.3
   debuffDuration: 2
-  damage: 350
+  damage: 460
   radius: 3
   targetLayer:
     serializedVersion: 2
@@ -5793,6 +5794,7 @@ MonoBehaviour:
   range: 2
   useChance: 0.4
   windupDuration: 0.5
+  extraWindup: 0.5
   attackDuration: 0.15
   recoveryDuration: 1.05
   animTrigger: skill2
@@ -5801,7 +5803,7 @@ MonoBehaviour:
   debuff: 2
   debuffValue: 0.3
   debuffDuration: 1
-  damage: 300
+  damage: 390
   radius: 2
   targetLayer:
     serializedVersion: 2

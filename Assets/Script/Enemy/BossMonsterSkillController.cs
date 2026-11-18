@@ -164,7 +164,11 @@ public class BossMonsterSkillController : MonoBehaviour, ISkillCaster
         if (_animator != null && !string.IsNullOrEmpty(skill.animTrigger))
             _animator.SetTrigger(skill.animTrigger);
 
-        yield return new WaitForSeconds(skill.windupDuration);
+        // 추가 예고가 있으면 그만큼 시전 모션을 느리게 — 모션의 타격 순간이 실제 판정 시점과 맞도록
+        float windupAnimSpeed = skill.WindupAnimSpeed;
+        if (_animator != null && windupAnimSpeed < 1f) _animator.speed = windupAnimSpeed;
+        yield return new WaitForSeconds(skill.TotalWindup);
+        if (_animator != null) _animator.speed = 1f;
 
         // 예고가 끝난 시점엔 애니메이터가 스킬 상태에 들어가 있음 — 후딜 종료 때 아직 이 상태인지 비교용
         int skillStateHash = string.IsNullOrEmpty(skill.animTrigger) ? 0 : MonsterAnimUtil.CurrentStateHash(_animator);
@@ -207,6 +211,7 @@ public class BossMonsterSkillController : MonoBehaviour, ISkillCaster
             _activeSkill?.OnForceCancelled();  // 지연 실행 중이던 효과(데미지 등)가 있다면 함께 정지
             _activeSkill = null;
         }
+        if (_animator != null) _animator.speed = 1f; // 예고 중 느리게 재생하던 시전 모션 복구
         if (_attackBase != null) _attackBase.IsCastingSkill = false;
         // isStopped는 여기서 풀지 않음 — 스턴 때문에 취소된 거라면 BasicMonsterScript.HandleStunEnded가
         // 스턴이 끝날 때 알아서 풀어줌. 여기서 미리 풀면 스턴 중에도 움직여버릴 수 있음

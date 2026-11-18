@@ -16,6 +16,13 @@ public abstract class MonsterSkillBase : MonoBehaviour
     [Tooltip("시전 예고(텔레그래프) 시간 — 보스 스킬 인디케이터를 붙일 지점. 이 시간 동안 " +
              "몬스터는 멈춰서 시전 모션만 재생하고, 끝나면 ExecuteSkill이 실행된다")]
     public float windupDuration = 0.6f;
+    [Tooltip("추가 예고 시간(초) — 피할 시간을 더 주고 싶을 때. windupDuration은 시전 모션의 타격 시점 그대로 두고 " +
+             "이 값만 늘리면, 예고 동안 시전 모션을 그만큼 느리게 재생해서 모션의 타격 순간과 실제 판정 시점이 맞는다 (0이면 기존과 동일)")]
+    public float extraWindup = 0f;
+
+    // 실제 예고 시간과, 그 동안의 시전 모션 재생 속도 (추가 예고가 없으면 1)
+    public float TotalWindup     => windupDuration + Mathf.Max(0f, extraWindup);
+    public float WindupAnimSpeed => (extraWindup > 0f && windupDuration > 0f) ? windupDuration / TotalWindup : 1f;
     [Tooltip("ExecuteSkill 실행 후 그 효과 자체가 유지/전개되는 시간(초) — 예: 폭발 이펙트가 실제로 " +
              "터지는 데 시간이 걸리거나, 판정 존이 windupDuration이 끝난 뒤에도 한동안 유효한 경우. " +
              "이 시간 동안 인디케이터가 계속 보이다가 끝나는 시점에 사라진다. 즉시 끝나는 스킬이면 0")]

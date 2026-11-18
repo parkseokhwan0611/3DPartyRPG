@@ -19,6 +19,8 @@ public class BossClearActivator : MonoBehaviour
     [Tooltip("보스 처치 후 출력할 대사 — Speaker NPC = 보스, Character0~2 = 파티원, Custom = 직접 적은 화자(시스템 등). " +
              "대사가 끝나야(또는 스킵) 포탈 등이 활성화된다")]
     public DialogueLine[] clearDialogue;
+    [Tooltip("켜두면 이 보스의 첫 처치 때만 대사 출력 (보스 반복 사냥 시 생략 — 세이브에 기록됨)")]
+    public bool dialogueOnlyOnce = true;
 
     [Header("처치 확정 지급 아이템 (비워두면 지급 없음)")]
     [Tooltip("대사가 끝난 뒤(대사가 없으면 활성화 시점) 파티 인벤토리에 바로 들어가는 아이템 — 스토리용 QuestItem 등. " +
@@ -26,7 +28,7 @@ public class BossClearActivator : MonoBehaviour
     public ItemData rewardItem;
     [Min(1)] public int rewardCount = 1;
     [Tooltip("켜두면 이 보스의 첫 처치 때만 지급 (보스 반복 사냥 시 중복 지급 안 함 — 보스별로 세이브에 기록되므로 " +
-             "다른 보스가 같은 아이템을 줘도 각각 1회씩 지급됨). 대사는 매번 출력")]
+             "다른 보스가 같은 아이템을 줘도 각각 1회씩 지급됨)")]
     public bool rewardOnlyOnce = true;
 
     private EnemyHp _enemyHp;
@@ -45,7 +47,10 @@ public class BossClearActivator : MonoBehaviour
     private void HandleDeath()
     {
         _deathPos = transform.position;
-        bool hasDialogue = clearDialogue != null && clearDialogue.Length > 0 && DialogueUI.instance != null;
+        // 1회 대사는 이 보스의 대사를 이미 본 기록이 있으면 생략 (포탈 활성화·아이템 지급은 그대로 진행)
+        string dialogueKey = dialogueOnlyOnce ? $"{BossId()}:dialogue" : null;
+        bool dialogueSeen  = dialogueKey != null && DataManager.instance != null && DataManager.instance.HasGrantedOnce(dialogueKey);
+        bool hasDialogue   = clearDialogue != null && clearDialogue.Length > 0 && DialogueUI.instance != null && !dialogueSeen;
 
         if (hasDialogue)
         {
@@ -60,7 +65,8 @@ public class BossClearActivator : MonoBehaviour
                 reward     = rewardItem,
                 count      = rewardCount,
                 onceKey    = OnceKey(),
-                dropTable= _enemyHp != null ? _enemyHp.dropTable : null,
+                dialogueKey = dialogueKey,
+                dropTable  = _enemyHp != null ? _enemyHp.dropTable : null,
                 dropPos    = _deathPos,
             };
             // 대기·대사 진행은 씬에 남아있는 DialogueUI에서 돌린다 (보스 쪽 코루틴이 끊기는 경우 대비)
@@ -86,6 +92,7 @@ public class BossClearActivator : MonoBehaviour
         public ItemData         reward;
         public int              count;
         public string           onceKey;
+        public string           dialogueKey;
         public MonsterDropTable dropTable;
         public Vector3          dropPos;
     }
@@ -101,6 +108,7 @@ public class BossClearActivator : MonoBehaviour
         void Finish()
         {
             SetTargetsActive(clear.targets, true);
+            if (!string.IsNullOrEmpty(clear.dialogueKey)) DataManager.instance?.MarkGrantedOnce(clear.dialogueKey); // 대사를 본 기록
             GrantReward(clear.reward, clear.count, clear.onceKey, clear.dropTable, clear.dropPos);
             if (clear.corpse != null) clear.corpse.holdDestroy = false;
         }
@@ -135,9 +143,10 @@ public class BossClearActivator : MonoBehaviour
     private string OnceKey()
     {
         if (!rewardOnlyOnce || rewardItem == null) return null;
-        string bossId = _enemyHp != null && !string.IsNullOrEmpty(_enemyHp.monsterId) ? _enemyHp.monsterId : gameObject.name;
-        return $"{bossId}:{rewardItem.itemId}";
+        return $"{BossId()}:{rewardItem.itemId}";
     }
+
+    private string BossId() => _enemyHp != null && !string.IsNullOrEmpty(_enemyHp.monsterId) ? _enemyHp.monsterId : gameObject.name;
 
     // 확정 아이템을 파티 인벤토리에 바로 넣는다 — 가득 차 있으면 보스 자리에 바닥 드랍 (스토리 아이템 유실 방지)
     private static void GrantReward(ItemData item, int count, string onceKey, MonsterDropTable dropTable, Vector3 pos)

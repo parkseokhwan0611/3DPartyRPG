@@ -701,7 +701,7 @@ MonoBehaviour:
   m_OverrideTileSize: 0
   m_TileSize: 256
   m_OverrideVoxelSize: 0
-  m_VoxelSize: 0.23333333
+  m_VoxelSize: 0.16666667
   m_MinRegionArea: 2
   m_NavMeshData: {fileID: 23800000, guid: 1a116bc2dea7ff74d95a1598153f4f76, type: 2}
   m_BuildHeightMesh: 0
@@ -66827,6 +66827,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Portal_Back
       objectReference: {fileID: 0}
+    - target: {fileID: 1075712664182657804, guid: 3d9c0427d76b8714ab057048ce42863b,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 8078761070689332417, guid: 3d9c0427d76b8714ab057048ce42863b,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -110608,18 +110613,22 @@ MonoBehaviour:
     customSpeakerName: 
     text: "\uD2B9\uD788 \uD22C\uCC99\uBCD1\uC774 \uB108\uBB34 \uAC15\uD574\uC11C
       \uACE0\uBE14\uB9B0 \uD22C\uCC99\uBCD1 3\uB9C8\uB9AC\uB97C \uCC98\uCE58\uD558\uACE0
-      \uACE0\uBE14\uB9B0 \uC8FC\uC220\uC0AC\uC758 \uD68C\uB791\uC73C\uB85C \uAC00\uC8FC\uC2ED\uC2DC\uC624."
+      \uACE0\uBE14\uB9B0 \uC131 \uC785\uAD6C\uB85C \uAC00\uC8FC\uC2ED\uC2DC\uC624."
   - speaker: 0
     customSpeakerName: 
     text: "\uADF8\uACF3\uC5D0 \uC800\uC758 \uB3D9\uB8CC\uAC00 \uC788\uC2B5\uB2C8\uB2E4."
   - speaker: 1
     customSpeakerName: 
     text: "\uC54C\uC558\uB2E4. \uC5B4\uC11C \uBB34\uB9AC\uC640 \uD569\uB958\uD574\uB77C."
-  notReadyDialogueLines:
+  notReadyDialogueLines: []
+  futureQuestDialogueLines:
   - speaker: 0
     customSpeakerName: 
-    text: "\uACE0\uBE14\uB9B0 \uD22C\uCC99\uBCD1\uC744 \uCC98\uCE58\uD558\uACE0 \uACE0\uBE14\uB9B0
-      \uC8FC\uC220\uC0AC\uC758 \uD68C\uB791\uC73C\uB85C \uAC00\uC2DC\uBA74 \uB429\uB2C8\uB2E4."
+    text: "\uC138\uACC4\uC218\uC758 \uBB34\uB140\uB2D8\uC744 \uBA3C\uC800 \uB9CC\uB098\uACE0 \uC640\uC8FC\uC2ED\uC2DC\uC624."
+  completedDialogueLines:
+  - speaker: 0
+    customSpeakerName: 
+    text: "\uAC10\uC0AC\uD569\uB2C8\uB2E4 \uC601\uC6C5\uB2D8."
   shopData: {fileID: 0}
   interactRange: 2
   promptObject: {fileID: 452448900}
@@ -110765,6 +110774,7 @@ MonoBehaviour:
   cameraFollowTarget: {fileID: 2056592582}
   maxWalkableSnapHorizontal: 0.6
   maxWalkableSnapHeight: 0.5
+  maxGroundPierceDrop: 6
   partyHoldLockAfterDialogue: 0.3
   gameOverUI: {fileID: 920746052}
   titleSceneName: TitleScene
@@ -124984,13 +124994,6 @@ MonoBehaviour:
     GateFit: 2
     FocusDistance: 10
     m_SensorSize: {x: 1, y: 1}
-    Iso: 200
-    ShutterSpeed: 0.005
-    Aperture: 16
-    BladeCount: 5
-    Curvature: {x: 2, y: 11}
-    BarrelClipping: 0.25
-    Anamorphism: 0
   m_Transitions:
     m_BlendHint: 0
     m_InheritPosition: 0
@@ -168380,6 +168383,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Lunaris
       objectReference: {fileID: 0}
+    - target: {fileID: 1401794917289392688, guid: 2f33a4e6571441042aa45a63ffb1e21d,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1638296585788729073, guid: 2f33a4e6571441042aa45a63ffb1e21d,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -169435,6 +169443,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Varunius
+      objectReference: {fileID: 0}
+    - target: {fileID: 5943357817500116436, guid: ec4d99217f2f68444bf7290d29a074b3,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8113579044440472631, guid: ec4d99217f2f68444bf7290d29a074b3,
         type: 3}
@@ -171556,6 +171569,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Solaris
+      objectReference: {fileID: 0}
+    - target: {fileID: 2169059086056585671, guid: 87bb6553ecc4d4c4a92cf1f11ba83263,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

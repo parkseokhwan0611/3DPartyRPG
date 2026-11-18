@@ -30,7 +30,7 @@ public class CharacterEquipment
 
     /// <summary>
     /// 아이템 장착.
-    /// Ring은 Ring1 → Ring2 순서로 자동 배치.
+    /// Ring은 빈 슬롯(Ring1 → Ring2)에 배치, 둘 다 차 있으면 등급이 낮은 반지를 교체 (DetermineSlot).
     /// 이미 슬롯이 차 있으면 기존 아이템을 반환 (호출자가 인벤토리에 돌려놓음).
     /// </summary>
     public ItemInstance Equip(ItemInstance newItem)
@@ -130,16 +130,25 @@ public class CharacterEquipment
     // 내부 헬퍼
     // ─────────────────────────────────────────────────────────────────
 
-    /// <summary>Ring: Ring1이 비어있으면 Ring1, 아니면 Ring2 자동 배치.</summary>
+    /// <summary>
+    /// Ring: 빈 슬롯(Ring1 → Ring2 순)에 배치. 둘 다 차 있으면 등급이 낮은 반지를 교체하고,
+    /// 등급이 같으면 강화 수치가 낮은 쪽, 그것도 같으면 Ring2를 교체.
+    /// </summary>
     private EquipSlot DetermineSlot(EquipItemData equip)
     {
         EquipSlot base_ = equip.GetEquipSlot();
-        if (base_ == EquipSlot.Ring1)
-        {
-            bool ring1Empty = !slots.ContainsKey(EquipSlot.Ring1) || slots[EquipSlot.Ring1] == null;
-            return ring1Empty ? EquipSlot.Ring1 : EquipSlot.Ring2;
-        }
-        return base_;
+        if (base_ != EquipSlot.Ring1) return base_;
+
+        slots.TryGetValue(EquipSlot.Ring1, out var ring1);
+        slots.TryGetValue(EquipSlot.Ring2, out var ring2);
+        if (ring1 == null) return EquipSlot.Ring1;
+        if (ring2 == null) return EquipSlot.Ring2;
+
+        int grade1 = (int)ring1.data.grade, grade2 = (int)ring2.data.grade;
+        if (grade1 != grade2) return grade1 < grade2 ? EquipSlot.Ring1 : EquipSlot.Ring2;
+        if (ring1.enhancementLevel != ring2.enhancementLevel)
+            return ring1.enhancementLevel < ring2.enhancementLevel ? EquipSlot.Ring1 : EquipSlot.Ring2;
+        return EquipSlot.Ring2;
     }
 
     private static void ApplySubOption(CharacterStatus status, SubOption sub)

@@ -1472,7 +1472,7 @@ MonoBehaviour:
   m_OverrideTileSize: 0
   m_TileSize: 256
   m_OverrideVoxelSize: 0
-  m_VoxelSize: 0.23333333
+  m_VoxelSize: 0.16666667
   m_MinRegionArea: 2
   m_NavMeshData: {fileID: 23800000, guid: 1b42a424f324aa442bf54e9fef227992, type: 2}
   m_BuildHeightMesh: 0
@@ -16865,10 +16865,15 @@ MonoBehaviour:
   - speaker: 0
     customSpeakerName: 
     text: "\uADF8\uB4E4\uC744 \uB9C9\uC544\uC8FC\uC138\uC694."
-  notReadyDialogueLines:
+  notReadyDialogueLines: []
+  futureQuestDialogueLines:
   - speaker: 0
     customSpeakerName: 
     text: "\uC544\uC9C1\uC740 \uB54C\uAC00 \uC544\uB2D9\uB2C8\uB2E4."
+  completedDialogueLines:
+  - speaker: 0
+    customSpeakerName: 
+    text: "\uAC10\uC0AC\uD569\uB2C8\uB2E4 \uC601\uC6C5\uB2D8."
   shopData: {fileID: 0}
   interactRange: 2
   promptObject: {fileID: 109119101}
@@ -219280,6 +219285,7 @@ MonoBehaviour:
   cameraFollowTarget: {fileID: 2056592582}
   maxWalkableSnapHorizontal: 0.6
   maxWalkableSnapHeight: 0.5
+  maxGroundPierceDrop: 6
   partyHoldLockAfterDialogue: 0.3
   gameOverUI: {fileID: 920746052}
   titleSceneName: TitleScene
@@ -247683,13 +247689,6 @@ MonoBehaviour:
     GateFit: 2
     FocusDistance: 10
     m_SensorSize: {x: 1, y: 1}
-    Iso: 200
-    ShutterSpeed: 0.005
-    Aperture: 16
-    BladeCount: 5
-    Curvature: {x: 2, y: 11}
-    BarrelClipping: 0.25
-    Anamorphism: 0
   m_Transitions:
     m_BlendHint: 0
     m_InheritPosition: 0
