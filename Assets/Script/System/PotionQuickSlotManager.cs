@@ -7,6 +7,8 @@ public class PotionQuickSlotManager : MonoBehaviour
 
     public event Action OnHpSlotChanged;
     public event Action OnMpSlotChanged;
+    // 포션을 실제로 마신 순간 (보스전 측정 로거 등 외부 집계용)
+    public static event Action<ConsumableType> OnPotionUsed;
 
     private ItemInstance _hpSlot             = null;
     private ItemInstance _mpSlot             = null;
@@ -242,6 +244,8 @@ public class PotionQuickSlotManager : MonoBehaviour
 
         if (type == ConsumableType.HpPotion) _hpCooldownRemaining = cd.cooldown;
         else                                  _mpCooldownRemaining = cd.cooldown;
+
+        OnPotionUsed?.Invoke(type);
     }
 
     // ─────────────────────────────────────────────────────────────────
